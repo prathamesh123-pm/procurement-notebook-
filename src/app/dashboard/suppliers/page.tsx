@@ -125,15 +125,15 @@ function SuppliersContent() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-4">
               <div className="space-y-2">
                 <Label>Supplier Name</Label>
-                <Input value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
+                <Input value={formData.name ?? ""} onChange={e => setFormData({...formData, name: e.target.value})} />
               </div>
               <div className="space-y-2">
                 <Label>Mobile Number</Label>
-                <Input value={formData.mobile} onChange={e => setFormData({...formData, mobile: e.target.value})} />
+                <Input value={formData.mobile ?? ""} onChange={e => setFormData({...formData, mobile: e.target.value})} />
               </div>
               <div className="space-y-2 md:col-span-2">
                 <Label>Address</Label>
-                <Input value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} />
+                <Input value={formData.address ?? ""} onChange={e => setFormData({...formData, address: e.target.value})} />
               </div>
               
               <div className="p-4 border rounded-lg md:col-span-1 space-y-3 bg-muted/20">
@@ -141,15 +141,15 @@ function SuppliersContent() {
                 <div className="grid grid-cols-3 gap-2">
                   <div className="space-y-1">
                     <Label className="text-[10px]">Qty (L)</Label>
-                    <Input type="number" step="0.1" value={formData.cowMilk?.quantity} onChange={e => setFormData({...formData, cowMilk: {...formData.cowMilk!, quantity: Number(e.target.value)}})} />
+                    <Input type="number" step="0.1" value={formData.cowMilk?.quantity ?? 0} onChange={e => setFormData({...formData, cowMilk: {...(formData.cowMilk || {quantity:0, fat:0, snf:0}), quantity: Number(e.target.value)}})} />
                   </div>
                   <div className="space-y-1">
                     <Label className="text-[10px]">Fat (%)</Label>
-                    <Input type="number" step="0.1" value={formData.cowMilk?.fat} onChange={e => setFormData({...formData, cowMilk: {...formData.cowMilk!, fat: Number(e.target.value)}})} />
+                    <Input type="number" step="0.1" value={formData.cowMilk?.fat ?? 0} onChange={e => setFormData({...formData, cowMilk: {...(formData.cowMilk || {quantity:0, fat:0, snf:0}), fat: Number(e.target.value)}})} />
                   </div>
                   <div className="space-y-1">
                     <Label className="text-[10px]">SNF (%)</Label>
-                    <Input type="number" step="0.1" value={formData.cowMilk?.snf} onChange={e => setFormData({...formData, cowMilk: {...formData.cowMilk!, snf: Number(e.target.value)}})} />
+                    <Input type="number" step="0.1" value={formData.cowMilk?.snf ?? 0} onChange={e => setFormData({...formData, cowMilk: {...(formData.cowMilk || {quantity:0, fat:0, snf:0}), snf: Number(e.target.value)}})} />
                   </div>
                 </div>
               </div>
@@ -159,22 +159,22 @@ function SuppliersContent() {
                 <div className="grid grid-cols-3 gap-2">
                   <div className="space-y-1">
                     <Label className="text-[10px]">Qty (L)</Label>
-                    <Input type="number" step="0.1" value={formData.buffaloMilk?.quantity} onChange={e => setFormData({...formData, buffaloMilk: {...formData.buffaloMilk!, quantity: Number(e.target.value)}})} />
+                    <Input type="number" step="0.1" value={formData.buffaloMilk?.quantity ?? 0} onChange={e => setFormData({...formData, buffaloMilk: {...(formData.buffaloMilk || {quantity:0, fat:0, snf:0}), quantity: Number(e.target.value)}})} />
                   </div>
                   <div className="space-y-1">
                     <Label className="text-[10px]">Fat (%)</Label>
-                    <Input type="number" step="0.1" value={formData.buffaloMilk?.fat} onChange={e => setFormData({...formData, buffaloMilk: {...formData.buffaloMilk!, fat: Number(e.target.value)}})} />
+                    <Input type="number" step="0.1" value={formData.buffaloMilk?.fat ?? 0} onChange={e => setFormData({...formData, buffaloMilk: {...(formData.buffaloMilk || {quantity:0, fat:0, snf:0}), fat: Number(e.target.value)}})} />
                   </div>
                   <div className="space-y-1">
                     <Label className="text-[10px]">SNF (%)</Label>
-                    <Input type="number" step="0.1" value={formData.buffaloMilk?.snf} onChange={e => setFormData({...formData, buffaloMilk: {...formData.buffaloMilk!, snf: Number(e.target.value)}})} />
+                    <Input type="number" step="0.1" value={formData.buffaloMilk?.snf ?? 0} onChange={e => setFormData({...formData, buffaloMilk: {...(formData.buffaloMilk || {quantity:0, fat:0, snf:0}), snf: Number(e.target.value)}})} />
                   </div>
                 </div>
               </div>
 
               <div className="space-y-2">
                 <Label>Quality Grade</Label>
-                <Select value={formData.milkQuality} onValueChange={val => setFormData({...formData, milkQuality: val})}>
+                <Select value={formData.milkQuality ?? ""} onValueChange={val => setFormData({...formData, milkQuality: val})}>
                   <SelectTrigger><SelectValue placeholder="Select Grade" /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="A+">A+ Premium</SelectItem>
@@ -186,7 +186,7 @@ function SuppliersContent() {
               </div>
               <div className="space-y-2">
                 <Label>Route</Label>
-                <Select value={formData.routeId} onValueChange={val => setFormData({...formData, routeId: val})}>
+                <Select value={formData.routeId ?? ""} onValueChange={val => setFormData({...formData, routeId: val})}>
                   <SelectTrigger><SelectValue placeholder="Select Route" /></SelectTrigger>
                   <SelectContent>
                     {routes.map(r => <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>)}
@@ -195,11 +195,11 @@ function SuppliersContent() {
               </div>
               <div className="space-y-2">
                 <Label>Local Competition</Label>
-                <Input placeholder="e.g. Amul Center" value={formData.competition} onChange={e => setFormData({...formData, competition: e.target.value})} />
+                <Input placeholder="e.g. Amul Center" value={formData.competition ?? ""} onChange={e => setFormData({...formData, competition: e.target.value})} />
               </div>
               <div className="space-y-2">
                 <Label>Other Info</Label>
-                <Input placeholder="Preferred collection time etc." value={formData.additionalInfo} onChange={e => setFormData({...formData, additionalInfo: e.target.value})} />
+                <Input placeholder="Preferred collection time etc." value={formData.additionalInfo ?? ""} onChange={e => setFormData({...formData, additionalInfo: e.target.value})} />
               </div>
             </div>
             <DialogFooter>
@@ -339,13 +339,13 @@ function SuppliersContent() {
                <h4 className="text-sm font-bold font-headline uppercase text-muted-foreground">Update Profile</h4>
                <div className="space-y-3">
                  <Label className="text-xs">Cow Milk Qty (L)</Label>
-                 <Input type="number" step="0.1" value={formData.cowMilk?.quantity} onChange={e => setFormData({...formData, cowMilk: {...formData.cowMilk!, quantity: Number(e.target.value)}})} />
+                 <Input type="number" step="0.1" value={formData.cowMilk?.quantity ?? 0} onChange={e => setFormData({...formData, cowMilk: {...(formData.cowMilk || {quantity:0, fat:0, snf:0}), quantity: Number(e.target.value)}})} />
                  
                  <Label className="text-xs">Buffalo Milk Qty (L)</Label>
-                 <Input type="number" step="0.1" value={formData.buffaloMilk?.quantity} onChange={e => setFormData({...formData, buffaloMilk: {...formData.buffaloMilk!, quantity: Number(e.target.value)}})} />
+                 <Input type="number" step="0.1" value={formData.buffaloMilk?.quantity ?? 0} onChange={e => setFormData({...formData, buffaloMilk: {...(formData.buffaloMilk || {quantity:0, fat:0, snf:0}), quantity: Number(e.target.value)}})} />
 
                  <Label className="text-xs">Quality Grade</Label>
-                 <Select value={formData.milkQuality} onValueChange={val => setFormData({...formData, milkQuality: val})}>
+                 <Select value={formData.milkQuality ?? ""} onValueChange={val => setFormData({...formData, milkQuality: val})}>
                    <SelectTrigger><SelectValue /></SelectTrigger>
                    <SelectContent>
                      <SelectItem value="A+">A+ Premium</SelectItem>
@@ -356,7 +356,7 @@ function SuppliersContent() {
                  </Select>
 
                  <Label className="text-xs">Change Route</Label>
-                 <Select value={formData.routeId} onValueChange={val => setFormData({...formData, routeId: val})}>
+                 <Select value={formData.routeId ?? ""} onValueChange={val => setFormData({...formData, routeId: val})}>
                    <SelectTrigger><SelectValue /></SelectTrigger>
                    <SelectContent>
                      {routes.map(r => <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>)}
