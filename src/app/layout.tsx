@@ -3,7 +3,7 @@ import type {Metadata} from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'ProcurePal - Milk Procurement Management',
+  title: 'MilkPath Log - Procurement Management',
   description: 'Streamlined daily work logs, route management, and supplier profiles for milk procurement.',
 };
 

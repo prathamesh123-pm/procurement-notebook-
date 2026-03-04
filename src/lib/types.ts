@@ -1,12 +1,19 @@
 
-export type TaskStatus = 'assigned' | 'pending' | 'completed';
+export type TaskStatus = 'pending' | 'completed';
 
 export interface Task {
   id: string;
   title: string;
+  description?: string;
   assignedTo: string;
   status: TaskStatus;
   createdAt: string;
+}
+
+export interface MilkMetrics {
+  quantity: number;
+  fat: number;
+  snf: number;
 }
 
 export interface Supplier {
@@ -14,10 +21,12 @@ export interface Supplier {
   name: string;
   address: string;
   mobile: string;
-  milkQuantity: number;
   milkQuality: string;
-  additionalInfo?: string;
   routeId?: string;
+  competition?: string;
+  additionalInfo?: string;
+  cowMilk: MilkMetrics;
+  buffaloMilk: MilkMetrics;
 }
 
 export interface Route {
@@ -25,6 +34,7 @@ export interface Route {
   name: string;
   distanceKm: number;
   vehicle: string;
+  costPerKm: number;
   supplierIds: string[];
 }
 

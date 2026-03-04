@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Supplier, Route } from "@/lib/types"
-import { Plus, Search, Filter, Phone, MapPin, MoreVertical, Trash2, Edit3, Milk } from "lucide-react"
+import { Plus, Search, Filter, Phone, MapPin, Trash2, Milk, Info, Beaker } from "lucide-react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogDescription } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -28,7 +28,9 @@ export default function SuppliersPage() {
 
   // Form state
   const [formData, setFormData] = useState<Partial<Supplier>>({
-    name: "", address: "", mobile: "", milkQuantity: 0, milkQuality: "", routeId: ""
+    name: "", address: "", mobile: "", milkQuality: "", routeId: "", competition: "", additionalInfo: "",
+    cowMilk: { quantity: 0, fat: 0, snf: 0 },
+    buffaloMilk: { quantity: 0, fat: 0, snf: 0 }
   })
 
   useEffect(() => {
@@ -51,7 +53,6 @@ export default function SuppliersPage() {
     const updatedSuppliers = [...suppliers, newSupp]
     saveSuppliers(updatedSuppliers)
     
-    // Update route supplier IDs if route is selected
     if (newSupp.routeId) {
       const updatedRoutes = routes.map(r => 
         r.id === newSupp.routeId ? { ...r, supplierIds: [...r.supplierIds, newSupp.id] } : r
@@ -61,7 +62,11 @@ export default function SuppliersPage() {
     }
 
     setIsAdding(false)
-    setFormData({ name: "", address: "", mobile: "", milkQuantity: 0, milkQuality: "", routeId: "" })
+    setFormData({ 
+      name: "", address: "", mobile: "", milkQuality: "", routeId: "", competition: "", additionalInfo: "",
+      cowMilk: { quantity: 0, fat: 0, snf: 0 },
+      buffaloMilk: { quantity: 0, fat: 0, snf: 0 }
+    })
   }
 
   const handleUpdateSupplier = () => {
@@ -74,7 +79,6 @@ export default function SuppliersPage() {
 
   const deleteSupplier = (id: string) => {
     saveSuppliers(suppliers.filter(s => s.id !== id))
-    // Also remove from route associations
     const updatedRoutes = routes.map(r => ({
       ...r,
       supplierIds: r.supplierIds.filter(sid => sid !== id)
@@ -92,12 +96,14 @@ export default function SuppliersPage() {
     })
   }, [suppliers, searchQuery, routeFilter])
 
+  const totalMilk = (s: Supplier) => (s.cowMilk?.quantity || 0) + (s.buffaloMilk?.quantity || 0)
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h2 className="text-3xl font-headline font-bold text-foreground">Supplier Management</h2>
-          <p className="text-muted-foreground mt-1">Detailed profiles and route assignments for all dairy suppliers.</p>
+          <p className="text-muted-foreground mt-1">Detailed profiles and production metrics for all dairy suppliers.</p>
         </div>
         <Dialog open={isAdding} onOpenChange={setIsAdding}>
           <DialogTrigger asChild>
@@ -105,10 +111,10 @@ export default function SuppliersPage() {
               <Plus className="h-4 w-4" /> Add Supplier
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>New Supplier Profile</DialogTitle>
-              <DialogDescription>Enter primary contact and milk production details.</DialogDescription>
+              <DialogDescription>Enter contact details and milk metrics.</DialogDescription>
             </DialogHeader>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-4">
               <div className="space-y-2">
@@ -123,30 +129,71 @@ export default function SuppliersPage() {
                 <Label>Address</Label>
                 <Input value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} />
               </div>
-              <div className="space-y-2">
-                <Label>Daily Milk Qty (Liters)</Label>
-                <Input type="number" value={formData.milkQuantity} onChange={e => setFormData({...formData, milkQuantity: Number(e.target.value)})} />
+              
+              <div className="p-4 border rounded-lg md:col-span-1 space-y-3 bg-muted/20">
+                <h4 className="font-bold flex items-center gap-2 text-sm"><Milk className="h-4 w-4" /> Cow Milk Metrics</h4>
+                <div className="grid grid-cols-3 gap-2">
+                  <div className="space-y-1">
+                    <Label className="text-[10px]">Qty (L)</Label>
+                    <Input type="number" step="0.1" value={formData.cowMilk?.quantity} onChange={e => setFormData({...formData, cowMilk: {...formData.cowMilk!, quantity: Number(e.target.value)}})} />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-[10px]">Fat (%)</Label>
+                    <Input type="number" step="0.1" value={formData.cowMilk?.fat} onChange={e => setFormData({...formData, cowMilk: {...formData.cowMilk!, fat: Number(e.target.value)}})} />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-[10px]">SNF (%)</Label>
+                    <Input type="number" step="0.1" value={formData.cowMilk?.snf} onChange={e => setFormData({...formData, cowMilk: {...formData.cowMilk!, snf: Number(e.target.value)}})} />
+                  </div>
+                </div>
               </div>
+
+              <div className="p-4 border rounded-lg md:col-span-1 space-y-3 bg-muted/20">
+                <h4 className="font-bold flex items-center gap-2 text-sm"><Milk className="h-4 w-4 fill-amber-500 text-amber-500" /> Buffalo Milk Metrics</h4>
+                <div className="grid grid-cols-3 gap-2">
+                  <div className="space-y-1">
+                    <Label className="text-[10px]">Qty (L)</Label>
+                    <Input type="number" step="0.1" value={formData.buffaloMilk?.quantity} onChange={e => setFormData({...formData, buffaloMilk: {...formData.buffaloMilk!, quantity: Number(e.target.value)}})} />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-[10px]">Fat (%)</Label>
+                    <Input type="number" step="0.1" value={formData.buffaloMilk?.fat} onChange={e => setFormData({...formData, buffaloMilk: {...formData.buffaloMilk!, fat: Number(e.target.value)}})} />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-[10px]">SNF (%)</Label>
+                    <Input type="number" step="0.1" value={formData.buffaloMilk?.snf} onChange={e => setFormData({...formData, buffaloMilk: {...formData.buffaloMilk!, snf: Number(e.target.value)}})} />
+                  </div>
+                </div>
+              </div>
+
               <div className="space-y-2">
-                <Label>Milk Quality Grade</Label>
+                <Label>Quality Grade</Label>
                 <Select value={formData.milkQuality} onValueChange={val => setFormData({...formData, milkQuality: val})}>
                   <SelectTrigger><SelectValue placeholder="Select Grade" /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="A+">A+ Premium</SelectItem>
                     <SelectItem value="A">A Standard</SelectItem>
                     <SelectItem value="B">B Average</SelectItem>
-                    <SelectItem value="C">C Needs Monitoring</SelectItem>
+                    <SelectItem value="C">C Monitoring</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
-              <div className="space-y-2 md:col-span-2">
-                <Label>Assign to Route</Label>
+              <div className="space-y-2">
+                <Label>Route</Label>
                 <Select value={formData.routeId} onValueChange={val => setFormData({...formData, routeId: val})}>
                   <SelectTrigger><SelectValue placeholder="Select Route" /></SelectTrigger>
                   <SelectContent>
                     {routes.map(r => <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>)}
                   </SelectContent>
                 </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Local Competition</Label>
+                <Input placeholder="e.g. Amul Center" value={formData.competition} onChange={e => setFormData({...formData, competition: e.target.value})} />
+              </div>
+              <div className="space-y-2">
+                <Label>Other Info</Label>
+                <Input placeholder="Preferred collection time etc." value={formData.additionalInfo} onChange={e => setFormData({...formData, additionalInfo: e.target.value})} />
               </div>
             </div>
             <DialogFooter>
@@ -190,7 +237,7 @@ export default function SuppliersPage() {
             <TableRow className="bg-muted/30">
               <TableHead>Supplier</TableHead>
               <TableHead>Route</TableHead>
-              <TableHead>Quantity (L)</TableHead>
+              <TableHead>Total Milk (L)</TableHead>
               <TableHead>Quality</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
@@ -216,7 +263,7 @@ export default function SuppliersPage() {
                       {routes.find(r => r.id === supp.routeId)?.name || 'Unassigned'}
                     </Badge>
                   </TableCell>
-                  <TableCell className="font-medium">{supp.milkQuantity}</TableCell>
+                  <TableCell className="font-medium">{totalMilk(supp)}</TableCell>
                   <TableCell>
                     <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
                       supp.milkQuality.startsWith('A') ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'
@@ -237,7 +284,7 @@ export default function SuppliersPage() {
             ) : (
               <TableRow>
                 <TableCell colSpan={5} className="h-32 text-center text-muted-foreground">
-                  No suppliers found matching your criteria.
+                  No suppliers found.
                 </TableCell>
               </TableRow>
             )}
@@ -246,7 +293,7 @@ export default function SuppliersPage() {
       </div>
 
       <Dialog open={isEditing} onOpenChange={setIsEditing}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-3xl">
           <DialogHeader>
             <DialogTitle>Supplier Details: {selectedSupplier?.name}</DialogTitle>
           </DialogHeader>
@@ -259,48 +306,55 @@ export default function SuppliersPage() {
                     <p className="text-sm font-medium">{selectedSupplier?.address}</p>
                   </div>
                </div>
-               <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/20">
-                  <Phone className="h-5 w-5 text-primary shrink-0" />
-                  <div>
-                    <Label className="text-[10px] text-muted-foreground uppercase">Mobile Number</Label>
-                    <p className="text-sm font-medium">{selectedSupplier?.mobile}</p>
-                  </div>
+               <div className="grid grid-cols-2 gap-3">
+                 <div className="p-3 rounded-lg bg-primary/5 border border-primary/10">
+                    <Label className="text-[10px] text-primary uppercase font-bold">Cow Milk</Label>
+                    <p className="text-lg font-bold">{selectedSupplier?.cowMilk?.quantity} L</p>
+                    <p className="text-[10px] text-muted-foreground">Fat: {selectedSupplier?.cowMilk?.fat}% | SNF: {selectedSupplier?.cowMilk?.snf}%</p>
+                 </div>
+                 <div className="p-3 rounded-lg bg-amber-50 border border-amber-100">
+                    <Label className="text-[10px] text-amber-700 uppercase font-bold">Buffalo Milk</Label>
+                    <p className="text-lg font-bold">{selectedSupplier?.buffaloMilk?.quantity} L</p>
+                    <p className="text-[10px] text-muted-foreground">Fat: {selectedSupplier?.buffaloMilk?.fat}% | SNF: {selectedSupplier?.buffaloMilk?.snf}%</p>
+                 </div>
                </div>
-               <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/20">
-                  <Milk className="h-5 w-5 text-primary shrink-0" />
-                  <div>
-                    <Label className="text-[10px] text-muted-foreground uppercase">Milk Production</Label>
-                    <p className="text-sm font-medium">{selectedSupplier?.milkQuantity} Liters/Day ({selectedSupplier?.milkQuality} Grade)</p>
-                  </div>
+               <div className="p-3 rounded-lg bg-muted/20">
+                  <Label className="text-[10px] text-muted-foreground uppercase">Competition</Label>
+                  <p className="text-sm font-medium">{selectedSupplier?.competition || 'None'}</p>
+               </div>
+               <div className="p-3 rounded-lg bg-muted/20">
+                  <Label className="text-[10px] text-muted-foreground uppercase">Other Info</Label>
+                  <p className="text-sm font-medium italic">{selectedSupplier?.additionalInfo || 'No notes available'}</p>
                </div>
             </div>
             
-            <div className="space-y-4 border-l pl-6">
+            <div className="space-y-4 border-l pl-6 max-h-[400px] overflow-y-auto">
                <h4 className="text-sm font-bold font-headline uppercase text-muted-foreground">Update Profile</h4>
-               <div className="space-y-2">
-                  <Label className="text-xs">Daily Milk Qty</Label>
-                  <Input type="number" value={formData.milkQuantity} onChange={e => setFormData({...formData, milkQuantity: Number(e.target.value)})} />
-               </div>
-               <div className="space-y-2">
-                  <Label className="text-xs">Quality Grade</Label>
-                  <Select value={formData.milkQuality} onValueChange={val => setFormData({...formData, milkQuality: val})}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="A+">A+ Premium</SelectItem>
-                      <SelectItem value="A">A Standard</SelectItem>
-                      <SelectItem value="B">B Average</SelectItem>
-                      <SelectItem value="C">C Needs Monitoring</SelectItem>
-                    </SelectContent>
-                  </Select>
-               </div>
-               <div className="space-y-2">
-                  <Label className="text-xs">Change Route</Label>
-                  <Select value={formData.routeId} onValueChange={val => setFormData({...formData, routeId: val})}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      {routes.map(r => <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
+               <div className="space-y-3">
+                 <Label className="text-xs">Cow Milk Qty (L)</Label>
+                 <Input type="number" step="0.1" value={formData.cowMilk?.quantity} onChange={e => setFormData({...formData, cowMilk: {...formData.cowMilk!, quantity: Number(e.target.value)}})} />
+                 
+                 <Label className="text-xs">Buffalo Milk Qty (L)</Label>
+                 <Input type="number" step="0.1" value={formData.buffaloMilk?.quantity} onChange={e => setFormData({...formData, buffaloMilk: {...formData.buffaloMilk!, quantity: Number(e.target.value)}})} />
+
+                 <Label className="text-xs">Quality Grade</Label>
+                 <Select value={formData.milkQuality} onValueChange={val => setFormData({...formData, milkQuality: val})}>
+                   <SelectTrigger><SelectValue /></SelectTrigger>
+                   <SelectContent>
+                     <SelectItem value="A+">A+ Premium</SelectItem>
+                     <SelectItem value="A">A Standard</SelectItem>
+                     <SelectItem value="B">B Average</SelectItem>
+                     <SelectItem value="C">C Monitoring</SelectItem>
+                   </SelectContent>
+                 </Select>
+
+                 <Label className="text-xs">Change Route</Label>
+                 <Select value={formData.routeId} onValueChange={val => setFormData({...formData, routeId: val})}>
+                   <SelectTrigger><SelectValue /></SelectTrigger>
+                   <SelectContent>
+                     {routes.map(r => <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>)}
+                   </SelectContent>
+                 </Select>
                </div>
             </div>
           </div>

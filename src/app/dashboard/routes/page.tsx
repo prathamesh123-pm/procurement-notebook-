@@ -7,13 +7,13 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Route } from "@/lib/types"
-import { Plus, MapPin, Truck, Users, Trash2, Edit2 } from "lucide-react"
+import { Plus, MapPin, Truck, Users, Trash2, Edit2, IndianRupee } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog"
 
 export default function RoutesPage() {
   const [routes, setRoutes] = useState<Route[]>([])
   const [isAddingRoute, setIsAddingRoute] = useState(false)
-  const [formData, setFormData] = useState({ name: "", distanceKm: "", vehicle: "" })
+  const [formData, setFormData] = useState({ name: "", distanceKm: "", vehicle: "", costPerKm: "" })
 
   useEffect(() => {
     const stored = JSON.parse(localStorage.getItem('procurepal_routes') || '[]')
@@ -32,10 +32,11 @@ export default function RoutesPage() {
       name: formData.name,
       distanceKm: Number(formData.distanceKm),
       vehicle: formData.vehicle,
+      costPerKm: Number(formData.costPerKm) || 0,
       supplierIds: []
     }
     saveRoutes([...routes, newRoute])
-    setFormData({ name: "", distanceKm: "", vehicle: "" })
+    setFormData({ name: "", distanceKm: "", vehicle: "", costPerKm: "" })
     setIsAddingRoute(false)
   }
 
@@ -47,8 +48,8 @@ export default function RoutesPage() {
     <div className="space-y-8 max-w-6xl mx-auto">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-headline font-bold text-foreground">Route Definitions</h2>
-          <p className="text-muted-foreground mt-1">Configure and manage your milk collection routes.</p>
+          <h2 className="text-3xl font-headline font-bold text-foreground">Milk Collection Routes</h2>
+          <p className="text-muted-foreground mt-1">Configure and manage your milk collection network.</p>
         </div>
         <Dialog open={isAddingRoute} onOpenChange={setIsAddingRoute}>
           <DialogTrigger asChild>
@@ -65,26 +66,39 @@ export default function RoutesPage() {
                 <Label htmlFor="routeName">Route Name</Label>
                 <Input 
                   id="routeName" 
-                  placeholder="e.g. West Highlands Route" 
+                  placeholder="e.g. North-West Village Path" 
                   value={formData.name}
                   onChange={(e) => setFormData({...formData, name: e.target.value})}
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="distance">Distance (Kilometers)</Label>
-                <Input 
-                  id="distance" 
-                  type="number" 
-                  placeholder="0" 
-                  value={formData.distanceKm}
-                  onChange={(e) => setFormData({...formData, distanceKm: e.target.value})}
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="distance">Distance (km)</Label>
+                  <Input 
+                    id="distance" 
+                    type="number" 
+                    placeholder="45" 
+                    value={formData.distanceKm}
+                    onChange={(e) => setFormData({...formData, distanceKm: e.target.value})}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="cost">Cost per KM (₹)</Label>
+                  <Input 
+                    id="cost" 
+                    type="number" 
+                    step="0.01"
+                    placeholder="0.85" 
+                    value={formData.costPerKm}
+                    onChange={(e) => setFormData({...formData, costPerKm: e.target.value})}
+                  />
+                </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="vehicle">Assigned Vehicle</Label>
                 <Input 
                   id="vehicle" 
-                  placeholder="e.g. Tanker #42" 
+                  placeholder="e.g. Eicher 10.90" 
                   value={formData.vehicle}
                   onChange={(e) => setFormData({...formData, vehicle: e.target.value})}
                 />
@@ -117,6 +131,9 @@ export default function RoutesPage() {
                   </div>
                 </div>
                 <CardTitle className="mt-4 font-headline text-xl">{route.name}</CardTitle>
+                <CardDescription className="flex items-center gap-1">
+                  <IndianRupee className="h-3 w-3" /> {route.costPerKm} per KM
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-3 pt-0">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -125,17 +142,18 @@ export default function RoutesPage() {
                 </div>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Users className="h-4 w-4" />
-                  <span>{route.supplierIds.length} Suppliers assigned</span>
+                  <span>{route.supplierIds.length} Active Suppliers</span>
                 </div>
                 <div className="mt-4 bg-muted/30 p-2 rounded-md text-center">
                   <span className="text-2xl font-bold text-foreground">{route.distanceKm}</span>
                   <span className="text-xs text-muted-foreground ml-1 font-medium">KM TOTAL</span>
                 </div>
               </CardContent>
-              <CardFooter className="pt-2 border-t">
-                 <Button variant="link" className="w-full text-accent h-8" asChild>
-                    <a href={`/dashboard/suppliers?route=${route.id}`}>View Suppliers</a>
+              <CardFooter className="pt-2 border-t flex gap-2">
+                 <Button variant="outline" size="sm" className="flex-1" asChild>
+                    <a href={`/dashboard/suppliers?route=${route.id}`}>Manage Suppliers</a>
                  </Button>
+                 <Button variant="ghost" size="sm" className="text-primary">Edit</Button>
               </CardFooter>
             </Card>
           ))
@@ -143,7 +161,7 @@ export default function RoutesPage() {
           <div className="col-span-full py-20 text-center">
              <MapPin className="h-12 w-12 mx-auto text-muted-foreground/30 mb-4" />
              <h3 className="text-xl font-medium">No routes defined</h3>
-             <p className="text-muted-foreground">Start by adding your first procurement route.</p>
+             <p className="text-muted-foreground">Start by adding your first collection route.</p>
           </div>
         )}
       </div>

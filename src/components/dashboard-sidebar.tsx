@@ -2,7 +2,7 @@
 "use client"
 
 import * as React from "react"
-import { LayoutDashboard, ListTodo, MapPin, Users, FileText, Settings, Milk } from "lucide-react"
+import { LayoutDashboard, ListTodo, MapPin, Users, FileText, LogOut, Milk } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
@@ -26,7 +26,7 @@ const items = [
     icon: LayoutDashboard,
   },
   {
-    title: "Task Log",
+    title: "Work Log",
     url: "/dashboard/tasks",
     icon: ListTodo,
   },
@@ -45,6 +45,11 @@ const items = [
     url: "/dashboard/reports",
     icon: FileText,
   },
+  {
+    title: "Sign Out",
+    url: "/",
+    icon: LogOut,
+  },
 ]
 
 export function DashboardSidebar() {
@@ -58,14 +63,14 @@ export function DashboardSidebar() {
             <Milk className="h-6 w-6" />
           </div>
           <span className="font-headline text-xl font-bold tracking-tight group-data-[collapsible=icon]:hidden">
-            ProcurePal
+            MilkPath Log
           </span>
         </div>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel className="px-6 py-4 uppercase tracking-widest text-[10px] font-bold text-muted-foreground group-data-[collapsible=icon]:hidden">
-            Management
+            Procurement Manager
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="px-3">
@@ -78,8 +83,8 @@ export function DashboardSidebar() {
                     className="flex h-11 items-center gap-3 rounded-md px-3 transition-all hover:bg-sidebar-accent"
                   >
                     <Link href={item.url}>
-                      <item.icon className="h-5 w-5" />
-                      <span className="font-medium">{item.title}</span>
+                      <item.icon className={`h-5 w-5 ${item.title === 'Sign Out' ? 'text-destructive' : ''}`} />
+                      <span className={`font-medium ${item.title === 'Sign Out' ? 'text-destructive' : ''}`}>{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
