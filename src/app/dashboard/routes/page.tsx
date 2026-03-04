@@ -7,14 +7,22 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Route } from "@/lib/types"
-import { Plus, MapPin, Truck, Users, Trash2, Edit2, IndianRupee } from "lucide-react"
+import { Plus, MapPin, Truck, Users, IndianRupee, Trash2, ArrowRight } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogDescription } from "@/components/ui/dialog"
+import Link from "next/link"
 
 export default function RoutesPage() {
   const [routes, setRoutes] = useState<Route[]>([])
   const [isAddingRoute, setIsAddingRoute] = useState(false)
-  const [formData, setFormData] = useState({ name: "", distanceKm: "", vehicle: "", costPerKm: "" })
   const [mounted, setMounted] = useState(false)
+  
+  const [formData, setFormData] = useState({ 
+    name: "", 
+    distanceKm: "", 
+    vehicle: "", 
+    costPerKm: "",
+    initialSuppliers: "0" 
+  })
 
   useEffect(() => {
     setMounted(true)
@@ -35,10 +43,10 @@ export default function RoutesPage() {
       distanceKm: Number(formData.distanceKm),
       vehicle: formData.vehicle,
       costPerKm: Number(formData.costPerKm) || 0,
-      supplierIds: []
+      supplierIds: Array(Number(formData.initialSuppliers)).fill(null).map(() => crypto.randomUUID())
     }
     saveRoutes([...routes, newRoute])
-    setFormData({ name: "", distanceKm: "", vehicle: "", costPerKm: "" })
+    setFormData({ name: "", distanceKm: "", vehicle: "", costPerKm: "", initialSuppliers: "0" })
     setIsAddingRoute(false)
   }
 
@@ -55,12 +63,12 @@ export default function RoutesPage() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-3xl font-headline font-bold text-foreground">Milk Collection Routes</h2>
-          <p className="text-muted-foreground mt-1">Configure and manage your milk collection network.</p>
+          <p className="text-muted-foreground mt-1">The logistics, costing, and supplier associations.</p>
         </div>
         <Dialog open={isAddingRoute} onOpenChange={setIsAddingRoute}>
           <DialogTrigger asChild>
             <Button className="gap-2 shadow-sm">
-              <Plus className="h-4 w-4" /> New Route
+              <Plus className="h-4 w-4" /> Add Route
             </Button>
           </DialogTrigger>
           <DialogContent>
@@ -73,7 +81,7 @@ export default function RoutesPage() {
                 <Label htmlFor="routeName">Route Name</Label>
                 <Input 
                   id="routeName" 
-                  placeholder="e.g. North-West Village Path" 
+                  placeholder="e.g. Main Highway Loop" 
                   value={formData.name}
                   onChange={(e) => setFormData({...formData, name: e.target.value})}
                 />
@@ -84,7 +92,7 @@ export default function RoutesPage() {
                   <Input 
                     id="distance" 
                     type="number" 
-                    placeholder="45" 
+                    placeholder="40" 
                     value={formData.distanceKm}
                     onChange={(e) => setFormData({...formData, distanceKm: e.target.value})}
                   />
@@ -105,9 +113,19 @@ export default function RoutesPage() {
                 <Label htmlFor="vehicle">Assigned Vehicle</Label>
                 <Input 
                   id="vehicle" 
-                  placeholder="e.g. Eicher 10.90" 
+                  placeholder="e.g. Tata Ace" 
                   value={formData.vehicle}
                   onChange={(e) => setFormData({...formData, vehicle: e.target.value})}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="initialSuppliers">Initial Suppliers</Label>
+                <Input 
+                  id="initialSuppliers" 
+                  type="number"
+                  placeholder="0" 
+                  value={formData.initialSuppliers}
+                  onChange={(e) => setFormData({...formData, initialSuppliers: e.target.value})}
                 />
               </div>
             </div>
@@ -128,39 +146,35 @@ export default function RoutesPage() {
                   <div className="p-2 rounded-lg bg-primary/10 text-primary">
                     <MapPin className="h-5 w-5" />
                   </div>
-                  <div className="flex gap-1">
-                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
-                      <Edit2 className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => deleteRoute(route.id)}>
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
+                  <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => deleteRoute(route.id)}>
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
                 </div>
                 <CardTitle className="mt-4 font-headline text-xl">{route.name}</CardTitle>
                 <CardDescription className="flex items-center gap-1">
-                  <IndianRupee className="h-3 w-3" /> {route.costPerKm} per KM
+                  <Truck className="h-3 w-3" /> {route.vehicle}
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-3 pt-0">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Truck className="h-4 w-4" />
-                  <span>{route.vehicle}</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <CardContent className="space-y-2 pt-0 text-sm">
+                <div className="flex items-center gap-2 text-muted-foreground">
                   <Users className="h-4 w-4" />
                   <span>{route.supplierIds.length} Active Suppliers</span>
                 </div>
-                <div className="mt-4 bg-muted/30 p-2 rounded-md text-center">
-                  <span className="text-2xl font-bold text-foreground">{route.distanceKm}</span>
-                  <span className="text-xs text-muted-foreground ml-1 font-medium">KM TOTAL</span>
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <MapPin className="h-4 w-4" />
+                  <span>{route.distanceKm} km</span>
+                </div>
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <IndianRupee className="h-4 w-4" />
+                  <span>Rate: ₹{route.costPerKm}</span>
                 </div>
               </CardContent>
-              <CardFooter className="pt-2 border-t flex gap-2">
-                 <Button variant="outline" size="sm" className="flex-1" asChild>
-                    <a href={`/dashboard/suppliers?route=${route.id}`}>Manage Suppliers</a>
+              <CardFooter className="pt-2 border-t">
+                 <Button variant="ghost" size="sm" className="w-full justify-between text-primary group" asChild>
+                    <Link href={`/dashboard/routes/${route.id}`}>
+                      Manage Suppliers <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    </Link>
                  </Button>
-                 <Button variant="ghost" size="sm" className="text-primary">Edit</Button>
               </CardFooter>
             </Card>
           ))

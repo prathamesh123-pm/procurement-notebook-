@@ -2,7 +2,7 @@
 "use client"
 
 import * as React from "react"
-import { LayoutDashboard, ListTodo, MapPin, Users, FileText, LogOut, Milk } from "lucide-react"
+import { LayoutDashboard, ListTodo, MapPin, FileText, LogOut, Milk } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
@@ -27,18 +27,13 @@ const items = [
   },
   {
     title: "Work Log",
-    url: "/dashboard/tasks",
+    url: "/dashboard/work-log",
     icon: ListTodo,
   },
   {
     title: "Routes",
     url: "/dashboard/routes",
     icon: MapPin,
-  },
-  {
-    title: "Suppliers",
-    url: "/dashboard/suppliers",
-    icon: Users,
   },
   {
     title: "Reports",
@@ -78,7 +73,7 @@ export function DashboardSidebar() {
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
                     asChild
-                    isActive={pathname === item.url}
+                    isActive={pathname === item.url || (item.url !== '/dashboard' && pathname.startsWith(item.url))}
                     tooltip={item.title}
                     className="flex h-11 items-center gap-3 rounded-md px-3 transition-all hover:bg-sidebar-accent"
                   >

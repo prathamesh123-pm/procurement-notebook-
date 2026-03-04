@@ -8,6 +8,7 @@ export interface Task {
   assignedTo: string;
   status: TaskStatus;
   createdAt: string;
+  completedAt?: string;
 }
 
 export interface MilkMetrics {
@@ -22,7 +23,7 @@ export interface Supplier {
   address: string;
   mobile: string;
   milkQuality: string;
-  routeId?: string;
+  routeId: string;
   competition?: string;
   additionalInfo?: string;
   cowMilk: MilkMetrics;
@@ -38,20 +39,13 @@ export interface Route {
   supplierIds: string[];
 }
 
-export interface VisitReport {
-  id: string;
-  routeId: string;
-  supplierId: string;
-  date: string;
-  observations: string;
-  summary?: string;
-}
+export type ReportType = 'Daily Log' | 'Field Visit';
 
-export interface DailyReport {
+export interface Report {
   id: string;
+  type: ReportType;
   date: string;
-  taskIds: string[];
-  routeIds: string[];
-  notes: string;
-  summary?: string;
+  workItemsCount: number;
+  interactionsCount: number;
+  summary: string;
 }
