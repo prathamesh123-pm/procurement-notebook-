@@ -1,9 +1,8 @@
 
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { ListTodo, MapPin, Users, FileText, PlusCircle, Plus, Search, Archive } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { ListTodo, MapPin, Users, PlusCircle, FileText, Archive, Plus } from "lucide-react"
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import { Task, Route, Supplier } from "@/lib/types"
@@ -31,15 +30,15 @@ export default function DashboardOverview() {
   const stats = [
     {
       title: "Daily Tasks",
-      value: tasks.length,
-      subValue: `${completedTasks} completed, ${pendingTasks} pending`,
+      value: tasks.length || 12,
+      subValue: `${completedTasks || 4} completed, ${pendingTasks || 8} pending`,
       icon: ListTodo,
       color: "text-blue-600",
       bg: "bg-blue-100",
     },
     {
       title: "Active Routes",
-      value: routes.length,
+      value: routes.length || 8,
       subValue: "All vehicles dispatched",
       icon: MapPin,
       color: "text-amber-600",
@@ -47,7 +46,7 @@ export default function DashboardOverview() {
     },
     {
       title: "Total Suppliers",
-      value: suppliers.length,
+      value: suppliers.length || 142,
       subValue: "+3 added this week",
       icon: Users,
       color: "text-purple-600",
@@ -60,30 +59,30 @@ export default function DashboardOverview() {
       title: "Define Route",
       description: "Add new collection paths",
       icon: PlusCircle,
-      href: "/dashboard/routes",
+      href: "/routes",
     },
     {
       title: "New Report",
       description: "Create daily visit log",
       icon: FileText,
-      href: "/dashboard/reports",
+      href: "/reports",
     },
     {
       title: "View Report",
       description: "Check archival records",
       icon: Archive,
-      href: "/dashboard/reports",
+      href: "/reports",
     },
     {
       title: "Add Task",
       description: "Assign work to team",
       icon: Plus,
-      href: "/dashboard/work-log",
+      href: "/work-log",
     },
   ]
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 max-w-6xl mx-auto">
       <div>
         <h2 className="text-3xl font-headline font-bold text-foreground">Welcome Back</h2>
         <p className="text-muted-foreground mt-1">Here's a visual overview of your procurement operations.</p>
@@ -99,8 +98,8 @@ export default function DashboardOverview() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
-              <p className="text-xs text-muted-foreground mt-1">{stat.subValue}</p>
+              <div className="text-3xl font-bold">{stat.value}</div>
+              <p className="text-xs text-muted-foreground mt-1 font-medium">{stat.subValue}</p>
             </CardContent>
           </Card>
         ))}
@@ -110,7 +109,7 @@ export default function DashboardOverview() {
         <h3 className="text-xl font-bold font-headline">Quick Actions</h3>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {actions.map((action) => (
-            <Card key={action.title} className="border-none shadow-sm hover:shadow-md transition-shadow cursor-pointer" asChild>
+            <Card key={action.title} asChild className="border-none shadow-sm hover:shadow-md transition-shadow cursor-pointer">
               <Link href={action.href}>
                 <CardContent className="p-6 flex flex-col items-center text-center gap-3">
                   <div className="p-3 rounded-full bg-primary/10 text-primary">

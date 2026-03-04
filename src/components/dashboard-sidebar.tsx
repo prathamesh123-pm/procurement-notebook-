@@ -27,23 +27,18 @@ const items = [
   },
   {
     title: "Work Log",
-    url: "/dashboard/work-log",
+    url: "/work-log",
     icon: ListTodo,
   },
   {
     title: "Routes",
-    url: "/dashboard/routes",
+    url: "/routes",
     icon: MapPin,
   },
   {
     title: "Reports",
-    url: "/dashboard/reports",
+    url: "/reports",
     icon: FileText,
-  },
-  {
-    title: "Sign Out",
-    url: "/",
-    icon: LogOut,
   },
 ]
 
@@ -78,8 +73,8 @@ export function DashboardSidebar() {
                     className="flex h-11 items-center gap-3 rounded-md px-3 transition-all hover:bg-sidebar-accent"
                   >
                     <Link href={item.url}>
-                      <item.icon className={`h-5 w-5 ${item.title === 'Sign Out' ? 'text-destructive' : ''}`} />
-                      <span className={`font-medium ${item.title === 'Sign Out' ? 'text-destructive' : ''}`}>{item.title}</span>
+                      <item.icon className="h-5 w-5" />
+                      <span className="font-medium">{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -88,6 +83,18 @@ export function DashboardSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      <div className="mt-auto p-4 border-t group-data-[collapsible=icon]:hidden">
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild className="text-destructive hover:text-destructive hover:bg-destructive/10">
+              <Link href="/">
+                <LogOut className="h-5 w-5" />
+                <span>Sign Out</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </div>
       <SidebarRail />
     </Sidebar>
   )
