@@ -1,20 +1,20 @@
 
 "use client"
 
-import { useState, useEffect, useMemo } from "react"
+import { useState, useEffect, useMemo, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Supplier, Route } from "@/lib/types"
-import { Plus, Search, Filter, Phone, MapPin, Trash2, Milk, Info, Beaker } from "lucide-react"
+import { Plus, Search, Filter, Phone, MapPin, Trash2, Milk } from "lucide-react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogDescription } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 
-export default function SuppliersPage() {
+function SuppliersContent() {
   const searchParams = useSearchParams()
   const initialRouteFilter = searchParams.get('route') || 'all'
 
@@ -25,6 +25,7 @@ export default function SuppliersPage() {
   const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(null)
   const [isEditing, setIsEditing] = useState(false)
   const [isAdding, setIsAdding] = useState(false)
+  const [mounted, setMounted] = useState(false)
 
   // Form state
   const [formData, setFormData] = useState<Partial<Supplier>>({
@@ -34,6 +35,7 @@ export default function SuppliersPage() {
   })
 
   useEffect(() => {
+    setMounted(true)
     const storedSupps = JSON.parse(localStorage.getItem('procurepal_suppliers') || '[]')
     const storedRoutes = JSON.parse(localStorage.getItem('procurepal_routes') || '[]')
     setSuppliers(storedSupps)
@@ -97,6 +99,10 @@ export default function SuppliersPage() {
   }, [suppliers, searchQuery, routeFilter])
 
   const totalMilk = (s: Supplier) => (s.cowMilk?.quantity || 0) + (s.buffaloMilk?.quantity || 0)
+
+  if (!mounted) {
+    return <div className="p-8 text-center text-muted-foreground italic">Loading suppliers...</div>
+  }
 
   return (
     <div className="space-y-6">
@@ -296,6 +302,7 @@ export default function SuppliersPage() {
         <DialogContent className="max-w-3xl">
           <DialogHeader>
             <DialogTitle>Supplier Details: {selectedSupplier?.name}</DialogTitle>
+            <DialogDescription>Review or update supplier production and contact details.</DialogDescription>
           </DialogHeader>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-4">
             <div className="space-y-4">
@@ -365,5 +372,13 @@ export default function SuppliersPage() {
         </DialogContent>
       </Dialog>
     </div>
+  )
+}
+
+export default function SuppliersPage() {
+  return (
+    <Suspense fallback={<div className="p-8 text-center text-muted-foreground italic">Loading suppliers center...</div>}>
+      <SuppliersContent />
+    </Suspense>
   )
 }

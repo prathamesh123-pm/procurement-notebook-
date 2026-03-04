@@ -3,7 +3,8 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Milk, MapPin, Users, CheckCircle2, AlertCircle, Clock, Archive, IndianRupee } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Milk, MapPin, Users, Archive, IndianRupee } from "lucide-react"
 import { useEffect, useState } from "react"
 import { Task, Route, Supplier, DailyReport } from "@/lib/types"
 
@@ -12,13 +13,19 @@ export default function DashboardOverview() {
   const [routes, setRoutes] = useState<Route[]>([])
   const [suppliers, setSuppliers] = useState<Supplier[]>([])
   const [dailyReports, setDailyReports] = useState<DailyReport[]>([])
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
+    setMounted(true)
     setTasks(JSON.parse(localStorage.getItem('procurepal_tasks') || '[]'))
     setRoutes(JSON.parse(localStorage.getItem('procurepal_routes') || '[]'))
     setSuppliers(JSON.parse(localStorage.getItem('procurepal_suppliers') || '[]'))
     setDailyReports(JSON.parse(localStorage.getItem('procurepal_daily_reports') || '[]'))
   }, [])
+
+  if (!mounted) {
+    return <div className="flex items-center justify-center h-full text-muted-foreground italic">Loading overview...</div>
+  }
 
   const totalMilk = suppliers.reduce((acc, s) => {
     return acc + (s.cowMilk?.quantity || 0) + (s.buffaloMilk?.quantity || 0)

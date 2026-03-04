@@ -8,7 +8,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Badge } from "@/components/ui/badge"
 import { Route, Supplier, Task, VisitReport, DailyReport } from "@/lib/types"
 import { Sparkles, Save, FileText, ClipboardList, Loader2 } from "lucide-react"
 import { summarizeNotes } from "@/ai/flows/summarize-notes-flow"
@@ -17,6 +16,7 @@ export default function ReportsPage() {
   const [routes, setRoutes] = useState<Route[]>([])
   const [suppliers, setSuppliers] = useState<Supplier[]>([])
   const [tasks, setTasks] = useState<Task[]>([])
+  const [mounted, setMounted] = useState(false)
   
   const [activeTab, setActiveTab] = useState("visit")
   const [isSummarizing, setIsSummarizing] = useState(false)
@@ -32,6 +32,7 @@ export default function ReportsPage() {
   const [dailySummary, setDailySummary] = useState("")
 
   useEffect(() => {
+    setMounted(true)
     setRoutes(JSON.parse(localStorage.getItem('procurepal_routes') || '[]'))
     setSuppliers(JSON.parse(localStorage.getItem('procurepal_suppliers') || '[]'))
     setTasks(JSON.parse(localStorage.getItem('procurepal_tasks') || '[]'))
@@ -80,6 +81,10 @@ export default function ReportsPage() {
     localStorage.setItem('procurepal_daily_reports', JSON.stringify([...reports, report]))
     alert("Daily operations report saved successfully!")
     setDailyNotes(""); setDailySummary("")
+  }
+
+  if (!mounted) {
+    return <div className="p-8 text-center text-muted-foreground italic">Loading reporting center...</div>
   }
 
   return (

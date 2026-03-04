@@ -8,14 +8,16 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Label } from "@/components/ui/label"
 import { Route } from "@/lib/types"
 import { Plus, MapPin, Truck, Users, Trash2, Edit2, IndianRupee } from "lucide-react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogDescription } from "@/components/ui/dialog"
 
 export default function RoutesPage() {
   const [routes, setRoutes] = useState<Route[]>([])
   const [isAddingRoute, setIsAddingRoute] = useState(false)
   const [formData, setFormData] = useState({ name: "", distanceKm: "", vehicle: "", costPerKm: "" })
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
+    setMounted(true)
     const stored = JSON.parse(localStorage.getItem('procurepal_routes') || '[]')
     setRoutes(stored)
   }, [])
@@ -44,6 +46,10 @@ export default function RoutesPage() {
     saveRoutes(routes.filter(r => r.id !== id))
   }
 
+  if (!mounted) {
+    return <div className="p-8 text-center text-muted-foreground italic">Loading routes...</div>
+  }
+
   return (
     <div className="space-y-8 max-w-6xl mx-auto">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -60,6 +66,7 @@ export default function RoutesPage() {
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Create Procurement Route</DialogTitle>
+              <DialogDescription>Add a new collection route to the network.</DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="space-y-2">

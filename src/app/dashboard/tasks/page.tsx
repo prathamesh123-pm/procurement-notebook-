@@ -10,7 +10,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Task, TaskStatus } from "@/lib/types"
 import { Plus, Trash2, CheckCircle2, Clock, ListTodo, Search } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
 
 export default function WorkLogPage() {
   const [tasks, setTasks] = useState<Task[]>([])
@@ -18,8 +17,10 @@ export default function WorkLogPage() {
   const [newTaskDesc, setNewTaskDesc] = useState("")
   const [searchQuery, setSearchQuery] = useState("")
   const [activeTab, setActiveTab] = useState<string>("all")
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
+    setMounted(true)
     const stored = JSON.parse(localStorage.getItem('procurepal_tasks') || '[]')
     setTasks(stored)
   }, [])
@@ -59,6 +60,10 @@ export default function WorkLogPage() {
     const matchesTab = activeTab === 'all' || t.status === activeTab
     return matchesSearch && matchesTab
   })
+
+  if (!mounted) {
+    return <div className="p-8 text-center text-muted-foreground italic">Loading work log...</div>
+  }
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
@@ -166,8 +171,8 @@ export default function WorkLogPage() {
           ) : (
             <div className="text-center py-20 bg-card rounded-xl border border-dashed border-muted-foreground/30">
               <ListTodo className="h-12 w-12 mx-auto text-muted-foreground/40 mb-3" />
-              <h3 className="text-lg font-medium text-muted-foreground">No tasks matching filters</h3>
-              <p className="text-sm text-muted-foreground/60">Your workspace is clear.</p>
+              <h3 className="text-lg font-medium text-muted-foreground">No tasks logged for today</h3>
+              <p className="text-sm text-muted-foreground/60">Fill in the form above to start tracking your work.</p>
             </div>
           )}
         </TabsContent>
