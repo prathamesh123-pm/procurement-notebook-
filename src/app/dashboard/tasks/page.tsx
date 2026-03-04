@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect } from "react"
@@ -8,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Task, TaskStatus } from "@/lib/types"
-import { Plus, Trash2, CheckCircle2, Clock, AlertCircle } from "lucide-react"
+import { Plus, Trash2, CheckCircle2, Clock, AlertCircle, ListTodo } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 
 export default function TasksPage() {
@@ -119,6 +118,7 @@ export default function TasksPage() {
                 </div>
 
                 <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
+                  <span className="sr-only">Status selector</span>
                   <Select 
                     value={task.status} 
                     onValueChange={(val: TaskStatus) => updateStatus(task.id, val)}
@@ -135,6 +135,7 @@ export default function TasksPage() {
                   
                   <Button variant="ghost" size="icon" onClick={() => deleteTask(task.id)} className="text-destructive hover:text-destructive hover:bg-destructive/10">
                     <Trash2 className="h-4 w-4" />
+                    <span className="sr-only">Delete task</span>
                   </Button>
                 </div>
               </CardContent>
