@@ -47,34 +47,34 @@ export function DashboardSidebar() {
 
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader className="border-b px-6 py-4">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <Milk className="h-6 w-6" />
+      <SidebarHeader className="border-b px-6 py-6">
+        <div className="flex items-center gap-4">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/20">
+            <Milk className="h-7 w-7" />
           </div>
-          <span className="font-headline text-xl font-bold tracking-tight group-data-[collapsible=icon]:hidden">
+          <span className="font-headline text-2xl font-bold tracking-tight group-data-[collapsible=icon]:hidden text-foreground">
             MilkPath Log
           </span>
         </div>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel className="px-6 py-4 uppercase tracking-widest text-[10px] font-bold text-muted-foreground group-data-[collapsible=icon]:hidden">
+          <SidebarGroupLabel className="px-6 py-6 uppercase tracking-[0.2em] text-[10px] font-bold text-muted-foreground/60 group-data-[collapsible=icon]:hidden">
             Procurement Manager
           </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu className="px-3">
+            <SidebarMenu className="px-3 gap-1">
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
                     asChild
                     isActive={pathname === item.url || (item.url !== '/dashboard' && pathname.startsWith(item.url))}
                     tooltip={item.title}
-                    className="flex h-11 items-center gap-3 rounded-md px-3 transition-all hover:bg-sidebar-accent"
+                    className="flex h-12 items-center gap-4 rounded-xl px-4 transition-all hover:bg-primary/5 hover:text-primary data-[active=true]:bg-primary data-[active=true]:text-primary-foreground data-[active=true]:shadow-md data-[active=true]:shadow-primary/20"
                   >
                     <Link href={item.url}>
                       <item.icon className="h-5 w-5" />
-                      <span className="font-medium">{item.title}</span>
+                      <span className="font-bold tracking-wide">{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -86,7 +86,7 @@ export function DashboardSidebar() {
       <div className="mt-auto p-4 border-t group-data-[collapsible=icon]:hidden">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild className="text-destructive hover:text-destructive hover:bg-destructive/10">
+            <SidebarMenuButton asChild className="text-destructive hover:text-destructive hover:bg-destructive/10 h-12 rounded-xl px-4 font-bold">
               <Link href="/">
                 <LogOut className="h-5 w-5" />
                 <span>Sign Out</span>

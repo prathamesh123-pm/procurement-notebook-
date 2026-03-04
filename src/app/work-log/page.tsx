@@ -110,16 +110,17 @@ export default function WorkLogPage() {
     <div className="space-y-8 max-w-5xl mx-auto">
       <div>
         <h2 className="text-3xl font-headline font-bold text-foreground">Work Log</h2>
+        <p className="text-muted-foreground mt-1">Manage and track your daily procurement duties.</p>
       </div>
 
-      <Card className="border-none shadow-sm">
+      <Card className="border-none shadow-sm bg-white">
         <CardHeader>
           <CardTitle className="text-lg font-bold">New Task</CardTitle>
           <CardDescription>Create a specific task or observation for your log.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="title">Task Title</Label>
+            <Label htmlFor="title" className="font-bold">Task Title</Label>
             <Input 
               id="title" 
               placeholder="e.g. Monthly collection review" 
@@ -128,7 +129,7 @@ export default function WorkLogPage() {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="desc">Information about the task</Label>
+            <Label htmlFor="desc" className="font-bold">Information about the task</Label>
             <Textarea 
               id="desc" 
               placeholder="Audit all collection centers for the past month's records." 
@@ -137,7 +138,7 @@ export default function WorkLogPage() {
               className="min-h-[100px]"
             />
           </div>
-          <Button onClick={addTask} className="w-full sm:w-auto font-bold px-8">
+          <Button onClick={addTask} className="w-full sm:w-auto font-bold px-10">
             Save
           </Button>
         </CardContent>
@@ -145,17 +146,17 @@ export default function WorkLogPage() {
 
       <div className="space-y-4">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-4">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
             <TabsList className="bg-muted/50 p-1">
-              <TabsTrigger value="all" className="px-6 font-bold">All</TabsTrigger>
-              <TabsTrigger value="pending" className="px-6 font-bold">Pending</TabsTrigger>
-              <TabsTrigger value="completed" className="px-6 font-bold">Done</TabsTrigger>
+              <TabsTrigger value="all" className="px-8 font-bold text-sm">All</TabsTrigger>
+              <TabsTrigger value="pending" className="px-8 font-bold text-sm">Pending</TabsTrigger>
+              <TabsTrigger value="completed" className="px-8 font-bold text-sm">Done</TabsTrigger>
             </TabsList>
-            <div className="relative w-full sm:w-[300px]">
+            <div className="relative w-full sm:w-[350px]">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input 
                 placeholder="Search tasks..." 
-                className="pl-9 h-10 bg-white" 
+                className="pl-10 h-10 bg-white" 
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
               />
@@ -165,30 +166,38 @@ export default function WorkLogPage() {
           <TabsContent value={activeTab} className="space-y-4 mt-0">
             {filteredTasks.length > 0 ? (
               filteredTasks.map((task) => (
-                <Card key={task.id} className="border-none shadow-sm group">
-                  <CardContent className="p-5 flex items-start gap-4">
-                    <Checkbox 
-                      id={`task-${task.id}`}
-                      checked={task.status === 'completed'}
-                      onCheckedChange={() => toggleTaskStatus(task.id)}
-                      className="mt-1 h-5 w-5 border-2"
-                    />
+                <Card key={task.id} className="border-none shadow-sm group bg-white hover:shadow-md transition-all">
+                  <CardContent className="p-6 flex items-start gap-5">
+                    <div className="mt-1">
+                      <Checkbox 
+                        id={`task-${task.id}`}
+                        checked={task.status === 'completed'}
+                        onCheckedChange={() => toggleTaskStatus(task.id)}
+                        className="h-5 w-5 border-2"
+                      />
+                    </div>
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between gap-2">
-                        <h4 className={`font-bold text-base transition-colors ${task.status === 'completed' ? 'line-through text-muted-foreground' : ''}`}>
+                      <div className="flex items-center justify-between gap-3">
+                        <h4 className={`font-bold text-lg transition-all ${task.status === 'completed' ? 'line-through text-muted-foreground/50' : 'text-foreground'}`}>
                           {task.title}
                         </h4>
                         <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => deleteTask(task.id)}>
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
-                      <p className={`text-sm mt-1 line-clamp-2 ${task.status === 'completed' ? 'text-muted-foreground/60' : 'text-muted-foreground'}`}>
+                      <p className={`text-sm mt-1.5 leading-relaxed ${task.status === 'completed' ? 'text-muted-foreground/40' : 'text-muted-foreground'}`}>
                         {task.description}
                       </p>
-                      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-3 text-[10px] uppercase tracking-wider font-bold text-muted-foreground/70">
-                        <span className="flex items-center gap-1">Created: {new Date(task.createdAt).toLocaleDateString()}</span>
+                      <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mt-4 text-[10px] uppercase tracking-[0.15em] font-bold text-muted-foreground/70">
+                        <span className="flex items-center gap-2">
+                          <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+                          Created: {new Date(task.createdAt).toLocaleDateString()}
+                        </span>
                         {task.status === 'completed' && task.completedAt && (
-                          <span className="text-green-600 bg-green-50 px-2 py-0.5 rounded">Completed {new Date(task.completedAt).toLocaleDateString()}</span>
+                          <span className="text-green-600 bg-green-50 px-3 py-1 rounded-md flex items-center gap-2">
+                            <span className="h-1.5 w-1.5 rounded-full bg-green-600" />
+                            Completed {new Date(task.completedAt).toLocaleDateString()}
+                          </span>
                         )}
                       </div>
                     </div>
@@ -196,12 +205,14 @@ export default function WorkLogPage() {
                 </Card>
               ))
             ) : (
-              <div className="text-center py-20 bg-card rounded-xl border border-dashed flex flex-col items-center">
-                <div className="bg-muted/30 p-4 rounded-full mb-4">
-                   <ListTodo className="h-10 w-10 text-muted-foreground/40" />
+              <div className="text-center py-24 bg-white rounded-xl border border-dashed flex flex-col items-center gap-4">
+                <div className="bg-muted/30 p-5 rounded-full">
+                   <ListTodo className="h-12 w-12 text-muted-foreground/20" />
                 </div>
-                <h3 className="text-lg font-bold text-muted-foreground">No tasks found</h3>
-                <p className="text-sm text-muted-foreground/60">Try changing your search or filter criteria.</p>
+                <div className="space-y-1">
+                  <h3 className="text-xl font-bold text-muted-foreground">No tasks found</h3>
+                  <p className="text-sm text-muted-foreground/60 max-w-xs mx-auto">Try changing your search or filter criteria, or add a new task above.</p>
+                </div>
               </div>
             )}
           </TabsContent>

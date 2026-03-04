@@ -88,7 +88,7 @@ export default function RoutesPage() {
         </div>
         <Dialog open={isAddingRoute} onOpenChange={setIsAddingRoute}>
           <DialogTrigger asChild>
-            <Button className="gap-2 shadow-sm">
+            <Button className="gap-2 shadow-sm font-bold">
               <Plus className="h-4 w-4" /> Add Route
             </Button>
           </DialogTrigger>
@@ -152,7 +152,7 @@ export default function RoutesPage() {
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setIsAddingRoute(false)}>Cancel</Button>
-              <Button onClick={handleAddRoute}>Save Route</Button>
+              <Button onClick={handleAddRoute} className="font-bold">Save Route</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -160,7 +160,7 @@ export default function RoutesPage() {
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {routes.map((route) => (
-          <Card key={route.id} className="border-none shadow-sm hover:shadow-md transition-shadow">
+          <Card key={route.id} className="border-none shadow-sm hover:shadow-md transition-shadow bg-white">
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
                 <div className="p-2 rounded-lg bg-primary/10 text-primary">
@@ -175,27 +175,27 @@ export default function RoutesPage() {
                   </Button>
                 </div>
               </div>
-              <CardTitle className="mt-4 font-headline text-xl">{route.name}</CardTitle>
-              <CardDescription className="flex items-center gap-1">
+              <CardTitle className="mt-4 font-headline text-xl font-bold">{route.name}</CardTitle>
+              <CardDescription className="flex items-center gap-1 mt-1">
                 <Truck className="h-3 w-3" /> {route.vehicle}
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-2 pt-0 text-sm">
+            <CardContent className="space-y-3 pt-4 text-sm">
               <div className="flex items-center gap-2 text-muted-foreground">
-                <Users className="h-4 w-4" />
-                <span>{route.supplierIds.length} Active Suppliers</span>
+                <Users className="h-4 w-4 text-primary" />
+                <span className="font-medium text-foreground">{route.supplierIds.length} Active Suppliers</span>
               </div>
               <div className="flex items-center gap-2 text-muted-foreground">
-                <MapPin className="h-4 w-4" />
-                <span>{route.distanceKm} km</span>
+                <MapPin className="h-4 w-4 text-primary" />
+                <span className="font-medium text-foreground">{route.distanceKm} km</span>
               </div>
               <div className="flex items-center gap-2 text-muted-foreground">
-                <IndianRupee className="h-4 w-4" />
-                <span>Cost: ₹{route.costPerKm} / km</span>
+                <IndianRupee className="h-4 w-4 text-primary" />
+                <span className="font-medium text-foreground">Rate: ₹{route.costPerKm.toFixed(2)} / km</span>
               </div>
             </CardContent>
             <CardFooter className="pt-2 border-t">
-               <Button variant="ghost" size="sm" className="w-full justify-between text-primary group" asChild>
+               <Button variant="ghost" size="sm" className="w-full justify-between text-primary font-bold group" asChild>
                   <Link href={`/routes/${route.id}`}>
                     Manage Suppliers <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                   </Link>
