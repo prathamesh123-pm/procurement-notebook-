@@ -52,7 +52,7 @@ export default function DailyReportPage() {
   const [activeReportType, setActiveReportType] = useState<string>("office")
 
   const createEmptyVisit = (): CenterVisit => ({
-    id: typeof window !== 'undefined' ? crypto.randomUUID() : Math.random().toString(),
+    id: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2),
     name: "",
     topic: "",
     observation: "",
@@ -74,7 +74,7 @@ export default function DailyReportPage() {
   });
 
   const createEmptyMeeting = (): Meeting => ({
-    id: typeof window !== 'undefined' ? crypto.randomUUID() : Math.random().toString(),
+    id: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2),
     person: "",
     org: "",
     from: "",
@@ -187,7 +187,7 @@ export default function DailyReportPage() {
     const typeLabel = activeReportType === 'office' ? 'Daily Office Work' : 'Field Visit'
     const reportSummary = `प्रतिनिधी: ${formData.name}. रिपोर्ट प्रकार: ${typeLabel}. कामगिरी: ${formData.achievements}.`
     const newReport = {
-      id: crypto.randomUUID(),
+      id: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2),
       type: typeLabel,
       date: formData.reportDate,
       workItemsCount: activeReportType === 'office' ? formData.officeTasks.length : formData.centerVisits.length,
