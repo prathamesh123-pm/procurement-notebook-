@@ -31,7 +31,7 @@ export interface Supplier {
   cowMilk: MilkMetrics;
   buffaloMilk: MilkMetrics;
   // Operations Fields
-  iceQuantity?: number;
+  iceBlocks?: number; // Changed from iceQuantity
   scaleBrand?: string;
   fatMachineBrand?: string;
   collectionType?: string;

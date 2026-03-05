@@ -40,7 +40,7 @@ export default function RouteDetailsPage() {
     bufQty: "0",
     bufFat: "0",
     bufSnf: "0",
-    iceQuantity: "0",
+    iceBlocks: "0",
     scaleBrand: "",
     fatMachineBrand: "",
     collectionType: "Route",
@@ -82,7 +82,7 @@ export default function RouteDetailsPage() {
         fat: Number(formData.bufFat),
         snf: Number(formData.bufSnf)
       },
-      iceQuantity: Number(formData.iceQuantity),
+      iceBlocks: Number(formData.iceBlocks),
       scaleBrand: formData.scaleBrand,
       fatMachineBrand: formData.fatMachineBrand,
       collectionType: formData.collectionType,
@@ -100,7 +100,7 @@ export default function RouteDetailsPage() {
     setFormData({
       name: "", id: "", address: "", mobile: "", competition: "", additionalInfo: "",
       cowQty: "0", cowFat: "0", cowSnf: "0", bufQty: "0", bufFat: "0", bufSnf: "0",
-      iceQuantity: "0", scaleBrand: "", fatMachineBrand: "", collectionType: "Route", cattleFeedBrand: "",
+      iceBlocks: "0", scaleBrand: "", fatMachineBrand: "", collectionType: "Route", cattleFeedBrand: "",
       fssaiNumber: "", fssaiExpiry: ""
     })
   }
@@ -137,7 +137,7 @@ export default function RouteDetailsPage() {
                 <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
                   <DialogHeader>
                     <DialogTitle>Add New Supplier</DialogTitle>
-                    <DialogDescription>Register a new supplier with FSSAI, equipment, and collection details.</DialogDescription>
+                    <DialogDescription>Register a new supplier to this collection route.</DialogDescription>
                   </DialogHeader>
                   <div className="grid gap-6 py-4">
                     <div className="grid grid-cols-2 gap-4">
@@ -249,9 +249,9 @@ export default function RouteDetailsPage() {
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label className="flex items-center gap-2">
-                          <Package className="h-4 w-4" /> Ice Quantity Given
+                          <Package className="h-4 w-4" /> Number of Ice Blocks
                         </Label>
-                        <Input type="number" placeholder="in kg" value={formData.iceQuantity} onChange={e => setFormData({...formData, iceQuantity: e.target.value})} />
+                        <Input type="number" placeholder="Enter number of blocks" value={formData.iceBlocks} onChange={e => setFormData({...formData, iceBlocks: e.target.value})} />
                       </div>
                       <div className="space-y-2">
                         <Label className="flex items-center gap-2">
@@ -417,9 +417,9 @@ export default function RouteDetailsPage() {
                   </h4>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="p-3 bg-primary/5 rounded-lg border border-primary/10">
-                      <Label className="text-[9px] uppercase font-bold text-primary block mb-1">Ice Quantity</Label>
+                      <Label className="text-[9px] uppercase font-bold text-primary block mb-1">Ice Blocks</Label>
                       <p className="text-sm font-bold flex items-center gap-2">
-                        <Package className="h-3.5 w-3.5 text-primary" /> {selectedSupplier.iceQuantity || 0} kg
+                        <Package className="h-3.5 w-3.5 text-primary" /> {selectedSupplier.iceBlocks || 0} Blocks
                       </p>
                     </div>
                     <div className="p-3 bg-amber-50 rounded-lg border border-amber-100">
