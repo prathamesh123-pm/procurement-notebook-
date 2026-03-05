@@ -259,8 +259,8 @@ export default function ReportsPage() {
       </div>
 
       <Dialog open={isViewOpen} onOpenChange={setIsViewOpen}>
-        <DialogContent className="max-w-5xl max-h-[95vh] overflow-hidden flex flex-col p-0 dialog-content bg-white">
-          <DialogHeader className="p-6 border-b no-print">
+        <DialogContent className="max-w-5xl h-[95vh] flex flex-col p-0 dialog-content bg-white overflow-hidden">
+          <DialogHeader className="p-6 border-b no-print shrink-0">
             <DialogTitle className="text-2xl font-bold flex items-center gap-3">
               {selectedReport && getIcon(selectedReport.type)}
               {selectedReport?.type} - अहवाल तपशील
@@ -270,7 +270,7 @@ export default function ReportsPage() {
             </DialogDescription>
           </DialogHeader>
 
-          <ScrollArea className="flex-1 p-0 scroll-area-viewport">
+          <ScrollArea className="flex-grow">
             <div className="p-4 md:p-8 space-y-4 max-w-5xl mx-auto" id="printable-report-content">
               {/* PRINT HEADER */}
               <div className="hidden print:flex flex-col gap-0.5 border-b pb-2 mb-4">
@@ -514,7 +514,7 @@ export default function ReportsPage() {
             </div>
           </ScrollArea>
 
-          <DialogFooter className="p-6 border-t gap-3 no-print">
+          <DialogFooter className="p-6 border-t gap-3 no-print shrink-0">
             <Button variant="outline" onClick={() => setIsViewOpen(false)} className="font-bold h-11 px-8 rounded-xl shadow-sm">
               बंद करा (Close)
             </Button>
