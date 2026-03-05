@@ -10,13 +10,14 @@ import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Task } from "@/lib/types"
-import { Plus, Search, ListTodo, Trash2, User, Hash } from "lucide-react"
+import { Plus, Search, ListTodo, Trash2, User, Hash, MessageSquare } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
 export default function WorkLogPage() {
   const [tasks, setTasks] = useState<Task[]>([])
   const [newTaskTitle, setNewTaskTitle] = useState("")
   const [newTaskDesc, setNewTaskDesc] = useState("")
+  const [newTaskRemark, setNewTaskRemark] = useState("")
   const [newTaskSupplierName, setNewTaskSupplierName] = useState("")
   const [newTaskSupplierId, setNewTaskSupplierId] = useState("")
   const [searchQuery, setSearchQuery] = useState("")
@@ -32,12 +33,7 @@ export default function WorkLogPage() {
   }, [])
 
   const saveTasks = (updatedTasks: Task[]) => {
-    // We only keep pending tasks in this list now
     setTasks(updatedTasks)
-    
-    // Get all tasks from storage to not lose them, or just manage pending here
-    // However, the logic is: once completed, they move to reports. 
-    // So 'procurepal_tasks' will only ever hold pending items.
     localStorage.setItem('procurepal_tasks', JSON.stringify(updatedTasks))
   }
 
@@ -47,6 +43,7 @@ export default function WorkLogPage() {
       id: crypto.randomUUID(),
       title: newTaskTitle,
       description: newTaskDesc,
+      remark: newTaskRemark,
       supplierName: newTaskSupplierName,
       supplierId: newTaskSupplierId,
       assignedTo: "Procurement Manager",
@@ -56,6 +53,7 @@ export default function WorkLogPage() {
     saveTasks([newTask, ...tasks])
     setNewTaskTitle("")
     setNewTaskDesc("")
+    setNewTaskRemark("")
     setNewTaskSupplierName("")
     setNewTaskSupplierId("")
     toast({
@@ -68,19 +66,24 @@ export default function WorkLogPage() {
     const taskToComplete = tasks.find(t => t.id === taskId)
     if (!taskToComplete) return
 
-    // 1. Remove from pending tasks
     const updatedTasks = tasks.filter(t => t.id !== taskId)
     saveTasks(updatedTasks)
 
-    // 2. Add to Reports (procurepal_reports)
     const storedReports = JSON.parse(localStorage.getItem('procurepal_reports') || '[]')
+    
+    // Constructing detailed summary for the report
+    let reportSummary = `Task Completed: ${taskToComplete.title}.`
+    if (taskToComplete.description) reportSummary += ` Details: ${taskToComplete.description}.`
+    if (taskToComplete.remark) reportSummary += ` Remark/Action Taken: ${taskToComplete.remark}.`
+    if (taskToComplete.supplierName) reportSummary += ` [Supplier: ${taskToComplete.supplierName} (${taskToComplete.supplierId || 'N/A'})]`
+
     const newReport = {
       id: crypto.randomUUID(),
       type: 'Daily Log',
       date: new Date().toISOString().split('T')[0],
       workItemsCount: 1,
       interactionsCount: 1,
-      summary: `Task Completed: ${taskToComplete.title}. ${taskToComplete.description || ''} ${taskToComplete.supplierName ? `[Supplier: ${taskToComplete.supplierName} (${taskToComplete.supplierId})]` : ''}`
+      summary: reportSummary
     }
     
     localStorage.setItem('procurepal_reports', JSON.stringify([newReport, ...storedReports]))
@@ -96,11 +99,13 @@ export default function WorkLogPage() {
   }
 
   const filteredTasks = tasks.filter(t => {
+    const query = searchQuery.toLowerCase()
     const matchesSearch = 
-      t.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-      (t.description?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false) ||
-      (t.supplierName?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false) ||
-      (t.supplierId?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false)
+      t.title.toLowerCase().includes(query) || 
+      (t.description?.toLowerCase().includes(query) ?? false) ||
+      (t.remark?.toLowerCase().includes(query) ?? false) ||
+      (t.supplierName?.toLowerCase().includes(query) ?? false) ||
+      (t.supplierId?.toLowerCase().includes(query) ?? false)
     return matchesSearch
   })
 
@@ -150,15 +155,27 @@ export default function WorkLogPage() {
               </div>
             </div>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="desc" className="font-bold">Information about the task</Label>
-            <Textarea 
-              id="desc" 
-              placeholder="Audit all collection centers for the past month's records." 
-              value={newTaskDesc} 
-              onChange={(e) => setNewTaskDesc(e.target.value)} 
-              className="min-h-[100px]"
-            />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="desc" className="font-bold">Information about the task</Label>
+              <Textarea 
+                id="desc" 
+                placeholder="Audit all collection centers for the past month's records." 
+                value={newTaskDesc} 
+                onChange={(e) => setNewTaskDesc(e.target.value)} 
+                className="min-h-[80px]"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="remark" className="font-bold text-primary">Remark / शेरा (Action Plan)</Label>
+              <Textarea 
+                id="remark" 
+                placeholder="उदा. केंद्रावर जाऊन प्रत्यक्ष पडताळणी केली." 
+                value={newTaskRemark} 
+                onChange={(e) => setNewTaskRemark(e.target.value)} 
+                className="min-h-[80px] border-primary/30"
+              />
+            </div>
           </div>
           <Button onClick={addTask} className="w-full sm:w-auto font-bold px-10">
             Save
@@ -213,9 +230,22 @@ export default function WorkLogPage() {
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
-                    <p className="text-sm mt-1.5 leading-relaxed text-muted-foreground">
-                      {task.description}
-                    </p>
+                    
+                    <div className="mt-2 space-y-2">
+                      <p className="text-sm leading-relaxed text-muted-foreground">
+                        {task.description}
+                      </p>
+                      {task.remark && (
+                        <div className="bg-primary/5 p-3 rounded-lg border border-primary/10 flex gap-2 items-start">
+                          <MessageSquare className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                          <div>
+                            <p className="text-[10px] font-bold text-primary uppercase tracking-wider">Remark / शेरा</p>
+                            <p className="text-sm text-foreground/80 italic">{task.remark}</p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
                     <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mt-4 text-[10px] uppercase tracking-[0.15em] font-bold text-muted-foreground/70">
                       <span className="flex items-center gap-2">
                         <span className="h-1.5 w-1.5 rounded-full bg-primary" />

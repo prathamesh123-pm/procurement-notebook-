@@ -5,6 +5,7 @@ export interface Task {
   id: string;
   title: string;
   description?: string;
+  remark?: string; // Added remark field
   assignedTo: string;
   status: TaskStatus;
   createdAt: string;
