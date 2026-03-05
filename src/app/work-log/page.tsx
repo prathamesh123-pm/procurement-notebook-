@@ -10,25 +10,30 @@ import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Task } from "@/lib/types"
-import { Plus, Search, ListTodo, Trash2, User, Hash, MessageSquare } from "lucide-react"
+import { Plus, Search, ListTodo, Trash2, User, Hash, MessageSquare, Info, CheckCircle2 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
 
 export default function WorkLogPage() {
   const [tasks, setTasks] = useState<Task[]>([])
   const [newTaskTitle, setNewTaskTitle] = useState("")
   const [newTaskDesc, setNewTaskDesc] = useState("")
-  const [newTaskRemark, setNewTaskRemark] = useState("")
   const [newTaskSupplierName, setNewTaskSupplierName] = useState("")
   const [newTaskSupplierId, setNewTaskSupplierId] = useState("")
   const [searchQuery, setSearchQuery] = useState("")
   const [activeTab, setActiveTab] = useState<string>("all")
   const [mounted, setMounted] = useState(false)
+  
+  // Detail Dialog State
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null)
+  const [tempRemark, setTempRemark] = useState("")
+  const [isDetailOpen, setIsDetailOpen] = useState(false)
+
   const { toast } = useToast()
 
   useEffect(() => {
     setMounted(true)
     const stored = JSON.parse(localStorage.getItem('procurepal_tasks') || '[]')
-    // Only show pending tasks in Work Log
     setTasks(stored.filter((t: Task) => t.status === 'pending'))
   }, [])
 
@@ -43,7 +48,7 @@ export default function WorkLogPage() {
       id: crypto.randomUUID(),
       title: newTaskTitle,
       description: newTaskDesc,
-      remark: newTaskRemark,
+      remark: "", // Initial remark is empty
       supplierName: newTaskSupplierName,
       supplierId: newTaskSupplierId,
       assignedTo: "Procurement Manager",
@@ -53,12 +58,30 @@ export default function WorkLogPage() {
     saveTasks([newTask, ...tasks])
     setNewTaskTitle("")
     setNewTaskDesc("")
-    setNewTaskRemark("")
     setNewTaskSupplierName("")
     setNewTaskSupplierId("")
     toast({
       title: "Task Saved",
-      description: "New task added to your work log.",
+      description: "New task added. Click on it to add a remark or complete it.",
+    })
+  }
+
+  const handleTaskClick = (task: Task) => {
+    setSelectedTask(task)
+    setTempRemark(task.remark || "")
+    setIsDetailOpen(true)
+  }
+
+  const updateRemarkOnly = () => {
+    if (!selectedTask) return
+    const updatedTasks = tasks.map(t => 
+      t.id === selectedTask.id ? { ...t, remark: tempRemark } : t
+    )
+    saveTasks(updatedTasks)
+    setIsDetailOpen(false)
+    toast({
+      title: "Remark Updated",
+      description: "Action plan has been saved.",
     })
   }
 
@@ -66,15 +89,17 @@ export default function WorkLogPage() {
     const taskToComplete = tasks.find(t => t.id === taskId)
     if (!taskToComplete) return
 
+    // Finalize the remark if coming from dialog
+    const finalRemark = taskId === selectedTask?.id ? tempRemark : taskToComplete.remark
+
     const updatedTasks = tasks.filter(t => t.id !== taskId)
     saveTasks(updatedTasks)
 
     const storedReports = JSON.parse(localStorage.getItem('procurepal_reports') || '[]')
     
-    // Constructing detailed summary for the report
     let reportSummary = `Task Completed: ${taskToComplete.title}.`
     if (taskToComplete.description) reportSummary += ` Details: ${taskToComplete.description}.`
-    if (taskToComplete.remark) reportSummary += ` Remark/Action Taken: ${taskToComplete.remark}.`
+    if (finalRemark) reportSummary += ` Remark/Action Taken: ${finalRemark}.`
     if (taskToComplete.supplierName) reportSummary += ` [Supplier: ${taskToComplete.supplierName} (${taskToComplete.supplierId || 'N/A'})]`
 
     const newReport = {
@@ -87,6 +112,7 @@ export default function WorkLogPage() {
     }
     
     localStorage.setItem('procurepal_reports', JSON.stringify([newReport, ...storedReports]))
+    setIsDetailOpen(false)
 
     toast({
       title: "Task Completed",
@@ -100,157 +126,147 @@ export default function WorkLogPage() {
 
   const filteredTasks = tasks.filter(t => {
     const query = searchQuery.toLowerCase()
-    const matchesSearch = 
+    return (
       t.title.toLowerCase().includes(query) || 
       (t.description?.toLowerCase().includes(query) ?? false) ||
       (t.remark?.toLowerCase().includes(query) ?? false) ||
       (t.supplierName?.toLowerCase().includes(query) ?? false) ||
       (t.supplierId?.toLowerCase().includes(query) ?? false)
-    return matchesSearch
+    )
   })
 
   if (!mounted) return null
 
   return (
     <div className="space-y-8 max-w-5xl mx-auto w-full">
-      <div>
+      <div className="flex flex-col gap-1">
         <h2 className="text-3xl font-headline font-bold text-foreground tracking-tight">Work Log</h2>
-        <p className="text-muted-foreground mt-1 font-medium">Manage and track your daily procurement duties. Completed tasks move to Reports.</p>
+        <p className="text-muted-foreground font-medium">Manage and track your daily procurement duties. Click tasks to add remarks.</p>
       </div>
 
-      <Card className="border-none shadow-sm bg-white">
-        <CardHeader>
-          <CardTitle className="text-lg font-bold">New Task</CardTitle>
-          <CardDescription>Create a specific task or observation for your log.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <Card className="border-none shadow-sm bg-white overflow-hidden">
+        <div className="bg-primary/5 px-6 py-4 border-b">
+          <CardTitle className="text-lg font-bold flex items-center gap-2">
+            <Plus className="h-5 w-5 text-primary" /> New Task
+          </CardTitle>
+        </div>
+        <CardContent className="p-6 space-y-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div className="space-y-2">
-              <Label htmlFor="title" className="font-bold">Task Title</Label>
+              <Label htmlFor="title" className="font-bold text-xs uppercase tracking-wider">Task Title</Label>
               <Input 
                 id="title" 
                 placeholder="e.g. Monthly collection review" 
                 value={newTaskTitle} 
                 onChange={(e) => setNewTaskTitle(e.target.value)} 
+                className="bg-muted/30"
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="supplierName" className="font-bold">Gavlyache Nav</Label>
+                <Label htmlFor="supplierName" className="font-bold text-xs uppercase tracking-wider">Gavlyache Nav</Label>
                 <Input 
                   id="supplierName" 
                   placeholder="Supplier Name" 
                   value={newTaskSupplierName} 
                   onChange={(e) => setNewTaskSupplierName(e.target.value)} 
+                  className="bg-muted/30"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="supplierId" className="font-bold">Code Numbar</Label>
+                <Label htmlFor="supplierId" className="font-bold text-xs uppercase tracking-wider">Code Numbar</Label>
                 <Input 
                   id="supplierId" 
                   placeholder="Code Number" 
                   value={newTaskSupplierId} 
                   onChange={(e) => setNewTaskSupplierId(e.target.value)} 
+                  className="bg-muted/30"
                 />
               </div>
             </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="desc" className="font-bold">Information about the task</Label>
-              <Textarea 
-                id="desc" 
-                placeholder="Audit all collection centers for the past month's records." 
-                value={newTaskDesc} 
-                onChange={(e) => setNewTaskDesc(e.target.value)} 
-                className="min-h-[80px]"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="remark" className="font-bold text-primary">Remark / शेरा (Action Plan)</Label>
-              <Textarea 
-                id="remark" 
-                placeholder="उदा. केंद्रावर जाऊन प्रत्यक्ष पडताळणी केली." 
-                value={newTaskRemark} 
-                onChange={(e) => setNewTaskRemark(e.target.value)} 
-                className="min-h-[80px] border-primary/30"
-              />
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="desc" className="font-bold text-xs uppercase tracking-wider">Information about the task</Label>
+            <Textarea 
+              id="desc" 
+              placeholder="Enter task details here..." 
+              value={newTaskDesc} 
+              onChange={(e) => setNewTaskDesc(e.target.value)} 
+              className="min-h-[100px] bg-muted/30"
+            />
           </div>
-          <Button onClick={addTask} className="w-full sm:w-auto font-bold px-10">
-            Save
+          <Button onClick={addTask} className="w-full sm:w-auto font-bold px-12 h-11 shadow-sm">
+            Save Task
           </Button>
         </CardContent>
       </Card>
 
-      <div className="space-y-4">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
+      <div className="space-y-5">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full sm:w-auto">
-            <TabsList className="bg-muted/50 p-1">
-              <TabsTrigger value="all" className="px-8 font-bold text-sm">All Pending</TabsTrigger>
+            <TabsList className="bg-muted/50 p-1 rounded-lg">
+              <TabsTrigger value="all" className="px-10 font-bold text-sm rounded-md">Pending List</TabsTrigger>
             </TabsList>
           </Tabs>
           <div className="relative w-full sm:w-[350px]">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input 
-              placeholder="Search tasks..." 
-              className="pl-10 h-10 bg-white" 
+              placeholder="Search tasks or suppliers..." 
+              className="pl-10 h-10 bg-white shadow-sm" 
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
             />
           </div>
         </div>
 
-        <div className="space-y-4">
+        <div className="grid grid-cols-1 gap-4">
           {filteredTasks.length > 0 ? (
             filteredTasks.map((task) => (
-              <Card key={task.id} className="border-none shadow-sm group bg-white hover:shadow-md transition-all">
-                <CardContent className="p-6 flex items-start gap-5">
-                  <div className="mt-1">
-                    <Checkbox 
-                      id={`task-${task.id}`}
-                      onCheckedChange={() => completeTask(task.id)}
-                      className="h-5 w-5 border-2"
-                    />
-                  </div>
+              <Card 
+                key={task.id} 
+                className="border-none shadow-sm group bg-white hover:shadow-md transition-all cursor-pointer border-l-4 border-primary/20 hover:border-primary"
+                onClick={() => handleTaskClick(task)}
+              >
+                <CardContent className="p-5 flex items-start gap-5">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-3">
                       <div className="space-y-1">
-                        <h4 className="font-bold text-lg text-foreground">
+                        <h4 className="font-bold text-lg text-foreground group-hover:text-primary transition-colors">
                           {task.title}
                         </h4>
                         {(task.supplierName || task.supplierId) && (
-                          <div className="flex items-center gap-3 text-xs font-bold uppercase tracking-wider text-primary">
-                            {task.supplierName && <span className="flex items-center gap-1"><User className="h-3 w-3" /> {task.supplierName}</span>}
-                            {task.supplierId && <span className="flex items-center gap-1"><Hash className="h-3 w-3" /> {task.supplierId}</span>}
+                          <div className="flex items-center gap-4 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                            {task.supplierName && <span className="flex items-center gap-1.5"><User className="h-3.5 w-3.5 text-primary" /> {task.supplierName}</span>}
+                            {task.supplierId && <span className="flex items-center gap-1.5"><Hash className="h-3.5 w-3.5 text-primary" /> {task.supplierId}</span>}
                           </div>
                         )}
                       </div>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => deleteTask(task.id)}>
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-8 w-8 text-destructive opacity-0 group-hover:opacity-100 transition-opacity" 
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          deleteTask(task.id)
+                        }}
+                      >
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
                     
-                    <div className="mt-2 space-y-2">
-                      <p className="text-sm leading-relaxed text-muted-foreground">
-                        {task.description}
-                      </p>
-                      {task.remark && (
-                        <div className="bg-primary/5 p-3 rounded-lg border border-primary/10 flex gap-2 items-start">
-                          <MessageSquare className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                          <div>
-                            <p className="text-[10px] font-bold text-primary uppercase tracking-wider">Remark / शेरा</p>
-                            <p className="text-sm text-foreground/80 italic">{task.remark}</p>
-                          </div>
-                        </div>
-                      )}
-                    </div>
+                    <p className="text-sm leading-relaxed text-muted-foreground mt-2 line-clamp-1 italic">
+                      {task.description || "No description provided."}
+                    </p>
 
-                    <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mt-4 text-[10px] uppercase tracking-[0.15em] font-bold text-muted-foreground/70">
-                      <span className="flex items-center gap-2">
-                        <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-                        Created: {new Date(task.createdAt).toLocaleDateString()}
-                      </span>
+                    {task.remark && (
+                      <div className="mt-3 flex items-center gap-2 text-primary text-xs font-bold">
+                        <MessageSquare className="h-3.5 w-3.5" />
+                        <span>Remark added</span>
+                      </div>
+                    )}
+
+                    <div className="flex items-center gap-2 mt-4 text-[10px] font-bold text-muted-foreground/50 uppercase tracking-tighter">
+                      <Plus className="h-3 w-3" /> Created: {new Date(task.createdAt).toLocaleDateString()}
                     </div>
                   </div>
                 </CardContent>
@@ -258,17 +274,74 @@ export default function WorkLogPage() {
             ))
           ) : (
             <div className="text-center py-24 bg-white rounded-xl border border-dashed flex flex-col items-center gap-4">
-              <div className="bg-muted/30 p-5 rounded-full">
+              <div className="bg-muted/30 p-6 rounded-full">
                  <ListTodo className="h-12 w-12 text-muted-foreground/20" />
               </div>
               <div className="space-y-1">
-                <h3 className="text-xl font-bold text-muted-foreground">No pending tasks</h3>
-                <p className="text-sm text-muted-foreground/60 max-w-xs mx-auto">All tasks are completed or deleted.</p>
+                <h3 className="text-xl font-bold text-muted-foreground tracking-tight">No pending tasks found</h3>
+                <p className="text-sm text-muted-foreground/60 max-w-xs mx-auto">Create a new task to get started with your procurement work.</p>
               </div>
             </div>
           )}
         </div>
       </div>
+
+      {/* Task Detail & Remark Dialog */}
+      <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold font-headline">{selectedTask?.title}</DialogTitle>
+            <DialogDescription>Review task details and add your action plan or remark.</DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-6 py-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="p-4 rounded-xl bg-muted/30 border space-y-1">
+                <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Supplier Name</Label>
+                <p className="font-bold flex items-center gap-2"><User className="h-4 w-4 text-primary" /> {selectedTask?.supplierName || "N/A"}</p>
+              </div>
+              <div className="p-4 rounded-xl bg-muted/30 border space-y-1">
+                <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Code Number</Label>
+                <p className="font-bold flex items-center gap-2"><Hash className="h-4 w-4 text-primary" /> {selectedTask?.supplierId || "N/A"}</p>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                <Info className="h-3.5 w-3.5" /> Task Information
+              </Label>
+              <div className="p-4 rounded-xl bg-primary/5 border border-primary/10 text-sm leading-relaxed text-foreground/80 italic">
+                {selectedTask?.description || "No specific details provided for this task."}
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <Label htmlFor="modal-remark" className="text-[10px] font-bold uppercase tracking-widest text-primary flex items-center gap-2">
+                <MessageSquare className="h-3.5 w-3.5" /> Remark / शेरा (Action Plan)
+              </Label>
+              <Textarea 
+                id="modal-remark" 
+                placeholder="उदा. प्रत्यक्ष भेट देऊन समस्या सोडवली, किंवा पुढील कार्यवाही केली." 
+                value={tempRemark} 
+                onChange={(e) => setTempRemark(e.target.value)} 
+                className="min-h-[120px] border-primary/20 focus:border-primary bg-background shadow-inner"
+              />
+              <p className="text-[10px] text-muted-foreground italic">हा शेरा रिपोर्टमध्ये जतन केला जाईल.</p>
+            </div>
+          </div>
+
+          <DialogFooter className="gap-2 sm:gap-0">
+            <div className="flex flex-col sm:flex-row gap-3 w-full">
+              <Button variant="outline" className="flex-1 font-bold" onClick={updateRemarkOnly}>
+                Update Remark
+              </Button>
+              <Button className="flex-1 font-bold bg-primary hover:bg-primary/90 gap-2" onClick={() => selectedTask && completeTask(selectedTask.id)}>
+                <CheckCircle2 className="h-4 w-4" /> Complete Task
+              </Button>
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
