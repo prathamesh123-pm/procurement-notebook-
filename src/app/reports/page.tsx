@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { 
   Archive, Calendar, ArrowRight, FileText, ClipboardList, 
   Filter, Briefcase, ListTodo, Truck, Download, Trash2, 
-  Eye, User, MapPin, Activity, ShieldCheck, Settings, MessageSquare, Clock
+  Eye, User, MapPin, Activity, ShieldCheck, Settings, MessageSquare, Clock, Hash, CheckCircle2
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { ReportType } from "@/lib/types"
@@ -23,44 +23,19 @@ const MOCK_REPORTS: any[] = [
     type: "Daily Office Work",
     date: "2024-05-20",
     workItemsCount: 8,
-    interactionsCount: 12,
-    summary: "Operations ran smoothly today across all routes. All milk collection centers reported data on time.",
+    interactionsCount: 1,
+    summary: "प्रतिनिधी: राहुल पाटील. रिपोर्ट प्रकार: Daily Office Work. सर्व कामे वेळेत पूर्ण झाली.",
     fullData: { 
-      officeTasks: ["दुग्ध नमुना नोंद तपासणी", "दरपत्रक तपासणी / मंजुरी"], 
-      officeTaskDetail: "सर्व कामे वेळेत पूर्ण झाली. कॉल करून माहिती घेतली.",
+      name: "Rahul Patil",
+      designation: "Collection Executive",
+      officeTasks: ["दुग्ध नमुना नोंद तपासणी", "दरपत्रक तपासणी / मंजुरी", "कॉल करणे (Calls Made)"], 
+      officeTaskDetail: "आज एकूण १५ केंद्रांना कॉल केले. दरपत्रक तपासणी पूर्ण झाली.",
       meetings: [
-        { person: "Rahul Patil", org: "Quality Dept", from: "10:00", to: "11:00", subject: "Fat Issues", decision: "Check all centers again" }
+        { id: "m1", person: "Vikram Shinde", org: "Quality Dept", from: "10:00", to: "11:00", subject: "Fat Issues", decision: "Increase sampling at Route A" }
       ],
-      supervisorName: "Vikram Shinde"
-    }
-  },
-  {
-    id: "2",
-    type: "Field Visit",
-    date: "2024-05-19",
-    workItemsCount: 4,
-    interactionsCount: 5,
-    summary: "Conducted quality audits in the Northern Sector. Identified two suppliers needing training.",
-    fullData: { 
-      fieldRoute: "North Route", 
-      vehicleNumber: "MH 12 AB 1234", 
-      totalKm: 45,
-      fieldTimeFrom: "09:00",
-      fieldTimeTo: "17:00",
-      centerVisits: [
-        { 
-          name: "Center A", 
-          topic: "Quality check", 
-          observation: "Good", 
-          suggestion: "Maintain", 
-          mixQty: "100", mixFat: "4.5", mixSnf: "8.5", 
-          cowQty: "50", cowFat: "3.5", cowSnf: "8.2", 
-          compliance: ["परिसर स्वच्छता"],
-          complianceRemarks: { "परिसर स्वच्छता": "Clean area" },
-          remark: "Very good center",
-          objectives: ["दूध संकलन तपासणी"]
-        }
-      ],
+      achievements: "१५ केंद्रांचा डेटा अपडेट केला.",
+      problems: "इंटरनेट स्लो होते.",
+      actionsTaken: "ऑफिस मधूनच काम पूर्ण केले.",
       supervisorName: "Vikram Shinde"
     }
   }
@@ -98,10 +73,10 @@ export default function ReportsPage() {
 
   const getIcon = (type: ReportType) => {
     switch (type) {
-      case 'Field Visit': return <Truck className="h-6 w-6" />
-      case 'Daily Office Work': return <Briefcase className="h-6 w-6" />
-      case 'Daily Task': return <ListTodo className="h-6 w-6" />
-      default: return <ClipboardList className="h-6 w-6" />
+      case 'Field Visit': return <Truck className="h-5 w-5" />
+      case 'Daily Office Work': return <Briefcase className="h-5 w-5" />
+      case 'Daily Task': return <ListTodo className="h-5 w-5" />
+      default: return <ClipboardList className="h-5 w-5" />
     }
   }
 
@@ -196,15 +171,15 @@ export default function ReportsPage() {
           ))}
         </div>
         <div className="flex items-center gap-2 w-full md:w-auto">
-          <Label className="text-[10px] font-bold uppercase text-muted-foreground whitespace-nowrap no-print">Filter by Date:</Label>
+          <Label className="text-[10px] font-bold uppercase text-muted-foreground whitespace-nowrap">Filter by Date:</Label>
           <Input 
             type="date" 
-            className="h-9 w-full md:w-[180px] text-xs font-bold no-print" 
+            className="h-9 w-full md:w-[180px] text-xs font-bold" 
             value={filterDate}
             onChange={(e) => setFilterDate(e.target.value)}
           />
           {filterDate && (
-            <Button variant="ghost" size="icon" className="h-9 w-9 no-print" onClick={() => setFilterDate("")}>
+            <Button variant="ghost" size="icon" className="h-9 w-9" onClick={() => setFilterDate("")}>
               <Trash2 className="h-4 w-4" />
             </Button>
           )}
@@ -281,14 +256,14 @@ export default function ReportsPage() {
           <div className="text-center py-24 bg-white rounded-2xl border border-dashed flex flex-col items-center gap-4">
              <Archive className="h-16 w-16 text-muted-foreground/20" />
              <div className="space-y-1">
-               <h3 className="text-xl font-bold text-muted-foreground">कोणताही रिपोर्ट सापडल नाही</h3>
+               <h3 className="text-xl font-bold text-muted-foreground">कोणताही रिपोर्ट सापडला नाही</h3>
                <p className="text-sm text-muted-foreground/60">निवडलेली तारीख किंवा कॅटेगरी तपासा.</p>
              </div>
           </div>
         )}
       </div>
 
-      {/* Report Details Modal */}
+      {/* Detailed Report View Modal */}
       <Dialog open={isViewOpen} onOpenChange={setIsViewOpen}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col p-0 dialog-content">
           <DialogHeader className="p-6 border-b no-print">
@@ -296,138 +271,208 @@ export default function ReportsPage() {
               {selectedReport && getIcon(selectedReport.type)}
               {selectedReport?.type} - अहवाल तपशील
             </DialogTitle>
-            <DialogDescription className="font-bold text-primary">
+            <DialogDescription className="font-bold text-primary uppercase tracking-widest text-[10px]">
               तारीख: {selectedReport?.date} | ID: {selectedReport?.id.slice(0, 12)}
             </DialogDescription>
           </DialogHeader>
 
-          <ScrollArea className="flex-1 p-6 scroll-area-viewport">
-            <div className="space-y-8 printable-area">
-              {/* Header for Print */}
-              <div className="hidden print:block border-b pb-4 mb-6">
-                <h1 className="text-2xl font-bold">संकलन विभाग - दैनिक कामकाज अहवाल</h1>
-                <p className="text-sm font-bold text-primary">प्रकार: {selectedReport?.type} | तारीख: {selectedReport?.date}</p>
+          <ScrollArea className="flex-1 p-8 scroll-area-viewport">
+            <div className="space-y-10 printable-area">
+              {/* Header for Print Output */}
+              <div className="hidden print:flex flex-col gap-2 border-b-2 border-primary pb-4 mb-8">
+                <h1 className="text-2xl font-bold text-center uppercase tracking-tighter">संकलन विभाग - दैनिक कामकाज अहवाल</h1>
+                <div className="flex justify-between items-end text-[11px] font-bold uppercase text-muted-foreground">
+                  <span>प्रकार: {selectedReport?.type}</span>
+                  <span>तारीख: {selectedReport?.date}</span>
+                </div>
               </div>
 
               {/* Summary Section */}
               <div className="space-y-3">
-                <h4 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
-                  <FileText className="h-4 w-4" /> सारांश (Summary)
+                <h4 className="text-[10px] font-bold uppercase tracking-widest text-primary flex items-center gap-2 border-b pb-1">
+                  <FileText className="h-4 w-4" /> १. अहवाल सारांश (Summary)
                 </h4>
-                <div className="p-4 rounded-xl bg-muted/20 border text-sm leading-relaxed italic">
+                <div className="p-4 rounded-xl bg-muted/10 border text-sm leading-relaxed italic">
                   {selectedReport?.summary}
                 </div>
               </div>
 
-              {/* Specific Data Sections */}
-              {selectedReport?.type === 'Field Visit' && selectedReport?.fullData && (
-                <div className="space-y-6">
+              {/* Representative Info (if available in fullData) */}
+              {selectedReport?.fullData && (
+                <div className="space-y-3">
+                  <h4 className="text-[10px] font-bold uppercase tracking-widest text-primary flex items-center gap-2 border-b pb-1">
+                    <User className="h-4 w-4" /> २. प्रतिनिधीची माहिती (Representative Info)
+                  </h4>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div className="p-3 border rounded-xl bg-primary/5">
-                      <Label className="text-[9px] uppercase font-bold text-muted-foreground">रूट / क्षेत्र</Label>
-                      <p className="text-sm font-bold">{selectedReport.fullData.fieldRoute}</p>
+                    <div className="space-y-0.5">
+                      <p className="text-[9px] font-bold text-muted-foreground uppercase">नाव</p>
+                      <p className="text-sm font-bold">{selectedReport.fullData.name || "N/A"}</p>
                     </div>
-                    <div className="p-3 border rounded-xl bg-primary/5">
-                      <Label className="text-[9px] uppercase font-bold text-muted-foreground">वाहन क्रमांक</Label>
-                      <p className="text-sm font-bold">{selectedReport.fullData.vehicleNumber}</p>
+                    <div className="space-y-0.5">
+                      <p className="text-[9px] font-bold text-muted-foreground uppercase">आयडी</p>
+                      <p className="text-sm font-bold">{selectedReport.fullData.idNumber || "N/A"}</p>
                     </div>
-                    <div className="p-3 border rounded-xl bg-primary/5">
-                      <Label className="text-[9px] uppercase font-bold text-muted-foreground">एकूण KM</Label>
-                      <p className="text-sm font-bold">{selectedReport.fullData.totalKm} KM</p>
+                    <div className="space-y-0.5">
+                      <p className="text-[9px] font-bold text-muted-foreground uppercase">पदनाम</p>
+                      <p className="text-sm font-bold">{selectedReport.fullData.designation || "N/A"}</p>
                     </div>
-                    <div className="p-3 border rounded-xl bg-primary/5">
-                      <Label className="text-[9px] uppercase font-bold text-muted-foreground">वेळ</Label>
-                      <p className="text-sm font-bold">{selectedReport.fullData.fieldTimeFrom} - {selectedReport.fullData.fieldTimeTo}</p>
+                    <div className="space-y-0.5">
+                      <p className="text-[9px] font-bold text-muted-foreground uppercase">शिफ्ट</p>
+                      <p className="text-sm font-bold">{selectedReport.fullData.shift || "N/A"}</p>
                     </div>
                   </div>
-
-                  <Separator />
-                  <h4 className="text-lg font-bold">केंद्रांची भेट माहिती (Center Visits)</h4>
-                  
-                  {selectedReport.fullData.centerVisits?.map((visit: any, idx: number) => (
-                    <Card key={idx} className="border border-primary/10 mb-4">
-                      <CardContent className="p-4 space-y-4">
-                        <div className="flex justify-between items-start border-b pb-2">
-                          <h5 className="font-bold text-primary">{idx + 1}. {visit.name}</h5>
-                          <Badge variant="outline" className="text-[10px]">{visit.topic}</Badge>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div className="space-y-1">
-                            <Label className="text-[10px] uppercase font-bold text-muted-foreground">निरीक्षण व समस्या</Label>
-                            <p className="text-xs">{visit.observation}</p>
-                          </div>
-                          <div className="space-y-1">
-                            <Label className="text-[10px] uppercase font-bold text-muted-foreground">सूचना</Label>
-                            <p className="text-xs">{visit.suggestion}</p>
-                          </div>
-                        </div>
-                        
-                        <div className="grid grid-cols-2 gap-4">
-                          <div className="bg-blue-50/50 p-3 rounded-lg border border-blue-100">
-                            <Label className="text-[9px] font-bold text-blue-700 block mb-2">Mix Milk Quality</Label>
-                            <p className="text-[10px]">Qty: {visit.mixQty}L | FAT: {visit.mixFat}% | SNF: {visit.mixSnf}% | Temp: {visit.mixTemp}°C</p>
-                          </div>
-                          <div className="bg-green-50/50 p-3 rounded-lg border border-green-100">
-                            <Label className="text-[9px] font-bold text-green-700 block mb-2">Cow Milk Quality</Label>
-                            <p className="text-[10px]">Qty: {visit.cowQty}L | FAT: {visit.cowFat}% | SNF: {visit.cowSnf}% | Temp: {visit.cowTemp}°C</p>
-                          </div>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-4">
-                          <div className="space-y-1">
-                            <Label className="text-[9px] font-bold uppercase text-muted-foreground">स्वच्छता (Compliance)</Label>
-                            <div className="flex flex-wrap gap-1">
-                              {visit.compliance?.map((c: string) => (
-                                <Badge key={c} variant="outline" className="text-[8px]">{c}</Badge>
-                              ))}
-                            </div>
-                          </div>
-                          <div className="space-y-1">
-                            <Label className="text-[9px] font-bold uppercase text-muted-foreground">उपकरणे (Equipment)</Label>
-                            <div className="flex flex-wrap gap-1">
-                              {visit.equipment?.map((e: string) => (
-                                <Badge key={e} variant="outline" className="text-[8px]">{e}</Badge>
-                              ))}
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <div className="space-y-1 bg-muted/10 p-2 rounded">
-                          <Label className="text-[9px] font-bold uppercase">शेरा (Remark)</Label>
-                          <p className="text-xs italic">{visit.remark}</p>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
                 </div>
               )}
 
-              {selectedReport?.type === 'Daily Office Work' && selectedReport?.fullData && (
-                <div className="space-y-6">
+              {/* FIELD VISIT DATA */}
+              {selectedReport?.type === 'Field Visit' && selectedReport?.fullData && (
+                <div className="space-y-8">
                   <div className="space-y-3">
-                    <h5 className="font-bold">केलेली कामे (Office Tasks)</h5>
-                    <div className="flex flex-wrap gap-2">
+                    <h4 className="text-[10px] font-bold uppercase tracking-widest text-primary flex items-center gap-2 border-b pb-1">
+                      <Truck className="h-4 w-4" /> ३. रूट व वाहन तपशील (Route & Vehicle)
+                    </h4>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div className="p-3 border rounded-xl bg-muted/5">
+                        <p className="text-[9px] uppercase font-bold text-muted-foreground">रूट / क्षेत्र</p>
+                        <p className="text-sm font-bold">{selectedReport.fullData.fieldRoute}</p>
+                      </div>
+                      <div className="p-3 border rounded-xl bg-muted/5">
+                        <p className="text-[9px] uppercase font-bold text-muted-foreground">वाहन क्रमांक</p>
+                        <p className="text-sm font-bold">{selectedReport.fullData.vehicleNumber}</p>
+                      </div>
+                      <div className="p-3 border rounded-xl bg-muted/5">
+                        <p className="text-[9px] uppercase font-bold text-muted-foreground">एकूण KM</p>
+                        <p className="text-sm font-bold">{selectedReport.fullData.totalKm} KM</p>
+                      </div>
+                      <div className="p-3 border rounded-xl bg-muted/5">
+                        <p className="text-[9px] uppercase font-bold text-muted-foreground">वेळ</p>
+                        <p className="text-sm font-bold">{selectedReport.fullData.fieldTimeFrom} ते {selectedReport.fullData.fieldTimeTo}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <h4 className="text-[10px] font-bold uppercase tracking-widest text-primary flex items-center gap-2 border-b pb-1">
+                      <MapPin className="h-4 w-4" /> ४. केंद्रांची भेट माहिती (Center Visits)
+                    </h4>
+                    {selectedReport.fullData.centerVisits?.map((visit: any, idx: number) => (
+                      <Card key={idx} className="border border-muted shadow-none bg-white p-0 overflow-hidden">
+                        <div className="bg-primary/5 px-4 py-2 border-b flex justify-between items-center">
+                          <h5 className="font-bold text-sm text-primary">{idx + 1}. {visit.name}</h5>
+                          <span className="text-[10px] font-bold uppercase text-muted-foreground">{visit.topic}</span>
+                        </div>
+                        <CardContent className="p-4 space-y-5">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-1">
+                              <p className="text-[9px] uppercase font-bold text-muted-foreground">निरीक्षण व समस्या</p>
+                              <p className="text-xs font-medium">{visit.observation}</p>
+                            </div>
+                            <div className="space-y-1">
+                              <p className="text-[9px] uppercase font-bold text-muted-foreground">सूचना</p>
+                              <p className="text-xs font-medium">{visit.suggestion}</p>
+                            </div>
+                          </div>
+                          
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="bg-blue-50/50 p-3 rounded-lg border border-blue-100 space-y-2">
+                              <p className="text-[9px] font-bold text-blue-700 uppercase">Mix Milk Quality</p>
+                              <div className="grid grid-cols-4 gap-2 text-[10px] font-bold">
+                                <div><span className="text-muted-foreground font-normal">Qty:</span> {visit.mixQty}L</div>
+                                <div><span className="text-muted-foreground font-normal">FAT:</span> {visit.mixFat}%</div>
+                                <div><span className="text-muted-foreground font-normal">SNF:</span> {visit.mixSnf}%</div>
+                                <div><span className="text-muted-foreground font-normal">Temp:</span> {visit.mixTemp}°C</div>
+                              </div>
+                            </div>
+                            <div className="bg-green-50/50 p-3 rounded-lg border border-green-100 space-y-2">
+                              <p className="text-[9px] font-bold text-green-700 uppercase">Cow Milk Quality</p>
+                              <div className="grid grid-cols-4 gap-2 text-[10px] font-bold">
+                                <div><span className="text-muted-foreground font-normal">Qty:</span> {visit.cowQty}L</div>
+                                <div><span className="text-muted-foreground font-normal">FAT:</span> {visit.cowFat}%</div>
+                                <div><span className="text-muted-foreground font-normal">SNF:</span> {visit.cowSnf}%</div>
+                                <div><span className="text-muted-foreground font-normal">Temp:</span> {visit.cowTemp}°C</div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-1.5">
+                              <p className="text-[9px] font-bold uppercase text-muted-foreground">स्वच्छता (Compliance)</p>
+                              <div className="flex flex-wrap gap-1.5">
+                                {visit.compliance?.length > 0 ? visit.compliance.map((c: string) => (
+                                  <div key={c} className="text-[9px] font-bold bg-muted px-2 py-0.5 rounded border">
+                                    {c} {visit.complianceRemarks?.[c] && <span className="text-primary font-normal ml-1">({visit.complianceRemarks[c]})</span>}
+                                  </div>
+                                )) : <span className="text-[9px] text-muted-foreground italic">No compliance issues</span>}
+                              </div>
+                            </div>
+                            <div className="space-y-1.5">
+                              <p className="text-[9px] font-bold uppercase text-muted-foreground">उपकरणे (Equipment Check)</p>
+                              <div className="flex flex-wrap gap-1.5">
+                                {visit.equipment?.length > 0 ? visit.equipment.map((e: string) => (
+                                  <div key={e} className="text-[9px] font-bold bg-muted px-2 py-0.5 rounded border">
+                                    {e} {visit.equipmentRemarks?.[e] && <span className="text-primary font-normal ml-1">({visit.equipmentRemarks[e]})</span>}
+                                  </div>
+                                )) : <span className="text-[9px] text-muted-foreground italic">No equipment issues</span>}
+                              </div>
+                            </div>
+                          </div>
+                          
+                          {visit.remark && (
+                            <div className="bg-muted/30 p-2.5 rounded border border-dashed text-[10px] italic leading-relaxed">
+                              <span className="font-bold text-primary not-italic uppercase mr-2">शेरा:</span> {visit.remark}
+                            </div>
+                          )}
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* DAILY OFFICE WORK DATA */}
+              {selectedReport?.type === 'Daily Office Work' && selectedReport?.fullData && (
+                <div className="space-y-8">
+                  <div className="space-y-4">
+                    <h4 className="text-[10px] font-bold uppercase tracking-widest text-primary flex items-center gap-2 border-b pb-1">
+                      <Briefcase className="h-4 w-4" /> ३. ऑफिस वर्क तपशील (Office Tasks)
+                    </h4>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                       {selectedReport.fullData.officeTasks?.map((task: string) => (
-                        <Badge key={task} className="bg-blue-100 text-blue-700 hover:bg-blue-100 border-none">{task}</Badge>
+                        <div key={task} className="flex items-center gap-2 p-2 border rounded-lg bg-blue-50/30 text-[11px] font-bold text-primary">
+                          <CheckCircle2 className="h-3 w-3" /> {task}
+                        </div>
                       ))}
                     </div>
                   </div>
+
                   <div className="space-y-2">
-                    <Label className="text-[10px] font-bold uppercase text-muted-foreground">कामाचा सविस्तर तपशील</Label>
-                    <p className="text-sm bg-muted/10 p-4 rounded-xl border leading-relaxed">{selectedReport.fullData.officeTaskDetail}</p>
+                    <p className="text-[9px] font-bold uppercase text-muted-foreground">केलेल्या कामाचा सविस्तर तपशील</p>
+                    <div className="p-4 rounded-xl border bg-muted/5 text-sm leading-relaxed whitespace-pre-wrap italic">
+                      {selectedReport.fullData.officeTaskDetail || "N/A"}
+                    </div>
                   </div>
                   
                   {selectedReport.fullData.meetings && selectedReport.fullData.meetings.length > 0 && (
                     <div className="space-y-4">
-                      <h5 className="font-bold">महत्वाच्या भेटी / बैठका</h5>
+                      <h4 className="text-[10px] font-bold uppercase tracking-widest text-primary flex items-center gap-2 border-b pb-1">
+                        <MessageSquare className="h-4 w-4" /> ४. महत्वाच्या भेटी / बैठका (Meetings)
+                      </h4>
                       {selectedReport.fullData.meetings.map((m: any, idx: number) => (
-                        <div key={idx} className="p-3 border rounded-xl bg-muted/5 space-y-2">
-                          <div className="flex justify-between border-b pb-1">
-                            <p className="font-bold text-sm text-primary">{m.person} ({m.org})</p>
-                            <p className="text-[10px] font-bold">{m.from} - {m.to}</p>
+                        <div key={idx} className="p-4 border rounded-xl bg-muted/5 space-y-3">
+                          <div className="flex justify-between border-b pb-2">
+                            <p className="font-bold text-sm text-primary">{m.person} <span className="text-muted-foreground font-medium text-xs">({m.org})</span></p>
+                            <p className="text-[10px] font-bold bg-muted px-2 py-0.5 rounded">{m.from} - {m.to}</p>
                           </div>
-                          <p className="text-xs font-semibold">विषय: {m.subject}</p>
-                          <p className="text-xs text-muted-foreground italic">निर्णय: {m.decision}</p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-1">
+                              <p className="text-[9px] font-bold uppercase text-muted-foreground">चर्चेचा विषय</p>
+                              <p className="text-xs font-semibold">{m.subject}</p>
+                            </div>
+                            <div className="space-y-1">
+                              <p className="text-[9px] font-bold uppercase text-muted-foreground">निर्णय / कार्यवाही</p>
+                              <p className="text-xs text-muted-foreground italic">{m.decision}</p>
+                            </div>
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -435,46 +480,56 @@ export default function ReportsPage() {
                 </div>
               )}
 
+              {/* DAILY TASK DATA */}
               {selectedReport?.type === 'Daily Task' && (
                 <div className="space-y-6">
-                  <h4 className="text-lg font-bold border-b pb-2">पूर्ण केलेल्या कामाचा तपशील</h4>
-                  <div className="p-6 rounded-2xl bg-orange-50/50 border border-orange-100">
-                    <p className="text-sm text-muted-foreground leading-relaxed italic">
+                  <h4 className="text-[10px] font-bold uppercase tracking-widest text-primary flex items-center gap-2 border-b pb-1">
+                    <ListTodo className="h-4 w-4" /> ३. पूर्ण केलेल्या कामाचा तपशील
+                  </h4>
+                  <div className="p-6 rounded-2xl bg-orange-50/30 border border-orange-100 shadow-inner">
+                    <p className="text-sm text-foreground leading-relaxed italic">
                       {selectedReport.summary}
                     </p>
                   </div>
                 </div>
               )}
 
-              {/* Day Summary Footer */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border-t pt-6">
-                <div className="space-y-1">
-                  <Label className="text-[9px] font-bold text-green-600 uppercase tracking-widest">आजची कामगिरी</Label>
-                  <p className="text-xs font-medium">{selectedReport?.fullData?.achievements || "N/A"}</p>
-                </div>
-                <div className="space-y-1">
-                  <Label className="text-[9px] font-bold text-red-600 uppercase tracking-widest">समस्या</Label>
-                  <p className="text-xs font-medium">{selectedReport?.fullData?.problems || "N/A"}</p>
-                </div>
-                <div className="space-y-1">
-                  <Label className="text-[9px] font-bold text-blue-600 uppercase tracking-widest">केलेली कार्यवाही</Label>
-                  <p className="text-xs font-medium">{selectedReport?.fullData?.actionsTaken || "N/A"}</p>
+              {/* DAY SUMMARY SECTION */}
+              <div className="space-y-4">
+                <h4 className="text-[10px] font-bold uppercase tracking-widest text-primary flex items-center gap-2 border-b pb-1">
+                  <Activity className="h-4 w-4" /> {selectedReport?.type === 'Daily Task' ? '४' : '५'}. दिवसाचा सारांश (Day Summary)
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="space-y-2 p-3 rounded-xl bg-green-50/30 border border-green-100">
+                    <p className="text-[9px] font-bold text-green-700 uppercase tracking-widest">आजची प्रमुख कामगिरी</p>
+                    <p className="text-xs font-medium leading-relaxed italic">{selectedReport?.fullData?.achievements || "N/A"}</p>
+                  </div>
+                  <div className="space-y-2 p-3 rounded-xl bg-red-50/30 border border-red-100">
+                    <p className="text-[9px] font-bold text-red-700 uppercase tracking-widest">आलेल्या समस्या</p>
+                    <p className="text-xs font-medium leading-relaxed italic">{selectedReport?.fullData?.problems || "N/A"}</p>
+                  </div>
+                  <div className="space-y-2 p-3 rounded-xl bg-blue-50/30 border border-blue-100">
+                    <p className="text-[9px] font-bold text-blue-700 uppercase tracking-widest">केलेली कार्यवाही</p>
+                    <p className="text-xs font-medium leading-relaxed italic">{selectedReport?.fullData?.actionsTaken || "N/A"}</p>
+                  </div>
                 </div>
               </div>
 
-              <div className="pt-8 flex justify-end">
-                <div className="text-right border-t-2 border-primary pt-2 min-w-[250px]">
-                  <Label className="text-[10px] font-bold uppercase text-muted-foreground">सुपरवायझरची स्वाक्षरी</Label>
-                  <p className="text-xl font-bold mt-1 text-foreground">
+              {/* SUPERVISOR SIGNATURE */}
+              <div className="pt-12 flex justify-end print:pt-16">
+                <div className="text-center border-t-2 border-primary pt-2 min-w-[250px]">
+                  <p className="text-[10px] font-bold uppercase text-muted-foreground tracking-widest">सुपरवायझरची स्वाक्षरी</p>
+                  <p className="text-xl font-bold mt-2 text-foreground font-headline">
                     {selectedReport?.fullData?.supervisorName || "Vikram Shinde"}
                   </p>
+                  <p className="text-[9px] text-muted-foreground mt-1">(Collection Supervisor)</p>
                 </div>
               </div>
             </div>
           </ScrollArea>
 
           <DialogFooter className="p-6 border-t gap-3 no-print">
-            <Button variant="outline" onClick={() => setIsViewOpen(false)} className="font-bold h-11 px-8 rounded-xl">
+            <Button variant="outline" onClick={() => setIsViewOpen(false)} className="font-bold h-11 px-8 rounded-xl shadow-sm">
               बंद करा (Close)
             </Button>
             <Button onClick={() => handleDownloadPDF(selectedReport)} className="font-bold bg-primary gap-2 h-11 px-8 rounded-xl shadow-lg shadow-primary/20">
