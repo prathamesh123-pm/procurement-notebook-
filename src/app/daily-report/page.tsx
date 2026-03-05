@@ -5,11 +5,10 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
@@ -23,8 +22,10 @@ interface CenterVisit {
   suggestion: string;
   objectives: string[];
   compliance: string[];
-  snf: string;
-  fat: string;
+  mixFat: string;
+  mixSnf: string;
+  cowFat: string;
+  cowSnf: string;
   temp: string;
   equipment: string[];
 }
@@ -44,8 +45,10 @@ export default function DailyReportPage() {
     suggestion: "",
     objectives: [],
     compliance: [],
-    snf: "",
-    fat: "",
+    mixFat: "",
+    mixSnf: "",
+    cowFat: "",
+    cowSnf: "",
     temp: "",
     equipment: []
   });
@@ -292,7 +295,7 @@ export default function DailyReportPage() {
                     <Input type="time" value={formData.meetingTimeFrom} onChange={e => setFormData({...formData, meetingTimeFrom: e.target.value})} />
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-xs font-bold uppercase">वेळ पर्यंत</Label>
+                    <Label className="text-xs font-bold uppercase">ते</Label>
                     <Input type="time" value={formData.meetingTimeTo} onChange={e => setFormData({...formData, meetingTimeTo: e.target.value})} />
                   </div>
                 </div>
@@ -371,9 +374,9 @@ export default function DailyReportPage() {
               <h3 className="text-xl font-bold flex items-center gap-2">
                 <MapPin className="h-5 w-5 text-primary" /> केंद्रांची माहिती (Center Visits)
               </h3>
-              <Button onClick={addCenter} size="sm" className="gap-2 font-bold shadow-sm">
+              <button onClick={addCenter} className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg font-bold text-sm shadow-sm hover:bg-primary/90 transition-colors">
                 <Plus className="h-4 w-4" /> केंद्राची माहिती जोडा
-              </Button>
+              </button>
             </div>
 
             {formData.centerVisits.map((visit, index) => (
@@ -444,20 +447,36 @@ export default function DailyReportPage() {
 
                   <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
                     {/* Quality Metrics */}
-                    <div className="lg:col-span-3 space-y-3 p-3 rounded-lg bg-blue-50/40 border border-blue-100">
+                    <div className="lg:col-span-4 space-y-3 p-3 rounded-lg bg-blue-50/40 border border-blue-100">
                       <Label className="text-[10px] font-bold text-blue-700 flex items-center gap-1.5 uppercase tracking-wider">
                         <Activity className="h-3.5 w-3.5" /> गुणवत्ता तपासणी
                       </Label>
-                      <div className="grid grid-cols-1 gap-2">
-                        <div className="flex items-center justify-between gap-2">
-                          <Label className="text-[10px] font-bold">SNF (%)</Label>
-                          <Input type="number" step="0.1" value={visit.snf} onChange={e => updateCenter(visit.id, { snf: e.target.value })} className="h-8 w-20 px-2" />
+                      <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                        <div className="space-y-1 col-span-2 border-b pb-1 mb-1">
+                           <span className="text-[9px] font-bold text-muted-foreground uppercase">मिश्र दूध (Mix Milk)</span>
                         </div>
-                        <div className="flex items-center justify-between gap-2">
-                          <Label className="text-[10px] font-bold">FAT (%)</Label>
-                          <Input type="number" step="0.1" value={visit.fat} onChange={e => updateCenter(visit.id, { fat: e.target.value })} className="h-8 w-20 px-2" />
+                        <div className="flex flex-col gap-1">
+                          <Label className="text-[9px] font-bold">Avg. FAT (%)</Label>
+                          <Input type="number" step="0.1" value={visit.mixFat} onChange={e => updateCenter(visit.id, { mixFat: e.target.value })} className="h-8 px-2" />
                         </div>
-                        <div className="flex items-center justify-between gap-2">
+                        <div className="flex flex-col gap-1">
+                          <Label className="text-[9px] font-bold">Avg. SNF (%)</Label>
+                          <Input type="number" step="0.1" value={visit.mixSnf} onChange={e => updateCenter(visit.id, { mixSnf: e.target.value })} className="h-8 px-2" />
+                        </div>
+                        
+                        <div className="space-y-1 col-span-2 border-b pb-1 mt-1 mb-1">
+                           <span className="text-[9px] font-bold text-muted-foreground uppercase">गाय दूध (Cow Milk)</span>
+                        </div>
+                        <div className="flex flex-col gap-1">
+                          <Label className="text-[9px] font-bold">Avg. FAT (%)</Label>
+                          <Input type="number" step="0.1" value={visit.cowFat} onChange={e => updateCenter(visit.id, { cowFat: e.target.value })} className="h-8 px-2" />
+                        </div>
+                        <div className="flex flex-col gap-1">
+                          <Label className="text-[9px] font-bold">Avg. SNF (%)</Label>
+                          <Input type="number" step="0.1" value={visit.cowSnf} onChange={e => updateCenter(visit.id, { cowSnf: e.target.value })} className="h-8 px-2" />
+                        </div>
+                        
+                        <div className="flex items-center justify-between gap-2 col-span-2 mt-2 pt-2 border-t">
                           <Label className="text-[10px] font-bold">Temp (°C)</Label>
                           <Input type="number" step="0.1" value={visit.temp} onChange={e => updateCenter(visit.id, { temp: e.target.value })} className="h-8 w-20 px-2" />
                         </div>
@@ -465,11 +484,11 @@ export default function DailyReportPage() {
                     </div>
 
                     {/* FSSAI & Cleanliness */}
-                    <div className="lg:col-span-5 space-y-3 p-3 rounded-lg bg-green-50/40 border border-green-100">
+                    <div className="lg:col-span-4 space-y-3 p-3 rounded-lg bg-green-50/40 border border-green-100">
                       <Label className="text-[10px] font-bold text-green-700 flex items-center gap-1.5 uppercase tracking-wider">
                         <ShieldCheck className="h-3.5 w-3.5" /> स्वच्छता व FSSAI तपासणी
                       </Label>
-                      <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                      <div className="grid grid-cols-1 gap-y-2">
                         {[
                           "परिसर स्वच्छता",
                           "भांडी स्वच्छता",
@@ -495,7 +514,7 @@ export default function DailyReportPage() {
                       <Label className="text-[10px] font-bold text-amber-700 flex items-center gap-1.5 uppercase tracking-wider">
                         <Settings className="h-3.5 w-3.5" /> उपकरण तपासणी
                       </Label>
-                      <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                      <div className="grid grid-cols-1 gap-y-2">
                         {[
                           "वजन काटा",
                           "फॅट मशीन",
