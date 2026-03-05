@@ -12,7 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
-import { ClipboardCheck, User, Briefcase, FileText, CheckCircle2, Truck, MapPin, Activity, Trash2, Plus, ShieldCheck, Settings, Target, MessageSquare, PhoneCall, Mail, IceCream, Database, AlertTriangle } from "lucide-react"
+import { ClipboardCheck, User, Briefcase, FileText, CheckCircle2, Truck, MapPin, Activity, Trash2, Plus, ShieldCheck, Settings, Target, MessageSquare, PhoneCall, Mail, IceCream, Database, AlertTriangle, SearchCode } from "lucide-react"
 
 interface CenterVisit {
   id: string;
@@ -168,16 +168,16 @@ export default function DailyReportPage() {
   if (!mounted) return null
 
   return (
-    <div className="space-y-4 max-w-6xl mx-auto w-full pb-10">
-      <div className="flex flex-col gap-0.5">
-        <h2 className="text-2xl font-headline font-bold text-foreground tracking-tight flex items-center gap-2">
-          <ClipboardCheck className="h-6 w-6 text-primary" /> 
+    <div className="space-y-4 max-w-7xl mx-auto w-full pb-10">
+      <div className="flex flex-col gap-0.5 px-4 md:px-0">
+        <h2 className="text-xl md:text-2xl font-headline font-bold text-foreground tracking-tight flex items-center gap-2">
+          <ClipboardCheck className="h-5 md:h-6 w-5 md:w-6 text-primary" /> 
           संकलन विभाग - दैनिक कामकाज अहवाल
         </h2>
         <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">Collection Department - Daily Work Report</p>
       </div>
 
-      <Card className="border-none shadow-sm bg-white overflow-hidden">
+      <Card className="border-none shadow-sm bg-white overflow-hidden mx-4 md:mx-0">
         <CardHeader className="bg-primary/5 border-b py-2 px-4">
           <CardTitle className="text-sm font-bold flex items-center gap-2">
             <User className="h-4 w-4 text-primary" /> १) प्रतिनिधीची मूलभूत माहिती (Basic Info)
@@ -220,7 +220,7 @@ export default function DailyReportPage() {
         </CardContent>
       </Card>
 
-      <Tabs value={activeReportType} onValueChange={setActiveReportType} className="w-full">
+      <Tabs value={activeReportType} onValueChange={setActiveReportType} className="w-full px-4 md:px-0">
         <TabsList className="grid w-full grid-cols-2 h-10 bg-muted/30 p-1 rounded-lg">
           <TabsTrigger value="office" className="rounded-md font-bold text-xs gap-1.5 data-[state=active]:bg-white data-[state=active]:shadow-sm">
             <Briefcase className="h-3.5 w-3.5" /> Office Work Report
@@ -533,7 +533,7 @@ export default function DailyReportPage() {
         </TabsContent>
       </Tabs>
 
-      <Card className="border-none shadow-sm bg-white overflow-hidden">
+      <Card className="border-none shadow-sm bg-white overflow-hidden mx-4 md:mx-0">
         <CardHeader className="bg-primary/5 border-b py-2 px-4">
           <CardTitle className="text-sm font-bold">भाग क: दिवसाचा सारांश (Day Summary)</CardTitle>
         </CardHeader>
