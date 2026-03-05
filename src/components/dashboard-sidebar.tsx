@@ -79,7 +79,7 @@ export function DashboardSidebar() {
           <SidebarGroupContent>
             <SidebarMenu className="px-3 gap-1">
               {items.map((item) => {
-                const isActive = pathname === item.url || (item.url !== '/dashboard' && pathname.startsWith(item.url));
+                const isActive = mounted && (pathname === item.url || (item.url !== '/dashboard' && pathname?.startsWith(item.url)));
                 return (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton

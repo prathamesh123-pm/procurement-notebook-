@@ -170,8 +170,8 @@ export default function RouteDetailsPage() {
 
   const filteredSuppliers = useMemo(() => {
     return suppliers.filter(s => 
-      s.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-      s.id.toLowerCase().includes(searchQuery.toLowerCase())
+      (s.name?.toLowerCase() || "").includes(searchQuery.toLowerCase()) || 
+      (s.id?.toLowerCase() || "").includes(searchQuery.toLowerCase())
     )
   }, [suppliers, searchQuery])
 
