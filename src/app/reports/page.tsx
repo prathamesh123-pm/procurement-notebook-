@@ -285,43 +285,45 @@ export default function ReportsPage() {
                 <p className="text-[8px] font-bold uppercase tracking-widest text-muted-foreground">Collection Department - Daily Work Report</p>
               </div>
 
-              {/* SECTION 1: BASIC INFO (FOR ALL TYPES) */}
-              <div className="space-y-1">
-                <h3 className="text-[10px] font-bold uppercase border-l-4 border-black pl-2 mb-1.5 bg-muted/20 py-1">१) प्रतिनिधीची मूलभूत माहिती (Basic Info)</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-2 border p-3 rounded-md">
-                  <div className="space-y-0.5">
-                    <Label className="text-[8px] font-bold uppercase text-muted-foreground">नाव (Name)</Label>
-                    <p className="text-[11px] font-bold border-b-2 border-muted pb-0.5">{selectedReport?.fullData?.name || "N/A"}</p>
-                  </div>
-                  <div className="space-y-0.5">
-                    <Label className="text-[8px] font-bold uppercase text-muted-foreground">आयडी (ID)</Label>
-                    <p className="text-[11px] font-bold border-b-2 border-muted pb-0.5">{selectedReport?.fullData?.idNumber || "N/A"}</p>
-                  </div>
-                  <div className="space-y-0.5">
-                    <Label className="text-[8px] font-bold uppercase text-muted-foreground">पदनाम (Designation)</Label>
-                    <p className="text-[11px] font-bold border-b-2 border-muted pb-0.5">{selectedReport?.fullData?.designation || "N/A"}</p>
-                  </div>
-                  <div className="space-y-0.5">
-                    <Label className="text-[8px] font-bold uppercase text-muted-foreground">मोबाईल (Mobile)</Label>
-                    <p className="text-[11px] font-bold border-b-2 border-muted pb-0.5">{selectedReport?.fullData?.mobile || "N/A"}</p>
-                  </div>
-                  <div className="space-y-0.5">
-                    <Label className="text-[8px] font-bold uppercase text-muted-foreground">तारीख (Date)</Label>
-                    <p className="text-[11px] font-bold border-b-2 border-muted pb-0.5">{selectedReport?.date || "N/A"}</p>
-                  </div>
-                  {selectedReport?.fullData?.shift && (
+              {/* SECTION 1: BASIC INFO (FOR OFFICE AND FIELD TYPES) */}
+              {selectedReport?.type !== 'Daily Task' && (
+                <div className="space-y-1">
+                  <h3 className="text-[10px] font-bold uppercase border-l-4 border-black pl-2 mb-1.5 bg-muted/20 py-1">१) प्रतिनिधीची मूलभूत माहिती (Basic Info)</h3>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-2 border p-3 rounded-md">
                     <div className="space-y-0.5">
-                      <Label className="text-[8px] font-bold uppercase text-muted-foreground">शिफ्ट (Shift)</Label>
-                      <p className="text-[11px] font-bold border-b-2 border-muted pb-0.5">{selectedReport?.fullData?.shift === 'Sakal' ? 'सकाळ (Morning)' : 'संध्या (Evening)'}</p>
+                      <Label className="text-[8px] font-bold uppercase text-muted-foreground">नाव (Name)</Label>
+                      <p className="text-[11px] font-bold border-b-2 border-muted pb-0.5">{selectedReport?.fullData?.name || "N/A"}</p>
                     </div>
-                  )}
+                    <div className="space-y-0.5">
+                      <Label className="text-[8px] font-bold uppercase text-muted-foreground">आयडी (ID)</Label>
+                      <p className="text-[11px] font-bold border-b-2 border-muted pb-0.5">{selectedReport?.fullData?.idNumber || "N/A"}</p>
+                    </div>
+                    <div className="space-y-0.5">
+                      <Label className="text-[8px] font-bold uppercase text-muted-foreground">पदनाम (Designation)</Label>
+                      <p className="text-[11px] font-bold border-b-2 border-muted pb-0.5">{selectedReport?.fullData?.designation || "N/A"}</p>
+                    </div>
+                    <div className="space-y-0.5">
+                      <Label className="text-[8px] font-bold uppercase text-muted-foreground">मोबाईल (Mobile)</Label>
+                      <p className="text-[11px] font-bold border-b-2 border-muted pb-0.5">{selectedReport?.fullData?.mobile || "N/A"}</p>
+                    </div>
+                    <div className="space-y-0.5">
+                      <Label className="text-[8px] font-bold uppercase text-muted-foreground">तारीख (Date)</Label>
+                      <p className="text-[11px] font-bold border-b-2 border-muted pb-0.5">{selectedReport?.date || "N/A"}</p>
+                    </div>
+                    {selectedReport?.fullData?.shift && (
+                      <div className="space-y-0.5">
+                        <Label className="text-[8px] font-bold uppercase text-muted-foreground">शिफ्ट (Shift)</Label>
+                        <p className="text-[11px] font-bold border-b-2 border-muted pb-0.5">{selectedReport?.fullData?.shift === 'Sakal' ? 'सकाळ (Morning)' : 'संध्या (Evening)'}</p>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* DAILY TASK SPECIFIC VIEW */}
               {selectedReport?.type === 'Daily Task' && (
                 <div className="space-y-4">
-                   <h3 className="text-[10px] font-bold uppercase border-l-4 border-black pl-2 mb-1.5 bg-muted/20 py-1">२) टास्क तपशील (Task Details)</h3>
+                   <h3 className="text-[10px] font-bold uppercase border-l-4 border-black pl-2 mb-1.5 bg-muted/20 py-1">टास्क तपशील (Task Details)</h3>
                    <div className="grid grid-cols-2 gap-4">
                       <div className="p-4 rounded-xl bg-primary/5 border border-primary/10 space-y-1">
                         <Label className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground">Supplier Name / गावल्याचे नाव</Label>
@@ -350,7 +352,6 @@ export default function ReportsPage() {
                       <div className="p-4 border-2 border-primary rounded-md text-[11px] min-h-[80px] leading-relaxed bg-primary/5 font-bold italic">
                         {selectedReport?.fullData?.remark || "शेरा उपलब्ध नाही."}
                       </div>
-                      <p className="text-[8px] text-muted-foreground font-bold italic">हा शेरा प्रक्रियेचा भाग म्हणून जतन केला गेला आहे.</p>
                    </div>
                 </div>
               )}
@@ -536,33 +537,35 @@ export default function ReportsPage() {
                 </div>
               )}
 
-              {/* SUMMARY SECTION */}
-              <div className="space-y-3 pt-4">
-                <h3 className="text-[10px] font-bold uppercase border-l-4 border-black pl-2 mb-1.5 bg-muted/20 py-1">दिवसाचा सारांश (Day Summary)</h3>
-                <div className="grid grid-cols-3 gap-4">
-                  <div className="space-y-1">
-                    <Label className="text-[8px] font-bold uppercase text-green-700">आजची प्रमुख कामगिरी (Achievements)</Label>
-                    <div className="p-2.5 border rounded-md text-[9px] min-h-[50px] italic bg-green-50/10">{selectedReport?.fullData?.achievements || "N/A"}</div>
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-[8px] font-bold uppercase text-red-700">आलेल्या समस्या (Problems)</Label>
-                    <div className="p-2.5 border rounded-md text-[9px] min-h-[50px] italic bg-red-50/10">{selectedReport?.fullData?.problems || "N/A"}</div>
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-[8px] font-bold uppercase text-blue-700">केलेली कार्यवाही (Actions Taken)</Label>
-                    <div className="p-2.5 border rounded-md text-[9px] min-h-[50px] italic bg-blue-50/10">{selectedReport?.fullData?.actionsTaken || "N/A"}</div>
-                  </div>
-                </div>
-
-                <div className="flex justify-end pt-8">
-                  <div className="text-center min-w-[200px]">
-                    <div className="border-b border-black mb-1 h-[30px] flex items-end justify-center">
-                       <span className="text-xs font-bold font-headline mb-0.5">{selectedReport?.fullData?.supervisorName}</span>
+              {/* SUMMARY SECTION (EXCLUDE FOR DAILY TASK) */}
+              {selectedReport?.type !== 'Daily Task' && (
+                <div className="space-y-3 pt-4">
+                  <h3 className="text-[10px] font-bold uppercase border-l-4 border-black pl-2 mb-1.5 bg-muted/20 py-1">दिवसाचा सारांश (Day Summary)</h3>
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="space-y-1">
+                      <Label className="text-[8px] font-bold uppercase text-green-700">आजची प्रमुख कामगिरी (Achievements)</Label>
+                      <div className="p-2.5 border rounded-md text-[9px] min-h-[50px] italic bg-green-50/10">{selectedReport?.fullData?.achievements || "N/A"}</div>
                     </div>
-                    <Label className="text-[9px] font-bold uppercase block">सुपरवायझरची स्वाक्षरी (Supervisor Signature)</Label>
+                    <div className="space-y-1">
+                      <Label className="text-[8px] font-bold uppercase text-red-700">आलेल्या समस्या (Problems)</Label>
+                      <div className="p-2.5 border rounded-md text-[9px] min-h-[50px] italic bg-red-50/10">{selectedReport?.fullData?.problems || "N/A"}</div>
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-[8px] font-bold uppercase text-blue-700">केलेली कार्यवाही (Actions Taken)</Label>
+                      <div className="p-2.5 border rounded-md text-[9px] min-h-[50px] italic bg-blue-50/10">{selectedReport?.fullData?.actionsTaken || "N/A"}</div>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end pt-8">
+                    <div className="text-center min-w-[200px]">
+                      <div className="border-b border-black mb-1 h-[30px] flex items-end justify-center">
+                         <span className="text-xs font-bold font-headline mb-0.5">{selectedReport?.fullData?.supervisorName}</span>
+                      </div>
+                      <Label className="text-[9px] font-bold uppercase block">सुपरवायझरची स्वाक्षरी (Supervisor Signature)</Label>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
             </div>
           </ScrollArea>
         </DialogContent>
