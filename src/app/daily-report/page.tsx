@@ -13,7 +13,7 @@ import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
-import { ClipboardCheck, User, Briefcase, FileText, CheckCircle2, Truck, MapPin, Activity, Camera, Clock } from "lucide-react"
+import { ClipboardCheck, User, Briefcase, FileText, CheckCircle2, Truck, MapPin, Activity, Camera, Clock, ShieldCheck, Sparkles } from "lucide-react"
 
 export default function DailyReportPage() {
   const { toast } = useToast()
@@ -52,9 +52,10 @@ export default function DailyReportPage() {
     fieldTimeFrom: "",
     fieldTimeTo: "",
     fieldObjectives: [] as string[],
+    complianceChecks: [] as string[],
     
-    visit1: { name: "", topic: "", observation: "", suggestion: "", media: false },
-    visit2: { name: "", topic: "", observation: "", suggestion: "", media: false },
+    visit1: { name: "", topic: "", observation: "", suggestion: "" },
+    visit2: { name: "", topic: "", observation: "", suggestion: "" },
     
     qcSnf: "",
     qcFat: "",
@@ -75,7 +76,7 @@ export default function DailyReportPage() {
     setMounted(true)
   }, [])
 
-  const handleCheckboxChange = (field: 'officeTasks' | 'fieldObjectives' | 'qcEquipment', value: string) => {
+  const handleCheckboxChange = (field: 'officeTasks' | 'fieldObjectives' | 'qcEquipment' | 'complianceChecks', value: string) => {
     setFormData(prev => ({
       ...prev,
       [field]: (prev[field] as string[]).includes(value)
@@ -264,7 +265,7 @@ export default function DailyReportPage() {
             </CardHeader>
             <CardContent className="p-6 space-y-8">
               <div className="space-y-4">
-                <h4 className="font-bold flex items-center gap-2 text-md text-primary">रूटवारीची माहिती</h4>
+                <h4 className="font-bold flex items-center gap-2 text-md text-primary">५) रूटवारीची माहिती</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   <div className="space-y-2">
                     <Label className="text-xs font-bold uppercase">आजचा रूट / क्षेत्र</Label>
@@ -308,7 +309,7 @@ export default function DailyReportPage() {
                 </div>
 
                 <div className="space-y-3">
-                  <Label className="text-xs font-bold uppercase">रूट उद्दिष्ट</Label>
+                  <Label className="text-xs font-bold uppercase flex items-center gap-1"><MapPin className="h-3 w-3" /> रूट उद्दिष्ट</Label>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                     {[
                       "दूध संकलन तपासणी",
@@ -333,7 +334,7 @@ export default function DailyReportPage() {
               <Separator />
 
               <div className="space-y-6">
-                <h4 className="font-bold flex items-center gap-2 text-md text-primary">भेटी / निरीक्षणे</h4>
+                <h4 className="font-bold flex items-center gap-2 text-md text-primary">६) भेटी / निरीक्षणे</h4>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                   <div className="space-y-4 border p-4 rounded-xl bg-muted/10">
                     <h5 className="font-bold text-sm border-b pb-2">भेट १</h5>
@@ -350,9 +351,9 @@ export default function DailyReportPage() {
                         <Label className="text-[10px] uppercase font-bold">निरीक्षण / समस्या</Label>
                         <Textarea value={formData.visit1.observation} onChange={e => setFormData({...formData, visit1: {...formData.visit1, observation: e.target.value}})} rows={2} />
                       </div>
-                      <div className="flex items-center gap-2 pt-2">
-                        <Checkbox id="v1-media" checked={formData.visit1.media} onCheckedChange={v => setFormData({...formData, visit1: {...formData.visit1, media: !!v}})} />
-                        <Label htmlFor="v1-media" className="text-xs flex items-center gap-1"><Camera className="h-3 w-3" /> फोटो / व्हिडिओ (हो)</Label>
+                      <div className="space-y-1">
+                        <Label className="text-[10px] uppercase font-bold">सूचना / शिफारस</Label>
+                        <Input value={formData.visit1.suggestion} onChange={e => setFormData({...formData, visit1: {...formData.visit1, suggestion: e.target.value}})} />
                       </div>
                     </div>
                   </div>
@@ -372,9 +373,9 @@ export default function DailyReportPage() {
                         <Label className="text-[10px] uppercase font-bold">निरीक्षण / समस्या</Label>
                         <Textarea value={formData.visit2.observation} onChange={e => setFormData({...formData, visit2: {...formData.visit2, observation: e.target.value}})} rows={2} />
                       </div>
-                      <div className="flex items-center gap-2 pt-2">
-                        <Checkbox id="v2-media" checked={formData.visit2.media} onCheckedChange={v => setFormData({...formData, visit2: {...formData.visit2, media: !!v}})} />
-                        <Label htmlFor="v2-media" className="text-xs flex items-center gap-1"><Camera className="h-3 w-3" /> फोटो / व्हिडिओ (हो)</Label>
+                      <div className="space-y-1">
+                        <Label className="text-[10px] uppercase font-bold">सूचना / शिफारस</Label>
+                        <Input value={formData.visit2.suggestion} onChange={e => setFormData({...formData, visit2: {...formData.visit2, suggestion: e.target.value}})} />
                       </div>
                     </div>
                   </div>
@@ -384,7 +385,31 @@ export default function DailyReportPage() {
               <Separator />
 
               <div className="space-y-6">
-                <h4 className="font-bold flex items-center gap-2 text-md text-primary">गुणवत्ता तपासणी (Quality Check)</h4>
+                <h4 className="font-bold flex items-center gap-2 text-md text-primary">स्वच्छता व FSSAI तपासणी</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {[
+                    "केंद्र परिसर स्वच्छता",
+                    "दूध साठवणूक भांडी स्वच्छता",
+                    "FSSAI लायसन्स डिस्प्ले",
+                    "वैयक्तिक स्वच्छता (कर्मचारी)",
+                    "पाण्याची उपलब्धता व स्वच्छता"
+                  ].map((check) => (
+                    <div key={check} className="flex items-center space-x-2 border p-3 rounded-lg bg-green-50/30">
+                      <Checkbox 
+                        id={`comp-${check}`} 
+                        checked={formData.complianceChecks.includes(check)} 
+                        onCheckedChange={() => handleCheckboxChange('complianceChecks', check)} 
+                      />
+                      <Label htmlFor={`comp-${check}`} className="text-xs font-medium">{check}</Label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <Separator />
+
+              <div className="space-y-6">
+                <h4 className="font-bold flex items-center gap-2 text-md text-primary">७) गुणवत्ता व उपकरण तपासणी</h4>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="space-y-2">
                     <Label className="text-xs font-bold uppercase flex items-center gap-1"><Activity className="h-3 w-3 text-blue-500" /> SNF (%)</Label>
@@ -420,6 +445,10 @@ export default function DailyReportPage() {
                     ))}
                   </div>
                 </div>
+                <div className="space-y-2">
+                  <Label className="text-xs font-bold uppercase">निरीक्षण निष्कर्ष</Label>
+                  <Textarea value={formData.qcConclusion} onChange={e => setFormData({...formData, qcConclusion: e.target.value})} placeholder="तपासणीचा निष्कर्ष..." />
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -433,7 +462,7 @@ export default function DailyReportPage() {
         </CardHeader>
         <CardContent className="p-6 space-y-6">
           <div className="space-y-2">
-            <Label className="text-xs font-bold uppercase text-green-600">आजची प्रमुख कामगिरी (Achievements)</Label>
+            <Label className="text-xs font-bold uppercase text-green-600">८) आजची प्रमुख कामगिरी (Achievements)</Label>
             <Textarea value={formData.achievements} onChange={e => setFormData({...formData, achievements: e.target.value})} placeholder="उदा. १. कामगिरी १, २. कामगिरी २" />
           </div>
           <div className="space-y-2">
@@ -449,7 +478,7 @@ export default function DailyReportPage() {
             <Textarea value={formData.tomorrowFollowUp} onChange={e => setFormData({...formData, tomorrowFollowUp: e.target.value})} placeholder="उदा. १. फॉलो-अप १" />
           </div>
           <div className="space-y-2">
-            <Label className="text-xs font-bold uppercase">अतिरिक्त नोंदी</Label>
+            <Label className="text-xs font-bold uppercase">९) अतिरिक्त नोंदी</Label>
             <Textarea value={formData.additionalNotes} onChange={e => setFormData({...formData, additionalNotes: e.target.value})} />
           </div>
         </CardContent>
