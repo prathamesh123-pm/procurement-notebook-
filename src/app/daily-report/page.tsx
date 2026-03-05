@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect } from "react"
@@ -584,7 +583,8 @@ export default function DailyReportPage() {
                         {[
                           "वजन काटा",
                           "फॅट मशीन",
-                          "SNF मशीन",
+                          "BMC मशीन",
+                          "कॅन कुलर",
                           "स्वच्छता"
                         ].map(eq => (
                           <div key={eq} className="space-y-1.5">
