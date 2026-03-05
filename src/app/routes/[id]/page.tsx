@@ -8,23 +8,26 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Supplier, Route } from "@/lib/types"
-import { Plus, Search, MapPin, Phone, Info, Milk, User, ChevronRight, Scale, Thermometer, Truck, Package, ShieldCheck, Calendar as CalendarIcon, Hash } from "lucide-react"
+import { Plus, Search, MapPin, Phone, Info, Milk, User, ChevronRight, Scale, Thermometer, Truck, Package, ShieldCheck, Calendar as CalendarIcon, Trash2, Edit } from "lucide-react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogDescription } from "@/components/ui/dialog"
 import { Separator } from "@/components/ui/separator"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useToast } from "@/hooks/use-toast"
 
 export default function RouteDetailsPage() {
   const params = useParams()
   const routeId = params.id as string
+  const { toast } = useToast()
 
   const [route, setRoute] = useState<Route | null>(null)
   const [suppliers, setSuppliers] = useState<Supplier[]>([])
   const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(null)
   const [searchQuery, setSearchQuery] = useState("")
   const [mounted, setMounted] = useState(false)
-  const [isAddingSupplier, setIsAddingSupplier] = useState(false)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [dialogMode, setDialogMode] = useState<'add' | 'edit'>('add')
 
   // Form State
   const [formData, setFormData] = useState({
@@ -61,10 +64,50 @@ export default function RouteDetailsPage() {
     setSuppliers(routeSuppliers)
   }, [routeId])
 
-  const handleAddSupplier = () => {
-    if (!formData.name || !formData.id) return
+  const openAddDialog = () => {
+    setDialogMode('add')
+    setFormData({
+      name: "", id: "", address: "", mobile: "", competition: "", additionalInfo: "",
+      cowQty: "0", cowFat: "0", cowSnf: "0", bufQty: "0", bufFat: "0", bufSnf: "0",
+      iceBlocks: "0", scaleBrand: "", fatMachineBrand: "", collectionType: "Route", cattleFeedBrand: "",
+      fssaiNumber: "", fssaiExpiry: ""
+    })
+    setIsDialogOpen(true)
+  }
 
-    const newSupplier: Supplier = {
+  const openEditDialog = (supplier: Supplier) => {
+    setDialogMode('edit')
+    setFormData({
+      name: supplier.name,
+      id: supplier.id,
+      address: supplier.address,
+      mobile: supplier.mobile,
+      competition: supplier.competition || "",
+      additionalInfo: supplier.additionalInfo || "",
+      cowQty: String(supplier.cowMilk.quantity),
+      cowFat: String(supplier.cowMilk.fat),
+      cowSnf: String(supplier.cowMilk.snf),
+      bufQty: String(supplier.buffaloMilk.quantity),
+      bufFat: String(supplier.buffaloMilk.fat),
+      bufSnf: String(supplier.buffaloMilk.snf),
+      iceBlocks: String(supplier.iceBlocks || 0),
+      scaleBrand: supplier.scaleBrand || "",
+      fatMachineBrand: supplier.fatMachineBrand || "",
+      collectionType: supplier.collectionType || "Route",
+      cattleFeedBrand: supplier.cattleFeedBrand || "",
+      fssaiNumber: supplier.fssaiNumber || "",
+      fssaiExpiry: supplier.fssaiExpiry || ""
+    })
+    setIsDialogOpen(true)
+  }
+
+  const handleSaveSupplier = () => {
+    if (!formData.name || !formData.id) {
+      toast({ title: "त्रुटी", description: "नाव आणि आयडी भरणे आवश्यक आहे.", variant: "destructive" })
+      return
+    }
+
+    const supplierData: Supplier = {
       id: formData.id,
       name: formData.name,
       address: formData.address,
@@ -92,17 +135,32 @@ export default function RouteDetailsPage() {
     }
 
     const allSupps = JSON.parse(localStorage.getItem('procurepal_suppliers') || '[]')
-    const updatedAllSupps = [...allSupps, newSupplier]
+    let updatedAllSupps: Supplier[]
+
+    if (dialogMode === 'add') {
+      updatedAllSupps = [...allSupps, supplierData]
+      toast({ title: "यशस्वी", description: "नवीन पुरवठादार जोडला गेला." })
+    } else {
+      updatedAllSupps = allSupps.map((s: Supplier) => s.id === formData.id ? supplierData : s)
+      toast({ title: "यशस्वी", description: "माहिती अद्ययावत केली गेली." })
+    }
+
+    localStorage.setItem('procurepal_suppliers', JSON.stringify(updatedAllSupps))
+    setSuppliers(updatedAllSupps.filter(s => s.routeId === routeId))
+    if (selectedSupplier?.id === formData.id) setSelectedSupplier(supplierData)
+    setIsDialogOpen(false)
+  }
+
+  const handleDeleteSupplier = (id: string) => {
+    if (!confirm("तुम्हाला खात्री आहे की हा पुरवठादार हटवायचा आहे?")) return
+
+    const allSupps = JSON.parse(localStorage.getItem('procurepal_suppliers') || '[]')
+    const updatedAllSupps = allSupps.filter((s: Supplier) => s.id !== id)
     localStorage.setItem('procurepal_suppliers', JSON.stringify(updatedAllSupps))
     
     setSuppliers(updatedAllSupps.filter(s => s.routeId === routeId))
-    setIsAddingSupplier(false)
-    setFormData({
-      name: "", id: "", address: "", mobile: "", competition: "", additionalInfo: "",
-      cowQty: "0", cowFat: "0", cowSnf: "0", bufQty: "0", bufFat: "0", bufSnf: "0",
-      iceBlocks: "0", scaleBrand: "", fatMachineBrand: "", collectionType: "Route", cattleFeedBrand: "",
-      fssaiNumber: "", fssaiExpiry: ""
-    })
+    if (selectedSupplier?.id === id) setSelectedSupplier(null)
+    toast({ title: "हटवले", description: "पुरवठादाराची माहिती काढून टाकली गेली." })
   }
 
   const filteredSuppliers = useMemo(() => {
@@ -127,159 +185,9 @@ export default function RouteDetailsPage() {
           <CardHeader className="p-4 pb-2">
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg font-bold">Suppliers</CardTitle>
-              
-              <Dialog open={isAddingSupplier} onOpenChange={setIsAddingSupplier}>
-                <DialogTrigger asChild>
-                  <Button size="sm" variant="outline" className="h-8 gap-1 font-bold">
-                    <Plus className="h-4 w-4" /> Add
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-                  <DialogHeader>
-                    <DialogTitle>Add New Supplier</DialogTitle>
-                    <DialogDescription>Register a new supplier to this collection route.</DialogDescription>
-                  </DialogHeader>
-                  <div className="grid gap-6 py-4">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label>Supplier Name</Label>
-                        <Input placeholder="Full Name" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Supplier ID (Code)</Label>
-                        <Input placeholder="e.g. SUP-005" value={formData.id} onChange={e => setFormData({...formData, id: e.target.value})} />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label>Mobile Number</Label>
-                        <Input placeholder="+91" value={formData.mobile} onChange={e => setFormData({...formData, mobile: e.target.value})} />
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Collection Type</Label>
-                        <Select value={formData.collectionType} onValueChange={v => setFormData({...formData, collectionType: v})}>
-                          <SelectTrigger><SelectValue /></SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="Route">Route</SelectItem>
-                            <SelectItem value="Center">Center</SelectItem>
-                            <SelectItem value="Both">Both</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label>FSSAI License Number</Label>
-                        <Input placeholder="14-digit number" value={formData.fssaiNumber} onChange={e => setFormData({...formData, fssaiNumber: e.target.value})} />
-                      </div>
-                      <div className="space-y-2">
-                        <Label>FSSAI Expiry Date</Label>
-                        <Input type="date" value={formData.fssaiExpiry} onChange={e => setFormData({...formData, fssaiExpiry: e.target.value})} />
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label>Address</Label>
-                      <Input placeholder="Village, Plot, Sector" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} />
-                    </div>
-
-                    <Separator />
-
-                    <div className="grid grid-cols-2 gap-6">
-                      <div className="space-y-4">
-                        <Label className="text-primary font-bold flex items-center gap-2">
-                          <Milk className="h-4 w-4" /> Cow Milk Metrics
-                        </Label>
-                        <div className="grid grid-cols-3 gap-2">
-                          <div className="space-y-1">
-                            <Label className="text-[10px]">QTY</Label>
-                            <Input type="number" step="0.1" value={formData.cowQty} onChange={e => setFormData({...formData, cowQty: e.target.value})} />
-                          </div>
-                          <div className="space-y-1">
-                            <Label className="text-[10px]">FAT</Label>
-                            <Input type="number" step="0.1" value={formData.cowFat} onChange={e => setFormData({...formData, cowFat: e.target.value})} />
-                          </div>
-                          <div className="space-y-1">
-                            <Label className="text-[10px]">SNF</Label>
-                            <Input type="number" step="0.1" value={formData.cowSnf} onChange={e => setFormData({...formData, cowSnf: e.target.value})} />
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="space-y-4">
-                        <Label className="text-amber-600 font-bold flex items-center gap-2">
-                          <Milk className="h-4 w-4" /> Buffalo Milk Metrics
-                        </Label>
-                        <div className="grid grid-cols-3 gap-2">
-                          <div className="space-y-1">
-                            <Label className="text-[10px]">QTY</Label>
-                            <Input type="number" step="0.1" value={formData.bufQty} onChange={e => setFormData({...formData, bufQty: e.target.value})} />
-                          </div>
-                          <div className="space-y-1">
-                            <Label className="text-[10px]">FAT</Label>
-                            <Input type="number" step="0.1" value={formData.bufFat} onChange={e => setFormData({...formData, bufFat: e.target.value})} />
-                          </div>
-                          <div className="space-y-1">
-                            <Label className="text-[10px]">SNF</Label>
-                            <Input type="number" step="0.1" value={formData.bufSnf} onChange={e => setFormData({...formData, bufSnf: e.target.value})} />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <Separator />
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label className="flex items-center gap-2">
-                          <Scale className="h-4 w-4" /> Weighing Scale Brand
-                        </Label>
-                        <Input placeholder="e.g. Avery, Essae" value={formData.scaleBrand} onChange={e => setFormData({...formData, scaleBrand: e.target.value})} />
-                      </div>
-                      <div className="space-y-2">
-                        <Label className="flex items-center gap-2">
-                          <Thermometer className="h-4 w-4" /> Fat Machine Brand
-                        </Label>
-                        <Input placeholder="e.g. Milkotester" value={formData.fatMachineBrand} onChange={e => setFormData({...formData, fatMachineBrand: e.target.value})} />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label className="flex items-center gap-2">
-                          <Package className="h-4 w-4" /> Number of Ice Blocks
-                        </Label>
-                        <Input type="number" placeholder="Enter number of blocks" value={formData.iceBlocks} onChange={e => setFormData({...formData, iceBlocks: e.target.value})} />
-                      </div>
-                      <div className="space-y-2">
-                        <Label className="flex items-center gap-2">
-                          <Truck className="h-4 w-4" /> Cattle Feed Brand
-                        </Label>
-                        <Input placeholder="Brand used by supplier" value={formData.cattleFeedBrand} onChange={e => setFormData({...formData, cattleFeedBrand: e.target.value})} />
-                      </div>
-                    </div>
-
-                    <Separator />
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label>Village Competition</Label>
-                        <Input placeholder="Other Dairies" value={formData.competition} onChange={e => setFormData({...formData, competition: e.target.value})} />
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Additional Notes</Label>
-                        <Input placeholder="Special requirements etc." value={formData.additionalInfo} onChange={e => setFormData({...formData, additionalInfo: e.target.value})} />
-                      </div>
-                    </div>
-                  </div>
-                  <DialogFooter>
-                    <Button variant="outline" onClick={() => setIsAddingSupplier(false)}>Cancel</Button>
-                    <Button onClick={handleAddSupplier}>Save Supplier</Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
+              <Button size="sm" variant="outline" className="h-8 gap-1 font-bold" onClick={openAddDialog}>
+                <Plus className="h-4 w-4" /> Add
+              </Button>
             </div>
             <div className="relative mt-2">
               <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
@@ -296,21 +204,26 @@ export default function RouteDetailsPage() {
               {filteredSuppliers.map(s => (
                 <div 
                   key={s.id}
-                  className={`p-4 cursor-pointer hover:bg-muted/50 transition-colors ${selectedSupplier?.id === s.id ? 'bg-primary/5 border-l-4 border-primary' : 'border-l-4 border-transparent'}`}
+                  className={`p-4 cursor-pointer hover:bg-muted/50 transition-colors flex justify-between items-center ${selectedSupplier?.id === s.id ? 'bg-primary/5 border-l-4 border-primary' : 'border-l-4 border-transparent'}`}
                   onClick={() => setSelectedSupplier(s)}
                 >
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h4 className="font-bold text-sm text-foreground">{s.name}</h4>
-                      <p className="text-[10px] text-muted-foreground uppercase tracking-widest mt-1 font-bold">SUP ID: {s.id}</p>
-                    </div>
-                    <ChevronRight className={`h-4 w-4 transition-colors ${selectedSupplier?.id === s.id ? 'text-primary' : 'text-muted-foreground'}`} />
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-bold text-sm text-foreground truncate">{s.name}</h4>
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-widest mt-1 font-bold">ID: {s.id}</p>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-2 line-clamp-1 flex items-center gap-1.5">
-                    <MapPin className="h-3 w-3 shrink-0" /> {s.address}
-                  </p>
+                  <div className="flex gap-2">
+                    <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground" onClick={(e) => { e.stopPropagation(); openEditDialog(s); }}>
+                      <Edit className="h-3.5 w-3.5" />
+                    </Button>
+                    <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={(e) => { e.stopPropagation(); handleDeleteSupplier(s.id); }}>
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
                 </div>
               ))}
+              {filteredSuppliers.length === 0 && (
+                <div className="p-8 text-center text-muted-foreground italic text-xs">No suppliers found</div>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -498,6 +411,15 @@ export default function RouteDetailsPage() {
                   </div>
                 </div>
               </div>
+
+              <div className="flex gap-4 pt-4 no-print border-t">
+                <Button variant="outline" className="flex-1 gap-2 font-bold" onClick={() => openEditDialog(selectedSupplier)}>
+                  <Edit className="h-4 w-4" /> Edit Supplier
+                </Button>
+                <Button variant="destructive" className="flex-1 gap-2 font-bold" onClick={() => handleDeleteSupplier(selectedSupplier.id)}>
+                  <Trash2 className="h-4 w-4" /> Delete Supplier
+                </Button>
+              </div>
             </CardContent>
           ) : (
             <div className="flex items-center justify-center p-12 text-center flex-col gap-5 h-[600px]">
@@ -512,6 +434,154 @@ export default function RouteDetailsPage() {
           )}
         </Card>
       </div>
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{dialogMode === 'add' ? 'Add New Supplier' : 'Edit Supplier Details'}</DialogTitle>
+            <DialogDescription>पुरवठादाराची माहिती {dialogMode === 'add' ? 'भरा' : 'दुरुस्त करा'}.</DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-6 py-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Supplier Name</Label>
+                <Input placeholder="Full Name" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
+              </div>
+              <div className="space-y-2">
+                <Label>Supplier ID (Code)</Label>
+                <Input placeholder="e.g. SUP-005" value={formData.id} onChange={e => setFormData({...formData, id: e.target.value})} disabled={dialogMode === 'edit'} />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Mobile Number</Label>
+                <Input placeholder="+91" value={formData.mobile} onChange={e => setFormData({...formData, mobile: e.target.value})} />
+              </div>
+              <div className="space-y-2">
+                <Label>Collection Type</Label>
+                <Select value={formData.collectionType} onValueChange={v => setFormData({...formData, collectionType: v})}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Route">Route</SelectItem>
+                    <SelectItem value="Center">Center</SelectItem>
+                    <SelectItem value="Both">Both</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>FSSAI License Number</Label>
+                <Input placeholder="14-digit number" value={formData.fssaiNumber} onChange={e => setFormData({...formData, fssaiNumber: e.target.value})} />
+              </div>
+              <div className="space-y-2">
+                <Label>FSSAI Expiry Date</Label>
+                <Input type="date" value={formData.fssaiExpiry} onChange={e => setFormData({...formData, fssaiExpiry: e.target.value})} />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Address</Label>
+              <Input placeholder="Village, Plot, Sector" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} />
+            </div>
+
+            <Separator />
+
+            <div className="grid grid-cols-2 gap-6">
+              <div className="space-y-4">
+                <Label className="text-primary font-bold flex items-center gap-2">
+                  <Milk className="h-4 w-4" /> Cow Milk Metrics
+                </Label>
+                <div className="grid grid-cols-3 gap-2">
+                  <div className="space-y-1">
+                    <Label className="text-[10px]">QTY</Label>
+                    <Input type="number" step="0.1" value={formData.cowQty} onChange={e => setFormData({...formData, cowQty: e.target.value})} />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-[10px]">FAT</Label>
+                    <Input type="number" step="0.1" value={formData.cowFat} onChange={e => setFormData({...formData, cowFat: e.target.value})} />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-[10px]">SNF</Label>
+                    <Input type="number" step="0.1" value={formData.cowSnf} onChange={e => setFormData({...formData, cowSnf: e.target.value})} />
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <Label className="text-amber-600 font-bold flex items-center gap-2">
+                  <Milk className="h-4 w-4" /> Buffalo Milk Metrics
+                </Label>
+                <div className="grid grid-cols-3 gap-2">
+                  <div className="space-y-1">
+                    <Label className="text-[10px]">QTY</Label>
+                    <Input type="number" step="0.1" value={formData.bufQty} onChange={e => setFormData({...formData, bufQty: e.target.value})} />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-[10px]">FAT</Label>
+                    <Input type="number" step="0.1" value={formData.bufFat} onChange={e => setFormData({...formData, bufFat: e.target.value})} />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-[10px]">SNF</Label>
+                    <Input type="number" step="0.1" value={formData.bufSnf} onChange={e => setFormData({...formData, bufSnf: e.target.value})} />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <Separator />
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label className="flex items-center gap-2">
+                  <Scale className="h-4 w-4" /> Weighing Scale Brand
+                </Label>
+                <Input placeholder="e.g. Avery, Essae" value={formData.scaleBrand} onChange={e => setFormData({...formData, scaleBrand: e.target.value})} />
+              </div>
+              <div className="space-y-2">
+                <Label className="flex items-center gap-2">
+                  <Thermometer className="h-4 w-4" /> Fat Machine Brand
+                </Label>
+                <Input placeholder="e.g. Milkotester" value={formData.fatMachineBrand} onChange={e => setFormData({...formData, fatMachineBrand: e.target.value})} />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label className="flex items-center gap-2">
+                  <Package className="h-4 w-4" /> Number of Ice Blocks
+                </Label>
+                <Input type="number" placeholder="Enter number of blocks" value={formData.iceBlocks} onChange={e => setFormData({...formData, iceBlocks: e.target.value})} />
+              </div>
+              <div className="space-y-2">
+                <Label className="flex items-center gap-2">
+                  <Truck className="h-4 w-4" /> Cattle Feed Brand
+                </Label>
+                <Input placeholder="Brand used by supplier" value={formData.cattleFeedBrand} onChange={e => setFormData({...formData, cattleFeedBrand: e.target.value})} />
+              </div>
+            </div>
+
+            <Separator />
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Village Competition</Label>
+                <Input placeholder="Other Dairies" value={formData.competition} onChange={e => setFormData({...formData, competition: e.target.value})} />
+              </div>
+              <div className="space-y-2">
+                <Label>Additional Notes</Label>
+                <Input placeholder="Special requirements etc." value={formData.additionalInfo} onChange={e => setFormData({...formData, additionalInfo: e.target.value})} />
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
+            <Button onClick={handleSaveSupplier} className="font-bold">{dialogMode === 'add' ? 'Save Supplier' : 'Update Supplier'}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
