@@ -102,7 +102,6 @@ export default function DailyReportPage() {
     achievements: "",
     problems: "",
     actionsTaken: "",
-    tomorrowFollowUp: "",
     additionalNotes: "",
     supervisorName: ""
   })
@@ -110,6 +109,8 @@ export default function DailyReportPage() {
   useEffect(() => {
     setMounted(true)
   }, [])
+
+  const totalKm = (Number(formData.odoEnd) || 0) - (Number(formData.odoStart) || 0);
 
   const handleCheckboxChange = (field: 'officeTasks', value: string) => {
     setFormData(prev => ({
@@ -192,7 +193,7 @@ export default function DailyReportPage() {
       workItemsCount: activeReportType === 'office' ? formData.officeTasks.length : formData.centerVisits.length,
       interactionsCount: (formData.meetingPerson ? 1 : 0) + formData.centerVisits.length,
       summary: reportSummary,
-      fullData: { ...formData, reportType: activeReportType }
+      fullData: { ...formData, reportType: activeReportType, totalKm }
     }
 
     const storedReports = JSON.parse(localStorage.getItem('procurepal_reports') || '[]')
@@ -225,7 +226,7 @@ export default function DailyReportPage() {
             <User className="h-5 w-5 text-primary" /> १) प्रतिनिधीची मूलभूत माहिती (Basic Info)
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <CardContent className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 hex-gap-6">
           <div className="space-y-2">
             <Label className="text-xs font-bold uppercase">प्रतिनिधीचे नाव</Label>
             <Input value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} placeholder="प्रतिनिधीचे नाव" />
@@ -393,7 +394,7 @@ export default function DailyReportPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="space-y-2">
                   <Label className="text-xs font-bold uppercase">ओडोमीटर सुरुवात (KM)</Label>
                   <Input type="number" value={formData.odoStart} onChange={e => setFormData({...formData, odoStart: e.target.value})} />
@@ -401,6 +402,12 @@ export default function DailyReportPage() {
                 <div className="space-y-2">
                   <Label className="text-xs font-bold uppercase">ओडोमीटर शेवट (KM)</Label>
                   <Input type="number" value={formData.odoEnd} onChange={e => setFormData({...formData, odoEnd: e.target.value})} />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-xs font-bold uppercase">एकूण किलोमीटर (Total KM)</Label>
+                  <div className="h-10 px-3 py-2 border rounded-md bg-muted/50 font-bold flex items-center text-primary">
+                    {totalKm > 0 ? totalKm : 0} KM
+                  </div>
                 </div>
               </div>
             </CardContent>
@@ -641,10 +648,6 @@ export default function DailyReportPage() {
             <div className="space-y-2">
               <Label className="text-xs font-bold uppercase text-blue-600">केलेली कार्यवाही (Actions Taken)</Label>
               <Textarea value={formData.actionsTaken} onChange={e => setFormData({...formData, actionsTaken: e.target.value})} placeholder="उदा. १. कार्यवाही १" />
-            </div>
-            <div className="space-y-2">
-              <Label className="text-xs font-bold uppercase">उद्याचा Follow-up</Label>
-              <Textarea value={formData.tomorrowFollowUp} onChange={e => setFormData({...formData, tomorrowFollowUp: e.target.value})} placeholder="उदा. १. फॉलो-अप १" />
             </div>
           </div>
           <div className="space-y-2">
