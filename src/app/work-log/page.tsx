@@ -9,8 +9,9 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Task, TaskStatus } from "@/lib/types"
-import { Plus, Search, ListTodo, Trash2, User, Hash, FileText } from "lucide-react"
+import { Task } from "@/lib/types"
+import { Plus, Search, ListTodo, Trash2, User, Hash } from "lucide-react"
+import { useToast } from "@/hooks/use-toast"
 
 export default function WorkLogPage() {
   const [tasks, setTasks] = useState<Task[]>([])
@@ -21,43 +22,22 @@ export default function WorkLogPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [activeTab, setActiveTab] = useState<string>("all")
   const [mounted, setMounted] = useState(false)
+  const { toast } = useToast()
 
   useEffect(() => {
     setMounted(true)
     const stored = JSON.parse(localStorage.getItem('procurepal_tasks') || '[]')
-    if (stored.length === 0) {
-      const initialTasks: Task[] = [
-        {
-          id: crypto.randomUUID(),
-          title: "Monthly Collection Review",
-          description: "Audit all collection centers for the past month's records.",
-          assignedTo: "Procurement Manager",
-          status: 'pending',
-          supplierName: "Sunlight Dairy",
-          supplierId: "SUP-002",
-          createdAt: "2024-05-20T10:00:00.000Z"
-        },
-        {
-          id: crypto.randomUUID(),
-          title: "Route C Verification",
-          description: "Verify the new collection path established last week.",
-          assignedTo: "Procurement Manager",
-          status: 'completed',
-          supplierName: "Green Valley Farm",
-          supplierId: "SUP-001",
-          createdAt: "2024-05-19T09:00:00.000Z",
-          completedAt: "2024-05-20T15:30:00.000Z"
-        }
-      ]
-      setTasks(initialTasks)
-      localStorage.setItem('procurepal_tasks', JSON.stringify(initialTasks))
-    } else {
-      setTasks(stored)
-    }
+    // Only show pending tasks in Work Log
+    setTasks(stored.filter((t: Task) => t.status === 'pending'))
   }, [])
 
   const saveTasks = (updatedTasks: Task[]) => {
+    // We only keep pending tasks in this list now
     setTasks(updatedTasks)
+    
+    // Get all tasks from storage to not lose them, or just manage pending here
+    // However, the logic is: once completed, they move to reports. 
+    // So 'procurepal_tasks' will only ever hold pending items.
     localStorage.setItem('procurepal_tasks', JSON.stringify(updatedTasks))
   }
 
@@ -78,21 +58,37 @@ export default function WorkLogPage() {
     setNewTaskDesc("")
     setNewTaskSupplierName("")
     setNewTaskSupplierId("")
+    toast({
+      title: "Task Saved",
+      description: "New task added to your work log.",
+    })
   }
 
-  const toggleTaskStatus = (taskId: string) => {
-    const updated = tasks.map(t => {
-      if (t.id === taskId) {
-        const newStatus: TaskStatus = t.status === 'completed' ? 'pending' : 'completed'
-        return { 
-          ...t, 
-          status: newStatus,
-          completedAt: newStatus === 'completed' ? new Date().toISOString() : undefined
-        }
-      }
-      return t
+  const completeTask = (taskId: string) => {
+    const taskToComplete = tasks.find(t => t.id === taskId)
+    if (!taskToComplete) return
+
+    // 1. Remove from pending tasks
+    const updatedTasks = tasks.filter(t => t.id !== taskId)
+    saveTasks(updatedTasks)
+
+    // 2. Add to Reports (procurepal_reports)
+    const storedReports = JSON.parse(localStorage.getItem('procurepal_reports') || '[]')
+    const newReport = {
+      id: crypto.randomUUID(),
+      type: 'Daily Log',
+      date: new Date().toISOString().split('T')[0],
+      workItemsCount: 1,
+      interactionsCount: 1,
+      summary: `Task Completed: ${taskToComplete.title}. ${taskToComplete.description || ''} ${taskToComplete.supplierName ? `[Supplier: ${taskToComplete.supplierName} (${taskToComplete.supplierId})]` : ''}`
+    }
+    
+    localStorage.setItem('procurepal_reports', JSON.stringify([newReport, ...storedReports]))
+
+    toast({
+      title: "Task Completed",
+      description: "Task moved to Management Reports.",
     })
-    saveTasks(updated)
   }
 
   const deleteTask = (taskId: string) => {
@@ -105,8 +101,7 @@ export default function WorkLogPage() {
       (t.description?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false) ||
       (t.supplierName?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false) ||
       (t.supplierId?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false)
-    const matchesTab = activeTab === 'all' || t.status === activeTab
-    return matchesSearch && matchesTab
+    return matchesSearch
   })
 
   if (!mounted) return null
@@ -115,7 +110,7 @@ export default function WorkLogPage() {
     <div className="space-y-8 max-w-5xl mx-auto w-full">
       <div>
         <h2 className="text-3xl font-headline font-bold text-foreground tracking-tight">Work Log</h2>
-        <p className="text-muted-foreground mt-1 font-medium">Manage and track your daily procurement duties.</p>
+        <p className="text-muted-foreground mt-1 font-medium">Manage and track your daily procurement duties. Completed tasks move to Reports.</p>
       </div>
 
       <Card className="border-none shadow-sm bg-white">
@@ -136,16 +131,16 @@ export default function WorkLogPage() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="supplierName" className="font-bold">Supplier Name</Label>
+                <Label htmlFor="supplierName" className="font-bold">Gavlyache Nav</Label>
                 <Input 
                   id="supplierName" 
-                  placeholder="Gavlyache Nav" 
+                  placeholder="Supplier Name" 
                   value={newTaskSupplierName} 
                   onChange={(e) => setNewTaskSupplierName(e.target.value)} 
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="supplierId" className="font-bold">Supplier ID</Label>
+                <Label htmlFor="supplierId" className="font-bold">Code Numbar</Label>
                 <Input 
                   id="supplierId" 
                   placeholder="Code Number" 
@@ -172,86 +167,77 @@ export default function WorkLogPage() {
       </Card>
 
       <div className="space-y-4">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full sm:w-auto">
             <TabsList className="bg-muted/50 p-1">
-              <TabsTrigger value="all" className="px-8 font-bold text-sm">All</TabsTrigger>
-              <TabsTrigger value="pending" className="px-8 font-bold text-sm">Pending</TabsTrigger>
-              <TabsTrigger value="completed" className="px-8 font-bold text-sm">Done</TabsTrigger>
+              <TabsTrigger value="all" className="px-8 font-bold text-sm">All Pending</TabsTrigger>
             </TabsList>
-            <div className="relative w-full sm:w-[350px]">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input 
-                placeholder="Search tasks or suppliers..." 
-                className="pl-10 h-10 bg-white" 
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-              />
-            </div>
+          </Tabs>
+          <div className="relative w-full sm:w-[350px]">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input 
+              placeholder="Search tasks..." 
+              className="pl-10 h-10 bg-white" 
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+            />
           </div>
+        </div>
 
-          <TabsContent value={activeTab} className="space-y-4 mt-0">
-            {filteredTasks.length > 0 ? (
-              filteredTasks.map((task) => (
-                <Card key={task.id} className="border-none shadow-sm group bg-white hover:shadow-md transition-all">
-                  <CardContent className="p-6 flex items-start gap-5">
-                    <div className="mt-1">
-                      <Checkbox 
-                        id={`task-${task.id}`}
-                        checked={task.status === 'completed'}
-                        onCheckedChange={() => toggleTaskStatus(task.id)}
-                        className="h-5 w-5 border-2"
-                      />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between gap-3">
-                        <div className="space-y-1">
-                          <h4 className={`font-bold text-lg transition-all ${task.status === 'completed' ? 'line-through text-muted-foreground/50' : 'text-foreground'}`}>
-                            {task.title}
-                          </h4>
-                          {(task.supplierName || task.supplierId) && (
-                            <div className="flex items-center gap-3 text-xs font-bold uppercase tracking-wider text-primary">
-                              {task.supplierName && <span className="flex items-center gap-1"><User className="h-3 w-3" /> {task.supplierName}</span>}
-                              {task.supplierId && <span className="flex items-center gap-1"><Hash className="h-3 w-3" /> {task.supplierId}</span>}
-                            </div>
-                          )}
-                        </div>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => deleteTask(task.id)}>
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                      <p className={`text-sm mt-1.5 leading-relaxed ${task.status === 'completed' ? 'text-muted-foreground/40' : 'text-muted-foreground'}`}>
-                        {task.description}
-                      </p>
-                      <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mt-4 text-[10px] uppercase tracking-[0.15em] font-bold text-muted-foreground/70">
-                        <span className="flex items-center gap-2">
-                          <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-                          Created: {new Date(task.createdAt).toLocaleDateString()}
-                        </span>
-                        {task.status === 'completed' && task.completedAt && (
-                          <span className="text-green-600 bg-green-50 px-3 py-1 rounded-md flex items-center gap-2">
-                            <span className="h-1.5 w-1.5 rounded-full bg-green-600" />
-                            Completed {new Date(task.completedAt).toLocaleDateString()}
-                          </span>
+        <div className="space-y-4">
+          {filteredTasks.length > 0 ? (
+            filteredTasks.map((task) => (
+              <Card key={task.id} className="border-none shadow-sm group bg-white hover:shadow-md transition-all">
+                <CardContent className="p-6 flex items-start gap-5">
+                  <div className="mt-1">
+                    <Checkbox 
+                      id={`task-${task.id}`}
+                      onCheckedChange={() => completeTask(task.id)}
+                      className="h-5 w-5 border-2"
+                    />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="space-y-1">
+                        <h4 className="font-bold text-lg text-foreground">
+                          {task.title}
+                        </h4>
+                        {(task.supplierName || task.supplierId) && (
+                          <div className="flex items-center gap-3 text-xs font-bold uppercase tracking-wider text-primary">
+                            {task.supplierName && <span className="flex items-center gap-1"><User className="h-3 w-3" /> {task.supplierName}</span>}
+                            {task.supplierId && <span className="flex items-center gap-1"><Hash className="h-3 w-3" /> {task.supplierId}</span>}
+                          </div>
                         )}
                       </div>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => deleteTask(task.id)}>
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </div>
-                  </CardContent>
-                </Card>
-              ))
-            ) : (
-              <div className="text-center py-24 bg-white rounded-xl border border-dashed flex flex-col items-center gap-4">
-                <div className="bg-muted/30 p-5 rounded-full">
-                   <ListTodo className="h-12 w-12 text-muted-foreground/20" />
-                </div>
-                <div className="space-y-1">
-                  <h3 className="text-xl font-bold text-muted-foreground">No tasks found</h3>
-                  <p className="text-sm text-muted-foreground/60 max-w-xs mx-auto">Try changing your search or filter criteria.</p>
-                </div>
+                    <p className="text-sm mt-1.5 leading-relaxed text-muted-foreground">
+                      {task.description}
+                    </p>
+                    <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mt-4 text-[10px] uppercase tracking-[0.15em] font-bold text-muted-foreground/70">
+                      <span className="flex items-center gap-2">
+                        <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+                        Created: {new Date(task.createdAt).toLocaleDateString()}
+                      </span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))
+          ) : (
+            <div className="text-center py-24 bg-white rounded-xl border border-dashed flex flex-col items-center gap-4">
+              <div className="bg-muted/30 p-5 rounded-full">
+                 <ListTodo className="h-12 w-12 text-muted-foreground/20" />
               </div>
-            )}
-          </TabsContent>
-        </Tabs>
+              <div className="space-y-1">
+                <h3 className="text-xl font-bold text-muted-foreground">No pending tasks</h3>
+                <p className="text-sm text-muted-foreground/60 max-w-xs mx-auto">All tasks are completed or deleted.</p>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )
