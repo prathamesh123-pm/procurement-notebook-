@@ -144,7 +144,6 @@ export default function RouteDetailsPage() {
       updatedAllSupps = [...allSupps, supplierData]
       toast({ title: "यशस्वी", description: "नवीन पुरवठादार जोडला गेला." })
     } else {
-      // Use editingId to find the original record if the ID was changed
       updatedAllSupps = allSupps.map((s: Supplier) => s.id === editingId ? supplierData : s)
       toast({ title: "यशस्वी", description: "माहिती अद्ययावत केली गेली." })
     }

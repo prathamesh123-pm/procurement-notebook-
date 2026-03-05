@@ -256,7 +256,7 @@ export default function ReportsPage() {
           <div className="text-center py-24 bg-white rounded-2xl border border-dashed flex flex-col items-center gap-4">
              <Archive className="h-16 w-16 text-muted-foreground/20" />
              <div className="space-y-1">
-               <h3 className="text-xl font-bold text-muted-foreground">कोणताही रिपोर्ट सापडला नाही</h3>
+               <h3 className="text-xl font-bold text-muted-foreground">कोणताही रिपोर्ट सापडल नाही</h3>
                <p className="text-sm text-muted-foreground/60">निवडलेली तारीख किंवा कॅटेगरी तपासा.</p>
              </div>
           </div>
