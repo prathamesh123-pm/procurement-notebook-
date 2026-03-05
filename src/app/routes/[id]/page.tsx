@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Supplier, Route } from "@/lib/types"
-import { Plus, Search, MapPin, Phone, Info, Milk, User, ChevronRight, Scale, Thermometer, Truck, Package } from "lucide-react"
+import { Plus, Search, MapPin, Phone, Info, Milk, User, ChevronRight, Scale, Thermometer, Truck, Package, ShieldCheck, Calendar as CalendarIcon } from "lucide-react"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
@@ -33,7 +33,6 @@ export default function RouteDetailsPage() {
     id: "",
     address: "",
     mobile: "",
-    milkQuality: "A Grade",
     competition: "",
     additionalInfo: "",
     cowQty: "0",
@@ -46,7 +45,9 @@ export default function RouteDetailsPage() {
     scaleBrand: "",
     fatMachineBrand: "",
     collectionType: "Route",
-    cattleFeedBrand: ""
+    cattleFeedBrand: "",
+    fssaiNumber: "",
+    fssaiExpiry: ""
   })
 
   useEffect(() => {
@@ -69,7 +70,6 @@ export default function RouteDetailsPage() {
       name: formData.name,
       address: formData.address,
       mobile: formData.mobile,
-      milkQuality: formData.milkQuality,
       routeId: routeId,
       competition: formData.competition,
       additionalInfo: formData.additionalInfo,
@@ -87,7 +87,9 @@ export default function RouteDetailsPage() {
       scaleBrand: formData.scaleBrand,
       fatMachineBrand: formData.fatMachineBrand,
       collectionType: formData.collectionType,
-      cattleFeedBrand: formData.cattleFeedBrand
+      cattleFeedBrand: formData.cattleFeedBrand,
+      fssaiNumber: formData.fssaiNumber,
+      fssaiExpiry: formData.fssaiExpiry
     }
 
     const allSupps = JSON.parse(localStorage.getItem('procurepal_suppliers') || '[]')
@@ -97,9 +99,10 @@ export default function RouteDetailsPage() {
     setSuppliers(updatedAllSupps.filter(s => s.routeId === routeId))
     setIsAddingSupplier(false)
     setFormData({
-      name: "", id: "", address: "", mobile: "", milkQuality: "A Grade", competition: "", additionalInfo: "",
+      name: "", id: "", address: "", mobile: "", competition: "", additionalInfo: "",
       cowQty: "0", cowFat: "0", cowSnf: "0", bufQty: "0", bufFat: "0", bufSnf: "0",
-      iceQuantity: "0", scaleBrand: "", fatMachineBrand: "", collectionType: "Route", cattleFeedBrand: ""
+      iceQuantity: "0", scaleBrand: "", fatMachineBrand: "", collectionType: "Route", cattleFeedBrand: "",
+      fssaiNumber: "", fssaiExpiry: ""
     })
   }
 
@@ -134,7 +137,7 @@ export default function RouteDetailsPage() {
                 <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
                   <DialogHeader>
                     <DialogTitle>Add New Supplier</DialogTitle>
-                    <DialogDescription>Register a new supplier with equipment and collection details.</DialogDescription>
+                    <DialogDescription>Register a new supplier with FSSAI, equipment, and collection details.</DialogDescription>
                   </DialogHeader>
                   <div className="grid gap-6 py-4">
                     <div className="grid grid-cols-2 gap-4">
@@ -148,21 +151,10 @@ export default function RouteDetailsPage() {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-3 gap-4">
+                    <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label>Mobile Number</Label>
                         <Input placeholder="+91" value={formData.mobile} onChange={e => setFormData({...formData, mobile: e.target.value})} />
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Quality Grade</Label>
-                        <Select value={formData.milkQuality} onValueChange={v => setFormData({...formData, milkQuality: v})}>
-                          <SelectTrigger><SelectValue /></SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="A+ Grade">A+ Grade</SelectItem>
-                            <SelectItem value="A Grade">A Grade</SelectItem>
-                            <SelectItem value="B Grade">B Grade</SelectItem>
-                          </SelectContent>
-                        </Select>
                       </div>
                       <div className="space-y-2">
                         <Label>Collection Type</Label>
@@ -174,6 +166,17 @@ export default function RouteDetailsPage() {
                             <SelectItem value="Both">Both</SelectItem>
                           </SelectContent>
                         </Select>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>FSSAI License Number</Label>
+                        <Input placeholder="14-digit number" value={formData.fssaiNumber} onChange={e => setFormData({...formData, fssaiNumber: e.target.value})} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>FSSAI Expiry Date</Label>
+                        <Input type="date" value={formData.fssaiExpiry} onChange={e => setFormData({...formData, fssaiExpiry: e.target.value})} />
                       </div>
                     </div>
 
@@ -326,13 +329,16 @@ export default function RouteDetailsPage() {
                       <Badge variant="outline" className="text-[10px] uppercase">{selectedSupplier.collectionType || 'Route'}</Badge>
                     </div>
                   </div>
-                  <div className="flex gap-3">
-                    <Badge variant="secondary" className="bg-green-100 text-green-700 font-bold px-4 py-1.5 text-xs uppercase tracking-wider border-none">
-                      {selectedSupplier.milkQuality}
-                    </Badge>
+                  <div className="flex flex-col items-end gap-2">
                     <Badge variant="secondary" className="bg-primary/10 text-primary font-bold px-4 py-1.5 text-xs uppercase tracking-wider border-none">
                       {((selectedSupplier.cowMilk?.quantity || 0) + (selectedSupplier.buffaloMilk?.quantity || 0)).toFixed(1)} Total Liters
                     </Badge>
+                    {selectedSupplier.fssaiNumber && (
+                      <div className="flex items-center gap-2 text-xs font-bold text-green-600 bg-green-50 px-3 py-1 rounded-md border border-green-100">
+                        <ShieldCheck className="h-3.5 w-3.5" />
+                        FSSAI: {selectedSupplier.fssaiNumber}
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -364,6 +370,30 @@ export default function RouteDetailsPage() {
                   </div>
 
                   <div className="space-y-5">
+                    <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2">
+                      FSSAI COMPLIANCE
+                    </h4>
+                    <div className="grid grid-cols-1 gap-3">
+                      <div className="p-3 bg-muted/20 rounded-lg border flex items-center justify-between">
+                        <div>
+                          <Label className="text-[9px] uppercase font-bold text-muted-foreground block mb-1">License No.</Label>
+                          <p className="text-sm font-bold">{selectedSupplier.fssaiNumber || "Not Registered"}</p>
+                        </div>
+                        <ShieldCheck className="h-5 w-5 text-green-600 opacity-50" />
+                      </div>
+                      <div className="p-3 bg-muted/20 rounded-lg border flex items-center justify-between">
+                        <div>
+                          <Label className="text-[9px] uppercase font-bold text-muted-foreground block mb-1">Expiry Date</Label>
+                          <p className="text-sm font-bold">{selectedSupplier.fssaiExpiry || "N/A"}</p>
+                        </div>
+                        <CalendarIcon className="h-5 w-5 text-amber-600 opacity-50" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                  <div className="space-y-5">
                     <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
                       EQUIPMENT & OPERATIONS
                     </h4>
@@ -382,9 +412,7 @@ export default function RouteDetailsPage() {
                       </div>
                     </div>
                   </div>
-                </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                   <div className="space-y-5">
                     <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
                       ADDITIONAL ASSETS
@@ -404,7 +432,9 @@ export default function RouteDetailsPage() {
                       </div>
                     </div>
                   </div>
+                </div>
 
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                   <div className="space-y-5">
                     <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
                       VILLAGE COMPETITION
@@ -413,12 +443,11 @@ export default function RouteDetailsPage() {
                       <p className="text-sm font-medium text-foreground">{selectedSupplier.competition || "No recorded competitors."}</p>
                     </div>
                   </div>
-                </div>
-
-                <div className="space-y-5">
-                  <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">OTHER INFORMATION</h4>
-                  <div className="p-5 border rounded-xl bg-background shadow-inner">
-                    <p className="text-sm text-muted-foreground leading-relaxed italic">{selectedSupplier.additionalInfo || "No special instructions provided."}</p>
+                  <div className="space-y-5">
+                    <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">OTHER INFORMATION</h4>
+                    <div className="p-5 border rounded-xl bg-background shadow-inner">
+                      <p className="text-sm text-muted-foreground leading-relaxed italic">{selectedSupplier.additionalInfo || "No special instructions provided."}</p>
+                    </div>
                   </div>
                 </div>
 

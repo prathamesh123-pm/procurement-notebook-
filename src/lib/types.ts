@@ -22,18 +22,20 @@ export interface Supplier {
   name: string;
   address: string;
   mobile: string;
-  milkQuality: string;
   routeId: string;
   competition?: string;
   additionalInfo?: string;
   cowMilk: MilkMetrics;
   buffaloMilk: MilkMetrics;
-  // New Fields
+  // Operations Fields
   iceQuantity?: number;
   scaleBrand?: string;
   fatMachineBrand?: string;
   collectionType?: string;
   cattleFeedBrand?: string;
+  // FSSAI Fields
+  fssaiNumber?: string;
+  fssaiExpiry?: string;
 }
 
 export interface Route {
