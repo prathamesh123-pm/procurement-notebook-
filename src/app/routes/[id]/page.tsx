@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Supplier, Route } from "@/lib/types"
-import { Plus, Search, MapPin, Phone, Info, Milk, User, ChevronRight, Scale, Thermometer, Truck, Package, ShieldCheck, Calendar as CalendarIcon, Trash2, Edit } from "lucide-react"
+import { Plus, Search, MapPin, Phone, Info, Milk, User, ChevronRight, Scale, Thermometer, Truck, Package, ShieldCheck, Calendar as CalendarIcon, Trash2, Edit, LayoutGrid } from "lucide-react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogDescription } from "@/components/ui/dialog"
@@ -28,6 +28,7 @@ export default function RouteDetailsPage() {
   const [mounted, setMounted] = useState(false)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [dialogMode, setDialogMode] = useState<'add' | 'edit'>('add')
+  const [editingId, setEditingId] = useState<string | null>(null)
 
   // Form State
   const [formData, setFormData] = useState({
@@ -66,6 +67,7 @@ export default function RouteDetailsPage() {
 
   const openAddDialog = () => {
     setDialogMode('add')
+    setEditingId(null)
     setFormData({
       name: "", id: "", address: "", mobile: "", competition: "", additionalInfo: "",
       cowQty: "0", cowFat: "0", cowSnf: "0", bufQty: "0", bufFat: "0", bufSnf: "0",
@@ -77,6 +79,7 @@ export default function RouteDetailsPage() {
 
   const openEditDialog = (supplier: Supplier) => {
     setDialogMode('edit')
+    setEditingId(supplier.id)
     setFormData({
       name: supplier.name,
       id: supplier.id,
@@ -141,13 +144,17 @@ export default function RouteDetailsPage() {
       updatedAllSupps = [...allSupps, supplierData]
       toast({ title: "यशस्वी", description: "नवीन पुरवठादार जोडला गेला." })
     } else {
-      updatedAllSupps = allSupps.map((s: Supplier) => s.id === formData.id ? supplierData : s)
+      // Use editingId to find the original record if the ID was changed
+      updatedAllSupps = allSupps.map((s: Supplier) => s.id === editingId ? supplierData : s)
       toast({ title: "यशस्वी", description: "माहिती अद्ययावत केली गेली." })
     }
 
     localStorage.setItem('procurepal_suppliers', JSON.stringify(updatedAllSupps))
-    setSuppliers(updatedAllSupps.filter(s => s.routeId === routeId))
-    if (selectedSupplier?.id === formData.id) setSelectedSupplier(supplierData)
+    const routeSuppliers = updatedAllSupps.filter(s => s.routeId === routeId)
+    setSuppliers(routeSuppliers)
+    if (editingId === selectedSupplier?.id || formData.id === selectedSupplier?.id) {
+      setSelectedSupplier(supplierData)
+    }
     setIsDialogOpen(false)
   }
 
@@ -209,7 +216,7 @@ export default function RouteDetailsPage() {
                 >
                   <div className="flex-1 min-w-0">
                     <h4 className="font-bold text-sm text-foreground truncate">{s.name}</h4>
-                    <p className="text-[10px] text-muted-foreground uppercase tracking-widest mt-1 font-bold">ID: {s.id}</p>
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-widest mt-1 font-bold">Code: {s.id}</p>
                   </div>
                   <div className="flex gap-2">
                     <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground" onClick={(e) => { e.stopPropagation(); openEditDialog(s); }}>
@@ -235,13 +242,15 @@ export default function RouteDetailsPage() {
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b pb-8">
                 <div className="space-y-1">
                   <h3 className="text-3xl font-bold font-headline text-foreground tracking-tight">{selectedSupplier.name}</h3>
-                  <div className="flex items-center gap-2">
-                    <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest">Supplier ID: {selectedSupplier.id}</p>
-                    <Badge variant="outline" className="text-[10px] uppercase">{selectedSupplier.collectionType || 'Route'}</Badge>
+                  <div className="flex items-center gap-3">
+                    <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest">Code: {selectedSupplier.id}</p>
+                    <Badge variant="secondary" className="bg-primary/10 text-primary font-bold px-3 py-0.5 text-[10px] uppercase tracking-wider border-none">
+                      Type: {selectedSupplier.collectionType || 'Route'}
+                    </Badge>
                   </div>
                 </div>
                 <div className="flex flex-col items-end gap-2">
-                  <Badge variant="secondary" className="bg-primary/10 text-primary font-bold px-4 py-1.5 text-xs uppercase tracking-wider border-none">
+                  <Badge variant="secondary" className="bg-green-100 text-green-700 font-bold px-4 py-1.5 text-xs uppercase tracking-wider border-none">
                     {((selectedSupplier.cowMilk?.quantity || 0) + (selectedSupplier.buffaloMilk?.quantity || 0)).toFixed(1)} Total Liters
                   </Badge>
                   {selectedSupplier.fssaiNumber && (
@@ -449,7 +458,11 @@ export default function RouteDetailsPage() {
               </div>
               <div className="space-y-2">
                 <Label>Supplier ID (Code)</Label>
-                <Input placeholder="e.g. SUP-005" value={formData.id} onChange={e => setFormData({...formData, id: e.target.value})} disabled={dialogMode === 'edit'} />
+                <Input 
+                  placeholder="e.g. 443/44" 
+                  value={formData.id} 
+                  onChange={e => setFormData({...formData, id: e.target.value})} 
+                />
               </div>
             </div>
 
