@@ -1,8 +1,7 @@
-
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ListTodo, MapPin, Users, PlusCircle, ClipboardCheck, Plus } from "lucide-react"
+import { Card, CardContent } from "@/components/ui/card"
+import { ListTodo, MapPin, Users, PlusCircle, ClipboardCheck } from "lucide-react"
 import { useEffect, useState } from "react"
 import Link from "next/link"
 
@@ -16,33 +15,6 @@ export default function DashboardOverview() {
   if (!mounted) {
     return <div className="flex items-center justify-center h-full text-muted-foreground italic">Loading overview...</div>
   }
-
-  const stats = [
-    {
-      title: "Daily Tasks",
-      value: 12,
-      subValue: "4 completed, 8 pending",
-      icon: ListTodo,
-      color: "text-blue-600",
-      bg: "bg-blue-100",
-    },
-    {
-      title: "Active Routes",
-      value: 8,
-      subValue: "All vehicles dispatched",
-      icon: MapPin,
-      color: "text-amber-600",
-      bg: "bg-amber-100",
-    },
-    {
-      title: "Total Suppliers",
-      value: 142,
-      subValue: "+3 added this week",
-      icon: Users,
-      color: "text-purple-600",
-      bg: "bg-purple-100",
-    },
-  ]
 
   const actions = [
     {
@@ -72,31 +44,11 @@ export default function DashboardOverview() {
   ]
 
   return (
-    <div className="space-y-8 max-w-6xl mx-auto w-full">
-      <div>
-        <h2 className="text-3xl font-headline font-bold text-foreground tracking-tight">Welcome Back</h2>
-        <p className="text-muted-foreground mt-1">Here's a visual overview of your procurement operations.</p>
-      </div>
-
-      <div className="grid gap-6 md:grid-cols-3">
-        {stats.map((stat) => (
-          <Card key={stat.title} className="border-none shadow-sm overflow-hidden bg-white">
-            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-              <CardTitle className="text-sm font-medium text-muted-foreground">{stat.title}</CardTitle>
-              <div className={`${stat.bg} p-2 rounded-lg`}>
-                <stat.icon className={`h-4 w-4 ${stat.color}`} />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-4xl font-bold tracking-tight">{stat.value}</div>
-              <p className="text-xs text-muted-foreground mt-1 font-medium">{stat.subValue}</p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+    <div className="space-y-6 max-w-6xl mx-auto w-full">
 
       <div className="space-y-4">
         <h3 className="text-xl font-bold font-headline">Quick Actions</h3>
+
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {actions.map((action) => (
             <Card key={action.title} asChild className="border-none shadow-sm hover:shadow-md transition-all cursor-pointer bg-white">
@@ -105,16 +57,20 @@ export default function DashboardOverview() {
                   <div className="p-3 rounded-full bg-primary/10 text-primary">
                     <action.icon className="h-6 w-6" />
                   </div>
+
                   <div>
                     <h4 className="font-bold text-foreground">{action.title}</h4>
                     <p className="text-xs text-muted-foreground mt-1">{action.description}</p>
                   </div>
+
                 </CardContent>
               </Link>
             </Card>
           ))}
         </div>
+
       </div>
+
     </div>
   )
 }
