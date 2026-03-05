@@ -9,6 +9,8 @@ export interface Task {
   status: TaskStatus;
   createdAt: string;
   completedAt?: string;
+  supplierName?: string;
+  supplierId?: string;
 }
 
 export interface MilkMetrics {
