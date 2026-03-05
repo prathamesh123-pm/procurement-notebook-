@@ -80,10 +80,10 @@ export default function RouteDetailsPage() {
     setDialogMode('edit')
     setEditingId(supplier.id)
     setFormData({
-      name: supplier.name,
-      id: supplier.id,
-      address: supplier.address,
-      mobile: supplier.mobile,
+      name: supplier.name || "",
+      id: supplier.id || "",
+      address: supplier.address || "",
+      mobile: supplier.mobile || "",
       competition: supplier.competition || "",
       additionalInfo: supplier.additionalInfo || "",
       cowQty: String(supplier.cowMilk?.quantity ?? 0),

@@ -109,43 +109,12 @@ export default function DailyReportPage() {
 
   useEffect(() => {
     setMounted(true)
+    // Initialize IDs on the client side only to avoid hydration mismatch
     setFormData(prev => ({
       ...prev,
       reportDate: new Date().toISOString().split('T')[0],
-      meetings: [
-        {
-          id: crypto.randomUUID(),
-          person: "",
-          org: "",
-          from: "",
-          to: "",
-          subject: "",
-          decision: ""
-        }
-      ],
-      centerVisits: [
-        {
-          id: crypto.randomUUID(),
-          name: "",
-          topic: "",
-          observation: "",
-          suggestion: "",
-          objectives: [],
-          compliance: [],
-          complianceRemarks: {},
-          mixQty: "",
-          mixFat: "",
-          mixSnf: "",
-          mixTemp: "",
-          cowQty: "",
-          cowFat: "",
-          cowSnf: "",
-          cowTemp: "",
-          equipment: [],
-          equipmentRemarks: {},
-          remark: ""
-        }
-      ]
+      meetings: [createEmptyMeeting()],
+      centerVisits: [createEmptyVisit()]
     }))
   }, [])
 
@@ -236,41 +205,18 @@ export default function DailyReportPage() {
 
   return (
     <div className="space-y-3 max-w-7xl mx-auto w-full pb-10 print:p-0 print:m-0 print:max-w-none" id="printable-report">
+      {/* Styles for printing */}
       <style jsx global>{`
         @media print {
-          body * {
-            visibility: hidden;
-          }
-          #printable-report, #printable-report * {
-            visibility: visible;
-          }
-          #printable-report {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-          }
-          .no-print {
-            display: none !important;
-          }
-          button {
-            display: none !important;
-          }
-          .sidebar-trigger, .sidebar, header {
-            display: none !important;
-          }
-          .tabs-list {
-            display: none !important;
-          }
-          .card {
-            border: 1px solid #ddd !important;
-            box-shadow: none !important;
-          }
-          input, textarea, select {
-            border: none !important;
-            background: transparent !important;
-            padding: 0 !important;
-          }
+          body * { visibility: hidden; }
+          #printable-report, #printable-report * { visibility: visible; }
+          #printable-report { position: absolute; left: 0; top: 0; width: 100%; }
+          .no-print { display: none !important; }
+          button { display: none !important; }
+          .sidebar-trigger, .sidebar, header { display: none !important; }
+          .tabs-list { display: none !important; }
+          .card { border: 1px solid #ddd !important; box-shadow: none !important; }
+          input, textarea, select { border: none !important; background: transparent !important; padding: 0 !important; }
         }
       `}</style>
 
@@ -282,6 +228,7 @@ export default function DailyReportPage() {
         <p className="text-[9px] text-muted-foreground font-bold uppercase tracking-wider">Collection Department - Daily Work Report</p>
       </div>
 
+      {/* BASIC INFO */}
       <Card className="border-none shadow-sm bg-white overflow-hidden mb-4">
         <CardHeader className="bg-primary/5 border-b py-1.5 px-3">
           <CardTitle className="text-xs font-bold flex items-center gap-2">
@@ -336,6 +283,7 @@ export default function DailyReportPage() {
         </TabsList>
       </Tabs>
 
+      {/* OFFICE WORK SECTION */}
       <div className={activeReportType === 'office' ? "block" : "hidden print:block"}>
         <Card className="border-none shadow-sm bg-white mb-4">
           <CardHeader className="bg-primary/5 border-b py-1.5 px-3">
@@ -382,6 +330,7 @@ export default function DailyReportPage() {
           </CardContent>
         </Card>
 
+        {/* MEETINGS */}
         <div className="flex items-center justify-between mb-2 no-print">
           <h3 className="text-xs font-bold flex items-center gap-2">
             <FileText className="h-3.5 w-3.5 text-primary" /> महत्वाच्या भेटी / बैठका (Meetings)
@@ -433,6 +382,7 @@ export default function DailyReportPage() {
         ))}
       </div>
 
+      {/* FIELD VISIT SECTION */}
       <div className={activeReportType === 'field' ? "block" : "hidden print:block"}>
         <Card className="border-none shadow-sm bg-white overflow-hidden mb-4">
           <CardHeader className="bg-primary/5 border-b py-1.5 px-3">
@@ -494,6 +444,7 @@ export default function DailyReportPage() {
           </CardContent>
         </Card>
 
+        {/* CENTER VISITS */}
         <div className="space-y-2">
           <div className="flex items-center justify-between no-print">
             <h3 className="text-xs font-bold flex items-center gap-2">
@@ -642,6 +593,7 @@ export default function DailyReportPage() {
         </div>
       </div>
 
+      {/* SUMMARY */}
       <Card className="border-none shadow-sm bg-white overflow-hidden mt-4">
         <CardHeader className="bg-primary/5 border-b py-1.5 px-3">
           <CardTitle className="text-xs font-bold">दिवसाचा सारांश (Day Summary)</CardTitle>

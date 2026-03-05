@@ -14,9 +14,9 @@ export interface Task {
 }
 
 export interface MilkMetrics {
-  quantity: number;
-  fat: number;
-  snf: number;
+  quantity?: number;
+  fat?: number;
+  snf?: number;
 }
 
 export interface Supplier {
