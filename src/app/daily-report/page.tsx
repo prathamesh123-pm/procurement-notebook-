@@ -13,7 +13,7 @@ import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
-import { ClipboardCheck, User, Briefcase, FileText, CheckCircle2, Truck, MapPin, Activity, Trash2, Plus, ShieldCheck, Settings } from "lucide-react"
+import { ClipboardCheck, User, Briefcase, FileText, CheckCircle2, Truck, MapPin, Activity, Trash2, Plus, ShieldCheck, Settings, Target } from "lucide-react"
 
 interface CenterVisit {
   id: string;
@@ -21,6 +21,7 @@ interface CenterVisit {
   topic: string;
   observation: string;
   suggestion: string;
+  objectives: string[];
   compliance: string[];
   snf: string;
   fat: string;
@@ -41,6 +42,7 @@ export default function DailyReportPage() {
     topic: "",
     observation: "",
     suggestion: "",
+    objectives: [],
     compliance: [],
     snf: "",
     fat: "",
@@ -77,7 +79,6 @@ export default function DailyReportPage() {
     odoEnd: "",
     fieldTimeFrom: "",
     fieldTimeTo: "",
-    fieldObjectives: [] as string[],
     
     // Dynamic Center Visits
     centerVisits: [createEmptyVisit()] as CenterVisit[],
@@ -95,7 +96,7 @@ export default function DailyReportPage() {
     setMounted(true)
   }, [])
 
-  const handleCheckboxChange = (field: 'officeTasks' | 'fieldObjectives', value: string) => {
+  const handleCheckboxChange = (field: 'officeTasks', value: string) => {
     setFormData(prev => ({
       ...prev,
       [field]: (prev[field] as string[]).includes(value)
@@ -112,7 +113,7 @@ export default function DailyReportPage() {
     }))
   }
 
-  const toggleCenterCheckbox = (id: string, field: 'compliance' | 'equipment', value: string) => {
+  const toggleCenterCheckbox = (id: string, field: 'compliance' | 'equipment' | 'objectives', value: string) => {
     const visit = formData.centerVisits.find(v => v.id === id);
     if (!visit) return;
 
@@ -224,10 +225,10 @@ export default function DailyReportPage() {
       <Tabs value={activeReportType} onValueChange={setActiveReportType} className="w-full">
         <TabsList className="grid w-full grid-cols-2 h-14 bg-muted/50 p-1 rounded-xl">
           <TabsTrigger value="office" className="rounded-lg font-bold text-base gap-2 data-[state=active]:bg-white data-[state=active]:shadow-md">
-            <Briefcase className="h-5 w-5" /> 1) Office Work Report
+            <Briefcase className="h-5 w-5" /> Office Work Report
           </TabsTrigger>
           <TabsTrigger value="field" className="rounded-lg font-bold text-base gap-2 data-[state=active]:bg-white data-[state=active]:shadow-md">
-            <Truck className="h-5 w-5" /> 2) Field Visit Report
+            <Truck className="h-5 w-5" /> Field Visit Report
           </TabsTrigger>
         </TabsList>
 
@@ -320,7 +321,7 @@ export default function DailyReportPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div className="space-y-2">
                   <Label className="text-xs font-bold uppercase">आजचा रूट / क्षेत्र</Label>
-                  <Input value={formData.fieldRoute} onChange={e => setFormData({...formData, fieldRoute: e.target.value})} />
+                  <Input value={formData.fieldRoute} onChange={e => setFormData({...formData, fieldRoute: e.target.value})} placeholder="रूटचे नाव" />
                 </div>
                 <div className="space-y-2">
                   <Label className="text-xs font-bold uppercase">वाहन प्रकार</Label>
@@ -337,7 +338,7 @@ export default function DailyReportPage() {
                 </div>
                 <div className="space-y-2">
                   <Label className="text-xs font-bold uppercase">वाहन क्रमांक</Label>
-                  <Input value={formData.vehicleNumber} onChange={e => setFormData({...formData, vehicleNumber: e.target.value})} />
+                  <Input value={formData.vehicleNumber} onChange={e => setFormData({...formData, vehicleNumber: e.target.value})} placeholder="MH 12 XX XXXX" />
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <div className="space-y-2">
@@ -361,22 +362,6 @@ export default function DailyReportPage() {
                   <Input type="number" value={formData.odoEnd} onChange={e => setFormData({...formData, odoEnd: e.target.value})} />
                 </div>
               </div>
-
-              <div className="space-y-3">
-                <Label className="text-xs font-bold uppercase">रूट उद्दिष्ट</Label>
-                <div className="flex flex-wrap gap-3">
-                  {["दूध संकलन तपासणी", "उपकरणे / मशीन तपासणी", "तक्रार निराकरण", "शेतकरी / केंद्र चर्चा", "इतर"].map((obj) => (
-                    <div key={obj} className="flex items-center space-x-2 border p-2 rounded-lg">
-                      <Checkbox 
-                        id={`obj-${obj}`} 
-                        checked={formData.fieldObjectives.includes(obj)} 
-                        onCheckedChange={() => handleCheckboxChange('fieldObjectives', obj)} 
-                      />
-                      <Label htmlFor={`obj-${obj}`} className="text-xs font-medium">{obj}</Label>
-                    </div>
-                  ))}
-                </div>
-              </div>
             </CardContent>
           </Card>
 
@@ -386,13 +371,13 @@ export default function DailyReportPage() {
               <h3 className="text-xl font-bold flex items-center gap-2">
                 <MapPin className="h-5 w-5 text-primary" /> केंद्रांची माहिती (Center Visits)
               </h3>
-              <Button onClick={addCenter} size="sm" className="gap-2 font-bold">
+              <Button onClick={addCenter} size="sm" className="gap-2 font-bold shadow-sm">
                 <Plus className="h-4 w-4" /> केंद्राची माहिती जोडा
               </Button>
             </div>
 
             {formData.centerVisits.map((visit, index) => (
-              <Card key={visit.id} className="border border-primary/20 shadow-sm bg-white overflow-hidden">
+              <Card key={visit.id} className="border border-primary/10 shadow-md bg-white overflow-hidden">
                 <CardHeader className="bg-primary/5 border-b py-3 px-6 flex flex-row items-center justify-between">
                   <CardTitle className="text-base font-bold">भेट {index + 1}: केंद्राची माहिती</CardTitle>
                   <Button 
@@ -405,84 +390,126 @@ export default function DailyReportPage() {
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </CardHeader>
-                <CardContent className="p-4 space-y-6">
-                  {/* Basic Visit Info */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div className="space-y-1">
-                      <Label className="text-[10px] uppercase font-bold">नाव / केंद्र</Label>
-                      <Input value={visit.name} onChange={e => updateCenter(visit.id, { name: e.target.value })} className="h-8" />
+                <CardContent className="p-5 space-y-6">
+                  {/* Basic Visit Info & Objectives */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-1">
+                          <Label className="text-[10px] uppercase font-bold">नाव / केंद्र</Label>
+                          <Input value={visit.name} onChange={e => updateCenter(visit.id, { name: e.target.value })} className="h-9" placeholder="केंद्राचे नाव" />
+                        </div>
+                        <div className="space-y-1">
+                          <Label className="text-[10px] uppercase font-bold">चर्चेचा विषय / उद्देश</Label>
+                          <Input value={visit.topic} onChange={e => updateCenter(visit.id, { topic: e.target.value })} className="h-9" />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-1 gap-4">
+                        <div className="space-y-1">
+                          <Label className="text-[10px] uppercase font-bold">निरीक्षण / समस्या</Label>
+                          <Input value={visit.observation} onChange={e => updateCenter(visit.id, { observation: e.target.value })} className="h-9" />
+                        </div>
+                        <div className="space-y-1">
+                          <Label className="text-[10px] uppercase font-bold">सूचना / शिफारस</Label>
+                          <Input value={visit.suggestion} onChange={e => updateCenter(visit.id, { suggestion: e.target.value })} className="h-9" />
+                        </div>
+                      </div>
                     </div>
-                    <div className="space-y-1">
-                      <Label className="text-[10px] uppercase font-bold">चर्चेचा विषय / उद्देश</Label>
-                      <Input value={visit.topic} onChange={e => updateCenter(visit.id, { topic: e.target.value })} className="h-8" />
-                    </div>
-                    <div className="space-y-1">
-                      <Label className="text-[10px] uppercase font-bold">निरीक्षण / समस्या</Label>
-                      <Input value={visit.observation} onChange={e => updateCenter(visit.id, { observation: e.target.value })} className="h-8" />
-                    </div>
-                    <div className="space-y-1">
-                      <Label className="text-[10px] uppercase font-bold">सूचना / शिफारस</Label>
-                      <Input value={visit.suggestion} onChange={e => updateCenter(visit.id, { suggestion: e.target.value })} className="h-8" />
+
+                    <div className="space-y-3 bg-muted/20 p-3 rounded-lg border">
+                      <Label className="text-xs font-bold text-primary flex items-center gap-2">
+                        <Target className="h-3.5 w-3.5" /> रूट उद्दिष्ट (Objectives)
+                      </Label>
+                      <div className="grid grid-cols-2 gap-2">
+                        {[
+                          "दूध संकलन तपासणी",
+                          "उपकरणे / मशीन तपासणी",
+                          "तक्रार निराकरण",
+                          "शेतकरी / केंद्र चर्चा",
+                          "इतर"
+                        ].map(obj => (
+                          <div key={obj} className="flex items-center space-x-1.5">
+                            <Checkbox 
+                              id={`obj-${visit.id}-${obj}`} 
+                              checked={visit.objectives.includes(obj)} 
+                              onCheckedChange={() => toggleCenterCheckbox(visit.id, 'objectives', obj)} 
+                              className="h-3.5 w-3.5"
+                            />
+                            <Label htmlFor={`obj-${visit.id}-${obj}`} className="text-[10px] font-medium leading-tight">{obj}</Label>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
                     {/* Quality Metrics */}
-                    <div className="lg:col-span-4 space-y-3 p-3 rounded-lg bg-blue-50/30 border border-blue-100">
-                      <Label className="text-xs font-bold text-blue-700 flex items-center gap-1">
-                        <Activity className="h-3 w-3" /> ७) गुणवत्ता तपासणी
+                    <div className="lg:col-span-3 space-y-3 p-3 rounded-lg bg-blue-50/40 border border-blue-100">
+                      <Label className="text-[10px] font-bold text-blue-700 flex items-center gap-1.5 uppercase tracking-wider">
+                        <Activity className="h-3.5 w-3.5" /> गुणवत्ता तपासणी
                       </Label>
-                      <div className="grid grid-cols-3 gap-2">
-                        <div className="space-y-1">
-                          <Label className="text-[9px] font-bold">SNF (%)</Label>
-                          <Input type="number" step="0.1" value={visit.snf} onChange={e => updateCenter(visit.id, { snf: e.target.value })} className="h-8 px-2" />
+                      <div className="grid grid-cols-1 gap-2">
+                        <div className="flex items-center justify-between gap-2">
+                          <Label className="text-[10px] font-bold">SNF (%)</Label>
+                          <Input type="number" step="0.1" value={visit.snf} onChange={e => updateCenter(visit.id, { snf: e.target.value })} className="h-8 w-20 px-2" />
                         </div>
-                        <div className="space-y-1">
-                          <Label className="text-[9px] font-bold">FAT (%)</Label>
-                          <Input type="number" step="0.1" value={visit.fat} onChange={e => updateCenter(visit.id, { fat: e.target.value })} className="h-8 px-2" />
+                        <div className="flex items-center justify-between gap-2">
+                          <Label className="text-[10px] font-bold">FAT (%)</Label>
+                          <Input type="number" step="0.1" value={visit.fat} onChange={e => updateCenter(visit.id, { fat: e.target.value })} className="h-8 w-20 px-2" />
                         </div>
-                        <div className="space-y-1">
-                          <Label className="text-[9px] font-bold">Temp (°C)</Label>
-                          <Input type="number" step="0.1" value={visit.temp} onChange={e => updateCenter(visit.id, { temp: e.target.value })} className="h-8 px-2" />
+                        <div className="flex items-center justify-between gap-2">
+                          <Label className="text-[10px] font-bold">Temp (°C)</Label>
+                          <Input type="number" step="0.1" value={visit.temp} onChange={e => updateCenter(visit.id, { temp: e.target.value })} className="h-8 w-20 px-2" />
                         </div>
                       </div>
                     </div>
 
                     {/* FSSAI & Cleanliness */}
-                    <div className="lg:col-span-5 space-y-3 p-3 rounded-lg bg-green-50/30 border border-green-100">
-                      <Label className="text-xs font-bold text-green-700 flex items-center gap-1">
-                        <ShieldCheck className="h-3 w-3" /> स्वच्छता व FSSAI तपासणी
+                    <div className="lg:col-span-5 space-y-3 p-3 rounded-lg bg-green-50/40 border border-green-100">
+                      <Label className="text-[10px] font-bold text-green-700 flex items-center gap-1.5 uppercase tracking-wider">
+                        <ShieldCheck className="h-3.5 w-3.5" /> स्वच्छता व FSSAI तपासणी
                       </Label>
-                      <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                        {["परिसर स्वच्छता", "भांडी स्वच्छता", "FSSAI डिस्प्ले", "कर्मचारी स्वच्छता", "पाण्याची स्वच्छता"].map(check => (
-                          <div key={check} className="flex items-center space-x-1.5">
+                      <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                        {[
+                          "परिसर स्वच्छता",
+                          "भांडी स्वच्छता",
+                          "FSSAI डिस्प्ले",
+                          "कर्मचारी स्वच्छता",
+                          "पाण्याची स्वच्छता"
+                        ].map(check => (
+                          <div key={check} className="flex items-center space-x-2">
                             <Checkbox 
                               id={`comp-${visit.id}-${check}`} 
                               checked={visit.compliance.includes(check)} 
                               onCheckedChange={() => toggleCenterCheckbox(visit.id, 'compliance', check)} 
-                              className="h-3 w-3"
+                              className="h-3.5 w-3.5"
                             />
-                            <Label htmlFor={`comp-${visit.id}-${check}`} className="text-[9px] font-medium leading-tight">{check}</Label>
+                            <Label htmlFor={`comp-${visit.id}-${check}`} className="text-[10px] font-medium leading-tight">{check}</Label>
                           </div>
                         ))}
                       </div>
                     </div>
 
                     {/* Equipment */}
-                    <div className="lg:col-span-3 space-y-3 p-3 rounded-lg bg-amber-50/30 border border-amber-100">
-                      <Label className="text-xs font-bold text-amber-700 flex items-center gap-1">
-                        <Settings className="h-3 w-3" /> उपकरण तपासणी
+                    <div className="lg:col-span-4 space-y-3 p-3 rounded-lg bg-amber-50/40 border border-amber-100">
+                      <Label className="text-[10px] font-bold text-amber-700 flex items-center gap-1.5 uppercase tracking-wider">
+                        <Settings className="h-3.5 w-3.5" /> उपकरण तपासणी
                       </Label>
-                      <div className="grid grid-cols-2 gap-2">
-                        {["वजन काटा", "फॅट मशीन", "SNF मशीन", "स्वच्छता"].map(eq => (
-                          <div key={eq} className="flex items-center space-x-1.5">
+                      <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                        {[
+                          "वजन काटा",
+                          "फॅट मशीन",
+                          "SNF मशीन",
+                          "स्वच्छता"
+                        ].map(eq => (
+                          <div key={eq} className="flex items-center space-x-2">
                             <Checkbox 
                               id={`eq-${visit.id}-${eq}`} 
                               checked={visit.equipment.includes(eq)} 
                               onCheckedChange={() => toggleCenterCheckbox(visit.id, 'equipment', eq)} 
-                              className="h-3 w-3"
+                              className="h-3.5 w-3.5"
                             />
-                            <Label htmlFor={`eq-${visit.id}-${eq}`} className="text-[9px] font-medium leading-tight">{eq}</Label>
+                            <Label htmlFor={`eq-${visit.id}-${eq}`} className="text-[10px] font-medium leading-tight">{eq}</Label>
                           </div>
                         ))}
                       </div>
