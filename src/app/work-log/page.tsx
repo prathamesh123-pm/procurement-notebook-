@@ -98,9 +98,9 @@ export default function WorkLogPage() {
     // Create Report Entry
     const storedReports = JSON.parse(localStorage.getItem('procurepal_reports') || '[]')
     
-    let reportSummary = `Task Completed: ${taskToComplete.title}.`
+    let reportSummary = `Task: ${taskToComplete.title}.`
     if (taskToComplete.description) reportSummary += ` Details: ${taskToComplete.description}.`
-    if (finalRemark) reportSummary += ` Remark/Action Taken: ${finalRemark}.`
+    if (finalRemark) reportSummary += ` Action Taken (Remark): ${finalRemark}.`
     if (taskToComplete.supplierName) reportSummary += ` [Supplier: ${taskToComplete.supplierName} (${taskToComplete.supplierId || 'N/A'})]`
 
     const newReport = {
@@ -117,7 +117,7 @@ export default function WorkLogPage() {
 
     toast({
       title: "Task Completed",
-      description: "Task moved to Management Reports.",
+      description: "Task has been moved to Management Reports.",
     })
   }
 
@@ -299,11 +299,11 @@ export default function WorkLogPage() {
             <div className="grid grid-cols-2 gap-4">
               <div className="p-4 rounded-xl bg-muted/30 border space-y-1">
                 <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Supplier Name</Label>
-                <p className="font-bold flex items-center gap-2"><User className="h-4 w-4 text-primary" /> {selectedTask?.supplierName || "N/A"}</p>
+                <p className="font-bold flex items-center gap-2 text-foreground"><User className="h-4 w-4 text-primary" /> {selectedTask?.supplierName || "N/A"}</p>
               </div>
               <div className="p-4 rounded-xl bg-muted/30 border space-y-1">
                 <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Code Number</Label>
-                <p className="font-bold flex items-center gap-2"><Hash className="h-4 w-4 text-primary" /> {selectedTask?.supplierId || "N/A"}</p>
+                <p className="font-bold flex items-center gap-2 text-foreground"><Hash className="h-4 w-4 text-primary" /> {selectedTask?.supplierId || "N/A"}</p>
               </div>
             </div>
 
@@ -327,16 +327,19 @@ export default function WorkLogPage() {
                 onChange={(e) => setTempRemark(e.target.value)} 
                 className="min-h-[120px] border-primary/20 focus:border-primary bg-background shadow-inner"
               />
-              <p className="text-[10px] text-muted-foreground italic">हा शेरा रिपोर्टमध्ये जतन केला जाईल.</p>
+              <p className="text-[10px] text-muted-foreground italic font-medium">हा शेरा रिपोर्टमध्ये जतन केला जाईल.</p>
             </div>
           </div>
 
-          <DialogFooter className="gap-2 sm:gap-0">
+          <DialogFooter className="gap-3 sm:gap-0">
             <div className="flex flex-col sm:flex-row gap-3 w-full">
-              <Button variant="outline" className="flex-1 font-bold" onClick={updateRemarkOnly}>
+              <Button variant="outline" className="flex-1 font-bold h-12" onClick={updateRemarkOnly}>
                 Update Remark
               </Button>
-              <Button className="flex-1 font-bold bg-primary hover:bg-primary/90 gap-2" onClick={() => selectedTask && completeTask(selectedTask.id)}>
+              <Button 
+                className="flex-1 font-bold bg-primary hover:bg-primary/90 gap-2 h-12" 
+                onClick={() => selectedTask && completeTask(selectedTask.id)}
+              >
                 <CheckCircle2 className="h-4 w-4" /> Complete Task
               </Button>
             </div>
