@@ -14,7 +14,6 @@ import { ReportType } from "@/lib/types"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
-import { Separator } from "@/components/ui/separator"
 import { ScrollArea } from "@/components/ui/scroll-area"
 
 const MOCK_REPORTS: any[] = [
@@ -28,6 +27,8 @@ const MOCK_REPORTS: any[] = [
     fullData: { 
       name: "Rahul Patil",
       designation: "Collection Executive",
+      idNumber: "EMP-001",
+      shift: "Sakal",
       officeTasks: ["दुग्ध नमुना नोंद तपासणी", "दरपत्रक तपासणी / मंजुरी", "कॉल करणे (Calls Made)"], 
       officeTaskDetail: "आज एकूण १५ केंद्रांना कॉल केले. दरपत्रक तपासणी पूर्ण झाली.",
       meetings: [
@@ -97,11 +98,8 @@ export default function ReportsPage() {
     toast({ title: "रिपोर्ट हटवला", description: "अहवाल यशस्वीरित्या काढून टाकला आहे." })
   }
 
-  const handleDownloadPDF = (report: any) => {
-    setSelectedReport(report)
-    setTimeout(() => {
-      window.print()
-    }, 100)
+  const handleDownloadPDF = () => {
+    window.print()
   }
 
   const handleViewReport = (report: any) => {
@@ -132,10 +130,10 @@ export default function ReportsPage() {
             padding: 0 !important;
             height: auto !important;
             overflow: visible !important;
+            background: white !important;
           }
           .dialog-overlay { display: none !important; }
           .scroll-area-viewport { overflow: visible !important; height: auto !important; }
-          .printable-area { display: block !important; }
         }
       `}</style>
 
@@ -178,11 +176,6 @@ export default function ReportsPage() {
             value={filterDate}
             onChange={(e) => setFilterDate(e.target.value)}
           />
-          {filterDate && (
-            <Button variant="ghost" size="icon" className="h-9 w-9" onClick={() => setFilterDate("")}>
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          )}
         </div>
       </div>
 
@@ -242,7 +235,7 @@ export default function ReportsPage() {
                     </Button>
                     <Button 
                       variant="secondary" 
-                      onClick={() => handleDownloadPDF(report)}
+                      onClick={() => { setSelectedReport(report); setTimeout(handleDownloadPDF, 100); }}
                       className="gap-2 group font-bold px-6 py-4 h-auto bg-primary text-primary-foreground hover:bg-primary/90"
                     >
                       <Download className="h-4 w-4" /> PDF डाउनलोड
@@ -263,9 +256,8 @@ export default function ReportsPage() {
         )}
       </div>
 
-      {/* Detailed Report View Modal */}
       <Dialog open={isViewOpen} onOpenChange={setIsViewOpen}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col p-0 dialog-content">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col p-0 dialog-content bg-white">
           <DialogHeader className="p-6 border-b no-print">
             <DialogTitle className="text-2xl font-bold flex items-center gap-3">
               {selectedReport && getIcon(selectedReport.type)}
@@ -277,7 +269,7 @@ export default function ReportsPage() {
           </DialogHeader>
 
           <ScrollArea className="flex-1 p-8 scroll-area-viewport">
-            <div className="space-y-10 printable-area">
+            <div className="space-y-10">
               {/* Header for Print Output */}
               <div className="hidden print:flex flex-col gap-2 border-b-2 border-primary pb-4 mb-8">
                 <h1 className="text-2xl font-bold text-center uppercase tracking-tighter">संकलन विभाग - दैनिक कामकाज अहवाल</h1>
@@ -287,21 +279,11 @@ export default function ReportsPage() {
                 </div>
               </div>
 
-              {/* Summary Section */}
-              <div className="space-y-3">
-                <h4 className="text-[10px] font-bold uppercase tracking-widest text-primary flex items-center gap-2 border-b pb-1">
-                  <FileText className="h-4 w-4" /> १. अहवाल सारांश (Summary)
-                </h4>
-                <div className="p-4 rounded-xl bg-muted/10 border text-sm leading-relaxed italic">
-                  {selectedReport?.summary}
-                </div>
-              </div>
-
-              {/* Representative Info (if available in fullData) */}
+              {/* Basic Info Section */}
               {selectedReport?.fullData && (
                 <div className="space-y-3">
                   <h4 className="text-[10px] font-bold uppercase tracking-widest text-primary flex items-center gap-2 border-b pb-1">
-                    <User className="h-4 w-4" /> २. प्रतिनिधीची माहिती (Representative Info)
+                    <User className="h-4 w-4" /> १. प्रतिनिधीची माहिती (Representative Info)
                   </h4>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div className="space-y-0.5">
@@ -324,12 +306,62 @@ export default function ReportsPage() {
                 </div>
               )}
 
+              {/* DAILY OFFICE WORK DATA */}
+              {selectedReport?.type === 'Daily Office Work' && selectedReport?.fullData && (
+                <div className="space-y-8">
+                  <div className="space-y-4">
+                    <h4 className="text-[10px] font-bold uppercase tracking-widest text-primary flex items-center gap-2 border-b pb-1">
+                      <Briefcase className="h-4 w-4" /> २. ऑफिस वर्क तपशील (Office Tasks)
+                    </h4>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                      {selectedReport.fullData.officeTasks?.map((task: string) => (
+                        <div key={task} className="flex items-center gap-2 p-2 border rounded-lg bg-blue-50/30 text-[11px] font-bold text-primary">
+                          <CheckCircle2 className="h-3 w-3" /> {task}
+                        </div>
+                      ))}
+                    </div>
+                    <div className="space-y-2 mt-4">
+                      <p className="text-[9px] font-bold uppercase text-muted-foreground">केलेल्या कामाचा सविस्तर तपशील</p>
+                      <div className="p-4 rounded-xl border bg-muted/5 text-sm leading-relaxed whitespace-pre-wrap italic">
+                        {selectedReport.fullData.officeTaskDetail || "तपशील उपलब्ध नाही."}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {selectedReport.fullData.meetings && selectedReport.fullData.meetings.length > 0 && (
+                    <div className="space-y-4">
+                      <h4 className="text-[10px] font-bold uppercase tracking-widest text-primary flex items-center gap-2 border-b pb-1">
+                        <MessageSquare className="h-4 w-4" /> ३. महत्वाच्या भेटी / बैठका (Meetings)
+                      </h4>
+                      {selectedReport.fullData.meetings.map((m: any, idx: number) => (
+                        <div key={idx} className="p-4 border rounded-xl bg-muted/5 space-y-3">
+                          <div className="flex justify-between border-b pb-2">
+                            <p className="font-bold text-sm text-primary">{m.person} <span className="text-muted-foreground font-medium text-xs">({m.org})</span></p>
+                            <p className="text-[10px] font-bold bg-muted px-2 py-0.5 rounded">{m.from} - {m.to}</p>
+                          </div>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-1">
+                              <p className="text-[9px] font-bold uppercase text-muted-foreground">चर्चेचा विषय</p>
+                              <p className="text-xs font-semibold">{m.subject}</p>
+                            </div>
+                            <div className="space-y-1">
+                              <p className="text-[9px] font-bold uppercase text-muted-foreground">निर्णय / कार्यवाही</p>
+                              <p className="text-xs text-muted-foreground italic">{m.decision}</p>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* FIELD VISIT DATA */}
               {selectedReport?.type === 'Field Visit' && selectedReport?.fullData && (
                 <div className="space-y-8">
                   <div className="space-y-3">
                     <h4 className="text-[10px] font-bold uppercase tracking-widest text-primary flex items-center gap-2 border-b pb-1">
-                      <Truck className="h-4 w-4" /> ३. रूट व वाहन तपशील (Route & Vehicle)
+                      <Truck className="h-4 w-4" /> २. रूट व वाहन तपशील (Route & Vehicle)
                     </h4>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       <div className="p-3 border rounded-xl bg-muted/5">
@@ -353,10 +385,10 @@ export default function ReportsPage() {
 
                   <div className="space-y-4">
                     <h4 className="text-[10px] font-bold uppercase tracking-widest text-primary flex items-center gap-2 border-b pb-1">
-                      <MapPin className="h-4 w-4" /> ४. केंद्रांची भेट माहिती (Center Visits)
+                      <MapPin className="h-4 w-4" /> ३. केंद्रांची भेट माहिती (Center Visits)
                     </h4>
                     {selectedReport.fullData.centerVisits?.map((visit: any, idx: number) => (
-                      <Card key={idx} className="border border-muted shadow-none bg-white p-0 overflow-hidden">
+                      <Card key={idx} className="border border-muted shadow-none bg-white p-0 overflow-hidden mb-4">
                         <div className="bg-primary/5 px-4 py-2 border-b flex justify-between items-center">
                           <h5 className="font-bold text-sm text-primary">{idx + 1}. {visit.name}</h5>
                           <span className="text-[10px] font-bold uppercase text-muted-foreground">{visit.topic}</span>
@@ -394,29 +426,6 @@ export default function ReportsPage() {
                             </div>
                           </div>
 
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="space-y-1.5">
-                              <p className="text-[9px] font-bold uppercase text-muted-foreground">स्वच्छता (Compliance)</p>
-                              <div className="flex flex-wrap gap-1.5">
-                                {visit.compliance?.length > 0 ? visit.compliance.map((c: string) => (
-                                  <div key={c} className="text-[9px] font-bold bg-muted px-2 py-0.5 rounded border">
-                                    {c} {visit.complianceRemarks?.[c] && <span className="text-primary font-normal ml-1">({visit.complianceRemarks[c]})</span>}
-                                  </div>
-                                )) : <span className="text-[9px] text-muted-foreground italic">No compliance issues</span>}
-                              </div>
-                            </div>
-                            <div className="space-y-1.5">
-                              <p className="text-[9px] font-bold uppercase text-muted-foreground">उपकरणे (Equipment Check)</p>
-                              <div className="flex flex-wrap gap-1.5">
-                                {visit.equipment?.length > 0 ? visit.equipment.map((e: string) => (
-                                  <div key={e} className="text-[9px] font-bold bg-muted px-2 py-0.5 rounded border">
-                                    {e} {visit.equipmentRemarks?.[e] && <span className="text-primary font-normal ml-1">({visit.equipmentRemarks[e]})</span>}
-                                  </div>
-                                )) : <span className="text-[9px] text-muted-foreground italic">No equipment issues</span>}
-                              </div>
-                            </div>
-                          </div>
-                          
                           {visit.remark && (
                             <div className="bg-muted/30 p-2.5 rounded border border-dashed text-[10px] italic leading-relaxed">
                               <span className="font-bold text-primary not-italic uppercase mr-2">शेरा:</span> {visit.remark}
@@ -429,91 +438,28 @@ export default function ReportsPage() {
                 </div>
               )}
 
-              {/* DAILY OFFICE WORK DATA */}
-              {selectedReport?.type === 'Daily Office Work' && selectedReport?.fullData && (
-                <div className="space-y-8">
-                  <div className="space-y-4">
-                    <h4 className="text-[10px] font-bold uppercase tracking-widest text-primary flex items-center gap-2 border-b pb-1">
-                      <Briefcase className="h-4 w-4" /> ३. ऑफिस वर्क तपशील (Office Tasks)
-                    </h4>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                      {selectedReport.fullData.officeTasks?.map((task: string) => (
-                        <div key={task} className="flex items-center gap-2 p-2 border rounded-lg bg-blue-50/30 text-[11px] font-bold text-primary">
-                          <CheckCircle2 className="h-3 w-3" /> {task}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <p className="text-[9px] font-bold uppercase text-muted-foreground">केलेल्या कामाचा सविस्तर तपशील</p>
-                    <div className="p-4 rounded-xl border bg-muted/5 text-sm leading-relaxed whitespace-pre-wrap italic">
-                      {selectedReport.fullData.officeTaskDetail || "N/A"}
-                    </div>
-                  </div>
-                  
-                  {selectedReport.fullData.meetings && selectedReport.fullData.meetings.length > 0 && (
-                    <div className="space-y-4">
-                      <h4 className="text-[10px] font-bold uppercase tracking-widest text-primary flex items-center gap-2 border-b pb-1">
-                        <MessageSquare className="h-4 w-4" /> ४. महत्वाच्या भेटी / बैठका (Meetings)
-                      </h4>
-                      {selectedReport.fullData.meetings.map((m: any, idx: number) => (
-                        <div key={idx} className="p-4 border rounded-xl bg-muted/5 space-y-3">
-                          <div className="flex justify-between border-b pb-2">
-                            <p className="font-bold text-sm text-primary">{m.person} <span className="text-muted-foreground font-medium text-xs">({m.org})</span></p>
-                            <p className="text-[10px] font-bold bg-muted px-2 py-0.5 rounded">{m.from} - {m.to}</p>
-                          </div>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="space-y-1">
-                              <p className="text-[9px] font-bold uppercase text-muted-foreground">चर्चेचा विषय</p>
-                              <p className="text-xs font-semibold">{m.subject}</p>
-                            </div>
-                            <div className="space-y-1">
-                              <p className="text-[9px] font-bold uppercase text-muted-foreground">निर्णय / कार्यवाही</p>
-                              <p className="text-xs text-muted-foreground italic">{m.decision}</p>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* DAILY TASK DATA */}
-              {selectedReport?.type === 'Daily Task' && (
-                <div className="space-y-6">
-                  <h4 className="text-[10px] font-bold uppercase tracking-widest text-primary flex items-center gap-2 border-b pb-1">
-                    <ListTodo className="h-4 w-4" /> ३. पूर्ण केलेल्या कामाचा तपशील
-                  </h4>
-                  <div className="p-6 rounded-2xl bg-orange-50/30 border border-orange-100 shadow-inner">
-                    <p className="text-sm text-foreground leading-relaxed italic">
-                      {selectedReport.summary}
-                    </p>
-                  </div>
-                </div>
-              )}
-
               {/* DAY SUMMARY SECTION */}
-              <div className="space-y-4">
-                <h4 className="text-[10px] font-bold uppercase tracking-widest text-primary flex items-center gap-2 border-b pb-1">
-                  <Activity className="h-4 w-4" /> {selectedReport?.type === 'Daily Task' ? '४' : '५'}. दिवसाचा सारांश (Day Summary)
-                </h4>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="space-y-2 p-3 rounded-xl bg-green-50/30 border border-green-100">
-                    <p className="text-[9px] font-bold text-green-700 uppercase tracking-widest">आजची प्रमुख कामगिरी</p>
-                    <p className="text-xs font-medium leading-relaxed italic">{selectedReport?.fullData?.achievements || "N/A"}</p>
-                  </div>
-                  <div className="space-y-2 p-3 rounded-xl bg-red-50/30 border border-red-100">
-                    <p className="text-[9px] font-bold text-red-700 uppercase tracking-widest">आलेल्या समस्या</p>
-                    <p className="text-xs font-medium leading-relaxed italic">{selectedReport?.fullData?.problems || "N/A"}</p>
-                  </div>
-                  <div className="space-y-2 p-3 rounded-xl bg-blue-50/30 border border-blue-100">
-                    <p className="text-[9px] font-bold text-blue-700 uppercase tracking-widest">केलेली कार्यवाही</p>
-                    <p className="text-xs font-medium leading-relaxed italic">{selectedReport?.fullData?.actionsTaken || "N/A"}</p>
+              {selectedReport?.fullData && (
+                <div className="space-y-4">
+                  <h4 className="text-[10px] font-bold uppercase tracking-widest text-primary flex items-center gap-2 border-b pb-1">
+                    <Activity className="h-4 w-4" /> ४. दिवसाचा सारांश (Day Summary)
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="space-y-2 p-3 rounded-xl bg-green-50/30 border border-green-100">
+                      <p className="text-[9px] font-bold text-green-700 uppercase tracking-widest">आजची प्रमुख कामगिरी</p>
+                      <p className="text-xs font-medium leading-relaxed italic">{selectedReport.fullData.achievements || "N/A"}</p>
+                    </div>
+                    <div className="space-y-2 p-3 rounded-xl bg-red-50/30 border border-red-100">
+                      <p className="text-[9px] font-bold text-red-700 uppercase tracking-widest">आलेल्या समस्या</p>
+                      <p className="text-xs font-medium leading-relaxed italic">{selectedReport.fullData.problems || "N/A"}</p>
+                    </div>
+                    <div className="space-y-2 p-3 rounded-xl bg-blue-50/30 border border-blue-100">
+                      <p className="text-[9px] font-bold text-blue-700 uppercase tracking-widest">केलेली कार्यवाही</p>
+                      <p className="text-xs font-medium leading-relaxed italic">{selectedReport.fullData.actionsTaken || "N/A"}</p>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
 
               {/* SUPERVISOR SIGNATURE */}
               <div className="pt-12 flex justify-end print:pt-16">
@@ -532,7 +478,7 @@ export default function ReportsPage() {
             <Button variant="outline" onClick={() => setIsViewOpen(false)} className="font-bold h-11 px-8 rounded-xl shadow-sm">
               बंद करा (Close)
             </Button>
-            <Button onClick={() => handleDownloadPDF(selectedReport)} className="font-bold bg-primary gap-2 h-11 px-8 rounded-xl shadow-lg shadow-primary/20">
+            <Button onClick={handleDownloadPDF} className="font-bold bg-primary gap-2 h-11 px-8 rounded-xl shadow-lg shadow-primary/20">
               <Download className="h-4 w-4" /> PDF डाउनलोड करा
             </Button>
           </DialogFooter>
@@ -545,3 +491,4 @@ export default function ReportsPage() {
 function Label({ className, children }: { className?: string, children: React.ReactNode }) {
   return <label className={className}>{children}</label>
 }
+
