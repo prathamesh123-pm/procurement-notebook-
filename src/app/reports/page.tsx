@@ -10,7 +10,7 @@ import {
   Eye, User, MapPin, Activity, ShieldCheck, Settings, MessageSquare, Clock
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
-import { ReportType, Report } from "@/lib/types"
+import { ReportType } from "@/lib/types"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
@@ -25,7 +25,14 @@ const MOCK_REPORTS: any[] = [
     workItemsCount: 8,
     interactionsCount: 12,
     summary: "Operations ran smoothly today across all routes. All milk collection centers reported data on time.",
-    fullData: { officeTasks: ["दुग्ध नमुना नोंद तपासणी", "दरपत्रक तपासणी / मंजुरी"], officeTaskDetail: "सर्व कामे वेळेत पूर्ण झाली." }
+    fullData: { 
+      officeTasks: ["दुग्ध नमुना नोंद तपासणी", "दरपत्रक तपासणी / मंजुरी"], 
+      officeTaskDetail: "सर्व कामे वेळेत पूर्ण झाली. कॉल करून माहिती घेतली.",
+      meetings: [
+        { person: "Rahul Patil", org: "Quality Dept", from: "10:00", to: "11:00", subject: "Fat Issues", decision: "Check all centers again" }
+      ],
+      supervisorName: "Vikram Shinde"
+    }
   },
   {
     id: "2",
@@ -34,7 +41,28 @@ const MOCK_REPORTS: any[] = [
     workItemsCount: 4,
     interactionsCount: 5,
     summary: "Conducted quality audits in the Northern Sector. Identified two suppliers needing training.",
-    fullData: { fieldRoute: "North Route", vehicleNumber: "MH 12 AB 1234", centerVisits: [{ name: "Center A", topic: "Quality check", observation: "Good", suggestion: "Maintain", mixQty: "100", mixFat: "4.5", mixSnf: "8.5", cowQty: "50", cowFat: "3.5", cowSnf: "8.2", remark: "Very good center" }] }
+    fullData: { 
+      fieldRoute: "North Route", 
+      vehicleNumber: "MH 12 AB 1234", 
+      totalKm: 45,
+      fieldTimeFrom: "09:00",
+      fieldTimeTo: "17:00",
+      centerVisits: [
+        { 
+          name: "Center A", 
+          topic: "Quality check", 
+          observation: "Good", 
+          suggestion: "Maintain", 
+          mixQty: "100", mixFat: "4.5", mixSnf: "8.5", 
+          cowQty: "50", cowFat: "3.5", cowSnf: "8.2", 
+          compliance: ["परिसर स्वच्छता"],
+          complianceRemarks: { "परिसर स्वच्छता": "Clean area" },
+          remark: "Very good center",
+          objectives: ["दूध संकलन तपासणी"]
+        }
+      ],
+      supervisorName: "Vikram Shinde"
+    }
   }
 ]
 
@@ -95,7 +123,10 @@ export default function ReportsPage() {
   }
 
   const handleDownloadPDF = (report: any) => {
-    window.print()
+    setSelectedReport(report)
+    setTimeout(() => {
+      window.print()
+    }, 100)
   }
 
   const handleViewReport = (report: any) => {
@@ -110,11 +141,26 @@ export default function ReportsPage() {
       <style jsx global>{`
         @media print {
           .no-print { display: none !important; }
-          header, sidebar, nav, .sidebar-trigger { display: none !important; }
+          header, sidebar, nav, .sidebar-trigger, button, .tabs-list { display: none !important; }
           .card { border: 1px solid #eee !important; box-shadow: none !important; margin-bottom: 20px !important; page-break-inside: avoid; }
           body { background: white !important; }
           main { padding: 0 !important; margin: 0 !important; }
-          .dialog-content { position: relative !important; width: 100% !important; max-width: none !important; border: none !important; }
+          .dialog-content { 
+            position: absolute !important; 
+            top: 0 !important; 
+            left: 0 !important; 
+            width: 100% !important; 
+            max-width: none !important; 
+            border: none !important; 
+            transform: none !important; 
+            margin: 0 !important;
+            padding: 0 !important;
+            height: auto !important;
+            overflow: visible !important;
+          }
+          .dialog-overlay { display: none !important; }
+          .scroll-area-viewport { overflow: visible !important; height: auto !important; }
+          .printable-area { display: block !important; }
         }
       `}</style>
 
@@ -150,15 +196,15 @@ export default function ReportsPage() {
           ))}
         </div>
         <div className="flex items-center gap-2 w-full md:w-auto">
-          <Label className="text-[10px] font-bold uppercase text-muted-foreground whitespace-nowrap">Filter by Date:</Label>
+          <Label className="text-[10px] font-bold uppercase text-muted-foreground whitespace-nowrap no-print">Filter by Date:</Label>
           <Input 
             type="date" 
-            className="h-9 w-full md:w-[180px] text-xs font-bold" 
+            className="h-9 w-full md:w-[180px] text-xs font-bold no-print" 
             value={filterDate}
             onChange={(e) => setFilterDate(e.target.value)}
           />
           {filterDate && (
-            <Button variant="ghost" size="icon" className="h-9 w-9" onClick={() => setFilterDate("")}>
+            <Button variant="ghost" size="icon" className="h-9 w-9 no-print" onClick={() => setFilterDate("")}>
               <Trash2 className="h-4 w-4" />
             </Button>
           )}
@@ -235,7 +281,7 @@ export default function ReportsPage() {
           <div className="text-center py-24 bg-white rounded-2xl border border-dashed flex flex-col items-center gap-4">
              <Archive className="h-16 w-16 text-muted-foreground/20" />
              <div className="space-y-1">
-               <h3 className="text-xl font-bold text-muted-foreground">कोणताही रिपोर्ट सापडला नाही</h3>
+               <h3 className="text-xl font-bold text-muted-foreground">कोणताही रिपोर्ट सापडल नाही</h3>
                <p className="text-sm text-muted-foreground/60">निवडलेली तारीख किंवा कॅटेगरी तपासा.</p>
              </div>
           </div>
@@ -244,8 +290,8 @@ export default function ReportsPage() {
 
       {/* Report Details Modal */}
       <Dialog open={isViewOpen} onOpenChange={setIsViewOpen}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col p-0">
-          <DialogHeader className="p-6 border-b">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col p-0 dialog-content">
+          <DialogHeader className="p-6 border-b no-print">
             <DialogTitle className="text-2xl font-bold flex items-center gap-3">
               {selectedReport && getIcon(selectedReport.type)}
               {selectedReport?.type} - अहवाल तपशील
@@ -255,8 +301,14 @@ export default function ReportsPage() {
             </DialogDescription>
           </DialogHeader>
 
-          <ScrollArea className="flex-1 p-6">
-            <div className="space-y-8" id="modal-content-to-print">
+          <ScrollArea className="flex-1 p-6 scroll-area-viewport">
+            <div className="space-y-8 printable-area">
+              {/* Header for Print */}
+              <div className="hidden print:block border-b pb-4 mb-6">
+                <h1 className="text-2xl font-bold">संकलन विभाग - दैनिक कामकाज अहवाल</h1>
+                <p className="text-sm font-bold text-primary">प्रकार: {selectedReport?.type} | तारीख: {selectedReport?.date}</p>
+              </div>
+
               {/* Summary Section */}
               <div className="space-y-3">
                 <h4 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
@@ -293,11 +345,11 @@ export default function ReportsPage() {
                   <h4 className="text-lg font-bold">केंद्रांची भेट माहिती (Center Visits)</h4>
                   
                   {selectedReport.fullData.centerVisits?.map((visit: any, idx: number) => (
-                    <Card key={idx} className="border border-primary/10">
+                    <Card key={idx} className="border border-primary/10 mb-4">
                       <CardContent className="p-4 space-y-4">
                         <div className="flex justify-between items-start border-b pb-2">
                           <h5 className="font-bold text-primary">{idx + 1}. {visit.name}</h5>
-                          <Badge variant="outline">{visit.topic}</Badge>
+                          <Badge variant="outline" className="text-[10px]">{visit.topic}</Badge>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div className="space-y-1">
@@ -313,11 +365,30 @@ export default function ReportsPage() {
                         <div className="grid grid-cols-2 gap-4">
                           <div className="bg-blue-50/50 p-3 rounded-lg border border-blue-100">
                             <Label className="text-[9px] font-bold text-blue-700 block mb-2">Mix Milk Quality</Label>
-                            <p className="text-xs">Qty: {visit.mixQty}L | FAT: {visit.mixFat}% | SNF: {visit.mixSnf}% | Temp: {visit.mixTemp}°C</p>
+                            <p className="text-[10px]">Qty: {visit.mixQty}L | FAT: {visit.mixFat}% | SNF: {visit.mixSnf}% | Temp: {visit.mixTemp}°C</p>
                           </div>
                           <div className="bg-green-50/50 p-3 rounded-lg border border-green-100">
                             <Label className="text-[9px] font-bold text-green-700 block mb-2">Cow Milk Quality</Label>
-                            <p className="text-xs">Qty: {visit.cowQty}L | FAT: {visit.cowFat}% | SNF: {visit.cowSnf}% | Temp: {visit.cowTemp}°C</p>
+                            <p className="text-[10px]">Qty: {visit.cowQty}L | FAT: {visit.cowFat}% | SNF: {visit.cowSnf}% | Temp: {visit.cowTemp}°C</p>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-1">
+                            <Label className="text-[9px] font-bold uppercase text-muted-foreground">स्वच्छता (Compliance)</Label>
+                            <div className="flex flex-wrap gap-1">
+                              {visit.compliance?.map((c: string) => (
+                                <Badge key={c} variant="outline" className="text-[8px]">{c}</Badge>
+                              ))}
+                            </div>
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-[9px] font-bold uppercase text-muted-foreground">उपकरणे (Equipment)</Label>
+                            <div className="flex flex-wrap gap-1">
+                              {visit.equipment?.map((e: string) => (
+                                <Badge key={e} variant="outline" className="text-[8px]">{e}</Badge>
+                              ))}
+                            </div>
                           </div>
                         </div>
                         
@@ -337,13 +408,13 @@ export default function ReportsPage() {
                     <h5 className="font-bold">केलेली कामे (Office Tasks)</h5>
                     <div className="flex flex-wrap gap-2">
                       {selectedReport.fullData.officeTasks?.map((task: string) => (
-                        <Badge key={task} className="bg-blue-100 text-blue-700 hover:bg-blue-100">{task}</Badge>
+                        <Badge key={task} className="bg-blue-100 text-blue-700 hover:bg-blue-100 border-none">{task}</Badge>
                       ))}
                     </div>
                   </div>
                   <div className="space-y-2">
                     <Label className="text-[10px] font-bold uppercase text-muted-foreground">कामाचा सविस्तर तपशील</Label>
-                    <p className="text-sm bg-muted/10 p-4 rounded-xl border">{selectedReport.fullData.officeTaskDetail}</p>
+                    <p className="text-sm bg-muted/10 p-4 rounded-xl border leading-relaxed">{selectedReport.fullData.officeTaskDetail}</p>
                   </div>
                   
                   {selectedReport.fullData.meetings && selectedReport.fullData.meetings.length > 0 && (
@@ -351,12 +422,12 @@ export default function ReportsPage() {
                       <h5 className="font-bold">महत्वाच्या भेटी / बैठका</h5>
                       {selectedReport.fullData.meetings.map((m: any, idx: number) => (
                         <div key={idx} className="p-3 border rounded-xl bg-muted/5 space-y-2">
-                          <div className="flex justify-between">
-                            <p className="font-bold text-sm">{m.person} ({m.org})</p>
+                          <div className="flex justify-between border-b pb-1">
+                            <p className="font-bold text-sm text-primary">{m.person} ({m.org})</p>
                             <p className="text-[10px] font-bold">{m.from} - {m.to}</p>
                           </div>
-                          <p className="text-xs">विषय: {m.subject}</p>
-                          <p className="text-xs text-muted-foreground">निर्णय: {m.decision}</p>
+                          <p className="text-xs font-semibold">विषय: {m.subject}</p>
+                          <p className="text-xs text-muted-foreground italic">निर्णय: {m.decision}</p>
                         </div>
                       ))}
                     </div>
@@ -364,38 +435,49 @@ export default function ReportsPage() {
                 </div>
               )}
 
-              {/* Day Summary - Achievements/Problems (If any) */}
-              {selectedReport?.fullData && (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border-t pt-6">
-                  <div className="space-y-1">
-                    <Label className="text-[9px] font-bold text-green-600 uppercase">आजची कामगिरी</Label>
-                    <p className="text-xs">{selectedReport.fullData.achievements || "N/A"}</p>
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-[9px] font-bold text-red-600 uppercase">समस्या</Label>
-                    <p className="text-xs">{selectedReport.fullData.problems || "N/A"}</p>
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-[9px] font-bold text-blue-600 uppercase">केलेली कार्यवाही</Label>
-                    <p className="text-xs">{selectedReport.fullData.actionsTaken || "N/A"}</p>
+              {selectedReport?.type === 'Daily Task' && (
+                <div className="space-y-6">
+                  <h4 className="text-lg font-bold border-b pb-2">पूर्ण केलेल्या कामाचा तपशील</h4>
+                  <div className="p-6 rounded-2xl bg-orange-50/50 border border-orange-100">
+                    <p className="text-sm text-muted-foreground leading-relaxed italic">
+                      {selectedReport.summary}
+                    </p>
                   </div>
                 </div>
               )}
 
-              <div className="pt-6 flex justify-end">
-                <div className="text-right">
-                  <Label className="text-[10px] font-bold uppercase text-muted-foreground">सुपरवायझरचे नाव</Label>
-                  <p className="text-lg font-bold border-b-2 border-primary min-w-[200px]">{selectedReport?.fullData?.supervisorName || selectedReport?.supervisorName || "N/A"}</p>
+              {/* Day Summary Footer */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border-t pt-6">
+                <div className="space-y-1">
+                  <Label className="text-[9px] font-bold text-green-600 uppercase tracking-widest">आजची कामगिरी</Label>
+                  <p className="text-xs font-medium">{selectedReport?.fullData?.achievements || "N/A"}</p>
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-[9px] font-bold text-red-600 uppercase tracking-widest">समस्या</Label>
+                  <p className="text-xs font-medium">{selectedReport?.fullData?.problems || "N/A"}</p>
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-[9px] font-bold text-blue-600 uppercase tracking-widest">केलेली कार्यवाही</Label>
+                  <p className="text-xs font-medium">{selectedReport?.fullData?.actionsTaken || "N/A"}</p>
+                </div>
+              </div>
+
+              <div className="pt-8 flex justify-end">
+                <div className="text-right border-t-2 border-primary pt-2 min-w-[250px]">
+                  <Label className="text-[10px] font-bold uppercase text-muted-foreground">सुपरवायझरची स्वाक्षरी</Label>
+                  <p className="text-xl font-bold mt-1 text-foreground">
+                    {selectedReport?.fullData?.supervisorName || "Vikram Shinde"}
+                  </p>
                 </div>
               </div>
             </div>
           </ScrollArea>
 
-          <DialogFooter className="p-6 border-t gap-3">
-            <Button variant="outline" onClick={() => setIsViewOpen(false)} className="font-bold">
+          <DialogFooter className="p-6 border-t gap-3 no-print">
+            <Button variant="outline" onClick={() => setIsViewOpen(false)} className="font-bold h-11 px-8 rounded-xl">
               बंद करा (Close)
             </Button>
-            <Button onClick={() => handleDownloadPDF(selectedReport)} className="font-bold bg-primary gap-2">
+            <Button onClick={() => handleDownloadPDF(selectedReport)} className="font-bold bg-primary gap-2 h-11 px-8 rounded-xl shadow-lg shadow-primary/20">
               <Download className="h-4 w-4" /> PDF डाउनलोड करा
             </Button>
           </DialogFooter>
