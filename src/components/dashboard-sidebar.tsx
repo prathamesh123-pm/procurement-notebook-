@@ -53,11 +53,6 @@ const items = [
 
 export function DashboardSidebar() {
   const pathname = usePathname()
-  const [mounted, setMounted] = React.useState(false)
-
-  React.useEffect(() => {
-    setMounted(true)
-  }, [])
 
   return (
     <Sidebar collapsible="icon">
@@ -82,7 +77,7 @@ export function DashboardSidebar() {
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
                     asChild
-                    isActive={mounted ? (pathname === item.url || (item.url !== '/dashboard' && pathname.startsWith(item.url))) : false}
+                    isActive={pathname === item.url || (item.url !== '/dashboard' && pathname.startsWith(item.url))}
                     tooltip={item.title}
                     className="flex h-12 items-center gap-4 rounded-xl px-4 transition-all hover:bg-primary/5 hover:text-primary data-[active=true]:bg-primary data-[active=true]:text-primary-foreground data-[active=true]:shadow-md data-[active=true]:shadow-primary/20"
                   >
