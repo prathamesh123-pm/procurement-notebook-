@@ -88,14 +88,13 @@ export default function WorkLogPage() {
     const taskToComplete = tasks.find(t => t.id === taskId)
     if (!taskToComplete) return
 
-    // Finalize the remark from current tempRemark
     const finalRemark = tempRemark
 
     // Remove from tasks list
     const updatedTasks = tasks.filter(t => t.id !== taskId)
     saveTasks(updatedTasks)
 
-    // Create Report Entry
+    // Create Report Entry with fullData
     const storedReports = JSON.parse(localStorage.getItem('procurepal_reports') || '[]')
     
     let reportSummary = `Task: ${taskToComplete.title}.`
@@ -109,7 +108,15 @@ export default function WorkLogPage() {
       date: new Date().toISOString().split('T')[0],
       workItemsCount: 1,
       interactionsCount: 1,
-      summary: reportSummary
+      summary: reportSummary,
+      fullData: {
+        title: taskToComplete.title,
+        description: taskToComplete.description,
+        supplierName: taskToComplete.supplierName,
+        supplierId: taskToComplete.supplierId,
+        remark: finalRemark,
+        createdAt: taskToComplete.createdAt
+      }
     }
     
     localStorage.setItem('procurepal_reports', JSON.stringify([newReport, ...storedReports]))
