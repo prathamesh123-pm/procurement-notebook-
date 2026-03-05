@@ -11,7 +11,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
-import { ClipboardCheck, User, Briefcase, FileText, CheckCircle2, Truck, MapPin, Activity, Trash2, Plus, ShieldCheck, Settings, Target, MessageSquare, PhoneCall, Mail, IceCream, Database, AlertTriangle, Scale, Thermometer, Download, Package } from "lucide-react"
+import { ClipboardCheck, User, Briefcase, FileText, CheckCircle2, Truck, MapPin, Activity, Trash2, Plus, ShieldCheck, Settings, Target, MessageSquare, PhoneCall, Mail, IceCream, Database, AlertTriangle } from "lucide-react"
 
 interface CenterVisit {
   id: string;
@@ -52,7 +52,7 @@ export default function DailyReportPage() {
   const [activeReportType, setActiveReportType] = useState<string>("office")
 
   const createEmptyVisit = (): CenterVisit => ({
-    id: mounted ? crypto.randomUUID() : "temp-visit-" + Math.random(),
+    id: crypto.randomUUID(),
     name: "",
     topic: "",
     observation: "",
@@ -74,7 +74,7 @@ export default function DailyReportPage() {
   });
 
   const createEmptyMeeting = (): Meeting => ({
-    id: mounted ? crypto.randomUUID() : "temp-meeting-" + Math.random(),
+    id: crypto.randomUUID(),
     person: "",
     org: "",
     from: "",

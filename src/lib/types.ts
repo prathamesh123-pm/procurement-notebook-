@@ -58,4 +58,5 @@ export interface Report {
   workItemsCount: number;
   interactionsCount: number;
   summary: string;
+  fullData?: any;
 }
