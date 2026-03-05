@@ -4,20 +4,28 @@
 import { useState, useEffect, useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Archive, Calendar, ArrowRight, FileText, ClipboardList, Filter, Briefcase, ListTodo, Truck, Download, Trash2 } from "lucide-react"
+import { 
+  Archive, Calendar, ArrowRight, FileText, ClipboardList, 
+  Filter, Briefcase, ListTodo, Truck, Download, Trash2, 
+  Eye, User, MapPin, Activity, ShieldCheck, Settings, MessageSquare, Clock
+} from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { ReportType, Report } from "@/lib/types"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
+import { Separator } from "@/components/ui/separator"
+import { ScrollArea } from "@/components/ui/scroll-area"
 
-const MOCK_REPORTS: Report[] = [
+const MOCK_REPORTS: any[] = [
   {
     id: "1",
     type: "Daily Office Work",
     date: "2024-05-20",
     workItemsCount: 8,
     interactionsCount: 12,
-    summary: "Operations ran smoothly today across all routes. All milk collection centers reported data on time."
+    summary: "Operations ran smoothly today across all routes. All milk collection centers reported data on time.",
+    fullData: { officeTasks: ["दुग्ध नमुना नोंद तपासणी", "दरपत्रक तपासणी / मंजुरी"], officeTaskDetail: "सर्व कामे वेळेत पूर्ण झाली." }
   },
   {
     id: "2",
@@ -25,7 +33,8 @@ const MOCK_REPORTS: Report[] = [
     date: "2024-05-19",
     workItemsCount: 4,
     interactionsCount: 5,
-    summary: "Conducted quality audits in the Northern Sector. Identified two suppliers needing training."
+    summary: "Conducted quality audits in the Northern Sector. Identified two suppliers needing training.",
+    fullData: { fieldRoute: "North Route", vehicleNumber: "MH 12 AB 1234", centerVisits: [{ name: "Center A", topic: "Quality check", observation: "Good", suggestion: "Maintain", mixQty: "100", mixFat: "4.5", mixSnf: "8.5", cowQty: "50", cowFat: "3.5", cowSnf: "8.2", remark: "Very good center" }] }
   }
 ]
 
@@ -35,6 +44,10 @@ export default function ReportsPage() {
   const [activeFilter, setActiveFilter] = useState<ReportType | 'All'>('All')
   const [filterDate, setFilterDate] = useState<string>("")
   const { toast } = useToast()
+
+  // View Modal State
+  const [selectedReport, setSelectedReport] = useState<any | null>(null)
+  const [isViewOpen, setIsViewOpen] = useState(false)
 
   useEffect(() => {
     setMounted(true)
@@ -82,9 +95,12 @@ export default function ReportsPage() {
   }
 
   const handleDownloadPDF = (report: any) => {
-    // Basic print functionality for the prototype
-    // In a real app, this would generate a clean PDF
     window.print()
+  }
+
+  const handleViewReport = (report: any) => {
+    setSelectedReport(report)
+    setIsViewOpen(true)
   }
 
   if (!mounted) return null
@@ -98,6 +114,7 @@ export default function ReportsPage() {
           .card { border: 1px solid #eee !important; box-shadow: none !important; margin-bottom: 20px !important; page-break-inside: avoid; }
           body { background: white !important; }
           main { padding: 0 !important; margin: 0 !important; }
+          .dialog-content { position: relative !important; width: 100% !important; max-width: none !important; border: none !important; }
         }
       `}</style>
 
@@ -194,13 +211,20 @@ export default function ReportsPage() {
                     </div>
                   </div>
 
-                  <div className="flex flex-col justify-end no-print">
+                  <div className="flex flex-col justify-end gap-3 no-print">
                     <Button 
                       variant="outline" 
-                      onClick={() => handleDownloadPDF(report)}
-                      className="gap-2 group font-bold px-6 py-4 h-auto transition-all hover:bg-primary hover:text-primary-foreground border-primary/20"
+                      onClick={() => handleViewReport(report)}
+                      className="gap-2 group font-bold px-6 py-4 h-auto border-primary/20"
                     >
-                      <Download className="h-4 w-4" /> PDF डाउनलोड करा
+                      <Eye className="h-4 w-4" /> अहवाल पहा (View)
+                    </Button>
+                    <Button 
+                      variant="secondary" 
+                      onClick={() => handleDownloadPDF(report)}
+                      className="gap-2 group font-bold px-6 py-4 h-auto bg-primary text-primary-foreground hover:bg-primary/90"
+                    >
+                      <Download className="h-4 w-4" /> PDF डाउनलोड
                     </Button>
                   </div>
                 </div>
@@ -214,12 +238,169 @@ export default function ReportsPage() {
                <h3 className="text-xl font-bold text-muted-foreground">कोणताही रिपोर्ट सापडला नाही</h3>
                <p className="text-sm text-muted-foreground/60">निवडलेली तारीख किंवा कॅटेगरी तपासा.</p>
              </div>
-             {filterDate && (
-               <Button variant="link" onClick={() => setFilterDate("")}>तारीख फिल्टर काढून टाका</Button>
-             )}
           </div>
         )}
       </div>
+
+      {/* Report Details Modal */}
+      <Dialog open={isViewOpen} onOpenChange={setIsViewOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col p-0">
+          <DialogHeader className="p-6 border-b">
+            <DialogTitle className="text-2xl font-bold flex items-center gap-3">
+              {selectedReport && getIcon(selectedReport.type)}
+              {selectedReport?.type} - अहवाल तपशील
+            </DialogTitle>
+            <DialogDescription className="font-bold text-primary">
+              तारीख: {selectedReport?.date} | ID: {selectedReport?.id.slice(0, 12)}
+            </DialogDescription>
+          </DialogHeader>
+
+          <ScrollArea className="flex-1 p-6">
+            <div className="space-y-8" id="modal-content-to-print">
+              {/* Summary Section */}
+              <div className="space-y-3">
+                <h4 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                  <FileText className="h-4 w-4" /> सारांश (Summary)
+                </h4>
+                <div className="p-4 rounded-xl bg-muted/20 border text-sm leading-relaxed italic">
+                  {selectedReport?.summary}
+                </div>
+              </div>
+
+              {/* Specific Data Sections */}
+              {selectedReport?.type === 'Field Visit' && selectedReport?.fullData && (
+                <div className="space-y-6">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="p-3 border rounded-xl bg-primary/5">
+                      <Label className="text-[9px] uppercase font-bold text-muted-foreground">रूट / क्षेत्र</Label>
+                      <p className="text-sm font-bold">{selectedReport.fullData.fieldRoute}</p>
+                    </div>
+                    <div className="p-3 border rounded-xl bg-primary/5">
+                      <Label className="text-[9px] uppercase font-bold text-muted-foreground">वाहन क्रमांक</Label>
+                      <p className="text-sm font-bold">{selectedReport.fullData.vehicleNumber}</p>
+                    </div>
+                    <div className="p-3 border rounded-xl bg-primary/5">
+                      <Label className="text-[9px] uppercase font-bold text-muted-foreground">एकूण KM</Label>
+                      <p className="text-sm font-bold">{selectedReport.fullData.totalKm} KM</p>
+                    </div>
+                    <div className="p-3 border rounded-xl bg-primary/5">
+                      <Label className="text-[9px] uppercase font-bold text-muted-foreground">वेळ</Label>
+                      <p className="text-sm font-bold">{selectedReport.fullData.fieldTimeFrom} - {selectedReport.fullData.fieldTimeTo}</p>
+                    </div>
+                  </div>
+
+                  <Separator />
+                  <h4 className="text-lg font-bold">केंद्रांची भेट माहिती (Center Visits)</h4>
+                  
+                  {selectedReport.fullData.centerVisits?.map((visit: any, idx: number) => (
+                    <Card key={idx} className="border border-primary/10">
+                      <CardContent className="p-4 space-y-4">
+                        <div className="flex justify-between items-start border-b pb-2">
+                          <h5 className="font-bold text-primary">{idx + 1}. {visit.name}</h5>
+                          <Badge variant="outline">{visit.topic}</Badge>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-1">
+                            <Label className="text-[10px] uppercase font-bold text-muted-foreground">निरीक्षण व समस्या</Label>
+                            <p className="text-xs">{visit.observation}</p>
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-[10px] uppercase font-bold text-muted-foreground">सूचना</Label>
+                            <p className="text-xs">{visit.suggestion}</p>
+                          </div>
+                        </div>
+                        
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="bg-blue-50/50 p-3 rounded-lg border border-blue-100">
+                            <Label className="text-[9px] font-bold text-blue-700 block mb-2">Mix Milk Quality</Label>
+                            <p className="text-xs">Qty: {visit.mixQty}L | FAT: {visit.mixFat}% | SNF: {visit.mixSnf}% | Temp: {visit.mixTemp}°C</p>
+                          </div>
+                          <div className="bg-green-50/50 p-3 rounded-lg border border-green-100">
+                            <Label className="text-[9px] font-bold text-green-700 block mb-2">Cow Milk Quality</Label>
+                            <p className="text-xs">Qty: {visit.cowQty}L | FAT: {visit.cowFat}% | SNF: {visit.cowSnf}% | Temp: {visit.cowTemp}°C</p>
+                          </div>
+                        </div>
+                        
+                        <div className="space-y-1 bg-muted/10 p-2 rounded">
+                          <Label className="text-[9px] font-bold uppercase">शेरा (Remark)</Label>
+                          <p className="text-xs italic">{visit.remark}</p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
+
+              {selectedReport?.type === 'Daily Office Work' && selectedReport?.fullData && (
+                <div className="space-y-6">
+                  <div className="space-y-3">
+                    <h5 className="font-bold">केलेली कामे (Office Tasks)</h5>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedReport.fullData.officeTasks?.map((task: string) => (
+                        <Badge key={task} className="bg-blue-100 text-blue-700 hover:bg-blue-100">{task}</Badge>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-[10px] font-bold uppercase text-muted-foreground">कामाचा सविस्तर तपशील</Label>
+                    <p className="text-sm bg-muted/10 p-4 rounded-xl border">{selectedReport.fullData.officeTaskDetail}</p>
+                  </div>
+                  
+                  {selectedReport.fullData.meetings && selectedReport.fullData.meetings.length > 0 && (
+                    <div className="space-y-4">
+                      <h5 className="font-bold">महत्वाच्या भेटी / बैठका</h5>
+                      {selectedReport.fullData.meetings.map((m: any, idx: number) => (
+                        <div key={idx} className="p-3 border rounded-xl bg-muted/5 space-y-2">
+                          <div className="flex justify-between">
+                            <p className="font-bold text-sm">{m.person} ({m.org})</p>
+                            <p className="text-[10px] font-bold">{m.from} - {m.to}</p>
+                          </div>
+                          <p className="text-xs">विषय: {m.subject}</p>
+                          <p className="text-xs text-muted-foreground">निर्णय: {m.decision}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Day Summary - Achievements/Problems (If any) */}
+              {selectedReport?.fullData && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border-t pt-6">
+                  <div className="space-y-1">
+                    <Label className="text-[9px] font-bold text-green-600 uppercase">आजची कामगिरी</Label>
+                    <p className="text-xs">{selectedReport.fullData.achievements || "N/A"}</p>
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-[9px] font-bold text-red-600 uppercase">समस्या</Label>
+                    <p className="text-xs">{selectedReport.fullData.problems || "N/A"}</p>
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-[9px] font-bold text-blue-600 uppercase">केलेली कार्यवाही</Label>
+                    <p className="text-xs">{selectedReport.fullData.actionsTaken || "N/A"}</p>
+                  </div>
+                </div>
+              )}
+
+              <div className="pt-6 flex justify-end">
+                <div className="text-right">
+                  <Label className="text-[10px] font-bold uppercase text-muted-foreground">सुपरवायझरचे नाव</Label>
+                  <p className="text-lg font-bold border-b-2 border-primary min-w-[200px]">{selectedReport?.fullData?.supervisorName || selectedReport?.supervisorName || "N/A"}</p>
+                </div>
+              </div>
+            </div>
+          </ScrollArea>
+
+          <DialogFooter className="p-6 border-t gap-3">
+            <Button variant="outline" onClick={() => setIsViewOpen(false)} className="font-bold">
+              बंद करा (Close)
+            </Button>
+            <Button onClick={() => handleDownloadPDF(selectedReport)} className="font-bold bg-primary gap-2">
+              <Download className="h-4 w-4" /> PDF डाउनलोड करा
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
