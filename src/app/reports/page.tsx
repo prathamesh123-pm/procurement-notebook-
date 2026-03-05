@@ -48,7 +48,7 @@ export default function ReportsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
         <div>
           <h2 className="text-3xl font-headline font-bold text-foreground tracking-tight">Management Reports</h2>
-          <p className="text-muted-foreground mt-1">Review historical operational data and field logs.</p>
+          <p className="text-muted-foreground mt-1 font-medium">Review historical operational data and field logs.</p>
         </div>
         <div className="flex items-center gap-3 bg-primary/10 px-5 py-2.5 rounded-xl text-primary font-bold shadow-sm border border-primary/5">
           <Archive className="h-5 w-5" /> 13 Total items archived
@@ -98,7 +98,7 @@ export default function ReportsPage() {
 
                   <div className="space-y-2.5">
                     <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">SUMMARY</p>
-                    <p className="text-sm text-muted-foreground leading-relaxed italic bg-muted/10 p-4 rounded-lg border-l-2 border-muted">
+                    <p className="text-sm text-muted-foreground leading-relaxed italic bg-muted/5 p-4 rounded-lg border-l-2 border-muted">
                       {report.summary}
                     </p>
                   </div>

@@ -80,10 +80,10 @@ export default function RoutesPage() {
   if (!mounted) return null
 
   return (
-    <div className="space-y-8 max-w-6xl mx-auto">
+    <div className="space-y-8 max-w-6xl mx-auto w-full">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-headline font-bold text-foreground">Milk Collection Routes</h2>
+          <h2 className="text-3xl font-headline font-bold text-foreground tracking-tight">Milk Collection Routes</h2>
           <p className="text-muted-foreground mt-1">The logistics, costing, and supplier associations.</p>
         </div>
         <Dialog open={isAddingRoute} onOpenChange={setIsAddingRoute}>
@@ -160,7 +160,7 @@ export default function RoutesPage() {
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {routes.map((route) => (
-          <Card key={route.id} className="border-none shadow-sm hover:shadow-md transition-shadow bg-white">
+          <Card key={route.id} className="border-none shadow-sm hover:shadow-md transition-shadow bg-white overflow-hidden">
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
                 <div className="p-2 rounded-lg bg-primary/10 text-primary">
@@ -176,26 +176,26 @@ export default function RoutesPage() {
                 </div>
               </div>
               <CardTitle className="mt-4 font-headline text-xl font-bold">{route.name}</CardTitle>
-              <CardDescription className="flex items-center gap-1 mt-1">
+              <CardDescription className="flex items-center gap-1 mt-1 font-medium">
                 <Truck className="h-3 w-3" /> {route.vehicle}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3 pt-4 text-sm">
               <div className="flex items-center gap-2 text-muted-foreground">
                 <Users className="h-4 w-4 text-primary" />
-                <span className="font-medium text-foreground">{route.supplierIds?.length || 0} Active Suppliers</span>
+                <span className="font-medium text-foreground">{(route.supplierIds?.length || 0)} Active Suppliers</span>
               </div>
               <div className="flex items-center gap-2 text-muted-foreground">
                 <MapPin className="h-4 w-4 text-primary" />
-                <span className="font-medium text-foreground">{route.distanceKm || 0} km</span>
+                <span className="font-medium text-foreground">{(route.distanceKm || 0)} km</span>
               </div>
               <div className="flex items-center gap-2 text-muted-foreground">
                 <IndianRupee className="h-4 w-4 text-primary" />
                 <span className="font-medium text-foreground">Rate: ₹{(route.costPerKm || 0).toFixed(2)} / km</span>
               </div>
             </CardContent>
-            <CardFooter className="pt-2 border-t">
-               <Button variant="ghost" size="sm" className="w-full justify-between text-primary font-bold group" asChild>
+            <CardFooter className="pt-2 border-t p-0">
+               <Button variant="ghost" size="sm" className="w-full justify-between text-primary font-bold group rounded-none h-12 px-6" asChild>
                   <Link href={`/routes/${route.id}`}>
                     Manage Suppliers <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                   </Link>

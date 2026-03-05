@@ -33,8 +33,7 @@ export default function RouteDetailsPage() {
     
     const routeSuppliers = storedSupps.filter((s: Supplier) => s.routeId === routeId)
     
-    // Default demo data for the first route
-    if (routeSuppliers.length === 0 && (routeId === "1" || routeId === route?.id)) {
+    if (routeSuppliers.length === 0 && (routeId === "1")) {
       const dummySupps: Supplier[] = [
         {
           id: "SUP-001",
@@ -42,7 +41,7 @@ export default function RouteDetailsPage() {
           address: "Village North, Plot 42",
           mobile: "+91 9876543210",
           milkQuality: "A+ Grade",
-          routeId: routeId,
+          routeId: "1",
           competition: "Amul Local Collection Center",
           additionalInfo: "Preferred morning collection.",
           cowMilk: { quantity: 25, fat: 4.2, snf: 8.5 },
@@ -54,7 +53,7 @@ export default function RouteDetailsPage() {
           address: "River Bend, Sector 4",
           mobile: "+91 9988776655",
           milkQuality: "A Grade",
-          routeId: routeId,
+          routeId: "1",
           competition: "Local Cooperative",
           additionalInfo: "Requires extra cans on Mondays.",
           cowMilk: { quantity: 15, fat: 3.8, snf: 8.2 },
@@ -65,7 +64,7 @@ export default function RouteDetailsPage() {
     } else {
       setSuppliers(routeSuppliers)
     }
-  }, [routeId, route?.id])
+  }, [routeId])
 
   const filteredSuppliers = useMemo(() => {
     return suppliers.filter(s => 
@@ -79,12 +78,11 @@ export default function RouteDetailsPage() {
   return (
     <div className="space-y-6 h-[calc(100vh-140px)] flex flex-col max-w-7xl mx-auto w-full">
       <div className="flex flex-col gap-1">
-        <h2 className="text-3xl font-headline font-bold text-foreground">Route Details</h2>
-        <p className="text-muted-foreground">Managing Path ID: {routeId}</p>
+        <h2 className="text-3xl font-headline font-bold text-foreground tracking-tight">Route Details</h2>
+        <p className="text-muted-foreground font-medium">Managing Path ID: {routeId}</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1 min-h-0">
-        {/* Left List Panel */}
         <Card className="lg:col-span-4 border-none shadow-sm flex flex-col overflow-hidden bg-white">
           <CardHeader className="flex-none p-4 pb-2">
             <div className="flex items-center justify-between">
@@ -124,25 +122,18 @@ export default function RouteDetailsPage() {
                     </p>
                   </div>
                 ))}
-                {filteredSuppliers.length === 0 && (
-                  <div className="p-8 text-center text-muted-foreground text-sm italic">
-                    No suppliers matched your search.
-                  </div>
-                )}
               </div>
             </ScrollArea>
           </CardContent>
         </Card>
 
-        {/* Right Detail Panel */}
         <Card className="lg:col-span-8 border-none shadow-sm flex flex-col overflow-hidden bg-white">
           {selectedSupplier ? (
             <ScrollArea className="flex-1">
               <CardContent className="p-8 space-y-10">
-                {/* Header Info */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b pb-8">
                   <div className="space-y-1">
-                    <h3 className="text-3xl font-bold font-headline text-foreground">{selectedSupplier.name}</h3>
+                    <h3 className="text-3xl font-bold font-headline text-foreground tracking-tight">{selectedSupplier.name}</h3>
                     <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest">Supplier ID: {selectedSupplier.id}</p>
                   </div>
                   <div className="flex gap-3">
@@ -156,47 +147,49 @@ export default function RouteDetailsPage() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                  {/* Contacts */}
                   <div className="space-y-5">
                     <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2">
                       CONTACT DETAILS
                     </h4>
                     <div className="space-y-4">
-                      <div>
-                        <Label className="text-[10px] text-muted-foreground flex items-center gap-2 font-bold mb-1">
-                          <Phone className="h-3 w-3 text-primary" /> MOBILE NUMBER
-                        </Label>
-                        <p className="text-sm font-semibold text-foreground">{selectedSupplier.mobile}</p>
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 rounded-full bg-blue-50">
+                          <Phone className="h-4 w-4 text-primary" />
+                        </div>
+                        <div>
+                          <p className="text-[10px] font-bold text-muted-foreground uppercase">Mobile Number</p>
+                          <p className="text-sm font-semibold text-foreground">{selectedSupplier.mobile}</p>
+                        </div>
                       </div>
-                      <div>
-                        <Label className="text-[10px] text-muted-foreground flex items-center gap-2 font-bold mb-1">
-                          <MapPin className="h-3 w-3 text-primary" /> ADDRESS
-                        </Label>
-                        <p className="text-sm font-semibold text-foreground">{selectedSupplier.address}</p>
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 rounded-full bg-blue-50">
+                          <MapPin className="h-4 w-4 text-primary" />
+                        </div>
+                        <div>
+                          <p className="text-[10px] font-bold text-muted-foreground uppercase">Address</p>
+                          <p className="text-sm font-semibold text-foreground">{selectedSupplier.address}</p>
+                        </div>
                       </div>
                     </div>
                   </div>
 
-                  {/* Competition */}
                   <div className="space-y-5">
                     <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
                       VILLAGE COMPETITION
                     </h4>
-                    <div className="p-4 bg-muted/30 rounded-lg border border-muted/50">
-                      <p className="text-sm font-medium text-foreground">{selectedSupplier.competition || "No recorded competitors in this area."}</p>
+                    <div className="p-4 bg-muted/20 rounded-xl border border-muted/50">
+                      <p className="text-sm font-medium text-foreground">{selectedSupplier.competition || "No recorded competitors."}</p>
                     </div>
                   </div>
                 </div>
 
-                {/* Other Info */}
                 <div className="space-y-5">
                   <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">OTHER INFORMATION</h4>
                   <div className="p-5 border rounded-xl bg-background shadow-inner">
-                    <p className="text-sm text-muted-foreground leading-relaxed italic">{selectedSupplier.additionalInfo || "No special instructions or notes provided."}</p>
+                    <p className="text-sm text-muted-foreground leading-relaxed italic">{selectedSupplier.additionalInfo || "No special instructions provided."}</p>
                   </div>
                 </div>
 
-                {/* Metrics */}
                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
                   <div className="space-y-5">
                     <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2">
@@ -254,8 +247,8 @@ export default function RouteDetailsPage() {
                 <User className="h-16 w-16 text-muted-foreground/20" />
               </div>
               <div className="space-y-2">
-                <h4 className="font-bold text-xl text-foreground">No Supplier Selected</h4>
-                <p className="text-sm text-muted-foreground max-w-xs">Select a supplier from the list on the left to view metrics and contact details.</p>
+                <h4 className="font-bold text-xl text-foreground tracking-tight">No Supplier Selected</h4>
+                <p className="text-sm text-muted-foreground max-w-xs mx-auto">Select a supplier from the list on the left to view metrics and contact details.</p>
               </div>
             </div>
           )}

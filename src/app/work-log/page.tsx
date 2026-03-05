@@ -41,14 +41,6 @@ export default function WorkLogPage() {
           status: 'completed',
           createdAt: "2024-05-19T09:00:00.000Z",
           completedAt: "2024-05-20T15:30:00.000Z"
-        },
-        {
-          id: crypto.randomUUID(),
-          title: "Quality Assurance Test – Suppliers",
-          description: "Random sampling of milk quality from top 10 suppliers.",
-          assignedTo: "Procurement Manager",
-          status: 'pending',
-          createdAt: "2024-05-20T11:00:00.000Z"
         }
       ]
       setTasks(initialTasks)
@@ -107,10 +99,10 @@ export default function WorkLogPage() {
   if (!mounted) return null
 
   return (
-    <div className="space-y-8 max-w-5xl mx-auto">
+    <div className="space-y-8 max-w-5xl mx-auto w-full">
       <div>
-        <h2 className="text-3xl font-headline font-bold text-foreground">Work Log</h2>
-        <p className="text-muted-foreground mt-1">Manage and track your daily procurement duties.</p>
+        <h2 className="text-3xl font-headline font-bold text-foreground tracking-tight">Work Log</h2>
+        <p className="text-muted-foreground mt-1 font-medium">Manage and track your daily procurement duties.</p>
       </div>
 
       <Card className="border-none shadow-sm bg-white">
@@ -211,7 +203,7 @@ export default function WorkLogPage() {
                 </div>
                 <div className="space-y-1">
                   <h3 className="text-xl font-bold text-muted-foreground">No tasks found</h3>
-                  <p className="text-sm text-muted-foreground/60 max-w-xs mx-auto">Try changing your search or filter criteria, or add a new task above.</p>
+                  <p className="text-sm text-muted-foreground/60 max-w-xs mx-auto">Try changing your search or filter criteria.</p>
                 </div>
               </div>
             )}

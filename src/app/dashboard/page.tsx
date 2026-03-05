@@ -5,7 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ListTodo, MapPin, Users, PlusCircle, FileText, Archive, Plus } from "lucide-react"
 import { useEffect, useState } from "react"
 import Link from "next/link"
-import { Task, Route, Supplier } from "@/lib/types"
 
 export default function DashboardOverview() {
   const [mounted, setMounted] = useState(false)
@@ -73,13 +72,13 @@ export default function DashboardOverview() {
   ]
 
   return (
-    <div className="space-y-8 max-w-6xl mx-auto">
+    <div className="space-y-8 max-w-6xl mx-auto w-full">
       <div>
         <h2 className="text-3xl font-headline font-bold text-foreground tracking-tight">Welcome Back</h2>
         <p className="text-muted-foreground mt-1">Here's a visual overview of your procurement operations.</p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-3">
         {stats.map((stat) => (
           <Card key={stat.title} className="border-none shadow-sm overflow-hidden bg-white">
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
