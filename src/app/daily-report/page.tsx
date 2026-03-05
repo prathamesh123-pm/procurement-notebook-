@@ -24,9 +24,10 @@ interface CenterVisit {
   compliance: string[];
   mixFat: string;
   mixSnf: string;
+  mixTemp: string;
   cowFat: string;
   cowSnf: string;
-  temp: string;
+  cowTemp: string;
   equipment: string[];
 }
 
@@ -47,9 +48,10 @@ export default function DailyReportPage() {
     compliance: [],
     mixFat: "",
     mixSnf: "",
+    mixTemp: "",
     cowFat: "",
     cowSnf: "",
-    temp: "",
+    cowTemp: "",
     equipment: []
   });
 
@@ -463,6 +465,10 @@ export default function DailyReportPage() {
                           <Label className="text-[9px] font-bold">Avg. SNF (%)</Label>
                           <Input type="number" step="0.1" value={visit.mixSnf} onChange={e => updateCenter(visit.id, { mixSnf: e.target.value })} className="h-8 px-2" />
                         </div>
+                        <div className="flex flex-col gap-1 col-span-2">
+                          <Label className="text-[9px] font-bold">Temp (°C)</Label>
+                          <Input type="number" step="0.1" value={visit.mixTemp} onChange={e => updateCenter(visit.id, { mixTemp: e.target.value })} className="h-8 px-2" />
+                        </div>
                         
                         <div className="space-y-1 col-span-2 border-b pb-1 mt-1 mb-1">
                            <span className="text-[9px] font-bold text-muted-foreground uppercase">गाय दूध (Cow Milk)</span>
@@ -475,10 +481,9 @@ export default function DailyReportPage() {
                           <Label className="text-[9px] font-bold">Avg. SNF (%)</Label>
                           <Input type="number" step="0.1" value={visit.cowSnf} onChange={e => updateCenter(visit.id, { cowSnf: e.target.value })} className="h-8 px-2" />
                         </div>
-                        
-                        <div className="flex items-center justify-between gap-2 col-span-2 mt-2 pt-2 border-t">
-                          <Label className="text-[10px] font-bold">Temp (°C)</Label>
-                          <Input type="number" step="0.1" value={visit.temp} onChange={e => updateCenter(visit.id, { temp: e.target.value })} className="h-8 w-20 px-2" />
+                        <div className="flex flex-col gap-1 col-span-2">
+                          <Label className="text-[9px] font-bold">Temp (°C)</Label>
+                          <Input type="number" step="0.1" value={visit.cowTemp} onChange={e => updateCenter(visit.id, { cowTemp: e.target.value })} className="h-8 px-2" />
                         </div>
                       </div>
                     </div>
