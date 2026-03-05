@@ -52,7 +52,7 @@ export default function DailyReportPage() {
   const [activeReportType, setActiveReportType] = useState<string>("office")
 
   const createEmptyVisit = (): CenterVisit => ({
-    id: crypto.randomUUID(),
+    id: typeof window !== 'undefined' ? crypto.randomUUID() : '',
     name: "",
     topic: "",
     observation: "",
@@ -74,7 +74,7 @@ export default function DailyReportPage() {
   });
 
   const createEmptyMeeting = (): Meeting => ({
-    id: crypto.randomUUID(),
+    id: typeof window !== 'undefined' ? crypto.randomUUID() : '',
     person: "",
     org: "",
     from: "",
@@ -109,7 +109,7 @@ export default function DailyReportPage() {
 
   useEffect(() => {
     setMounted(true)
-    // Initialize IDs on the client side only to avoid hydration mismatch
+    // Initialize dynamic values on the client side only to avoid hydration mismatch
     setFormData(prev => ({
       ...prev,
       reportDate: new Date().toISOString().split('T')[0],
@@ -205,7 +205,6 @@ export default function DailyReportPage() {
 
   return (
     <div className="space-y-3 max-w-7xl mx-auto w-full pb-10 print:p-0 print:m-0 print:max-w-none" id="printable-report">
-      {/* Styles for printing */}
       <style jsx global>{`
         @media print {
           body * { visibility: hidden; }
@@ -228,7 +227,6 @@ export default function DailyReportPage() {
         <p className="text-[9px] text-muted-foreground font-bold uppercase tracking-wider">Collection Department - Daily Work Report</p>
       </div>
 
-      {/* BASIC INFO */}
       <Card className="border-none shadow-sm bg-white overflow-hidden mb-4">
         <CardHeader className="bg-primary/5 border-b py-1.5 px-3">
           <CardTitle className="text-xs font-bold flex items-center gap-2">
@@ -283,7 +281,6 @@ export default function DailyReportPage() {
         </TabsList>
       </Tabs>
 
-      {/* OFFICE WORK SECTION */}
       <div className={activeReportType === 'office' ? "block" : "hidden print:block"}>
         <Card className="border-none shadow-sm bg-white mb-4">
           <CardHeader className="bg-primary/5 border-b py-1.5 px-3">
@@ -330,7 +327,6 @@ export default function DailyReportPage() {
           </CardContent>
         </Card>
 
-        {/* MEETINGS */}
         <div className="flex items-center justify-between mb-2 no-print">
           <h3 className="text-xs font-bold flex items-center gap-2">
             <FileText className="h-3.5 w-3.5 text-primary" /> महत्वाच्या भेटी / बैठका (Meetings)
@@ -382,7 +378,6 @@ export default function DailyReportPage() {
         ))}
       </div>
 
-      {/* FIELD VISIT SECTION */}
       <div className={activeReportType === 'field' ? "block" : "hidden print:block"}>
         <Card className="border-none shadow-sm bg-white overflow-hidden mb-4">
           <CardHeader className="bg-primary/5 border-b py-1.5 px-3">
@@ -444,7 +439,6 @@ export default function DailyReportPage() {
           </CardContent>
         </Card>
 
-        {/* CENTER VISITS */}
         <div className="space-y-2">
           <div className="flex items-center justify-between no-print">
             <h3 className="text-xs font-bold flex items-center gap-2">
@@ -532,11 +526,11 @@ export default function DailyReportPage() {
                         </div>
                         <div className="space-y-0.5">
                           <Label className="text-[6px]">FAT%</Label>
-                          <Input value={visit.cowFat} onChange={e => updateCenter(visit.id, { cowFat: e.target.value })} className="h-5 text-[9px] px-1" />
+                          <Input value={visit.mixFat} onChange={e => updateCenter(visit.id, { cowFat: e.target.value })} className="h-5 text-[9px] px-1" />
                         </div>
                         <div className="space-y-0.5">
                           <Label className="text-[6px]">SNF%</Label>
-                          <Input value={visit.cowSnf} onChange={e => updateCenter(visit.id, { cowSnf: e.target.value })} className="h-5 text-[9px] px-1" />
+                          <Input value={visit.mixSnf} onChange={e => updateCenter(visit.id, { cowSnf: e.target.value })} className="h-5 text-[9px] px-1" />
                         </div>
                       </div>
                     </div>
@@ -593,7 +587,6 @@ export default function DailyReportPage() {
         </div>
       </div>
 
-      {/* SUMMARY */}
       <Card className="border-none shadow-sm bg-white overflow-hidden mt-4">
         <CardHeader className="bg-primary/5 border-b py-1.5 px-3">
           <CardTitle className="text-xs font-bold">दिवसाचा सारांश (Day Summary)</CardTitle>

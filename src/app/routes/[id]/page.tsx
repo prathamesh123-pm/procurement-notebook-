@@ -148,7 +148,7 @@ export default function RouteDetailsPage() {
     }
 
     localStorage.setItem('procurepal_suppliers', JSON.stringify(updatedAllSupps))
-    const routeSuppliers = updatedAllSupps.filter(s => s.routeId === routeId)
+    const routeSuppliers = updatedAllSupps.filter((s: Supplier) => s.routeId === routeId)
     setSuppliers(routeSuppliers)
     if (editingId === selectedSupplier?.id || formData.id === selectedSupplier?.id) {
       setSelectedSupplier(supplierData)
@@ -163,7 +163,7 @@ export default function RouteDetailsPage() {
     const updatedAllSupps = allSupps.filter((s: Supplier) => s.id !== id)
     localStorage.setItem('procurepal_suppliers', JSON.stringify(updatedAllSupps))
     
-    setSuppliers(updatedAllSupps.filter(s => s.routeId === routeId))
+    setSuppliers(updatedAllSupps.filter((s: Supplier) => s.routeId === routeId))
     if (selectedSupplier?.id === id) setSelectedSupplier(null)
     toast({ title: "हटवले", description: "पुरवठादाराची माहिती काढून टाकली गेली." })
   }
@@ -185,7 +185,6 @@ export default function RouteDetailsPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Left List Panel */}
         <Card className="lg:col-span-4 border-none shadow-sm bg-white">
           <CardHeader className="p-4 pb-2">
             <div className="flex items-center justify-between">
@@ -233,7 +232,6 @@ export default function RouteDetailsPage() {
           </CardContent>
         </Card>
 
-        {/* Right Detail Panel */}
         <Card className="lg:col-span-8 border-none shadow-sm bg-white min-h-[600px]">
           {selectedSupplier ? (
             <CardContent className="p-4 sm:p-8 space-y-10">
@@ -348,23 +346,6 @@ export default function RouteDetailsPage() {
                         <Truck className="h-3.5 w-3.5 text-amber-700" /> {selectedSupplier.cattleFeedBrand || "Not Set"}
                       </p>
                     </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                <div className="space-y-5">
-                  <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
-                    VILLAGE COMPETITION
-                  </h4>
-                  <div className="p-4 bg-muted/20 rounded-xl border border-muted/50">
-                    <p className="text-sm font-medium text-foreground">{selectedSupplier.competition || "No recorded competitors."}</p>
-                  </div>
-                </div>
-                <div className="space-y-5">
-                  <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">OTHER INFORMATION</h4>
-                  <div className="p-5 border rounded-xl bg-background shadow-inner">
-                    <p className="text-sm text-muted-foreground leading-relaxed italic">{selectedSupplier.additionalInfo || "No special instructions provided."}</p>
                   </div>
                 </div>
               </div>
