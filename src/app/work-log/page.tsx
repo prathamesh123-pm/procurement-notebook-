@@ -8,7 +8,6 @@ import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Checkbox } from "@/components/ui/checkbox"
 import { Task } from "@/lib/types"
 import { Plus, Search, ListTodo, Trash2, User, Hash, MessageSquare, Info, CheckCircle2 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
@@ -48,7 +47,7 @@ export default function WorkLogPage() {
       id: crypto.randomUUID(),
       title: newTaskTitle,
       description: newTaskDesc,
-      remark: "", // Initial remark is empty
+      remark: "",
       supplierName: newTaskSupplierName,
       supplierId: newTaskSupplierId,
       assignedTo: "Procurement Manager",
@@ -89,12 +88,14 @@ export default function WorkLogPage() {
     const taskToComplete = tasks.find(t => t.id === taskId)
     if (!taskToComplete) return
 
-    // Finalize the remark if coming from dialog
-    const finalRemark = taskId === selectedTask?.id ? tempRemark : taskToComplete.remark
+    // Finalize the remark from current tempRemark
+    const finalRemark = tempRemark
 
+    // Remove from tasks list
     const updatedTasks = tasks.filter(t => t.id !== taskId)
     saveTasks(updatedTasks)
 
+    // Create Report Entry
     const storedReports = JSON.parse(localStorage.getItem('procurepal_reports') || '[]')
     
     let reportSummary = `Task Completed: ${taskToComplete.title}.`
