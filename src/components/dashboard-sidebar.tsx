@@ -66,8 +66,11 @@ export function DashboardSidebar() {
           <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/20">
             <Milk className="h-7 w-7" />
           </div>
-          <span className="font-headline text-lg font-bold tracking-tight group-data-[collapsible=icon]:hidden text-foreground">
-            {mounted ? "Procurement Notebook" : "Procurement Notebook"}
+          <span 
+            className="font-headline text-lg font-bold tracking-tight group-data-[collapsible=icon]:hidden text-foreground"
+            suppressHydrationWarning
+          >
+            Procurement Notebook
           </span>
         </div>
       </SidebarHeader>
