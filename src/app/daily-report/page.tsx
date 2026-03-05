@@ -52,7 +52,7 @@ export default function DailyReportPage() {
   const [activeReportType, setActiveReportType] = useState<string>("office")
 
   const createEmptyVisit = (): CenterVisit => ({
-    id: typeof window !== 'undefined' ? crypto.randomUUID() : '',
+    id: typeof window !== 'undefined' ? crypto.randomUUID() : Math.random().toString(),
     name: "",
     topic: "",
     observation: "",
@@ -74,7 +74,7 @@ export default function DailyReportPage() {
   });
 
   const createEmptyMeeting = (): Meeting => ({
-    id: typeof window !== 'undefined' ? crypto.randomUUID() : '',
+    id: typeof window !== 'undefined' ? crypto.randomUUID() : Math.random().toString(),
     person: "",
     org: "",
     from: "",
