@@ -22,6 +22,7 @@ interface CenterVisit {
   suggestion: string;
   objectives: string[];
   compliance: string[];
+  complianceRemarks: Record<string, string>;
   mixQty: string;
   mixFat: string;
   mixSnf: string;
@@ -31,6 +32,7 @@ interface CenterVisit {
   cowSnf: string;
   cowTemp: string;
   equipment: string[];
+  equipmentRemarks: Record<string, string>;
   remark: string;
 }
 
@@ -49,6 +51,7 @@ export default function DailyReportPage() {
     suggestion: "",
     objectives: [],
     compliance: [],
+    complianceRemarks: {},
     mixQty: "",
     mixFat: "",
     mixSnf: "",
@@ -58,6 +61,7 @@ export default function DailyReportPage() {
     cowSnf: "",
     cowTemp: "",
     equipment: [],
+    equipmentRemarks: {},
     remark: ""
   });
 
@@ -129,11 +133,37 @@ export default function DailyReportPage() {
     if (!visit) return;
 
     const current = visit[field];
-    const updated = current.includes(value)
+    const isSelected = current.includes(value);
+    
+    const updated = isSelected
       ? current.filter(v => v !== value)
       : [...current, value];
 
-    updateCenter(id, { [field]: updated });
+    const remarkField = field === 'compliance' ? 'complianceRemarks' : field === 'equipment' ? 'equipmentRemarks' : null;
+    
+    if (remarkField) {
+      const updatedRemarks = { ...visit[remarkField] };
+      if (isSelected) {
+        delete updatedRemarks[value];
+      } else {
+        updatedRemarks[value] = "";
+      }
+      updateCenter(id, { [field]: updated, [remarkField]: updatedRemarks });
+    } else {
+      updateCenter(id, { [field]: updated });
+    }
+  }
+
+  const updateOptionRemark = (id: string, field: 'complianceRemarks' | 'equipmentRemarks', option: string, remark: string) => {
+    const visit = formData.centerVisits.find(v => v.id === id);
+    if (!visit) return;
+    
+    updateCenter(id, {
+      [field]: {
+        ...visit[field],
+        [option]: remark
+      }
+    });
   }
 
   const addCenter = () => {
@@ -507,7 +537,7 @@ export default function DailyReportPage() {
                       <Label className="text-[10px] font-bold text-green-700 flex items-center gap-1.5 uppercase tracking-wider">
                         <ShieldCheck className="h-3.5 w-3.5" /> स्वच्छता व FSSAI तपासणी
                       </Label>
-                      <div className="grid grid-cols-1 gap-y-2">
+                      <div className="grid grid-cols-1 gap-y-3">
                         {[
                           "परिसर स्वच्छता",
                           "भांडी स्वच्छता",
@@ -515,14 +545,24 @@ export default function DailyReportPage() {
                           "कर्मचारी स्वच्छता",
                           "पाण्याची स्वच्छता"
                         ].map(check => (
-                          <div key={check} className="flex items-center space-x-2">
-                            <Checkbox 
-                              id={`comp-${visit.id}-${check}`} 
-                              checked={visit.compliance.includes(check)} 
-                              onCheckedChange={() => toggleCenterCheckbox(visit.id, 'compliance', check)} 
-                              className="h-3.5 w-3.5"
-                            />
-                            <Label htmlFor={`comp-${visit.id}-${check}`} className="text-[10px] font-medium leading-tight">{check}</Label>
+                          <div key={check} className="space-y-1.5">
+                            <div className="flex items-center space-x-2">
+                              <Checkbox 
+                                id={`comp-${visit.id}-${check}`} 
+                                checked={visit.compliance.includes(check)} 
+                                onCheckedChange={() => toggleCenterCheckbox(visit.id, 'compliance', check)} 
+                                className="h-3.5 w-3.5"
+                              />
+                              <Label htmlFor={`comp-${visit.id}-${check}`} className="text-[10px] font-bold leading-tight">{check}</Label>
+                            </div>
+                            {visit.compliance.includes(check) && (
+                              <Input 
+                                placeholder="शेरा लिहा..." 
+                                value={visit.complianceRemarks[check] || ""}
+                                onChange={(e) => updateOptionRemark(visit.id, 'complianceRemarks', check, e.target.value)}
+                                className="h-7 text-[10px] px-2 ml-5"
+                              />
+                            )}
                           </div>
                         ))}
                       </div>
@@ -533,21 +573,31 @@ export default function DailyReportPage() {
                       <Label className="text-[10px] font-bold text-amber-700 flex items-center gap-1.5 uppercase tracking-wider">
                         <Settings className="h-3.5 w-3.5" /> उपकरण तपासणी
                       </Label>
-                      <div className="grid grid-cols-1 gap-y-2">
+                      <div className="grid grid-cols-1 gap-y-3">
                         {[
                           "वजन काटा",
                           "फॅट मशीन",
                           "SNF मशीन",
                           "स्वच्छता"
                         ].map(eq => (
-                          <div key={eq} className="flex items-center space-x-2">
-                            <Checkbox 
-                              id={`eq-${visit.id}-${eq}`} 
-                              checked={visit.equipment.includes(eq)} 
-                              onCheckedChange={() => toggleCenterCheckbox(visit.id, 'equipment', eq)} 
-                              className="h-3.5 w-3.5"
-                            />
-                            <Label htmlFor={`eq-${visit.id}-${eq}`} className="text-[10px] font-medium leading-tight">{eq}</Label>
+                          <div key={eq} className="space-y-1.5">
+                            <div className="flex items-center space-x-2">
+                              <Checkbox 
+                                id={`eq-${visit.id}-${eq}`} 
+                                checked={visit.equipment.includes(eq)} 
+                                onCheckedChange={() => toggleCenterCheckbox(visit.id, 'equipment', eq)} 
+                                className="h-3.5 w-3.5"
+                              />
+                              <Label htmlFor={`eq-${visit.id}-${eq}`} className="text-[10px] font-bold leading-tight">{eq}</Label>
+                            </div>
+                            {visit.equipment.includes(eq) && (
+                              <Input 
+                                placeholder="शेरा लिहा..." 
+                                value={visit.equipmentRemarks[eq] || ""}
+                                onChange={(e) => updateOptionRemark(visit.id, 'equipmentRemarks', eq, e.target.value)}
+                                className="h-7 text-[10px] px-2 ml-5"
+                              />
+                            )}
                           </div>
                         ))}
                       </div>
