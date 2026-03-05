@@ -404,57 +404,99 @@ export default function ReportsPage() {
                     </div>
                   </div>
 
-                  {/* CENTER VISITS LIST */}
-                  <div className="space-y-4">
-                    <h3 className="text-xs font-bold uppercase border-l-4 border-black pl-2 mb-2 bg-muted/20 py-1">३) केंद्रांची माहिती (Center Visit Logs)</h3>
+                  {/* CENTER VISITS LIST - IMPROVED SUTATUTIT LAYOUT */}
+                  <div className="space-y-6">
+                    <h3 className="text-sm font-bold uppercase border-l-4 border-black pl-2 mb-4 bg-muted/20 py-2">३) केंद्रांची माहिती (Center Visit Logs)</h3>
                     {selectedReport?.fullData?.centerVisits?.map((visit: any, index: number) => (
-                      <div key={visit.id} className="border-2 border-muted rounded-lg overflow-hidden break-inside-avoid">
-                        <div className="bg-muted px-4 py-2 flex justify-between items-center">
-                          <span className="text-[11px] font-bold uppercase">Visit #{index + 1}: {visit.name}</span>
-                          <span className="text-[10px] font-medium">{visit.topic}</span>
+                      <div key={visit.id} className="border-2 border-black rounded-lg overflow-hidden break-inside-avoid mb-6 bg-white">
+                        {/* Visit Header */}
+                        <div className="bg-black text-white px-4 py-2 flex justify-between items-center">
+                          <span className="text-xs font-bold uppercase tracking-wider">Visit #{index + 1}: {visit.name}</span>
+                          <span className="text-[10px] font-bold bg-white text-black px-2 py-0.5 rounded uppercase">{visit.topic || "General Visit"}</span>
                         </div>
-                        <div className="p-4 space-y-4">
-                          <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-                            <div className="space-y-0.5">
-                              <Label className="text-[8px] uppercase font-bold text-muted-foreground">निरीक्षण (Observation)</Label>
-                              <p className="text-[10px] font-bold border-b min-h-[1.2rem]">{visit.observation}</p>
+
+                        <div className="p-4 space-y-6">
+                          {/* Core Observations */}
+                          <div className="grid grid-cols-3 gap-6">
+                            <div className="space-y-1">
+                              <Label className="text-[9px] uppercase font-bold text-muted-foreground border-b pb-0.5 block">निरीक्षण (Observation)</Label>
+                              <p className="text-[11px] font-bold leading-tight">{visit.observation || "---"}</p>
                             </div>
-                            <div className="space-y-0.5">
-                              <Label className="text-[8px] uppercase font-bold text-muted-foreground">सूचना (Suggestion)</Label>
-                              <p className="text-[10px] font-bold border-b min-h-[1.2rem]">{visit.suggestion}</p>
+                            <div className="space-y-1">
+                              <Label className="text-[9px] uppercase font-bold text-muted-foreground border-b pb-0.5 block">सूचना (Suggestion)</Label>
+                              <p className="text-[11px] font-bold leading-tight">{visit.suggestion || "---"}</p>
                             </div>
-                            <div className="space-y-0.5">
-                              <Label className="text-[8px] uppercase font-bold text-muted-foreground">उद्दिष्ट (Objectives)</Label>
-                              <div className="flex flex-wrap gap-1">
-                                {visit.objectives?.map((o: string) => <Badge key={o} variant="secondary" className="text-[7px] py-0 px-1">{o}</Badge>)}
+                            <div className="space-y-1">
+                              <Label className="text-[9px] uppercase font-bold text-muted-foreground border-b pb-0.5 block">रूट उद्दिष्ट (Objectives)</Label>
+                              <div className="flex flex-wrap gap-1 mt-1">
+                                {visit.objectives?.length > 0 ? 
+                                  visit.objectives.map((o: string) => <Badge key={o} variant="outline" className="text-[8px] border-black py-0 px-1">{o}</Badge>) 
+                                  : <span className="text-[10px] italic">---</span>
+                                }
                               </div>
                             </div>
                           </div>
 
-                          <div className="grid grid-cols-3 gap-4">
-                            <div className="p-2 border rounded bg-blue-50/20">
-                              <Label className="text-[8px] font-bold text-blue-700 uppercase block border-b mb-1">Quality & Collection</Label>
-                              <p className="text-[9px] font-bold">Mix: {visit.mixQty}L / {visit.mixFat}% / {visit.mixSnf}%</p>
-                              <p className="text-[9px] font-bold">Cow: {visit.cowQty}L / {visit.cowFat}% / {visit.cowSnf}%</p>
-                            </div>
-                            <div className="p-2 border rounded bg-green-50/20">
-                              <Label className="text-[8px] font-bold text-green-700 uppercase block border-b mb-1">Cleanliness</Label>
-                              <div className="text-[8px] font-bold space-y-0.5">
-                                {visit.compliance?.map((c: string) => <div key={c}>✓ {c}: {visit.complianceRemarks?.[c] || "OK"}</div>)}
+                          {/* Technical Data Grid */}
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            {/* Quality Table */}
+                            <div className="border border-black rounded p-3 space-y-2 bg-blue-50/10">
+                              <div className="flex items-center gap-2 border-b border-blue-200 pb-1 mb-2">
+                                <Activity className="h-3.5 w-3.5 text-blue-700" />
+                                <span className="text-[10px] font-bold uppercase text-blue-700">Quality & Collection</span>
+                              </div>
+                              <div className="space-y-2">
+                                <div className="flex justify-between items-center text-[10px] font-bold">
+                                  <span className="text-muted-foreground">Mix Milk:</span>
+                                  <span>{visit.mixQty}L / {visit.mixFat}% / {visit.mixSnf}%</span>
+                                </div>
+                                <div className="flex justify-between items-center text-[10px] font-bold">
+                                  <span className="text-muted-foreground">Cow Milk:</span>
+                                  <span>{visit.cowQty}L / {visit.cowFat}% / {visit.cowSnf}%</span>
+                                </div>
                               </div>
                             </div>
-                            <div className="p-2 border rounded bg-amber-50/20">
-                              <Label className="text-[8px] font-bold text-amber-700 uppercase block border-b mb-1">Equipment</Label>
-                              <div className="text-[8px] font-bold space-y-0.5">
-                                {visit.equipment?.map((e: string) => <div key={e}>✓ {e}: {visit.equipmentRemarks?.[e] || "Working"}</div>)}
+
+                            {/* Cleanliness Checklist */}
+                            <div className="border border-black rounded p-3 space-y-2 bg-green-50/10">
+                              <div className="flex items-center gap-2 border-b border-green-200 pb-1 mb-2">
+                                <ShieldCheck className="h-3.5 w-3.5 text-green-700" />
+                                <span className="text-[10px] font-bold uppercase text-green-700">Cleanliness & FSSAI</span>
+                              </div>
+                              <div className="space-y-1.5">
+                                 {visit.compliance?.length > 0 ? visit.compliance.map((c: string) => (
+                                   <div key={c} className="text-[9px] leading-tight">
+                                      <span className="font-bold">✓ {c}:</span> <span className="italic">{visit.complianceRemarks?.[c] || "ठीक आहे (OK)"}</span>
+                                   </div>
+                                 )) : <span className="text-[10px] italic">---</span>}
+                              </div>
+                            </div>
+
+                            {/* Equipment Status */}
+                            <div className="border border-black rounded p-3 space-y-2 bg-amber-50/10">
+                              <div className="flex items-center gap-2 border-b border-amber-200 pb-1 mb-2">
+                                <Settings className="h-3.5 w-3.5 text-amber-700" />
+                                <span className="text-[10px] font-bold uppercase text-amber-700">Equipment Check</span>
+                              </div>
+                              <div className="space-y-1.5">
+                                 {visit.equipment?.length > 0 ? visit.equipment.map((e: string) => (
+                                   <div key={e} className="text-[9px] leading-tight">
+                                      <span className="font-bold">✓ {e}:</span> <span className="italic">{visit.equipmentRemarks?.[e] || "कार्यरत (Working)"}</span>
+                                   </div>
+                                 )) : <span className="text-[10px] italic">---</span>}
                               </div>
                             </div>
                           </div>
-                          
+
+                          {/* Remark at Bottom */}
                           {visit.remark && (
-                            <div className="p-2 bg-muted/10 rounded border-t italic text-[10px]">
-                              <span className="font-bold uppercase text-[8px] block mb-1">Remark:</span>
-                              {visit.remark}
+                            <div className="border-t-2 border-dashed border-muted pt-3">
+                              <Label className="text-[9px] font-bold uppercase text-primary flex items-center gap-2 mb-1">
+                                <MessageSquare className="h-3 w-3" /> शेरा / सूचना (Final Remark)
+                              </Label>
+                              <p className="text-[10px] italic text-muted-foreground leading-relaxed pl-5 bg-muted/5 p-2 rounded">
+                                "{visit.remark}"
+                              </p>
                             </div>
                           )}
                         </div>
