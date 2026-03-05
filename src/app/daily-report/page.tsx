@@ -195,10 +195,6 @@ export default function DailyReportPage() {
     router.push('/reports')
   }
 
-  const handleDownloadPDF = () => {
-    window.print();
-  }
-
   if (!mounted) return null
 
   return (
@@ -636,9 +632,6 @@ export default function DailyReportPage() {
             <div className="flex gap-2 items-end no-print">
               <Button onClick={handleSave} className="flex-1 h-10 font-bold text-[11px] gap-1.5 shadow-sm">
                 <CheckCircle2 className="h-3.5 w-3.5" /> रिपोर्ट जतन करा
-              </Button>
-              <Button variant="outline" onClick={handleDownloadPDF} className="flex-1 h-10 font-bold text-[11px] gap-1.5 border-primary text-primary">
-                <Download className="h-3.5 w-3.5" /> PDF डाउनलोड करा
               </Button>
             </div>
           </div>
