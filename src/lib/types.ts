@@ -47,6 +47,7 @@ export interface Route {
   vehicle: string;
   costPerKm: number;
   supplierIds: string[];
+  iceBlocks?: number;
 }
 
 export type ReportType = 'Daily Office Work' | 'Field Visit' | 'Daily Task';

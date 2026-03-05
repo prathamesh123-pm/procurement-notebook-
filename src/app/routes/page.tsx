@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect } from "react"
@@ -7,20 +6,25 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Route } from "@/lib/types"
-import { Plus, MapPin, Truck, Users, IndianRupee, Trash2, ArrowRight, Edit } from "lucide-react"
+import { Plus, MapPin, Truck, Users, IndianRupee, Trash2, ArrowRight, Edit, IceCream } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogDescription } from "@/components/ui/dialog"
 import Link from "next/link"
+import { useToast } from "@/hooks/use-toast"
 
 export default function RoutesPage() {
   const [routes, setRoutes] = useState<Route[]>([])
-  const [isAddingRoute, setIsAddingRoute] = useState(false)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [isEditing, setIsEditing] = useState(false)
+  const [currentRouteId, setCurrentRouteId] = useState<string | null>(null)
   const [mounted, setMounted] = useState(false)
+  const { toast } = useToast()
   
   const [formData, setFormData] = useState({ 
     name: "", 
     distanceKm: "", 
     vehicle: "", 
     costPerKm: "",
+    iceBlocks: "0",
     initialSuppliers: "0" 
   })
 
@@ -35,7 +39,8 @@ export default function RoutesPage() {
           vehicle: "Eicher 10.90",
           distanceKm: 45,
           costPerKm: 0.85,
-          supplierIds: Array(24).fill(null).map(() => crypto.randomUUID())
+          iceBlocks: 10,
+          supplierIds: Array(24).fill(null).map(() => Math.random().toString(36).substring(7))
         },
         {
           id: "2",
@@ -43,7 +48,8 @@ export default function RoutesPage() {
           vehicle: "Tata Ace",
           distanceKm: 32,
           costPerKm: 0.75,
-          supplierIds: Array(18).fill(null).map(() => crypto.randomUUID())
+          iceBlocks: 5,
+          supplierIds: Array(18).fill(null).map(() => Math.random().toString(36).substring(7))
         }
       ]
       setRoutes(initialRoutes)
@@ -58,44 +64,89 @@ export default function RoutesPage() {
     localStorage.setItem('procurepal_routes', JSON.stringify(updated))
   }
 
-  const handleAddRoute = () => {
-    if (!formData.name || !formData.distanceKm || !formData.vehicle) return
-    const newRoute: Route = {
-      id: crypto.randomUUID(),
-      name: formData.name,
-      distanceKm: Number(formData.distanceKm),
-      vehicle: formData.vehicle,
-      costPerKm: Number(formData.costPerKm) || 0,
-      supplierIds: Array(Number(formData.initialSuppliers)).fill(null).map(() => crypto.randomUUID())
+  const handleOpenAdd = () => {
+    setIsEditing(false)
+    setCurrentRouteId(null)
+    setFormData({ name: "", distanceKm: "", vehicle: "", costPerKm: "", iceBlocks: "0", initialSuppliers: "0" })
+    setIsDialogOpen(true)
+  }
+
+  const handleOpenEdit = (route: Route) => {
+    setIsEditing(true)
+    setCurrentRouteId(route.id)
+    setFormData({
+      name: route.name,
+      distanceKm: String(route.distanceKm),
+      vehicle: route.vehicle,
+      costPerKm: String(route.costPerKm),
+      iceBlocks: String(route.iceBlocks || 0),
+      initialSuppliers: String(route.supplierIds.length)
+    })
+    setIsDialogOpen(true)
+  }
+
+  const handleSaveRoute = () => {
+    if (!formData.name || !formData.distanceKm || !formData.vehicle) {
+      toast({ title: "त्रुटी", description: "कृपया आवश्यक माहिती भरा.", variant: "destructive" })
+      return
     }
-    saveRoutes([...routes, newRoute])
-    setFormData({ name: "", distanceKm: "", vehicle: "", costPerKm: "", initialSuppliers: "0" })
-    setIsAddingRoute(false)
+
+    if (isEditing && currentRouteId) {
+      const updatedRoutes = routes.map(r => 
+        r.id === currentRouteId 
+          ? { 
+              ...r, 
+              name: formData.name, 
+              distanceKm: Number(formData.distanceKm), 
+              vehicle: formData.vehicle, 
+              costPerKm: Number(formData.costPerKm) || 0,
+              iceBlocks: Number(formData.iceBlocks) || 0
+            } 
+          : r
+      )
+      saveRoutes(updatedRoutes)
+      toast({ title: "यशस्वी", description: "रूटची माहिती अद्ययावत केली." })
+    } else {
+      const newRoute: Route = {
+        id: Math.random().toString(36).substring(2, 9),
+        name: formData.name,
+        distanceKm: Number(formData.distanceKm),
+        vehicle: formData.vehicle,
+        costPerKm: Number(formData.costPerKm) || 0,
+        iceBlocks: Number(formData.iceBlocks) || 0,
+        supplierIds: Array(Number(formData.initialSuppliers)).fill(null).map(() => Math.random().toString(36).substring(7))
+      }
+      saveRoutes([...routes, newRoute])
+      toast({ title: "यशस्वी", description: "नवीन रूट जोडला गेला." })
+    }
+
+    setIsDialogOpen(false)
   }
 
   const deleteRoute = (id: string) => {
-    saveRoutes(routes.filter(r => r.id !== id))
+    if (confirm("तुम्हाला खात्री आहे की हा रूट हटवायचा आहे?")) {
+      saveRoutes(routes.filter(r => r.id !== id))
+      toast({ title: "हटवले", description: "रूट काढून टाकला आहे." })
+    }
   }
 
   if (!mounted) return null
 
   return (
-    <div className="space-y-8 max-w-6xl mx-auto w-full">
+    <div className="space-y-8 max-w-6xl mx-auto w-full pb-10">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-3xl font-headline font-bold text-foreground tracking-tight">Milk Collection Routes</h2>
           <p className="text-muted-foreground mt-1">The logistics, costing, and supplier associations.</p>
         </div>
-        <Dialog open={isAddingRoute} onOpenChange={setIsAddingRoute}>
-          <DialogTrigger asChild>
-            <Button className="gap-2 shadow-sm font-bold">
-              <Plus className="h-4 w-4" /> Add Route
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <Button onClick={handleOpenAdd} className="gap-2 shadow-sm font-bold">
+            <Plus className="h-4 w-4" /> Add Route
+          </Button>
+          <DialogContent className="max-w-lg">
             <DialogHeader>
-              <DialogTitle>Create Procurement Route</DialogTitle>
-              <DialogDescription>Add a new collection route to the network.</DialogDescription>
+              <DialogTitle>{isEditing ? 'Edit Procurement Route' : 'Create Procurement Route'}</DialogTitle>
+              <DialogDescription>{isEditing ? 'रूटची माहिती बदला.' : 'नवीन कलेक्शन रूट तयार करा.'}</DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="space-y-2">
@@ -130,29 +181,43 @@ export default function RoutesPage() {
                   />
                 </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="vehicle">Assigned Vehicle</Label>
-                <Input 
-                  id="vehicle" 
-                  placeholder="e.g. Tata Ace" 
-                  value={formData.vehicle}
-                  onChange={(e) => setFormData({...formData, vehicle: e.target.value})}
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="vehicle">Assigned Vehicle</Label>
+                  <Input 
+                    id="vehicle" 
+                    placeholder="e.g. Tata Ace" 
+                    value={formData.vehicle}
+                    onChange={(e) => setFormData({...formData, vehicle: e.target.value})}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="iceBlocks">Number of Ice Blocks</Label>
+                  <Input 
+                    id="iceBlocks" 
+                    type="number"
+                    placeholder="0" 
+                    value={formData.iceBlocks}
+                    onChange={(e) => setFormData({...formData, iceBlocks: e.target.value})}
+                  />
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="initialSuppliers">Initial Suppliers</Label>
-                <Input 
-                  id="initialSuppliers" 
-                  type="number"
-                  placeholder="0" 
-                  value={formData.initialSuppliers}
-                  onChange={(e) => setFormData({...formData, initialSuppliers: e.target.value})}
-                />
-              </div>
+              {!isEditing && (
+                <div className="space-y-2">
+                  <Label htmlFor="initialSuppliers">Initial Suppliers (Optional)</Label>
+                  <Input 
+                    id="initialSuppliers" 
+                    type="number"
+                    placeholder="0" 
+                    value={formData.initialSuppliers}
+                    onChange={(e) => setFormData({...formData, initialSuppliers: e.target.value})}
+                  />
+                </div>
+              )}
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setIsAddingRoute(false)}>Cancel</Button>
-              <Button onClick={handleAddRoute} className="font-bold">Save Route</Button>
+              <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
+              <Button onClick={handleSaveRoute} className="font-bold">{isEditing ? 'Update Route' : 'Save Route'}</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -167,7 +232,7 @@ export default function RoutesPage() {
                   <MapPin className="h-5 w-5" />
                 </div>
                 <div className="flex gap-1">
-                  <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
+                  <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground" onClick={() => handleOpenEdit(route)}>
                     <Edit className="h-4 w-4" />
                   </Button>
                   <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => deleteRoute(route.id)}>
@@ -193,6 +258,12 @@ export default function RoutesPage() {
                 <IndianRupee className="h-4 w-4 text-primary" />
                 <span className="font-medium text-foreground">Rate: ₹{(route.costPerKm || 0).toFixed(2)} / km</span>
               </div>
+              {route.iceBlocks !== undefined && (
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <IceCream className="h-4 w-4 text-primary" />
+                  <span className="font-medium text-foreground">{route.iceBlocks} Ice Blocks</span>
+                </div>
+              )}
             </CardContent>
             <CardFooter className="pt-2 border-t p-0">
                <Button variant="ghost" size="sm" className="w-full justify-between text-primary font-bold group rounded-none h-12 px-6" asChild>
