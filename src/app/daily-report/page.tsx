@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect } from "react"
@@ -53,7 +52,7 @@ export default function DailyReportPage() {
   const [activeReportType, setActiveReportType] = useState<string>("office")
 
   const createEmptyVisit = (): CenterVisit => ({
-    id: crypto.randomUUID(),
+    id: mounted ? crypto.randomUUID() : "temp-visit-" + Math.random(),
     name: "",
     topic: "",
     observation: "",
@@ -75,7 +74,7 @@ export default function DailyReportPage() {
   });
 
   const createEmptyMeeting = (): Meeting => ({
-    id: crypto.randomUUID(),
+    id: mounted ? crypto.randomUUID() : "temp-meeting-" + Math.random(),
     person: "",
     org: "",
     from: "",
@@ -89,11 +88,11 @@ export default function DailyReportPage() {
     idNumber: "",
     designation: "",
     mobile: "",
-    reportDate: new Date().toISOString().split('T')[0],
+    reportDate: "",
     shift: "Sakal",
     officeTasks: [] as string[],
     officeTaskDetail: "",
-    meetings: [createEmptyMeeting()] as Meeting[],
+    meetings: [] as Meeting[],
     fieldRoute: "",
     vehicleType: "Company",
     vehicleNumber: "",
@@ -101,7 +100,7 @@ export default function DailyReportPage() {
     odoEnd: "",
     fieldTimeFrom: "",
     fieldTimeTo: "",
-    centerVisits: [createEmptyVisit()] as CenterVisit[],
+    centerVisits: [] as CenterVisit[],
     achievements: "",
     problems: "",
     actionsTaken: "",
@@ -110,6 +109,44 @@ export default function DailyReportPage() {
 
   useEffect(() => {
     setMounted(true)
+    setFormData(prev => ({
+      ...prev,
+      reportDate: new Date().toISOString().split('T')[0],
+      meetings: [
+        {
+          id: crypto.randomUUID(),
+          person: "",
+          org: "",
+          from: "",
+          to: "",
+          subject: "",
+          decision: ""
+        }
+      ],
+      centerVisits: [
+        {
+          id: crypto.randomUUID(),
+          name: "",
+          topic: "",
+          observation: "",
+          suggestion: "",
+          objectives: [],
+          compliance: [],
+          complianceRemarks: {},
+          mixQty: "",
+          mixFat: "",
+          mixSnf: "",
+          mixTemp: "",
+          cowQty: "",
+          cowFat: "",
+          cowSnf: "",
+          cowTemp: "",
+          equipment: [],
+          equipmentRemarks: {},
+          remark: ""
+        }
+      ]
+    }))
   }, [])
 
   const totalKm = (Number(formData.odoEnd) || 0) - (Number(formData.odoStart) || 0);

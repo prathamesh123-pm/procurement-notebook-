@@ -53,6 +53,11 @@ const items = [
 
 export function DashboardSidebar() {
   const pathname = usePathname()
+  const [mounted, setMounted] = React.useState(false)
+
+  React.useEffect(() => {
+    setMounted(true)
+  }, [])
 
   return (
     <Sidebar collapsible="icon">
@@ -61,8 +66,8 @@ export function DashboardSidebar() {
           <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/20">
             <Milk className="h-7 w-7" />
           </div>
-          <span className="font-headline text-xl font-bold tracking-tight group-data-[collapsible=icon]:hidden text-foreground">
-            ProcureNote
+          <span className="font-headline text-lg font-bold tracking-tight group-data-[collapsible=icon]:hidden text-foreground">
+            Procurement Notebook
           </span>
         </div>
       </SidebarHeader>
@@ -77,7 +82,7 @@ export function DashboardSidebar() {
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
                     asChild
-                    isActive={pathname === item.url || (item.url !== '/dashboard' && pathname.startsWith(item.url))}
+                    isActive={mounted ? (pathname === item.url || (item.url !== '/dashboard' && pathname.startsWith(item.url))) : false}
                     tooltip={item.title}
                     className="flex h-12 items-center gap-4 rounded-xl px-4 transition-all hover:bg-primary/5 hover:text-primary data-[active=true]:bg-primary data-[active=true]:text-primary-foreground data-[active=true]:shadow-md data-[active=true]:shadow-primary/20"
                   >
