@@ -80,7 +80,7 @@ export default function RoutesPage() {
       vehicle: route.vehicle,
       costPerKm: String(route.costPerKm),
       iceBlocks: String(route.iceBlocks || 0),
-      initialSuppliers: String(route.supplierIds.length)
+      initialSuppliers: String(route.supplierIds?.length || 0)
     })
     setIsDialogOpen(true)
   }
@@ -155,10 +155,10 @@ export default function RoutesPage() {
                     <MapPin className="h-5 w-5" />
                   </div>
                   <div className="flex gap-1">
-                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground" onClick={() => handleOpenEdit(route)}>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:bg-primary/5 hover:text-primary" onClick={() => handleOpenEdit(route)}>
                       <Edit className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => deleteRoute(route.id)}>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:bg-destructive/5" onClick={() => deleteRoute(route.id)}>
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
@@ -206,7 +206,13 @@ export default function RoutesPage() {
         )}
       </div>
 
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <Dialog open={isDialogOpen} onOpenChange={(open) => {
+        setIsDialogOpen(open);
+        if (!open) {
+          setIsEditing(false);
+          setCurrentRouteId(null);
+        }
+      }}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold font-headline">{isEditing ? 'Edit Procurement Route' : 'Create Procurement Route'}</DialogTitle>
@@ -214,7 +220,7 @@ export default function RoutesPage() {
           </DialogHeader>
           <div className="grid gap-5 py-4">
             <div className="space-y-2">
-              <Label htmlFor="routeName" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Route Name</Label>
+              <Label htmlFor="routeName" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Route Name (रूटचे नाव)</Label>
               <Input 
                 id="routeName" 
                 placeholder="e.g. Main Highway Loop" 
@@ -260,7 +266,7 @@ export default function RoutesPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="iceBlocks" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Number of Ice Blocks</Label>
+                <Label htmlFor="iceBlocks" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Number of Ice (बर्फाचे प्रमाण)</Label>
                 <Input 
                   id="iceBlocks" 
                   type="number"

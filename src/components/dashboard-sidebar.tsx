@@ -53,6 +53,11 @@ const items = [
 
 export function DashboardSidebar() {
   const pathname = usePathname()
+  const [mounted, setMounted] = React.useState(false)
+
+  React.useEffect(() => {
+    setMounted(true)
+  }, [])
 
   return (
     <Sidebar collapsible="icon">
@@ -62,7 +67,7 @@ export function DashboardSidebar() {
             <Milk className="h-7 w-7" />
           </div>
           <span className="font-headline text-lg font-bold tracking-tight group-data-[collapsible=icon]:hidden text-foreground">
-            Procurement Notebook
+            {mounted ? "Procurement Notebook" : "Procurement Notebook"}
           </span>
         </div>
       </SidebarHeader>
