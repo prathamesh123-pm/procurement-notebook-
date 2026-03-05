@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
@@ -262,7 +261,7 @@ export default function ReportsPage() {
             <div className="p-[5mm] space-y-3 max-w-full mx-auto bg-white" id="printable-report-content">
               {/* PRINT HEADER */}
               <div className="flex flex-col items-center border-b-[1.5px] border-black pb-1 mb-2 text-center print-header">
-                <h1 className="text-sm font-bold uppercase">MilkPath Log - Procurement Operations</h1>
+                <h1 className="text-sm font-bold uppercase">Procurement Notebook - Operations</h1>
                 <h2 className="text-xs font-bold">संकलन विभाग - दैनिक कामकाज अहवाल (DWR)</h2>
                 <p className="text-[7px] font-bold uppercase tracking-widest text-muted-foreground">Collection Department - Daily Work Report</p>
               </div>
@@ -314,7 +313,6 @@ export default function ReportsPage() {
                   </div>
                 </div>
               ) : (
-                /* OFFICE WORK & FIELD VISIT VIEWS (REMAIN UNCHANGED) */
                 <>
                   {/* BASIC INFO SECTION */}
                   <div className="space-y-1">
@@ -401,7 +399,7 @@ export default function ReportsPage() {
                   {selectedReport?.type === 'Field Visit' && (
                     <div className="space-y-3">
                       <div className="space-y-1">
-                        <h3 className="text-[9px] font-bold uppercase border-l-4 border-black pl-2 mb-1 bg-muted/20 py-1">२) रूटवारी / फील्ड विसिट (Field Visit)</h3>
+                        <h3 className="text-[9px] font-bold uppercase border-l-4 border-black pl-2 mb-1 bg-muted/20 py-1">२) रूटवारी / FIELD VISIT (FIELD VISIT)</h3>
                         <div className="grid grid-cols-4 gap-3 border p-2 rounded-md">
                           <div className="space-y-0.5">
                             <Label className="text-[7px] font-bold uppercase">रूट (Route)</Label>
@@ -479,7 +477,7 @@ export default function ReportsPage() {
                         <div className="p-2 border rounded-md text-[8px] min-h-[40px] italic bg-red-50/5">{selectedReport?.fullData?.problems || "N/A"}</div>
                       </div>
                       <div className="space-y-1">
-                        <Label className="text-[7px] font-bold uppercase text-blue-700">कार्यवाही (Actions Taken)</Label>
+                        <Label className="text-[7px] font-bold uppercase text-blue-700">केलेली कार्यवाही (Actions Taken)</Label>
                         <div className="p-2 border rounded-md text-[8px] min-h-[40px] italic bg-blue-50/5">{selectedReport?.fullData?.actionsTaken || "N/A"}</div>
                       </div>
                     </div>
