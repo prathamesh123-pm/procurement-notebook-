@@ -2,7 +2,7 @@
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ListTodo, MapPin, Users, PlusCircle, FileText, Archive, Plus } from "lucide-react"
+import { ListTodo, MapPin, Users, PlusCircle, FileText, Archive, Plus, ClipboardCheck } from "lucide-react"
 import { useEffect, useState } from "react"
 import Link from "next/link"
 
@@ -52,13 +52,13 @@ export default function DashboardOverview() {
       href: "/routes",
     },
     {
-      title: "New Report",
-      description: "Create daily visit log",
-      icon: FileText,
-      href: "/reports",
+      title: "Daily Report",
+      description: "Submit your daily log",
+      icon: ClipboardCheck,
+      href: "/daily-report",
     },
     {
-      title: "View Report",
+      title: "View Reports",
       description: "Check archival records",
       icon: Archive,
       href: "/reports",
