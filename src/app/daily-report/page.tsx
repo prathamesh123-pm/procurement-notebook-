@@ -12,7 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
-import { ClipboardCheck, User, Briefcase, FileText, CheckCircle2, Truck, MapPin, Activity, Trash2, Plus, ShieldCheck, Settings, Target, MessageSquare, PhoneCall, Mail, IceCream, Database, AlertTriangle, Scale, Thermometer, Download } from "lucide-react"
+import { ClipboardCheck, User, Briefcase, FileText, CheckCircle2, Truck, MapPin, Activity, Trash2, Plus, ShieldCheck, Settings, Target, MessageSquare, PhoneCall, Mail, IceCream, Database, AlertTriangle, Scale, Thermometer, Download, Package } from "lucide-react"
 
 interface CenterVisit {
   id: string;
@@ -192,7 +192,7 @@ export default function DailyReportPage() {
     const storedReports = JSON.parse(localStorage.getItem('procurepal_reports') || '[]')
     localStorage.setItem('procurepal_reports', JSON.stringify([newReport, ...storedReports]))
     toast({ title: "अहवाल जतन केला", description: `${typeLabel} यशस्वीरित्या सेव्ह झाला आहे.` })
-    router.push('/dashboard')
+    router.push('/reports')
   }
 
   const handleDownloadPDF = () => {
