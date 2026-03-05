@@ -192,7 +192,7 @@ export default function DailyReportPage() {
     const storedReports = JSON.parse(localStorage.getItem('procurepal_reports') || '[]')
     localStorage.setItem('procurepal_reports', JSON.stringify([newReport, ...storedReports]))
     toast({ title: "अहवाल जतन केला", description: `${typeLabel} यशस्वीरित्या सेव्ह झाला आहे.` })
-    router.push('/reports')
+    router.push('/dashboard')
   }
 
   const handleDownloadPDF = () => {
@@ -321,8 +321,7 @@ export default function DailyReportPage() {
                 { label: "पत्र पाठवणे (Letters Sent)", icon: Mail },
                 { label: "वास दूध नोंदणी (Vas Milk Reg)", icon: AlertTriangle },
                 { label: "नवीन ERP कामकाज", icon: Settings },
-                { label: "FSSAI लायसन्स एक्सपायरी तपासणी", icon: ShieldCheck },
-                { label: "इतर रिपोर्ट तयार करणे", icon: FileText }
+                { label: "FSSAI लायसन्स एक्सपायरी तपासणी", icon: ShieldCheck }
               ].map((task) => (
                 <div key={task.label} className="flex items-center space-x-2 border p-1.5 rounded-md hover:bg-muted/30 transition-colors">
                   <Checkbox 

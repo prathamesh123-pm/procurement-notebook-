@@ -2,7 +2,7 @@
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ListTodo, MapPin, Users, PlusCircle, FileText, Archive, Plus, ClipboardCheck } from "lucide-react"
+import { ListTodo, MapPin, Users, PlusCircle, ClipboardCheck, Plus } from "lucide-react"
 import { useEffect, useState } from "react"
 import Link from "next/link"
 
@@ -46,28 +46,28 @@ export default function DashboardOverview() {
 
   const actions = [
     {
-      title: "Define Route",
-      description: "Add new collection paths",
-      icon: PlusCircle,
-      href: "/routes",
-    },
-    {
       title: "Daily Report",
       description: "Submit your daily log",
       icon: ClipboardCheck,
       href: "/daily-report",
     },
     {
-      title: "View Reports",
-      description: "Check archival records",
-      icon: Archive,
-      href: "/reports",
+      title: "Work Log",
+      description: "Manage procurement tasks",
+      icon: ListTodo,
+      href: "/work-log",
     },
     {
-      title: "Add Task",
-      description: "Assign work to team",
-      icon: Plus,
-      href: "/work-log",
+      title: "Routes",
+      description: "Manage collection paths",
+      icon: MapPin,
+      href: "/routes",
+    },
+    {
+      title: "Add Route",
+      description: "Define new route",
+      icon: PlusCircle,
+      href: "/routes",
     },
   ]
 
