@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { 
   Archive, Calendar, ArrowRight, FileText, ClipboardList, 
   Filter, Briefcase, ListTodo, Truck, Download, Trash2, 
-  Eye, User, MapPin, Activity, ShieldCheck, Settings, MessageSquare, Clock, Hash, CheckCircle2
+  Eye, User, MapPin, Activity, ShieldCheck, Settings, MessageSquare, Clock, Hash, CheckCircle2, Target
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { ReportType } from "@/lib/types"
@@ -369,6 +369,10 @@ export default function ReportsPage() {
                         <p className="text-sm font-bold">{selectedReport.fullData.fieldRoute}</p>
                       </div>
                       <div className="p-3 border rounded-xl bg-muted/5">
+                        <p className="text-[9px] uppercase font-bold text-muted-foreground">वाहन प्रकार</p>
+                        <p className="text-sm font-bold">{selectedReport.fullData.vehicleType}</p>
+                      </div>
+                      <div className="p-3 border rounded-xl bg-muted/5">
                         <p className="text-[9px] uppercase font-bold text-muted-foreground">वाहन क्रमांक</p>
                         <p className="text-sm font-bold">{selectedReport.fullData.vehicleNumber}</p>
                       </div>
@@ -376,64 +380,124 @@ export default function ReportsPage() {
                         <p className="text-[9px] uppercase font-bold text-muted-foreground">एकूण KM</p>
                         <p className="text-sm font-bold">{selectedReport.fullData.totalKm} KM</p>
                       </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4 mt-2">
+                       <div className="p-3 border rounded-xl bg-muted/5">
+                        <p className="text-[9px] uppercase font-bold text-muted-foreground">ओडोमीटर सुरुवात</p>
+                        <p className="text-sm font-bold">{selectedReport.fullData.odoStart} KM</p>
+                      </div>
                       <div className="p-3 border rounded-xl bg-muted/5">
-                        <p className="text-[9px] uppercase font-bold text-muted-foreground">वेळ</p>
-                        <p className="text-sm font-bold">{selectedReport.fullData.fieldTimeFrom} ते {selectedReport.fullData.fieldTimeTo}</p>
+                        <p className="text-[9px] uppercase font-bold text-muted-foreground">ओडोमीटर शेवट</p>
+                        <p className="text-sm font-bold">{selectedReport.fullData.odoEnd} KM</p>
                       </div>
                     </div>
                   </div>
 
-                  <div className="space-y-4">
+                  <div className="space-y-6">
                     <h4 className="text-[10px] font-bold uppercase tracking-widest text-primary flex items-center gap-2 border-b pb-1">
                       <MapPin className="h-4 w-4" /> ३. केंद्रांची भेट माहिती (Center Visits)
                     </h4>
                     {selectedReport.fullData.centerVisits?.map((visit: any, idx: number) => (
-                      <Card key={idx} className="border border-muted shadow-none bg-white p-0 overflow-hidden mb-4">
+                      <Card key={idx} className="border border-muted shadow-none bg-white p-0 overflow-hidden mb-6">
                         <div className="bg-primary/5 px-4 py-2 border-b flex justify-between items-center">
-                          <h5 className="font-bold text-sm text-primary">{idx + 1}. {visit.name}</h5>
-                          <span className="text-[10px] font-bold uppercase text-muted-foreground">{visit.topic}</span>
+                          <h5 className="font-bold text-sm text-primary">भेट {idx + 1}: {visit.name}</h5>
+                          <span className="text-[10px] font-bold uppercase text-muted-foreground tracking-wider">{visit.topic}</span>
                         </div>
-                        <CardContent className="p-4 space-y-5">
+                        <CardContent className="p-4 space-y-6">
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-1">
-                              <p className="text-[9px] uppercase font-bold text-muted-foreground">निरीक्षण व समस्या</p>
-                              <p className="text-xs font-medium">{visit.observation}</p>
+                              <p className="text-[9px] uppercase font-bold text-muted-foreground">निरीक्षण</p>
+                              <p className="text-xs font-semibold">{visit.observation}</p>
                             </div>
                             <div className="space-y-1">
                               <p className="text-[9px] uppercase font-bold text-muted-foreground">सूचना</p>
-                              <p className="text-xs font-medium">{visit.suggestion}</p>
+                              <p className="text-xs font-semibold">{visit.suggestion}</p>
                             </div>
                           </div>
                           
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="bg-blue-50/50 p-3 rounded-lg border border-blue-100 space-y-2">
-                              <p className="text-[9px] font-bold text-blue-700 uppercase">Mix Milk Quality</p>
-                              <div className="grid grid-cols-4 gap-2 text-[10px] font-bold">
-                                <div><span className="text-muted-foreground font-normal">Qty:</span> {visit.mixQty}L</div>
-                                <div><span className="text-muted-foreground font-normal">FAT:</span> {visit.mixFat}%</div>
-                                <div><span className="text-muted-foreground font-normal">SNF:</span> {visit.mixSnf}%</div>
-                                <div><span className="text-muted-foreground font-normal">Temp:</span> {visit.mixTemp}°C</div>
-                              </div>
+                          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                            <div className="space-y-3">
+                               <p className="text-[10px] font-bold text-primary uppercase flex items-center gap-1"><Target className="h-3 w-3" /> रूट उद्दिष्ट</p>
+                               <div className="flex flex-wrap gap-2">
+                                  {visit.objectives?.map((obj: string) => (
+                                    <Badge key={obj} variant="outline" className="bg-muted/30 text-[9px] font-bold">{obj}</Badge>
+                                  ))}
+                               </div>
                             </div>
-                            <div className="bg-green-50/50 p-3 rounded-lg border border-green-100 space-y-2">
-                              <p className="text-[9px] font-bold text-green-700 uppercase">Cow Milk Quality</p>
-                              <div className="grid grid-cols-4 gap-2 text-[10px] font-bold">
-                                <div><span className="text-muted-foreground font-normal">Qty:</span> {visit.cowQty}L</div>
-                                <div><span className="text-muted-foreground font-normal">FAT:</span> {visit.cowFat}%</div>
-                                <div><span className="text-muted-foreground font-normal">SNF:</span> {visit.cowSnf}%</div>
-                                <div><span className="text-muted-foreground font-normal">Temp:</span> {visit.cowTemp}°C</div>
-                              </div>
+                            <div className="space-y-3">
+                               <p className="text-[10px] font-bold text-primary uppercase flex items-center gap-1"><Activity className="h-3 w-3" /> गुणवत्ता व संकलन</p>
+                               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                  <div className="bg-blue-50/50 p-2 rounded border border-blue-100">
+                                    <p className="text-[8px] font-bold text-blue-700 uppercase mb-1">Mix Milk</p>
+                                    <div className="grid grid-cols-3 gap-1 text-[9px] font-bold">
+                                      <div><span className="text-muted-foreground font-normal">Qty:</span> {visit.mixQty}L</div>
+                                      <div><span className="text-muted-foreground font-normal">FAT:</span> {visit.mixFat}%</div>
+                                      <div><span className="text-muted-foreground font-normal">SNF:</span> {visit.mixSnf}%</div>
+                                    </div>
+                                  </div>
+                                  <div className="bg-green-50/50 p-2 rounded border border-green-100">
+                                    <p className="text-[8px] font-bold text-green-700 uppercase mb-1">Cow Milk</p>
+                                    <div className="grid grid-cols-3 gap-1 text-[9px] font-bold">
+                                      <div><span className="text-muted-foreground font-normal">Qty:</span> {visit.cowQty}L</div>
+                                      <div><span className="text-muted-foreground font-normal">FAT:</span> {visit.cowFat}%</div>
+                                      <div><span className="text-muted-foreground font-normal">SNF:</span> {visit.cowSnf}%</div>
+                                    </div>
+                                  </div>
+                               </div>
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                               <p className="text-[10px] font-bold text-primary uppercase flex items-center gap-1"><ShieldCheck className="h-3 w-3" /> स्वच्छता व FSSAI</p>
+                               <div className="grid grid-cols-1 gap-1.5">
+                                  {visit.compliance?.map((comp: string) => (
+                                    <div key={comp} className="text-[10px] flex flex-col gap-0.5 border-l-2 border-green-200 pl-2">
+                                      <span className="font-bold">{comp}</span>
+                                      {visit.complianceRemarks?.[comp] && (
+                                        <span className="text-muted-foreground italic">शेरा: {visit.complianceRemarks[comp]}</span>
+                                      )}
+                                    </div>
+                                  ))}
+                               </div>
+                            </div>
+                            <div className="space-y-2">
+                               <p className="text-[10px] font-bold text-primary uppercase flex items-center gap-1"><Settings className="h-3 w-3" /> उपकरण तपासणी</p>
+                               <div className="grid grid-cols-1 gap-1.5">
+                                  {visit.equipment?.map((eq: string) => (
+                                    <div key={eq} className="text-[10px] flex flex-col gap-0.5 border-l-2 border-amber-200 pl-2">
+                                      <span className="font-bold">{eq}</span>
+                                      {visit.equipmentRemarks?.[eq] && (
+                                        <span className="text-muted-foreground italic">शेरा: {visit.equipmentRemarks[eq]}</span>
+                                      )}
+                                    </div>
+                                  ))}
+                               </div>
                             </div>
                           </div>
 
                           {visit.remark && (
-                            <div className="bg-muted/30 p-2.5 rounded border border-dashed text-[10px] italic leading-relaxed">
-                              <span className="font-bold text-primary not-italic uppercase mr-2">शेरा:</span> {visit.remark}
+                            <div className="bg-muted/30 p-3 rounded border border-dashed text-xs italic leading-relaxed">
+                              <span className="font-bold text-primary not-italic uppercase mr-2 text-[9px] tracking-wider">शेरा / सूचना (Remarks):</span> {visit.remark}
                             </div>
                           )}
                         </CardContent>
                       </Card>
                     ))}
+                  </div>
+                </div>
+              )}
+
+              {/* DAILY TASK DATA */}
+              {selectedReport?.type === 'Daily Task' && (
+                <div className="space-y-6">
+                  <h4 className="text-[10px] font-bold uppercase tracking-widest text-primary flex items-center gap-2 border-b pb-1">
+                    <ListTodo className="h-4 w-4" /> २. टास्क तपशील (Task Details)
+                  </h4>
+                  <div className="p-6 border rounded-2xl bg-muted/5 space-y-4">
+                    <div className="text-sm font-bold leading-relaxed whitespace-pre-wrap">
+                      {selectedReport.summary}
+                    </div>
                   </div>
                 </div>
               )}
@@ -445,17 +509,17 @@ export default function ReportsPage() {
                     <Activity className="h-4 w-4" /> ४. दिवसाचा सारांश (Day Summary)
                   </h4>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="space-y-2 p-3 rounded-xl bg-green-50/30 border border-green-100">
+                    <div className="space-y-2 p-4 rounded-xl bg-green-50/30 border border-green-100">
                       <p className="text-[9px] font-bold text-green-700 uppercase tracking-widest">आजची प्रमुख कामगिरी</p>
-                      <p className="text-xs font-medium leading-relaxed italic">{selectedReport.fullData.achievements || "N/A"}</p>
+                      <p className="text-xs font-semibold leading-relaxed italic">{selectedReport.fullData.achievements || "N/A"}</p>
                     </div>
-                    <div className="space-y-2 p-3 rounded-xl bg-red-50/30 border border-red-100">
+                    <div className="space-y-2 p-4 rounded-xl bg-red-50/30 border border-red-100">
                       <p className="text-[9px] font-bold text-red-700 uppercase tracking-widest">आलेल्या समस्या</p>
-                      <p className="text-xs font-medium leading-relaxed italic">{selectedReport.fullData.problems || "N/A"}</p>
+                      <p className="text-xs font-semibold leading-relaxed italic">{selectedReport.fullData.problems || "N/A"}</p>
                     </div>
-                    <div className="space-y-2 p-3 rounded-xl bg-blue-50/30 border border-blue-100">
+                    <div className="space-y-2 p-4 rounded-xl bg-blue-50/30 border border-blue-100">
                       <p className="text-[9px] font-bold text-blue-700 uppercase tracking-widest">केलेली कार्यवाही</p>
-                      <p className="text-xs font-medium leading-relaxed italic">{selectedReport.fullData.actionsTaken || "N/A"}</p>
+                      <p className="text-xs font-semibold leading-relaxed italic">{selectedReport.fullData.actionsTaken || "N/A"}</p>
                     </div>
                   </div>
                 </div>
@@ -491,4 +555,3 @@ export default function ReportsPage() {
 function Label({ className, children }: { className?: string, children: React.ReactNode }) {
   return <label className={className}>{children}</label>
 }
-
