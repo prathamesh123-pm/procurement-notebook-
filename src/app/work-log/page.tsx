@@ -105,7 +105,7 @@ export default function WorkLogPage() {
 
     const newReport = {
       id: crypto.randomUUID(),
-      type: 'Daily Log',
+      type: 'Daily Task',
       date: new Date().toISOString().split('T')[0],
       workItemsCount: 1,
       interactionsCount: 1,

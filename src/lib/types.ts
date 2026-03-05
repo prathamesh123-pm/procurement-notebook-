@@ -50,7 +50,7 @@ export interface Route {
   supplierIds: string[];
 }
 
-export type ReportType = 'Daily Log' | 'Field Visit';
+export type ReportType = 'Daily Office Work' | 'Field Visit' | 'Daily Task';
 
 export interface Report {
   id: string;

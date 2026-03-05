@@ -84,17 +84,11 @@ export default function DailyReportPage() {
   }
 
   const handleSave = () => {
-    const reportSummary = `
-      प्रतिनिधी: ${formData.name} (${formData.idNumber})
-      आजचा कामाचा प्रकार: ${formData.workType}
-      रूट/क्षेत्र: ${formData.fieldRoute || 'N/A'}
-      प्रमुख कामगिरी: ${formData.achievements}
-      आलेल्या समस्या: ${formData.problems}
-    `
+    const reportSummary = `प्रतिनिधी: ${formData.name} (${formData.idNumber}) आजचा कामाचा प्रकार: ${formData.workType} रूट/क्षेत्र: ${formData.fieldRoute || 'N/A'} प्रमुख कामगिरी: ${formData.achievements} आलेल्या समस्या: ${formData.problems}`
 
     const newReport = {
       id: crypto.randomUUID(),
-      type: formData.workType === 'Office' ? 'Daily Log' : 'Field Visit',
+      type: formData.workType === 'Office' ? 'Daily Office Work' : 'Field Visit',
       date: formData.reportDate,
       workItemsCount: formData.officeTasks.length + formData.fieldObjectives.length || 1,
       interactionsCount: (formData.meetingPerson ? 1 : 0) + (formData.visit1.name ? 1 : 0) + (formData.visit2.name ? 1 : 0),
