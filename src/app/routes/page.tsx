@@ -183,15 +183,15 @@ export default function RoutesPage() {
             <CardContent className="space-y-3 pt-4 text-sm">
               <div className="flex items-center gap-2 text-muted-foreground">
                 <Users className="h-4 w-4 text-primary" />
-                <span className="font-medium text-foreground">{route.supplierIds.length} Active Suppliers</span>
+                <span className="font-medium text-foreground">{route.supplierIds?.length || 0} Active Suppliers</span>
               </div>
               <div className="flex items-center gap-2 text-muted-foreground">
                 <MapPin className="h-4 w-4 text-primary" />
-                <span className="font-medium text-foreground">{route.distanceKm} km</span>
+                <span className="font-medium text-foreground">{route.distanceKm || 0} km</span>
               </div>
               <div className="flex items-center gap-2 text-muted-foreground">
                 <IndianRupee className="h-4 w-4 text-primary" />
-                <span className="font-medium text-foreground">Rate: ₹{route.costPerKm.toFixed(2)} / km</span>
+                <span className="font-medium text-foreground">Rate: ₹{(route.costPerKm || 0).toFixed(2)} / km</span>
               </div>
             </CardContent>
             <CardFooter className="pt-2 border-t">
