@@ -10,14 +10,16 @@ import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Separator } from "@/components/ui/separator"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
-import { ClipboardCheck, Calendar, Clock, User, Briefcase, FileText, CheckCircle2, Truck, MapPin, Activity, ShieldCheck, Camera } from "lucide-react"
+import { ClipboardCheck, User, Briefcase, FileText, CheckCircle2, Truck, MapPin, Activity, Camera, Clock } from "lucide-react"
 
 export default function DailyReportPage() {
   const { toast } = useToast()
   const router = useRouter()
   const [mounted, setMounted] = useState(false)
+  const [activeReportType, setActiveReportType] = useState<string>("office")
 
   // Form State
   const [formData, setFormData] = useState({
@@ -27,13 +29,12 @@ export default function DailyReportPage() {
     mobile: "",
     reportDate: new Date().toISOString().split('T')[0],
     shift: "Sakal",
-    workType: "Office",
     
     // Part A: Office Work
     officeTasks: [] as string[],
     officeTaskDetail: "",
     
-    // Section 4: Meetings
+    // Meetings
     meetingPerson: "",
     meetingOrg: "",
     meetingTimeFrom: "",
@@ -61,7 +62,7 @@ export default function DailyReportPage() {
     qcEquipment: [] as string[],
     qcConclusion: "",
 
-    // Part C: Day Summary
+    // Summary
     achievements: "",
     problems: "",
     actionsTaken: "",
@@ -84,16 +85,17 @@ export default function DailyReportPage() {
   }
 
   const handleSave = () => {
-    const reportSummary = `प्रतिनिधी: ${formData.name} (${formData.idNumber}) आजचा कामाचा प्रकार: ${formData.workType} रूट/क्षेत्र: ${formData.fieldRoute || 'N/A'} प्रमुख कामगिरी: ${formData.achievements} आलेल्या समस्या: ${formData.problems}`
+    const typeLabel = activeReportType === 'office' ? 'Daily Office Work' : 'Field Visit'
+    const reportSummary = `प्रतिनिधी: ${formData.name}. रिपोर्ट प्रकार: ${typeLabel}. कामगिरी: ${formData.achievements}.`
 
     const newReport = {
       id: crypto.randomUUID(),
-      type: formData.workType === 'Office' ? 'Daily Office Work' : 'Field Visit',
+      type: typeLabel,
       date: formData.reportDate,
-      workItemsCount: formData.officeTasks.length + formData.fieldObjectives.length || 1,
-      interactionsCount: (formData.meetingPerson ? 1 : 0) + (formData.visit1.name ? 1 : 0) + (formData.visit2.name ? 1 : 0),
+      workItemsCount: activeReportType === 'office' ? formData.officeTasks.length : formData.fieldObjectives.length,
+      interactionsCount: (formData.meetingPerson ? 1 : 0) + (formData.visit1.name ? 1 : 0),
       summary: reportSummary,
-      fullData: formData
+      fullData: { ...formData, reportType: activeReportType }
     }
 
     const storedReports = JSON.parse(localStorage.getItem('procurepal_reports') || '[]')
@@ -101,7 +103,7 @@ export default function DailyReportPage() {
 
     toast({
       title: "अहवाल जतन केला",
-      description: "तुमचा दैनिक अहवाल यशस्वीरित्या सेव्ह झाला आहे.",
+      description: `${typeLabel} यशस्वीरित्या सेव्ह झाला आहे.`,
     })
 
     router.push('/reports')
@@ -163,299 +165,266 @@ export default function DailyReportPage() {
         </CardContent>
       </Card>
 
-      {/* २) आजचा कामाचा प्रकार */}
-      <Card className="border-none shadow-sm bg-white">
-        <CardHeader className="bg-primary/5 border-b">
-          <CardTitle className="text-lg font-bold flex items-center gap-2">
-            <Briefcase className="h-5 w-5 text-primary" /> २) आजचा कामाचा प्रकार (Work Type)
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-6">
-          <RadioGroup value={formData.workType} onValueChange={v => setFormData({...formData, workType: v})} className="flex flex-wrap gap-8">
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="Office" id="office" />
-              <Label htmlFor="office" className="font-bold">ऑफिस वर्क</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="Field" id="field" />
-              <Label htmlFor="field" className="font-bold">फील्ड विसिट</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="Mixed" id="mixed" />
-              <Label htmlFor="mixed" className="font-bold">मिश्र</Label>
-            </div>
-          </RadioGroup>
-        </CardContent>
-      </Card>
+      {/* २) अहवाल प्रकार निवड */}
+      <Tabs value={activeReportType} onValueChange={setActiveReportType} className="w-full">
+        <TabsList className="grid w-full grid-cols-2 h-16 bg-muted/50 p-1 rounded-xl">
+          <TabsTrigger value="office" className="rounded-lg font-bold text-lg gap-2 data-[state=active]:bg-white data-[state=active]:shadow-md">
+            <Briefcase className="h-5 w-5" /> 1) Office Work Report
+          </TabsTrigger>
+          <TabsTrigger value="field" className="rounded-lg font-bold text-lg gap-2 data-[state=active]:bg-white data-[state=active]:shadow-md">
+            <Truck className="h-5 w-5" /> 2) Field Visit Report
+          </TabsTrigger>
+        </TabsList>
 
-      {/* भाग अ: ऑफिस वर्क */}
-      <Card className="border-none shadow-sm bg-white">
-        <CardHeader className="bg-primary/5 border-b">
-          <CardTitle className="text-lg font-bold">भाग अ: ऑफिस वर्क (Office Work)</CardTitle>
-          <CardDescription>३) ऑफिसमध्ये केलेली प्रमुख कार्ये</CardDescription>
-        </CardHeader>
-        <CardContent className="p-6 space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[
-              "दुग्ध नमुना नोंद तपासणी",
-              "दरपत्रक तपासणी / मंजुरी",
-              "बिलिंग / पेमेंट मंजुरी",
-              "संकलन रजिस्टर तपासणी",
-              "MIS रिपोर्ट अपडेट",
-              "ई-मेल / पत्रव्यवहार"
-            ].map((task) => (
-              <div key={task} className="flex items-center space-x-2 border p-3 rounded-lg hover:bg-muted/30 transition-colors">
-                <Checkbox 
-                  id={task} 
-                  checked={formData.officeTasks.includes(task)} 
-                  onCheckedChange={() => handleCheckboxChange('officeTasks', task)} 
+        {/* ऑफिस वर्क फॉर्म */}
+        <TabsContent value="office" className="space-y-6 mt-6">
+          <Card className="border-none shadow-sm bg-white">
+            <CardHeader className="bg-primary/5 border-b">
+              <CardTitle className="text-lg font-bold">भाग अ: ऑफिस वर्क (Office Work)</CardTitle>
+              <CardDescription>ऑफिसमध्ये केलेली प्रमुख कार्ये</CardDescription>
+            </CardHeader>
+            <CardContent className="p-6 space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {[
+                  "दुग्ध नमुना नोंद तपासणी",
+                  "दरपत्रक तपासणी / मंजुरी",
+                  "बिलिंग / पेमेंट मंजुरी",
+                  "संकलन रजिस्टर तपासणी",
+                  "MIS रिपोर्ट अपडेट",
+                  "ई-मेल / पत्रव्यवहार"
+                ].map((task) => (
+                  <div key={task} className="flex items-center space-x-2 border p-3 rounded-lg hover:bg-muted/30 transition-colors">
+                    <Checkbox 
+                      id={task} 
+                      checked={formData.officeTasks.includes(task)} 
+                      onCheckedChange={() => handleCheckboxChange('officeTasks', task)} 
+                    />
+                    <Label htmlFor={task} className="text-sm cursor-pointer font-medium">{task}</Label>
+                  </div>
+                ))}
+              </div>
+              <div className="space-y-2">
+                <Label className="text-xs font-bold uppercase">केलेल्या कामाचा संक्षिप्त तपशील</Label>
+                <Textarea 
+                  value={formData.officeTaskDetail} 
+                  onChange={e => setFormData({...formData, officeTaskDetail: e.target.value})} 
+                  placeholder="तपशील लिहा..." 
+                  className="min-h-[100px]"
                 />
-                <Label htmlFor={task} className="text-sm cursor-pointer">{task}</Label>
               </div>
-            ))}
-          </div>
-          <div className="space-y-2">
-            <Label className="text-xs font-bold uppercase">केलेल्या कामाचा संक्षिप्त तपशील</Label>
-            <Textarea 
-              value={formData.officeTaskDetail} 
-              onChange={e => setFormData({...formData, officeTaskDetail: e.target.value})} 
-              placeholder="तपशील लिहा..." 
-              className="min-h-[100px]"
-            />
-          </div>
-        </CardContent>
-      </Card>
+            </CardContent>
+          </Card>
 
-      {/* ४) महत्वाच्या भेटी / बैठका */}
-      <Card className="border-none shadow-sm bg-white">
-        <CardHeader className="bg-primary/5 border-b">
-          <CardTitle className="text-lg font-bold flex items-center gap-2">
-            <FileText className="h-5 w-5 text-primary" /> ४) महत्वाच्या भेटी / बैठका (Meetings)
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-6 space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label className="text-xs font-bold uppercase">व्यक्ती / विभाग</Label>
-              <Input value={formData.meetingPerson} onChange={e => setFormData({...formData, meetingPerson: e.target.value})} />
-            </div>
-            <div className="space-y-2">
-              <Label className="text-xs font-bold uppercase">पद / संस्था</Label>
-              <Input value={formData.meetingOrg} onChange={e => setFormData({...formData, meetingOrg: e.target.value})} />
-            </div>
-            <div className="grid grid-cols-2 gap-2">
-              <div className="space-y-2">
-                <Label className="text-xs font-bold uppercase">वेळ पासून</Label>
-                <Input type="time" value={formData.meetingTimeFrom} onChange={e => setFormData({...formData, meetingTimeFrom: e.target.value})} />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-xs font-bold uppercase">वेळ पर्यंत</Label>
-                <Input type="time" value={formData.meetingTimeTo} onChange={e => setFormData({...formData, meetingTimeTo: e.target.value})} />
-              </div>
-            </div>
-          </div>
-          <div className="space-y-2">
-            <Label className="text-xs font-bold uppercase">चर्चेचा विषय</Label>
-            <Input value={formData.meetingSubject} onChange={e => setFormData({...formData, meetingSubject: e.target.value})} />
-          </div>
-          <div className="space-y-2">
-            <Label className="text-xs font-bold uppercase">निर्णय / पुढील कार्यवाही</Label>
-            <Textarea value={formData.meetingDecision} onChange={e => setFormData({...formData, meetingDecision: e.target.value})} />
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* भाग ब: रूटवारी / फील्ड विसिट */}
-      <Card className="border-none shadow-sm bg-white">
-        <CardHeader className="bg-primary/5 border-b">
-          <CardTitle className="text-lg font-bold flex items-center gap-2">
-            <Truck className="h-5 w-5 text-primary" /> भाग ब: रूटवारी / फील्ड विसिट (Field Visit)
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-6 space-y-8">
-          {/* ५) रूटवारीची माहिती */}
-          <div className="space-y-4">
-            <h4 className="font-bold flex items-center gap-2 text-md text-primary">५) रूटवारीची माहिती</h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <div className="space-y-2">
-                <Label className="text-xs font-bold uppercase">आजचा रूट / क्षेत्र</Label>
-                <Input value={formData.fieldRoute} onChange={e => setFormData({...formData, fieldRoute: e.target.value})} placeholder="रूट / क्षेत्र" />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-xs font-bold uppercase">वाहन प्रकार</Label>
-                <RadioGroup value={formData.vehicleType} onValueChange={v => setFormData({...formData, vehicleType: v})} className="flex gap-4 mt-2">
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="Self" id="self-v" />
-                    <Label htmlFor="self-v">स्वतःची</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="Company" id="company-v" />
-                    <Label htmlFor="company-v">कंपनीची</Label>
-                  </div>
-                </RadioGroup>
-              </div>
-              <div className="space-y-2">
-                <Label className="text-xs font-bold uppercase">वाहन क्रमांक</Label>
-                <Input value={formData.vehicleNumber} onChange={e => setFormData({...formData, vehicleNumber: e.target.value})} placeholder="वाहन क्रमांक" />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-xs font-bold uppercase">ओडोमीटर सुरुवात (KM)</Label>
-                <Input type="number" value={formData.odoStart} onChange={e => setFormData({...formData, odoStart: e.target.value})} placeholder="Start KM" />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-xs font-bold uppercase">ओडोमीटर शेवट (KM)</Label>
-                <Input type="number" value={formData.odoEnd} onChange={e => setFormData({...formData, odoEnd: e.target.value})} placeholder="End KM" />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-xs font-bold uppercase">एकूण KM</Label>
-                <Input type="number" value={formData.totalKm} onChange={e => setFormData({...formData, totalKm: e.target.value})} placeholder="Total KM" />
-              </div>
-              <div className="grid grid-cols-2 gap-2">
+          <Card className="border-none shadow-sm bg-white">
+            <CardHeader className="bg-primary/5 border-b">
+              <CardTitle className="text-lg font-bold flex items-center gap-2">
+                <FileText className="h-5 w-5 text-primary" /> महत्वाच्या भेटी / बैठका (Meetings)
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-6 space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label className="text-xs font-bold uppercase">वेळ पासून</Label>
-                  <Input type="time" value={formData.fieldTimeFrom} onChange={e => setFormData({...formData, fieldTimeFrom: e.target.value})} />
+                  <Label className="text-xs font-bold uppercase">व्यक्ती / विभाग</Label>
+                  <Input value={formData.meetingPerson} onChange={e => setFormData({...formData, meetingPerson: e.target.value})} />
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-xs font-bold uppercase">ते</Label>
-                  <Input type="time" value={formData.fieldTimeTo} onChange={e => setFormData({...formData, fieldTimeTo: e.target.value})} />
+                  <Label className="text-xs font-bold uppercase">पद / संस्था</Label>
+                  <Input value={formData.meetingOrg} onChange={e => setFormData({...formData, meetingOrg: e.target.value})} />
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="space-y-2">
+                    <Label className="text-xs font-bold uppercase">वेळ पासून</Label>
+                    <Input type="time" value={formData.meetingTimeFrom} onChange={e => setFormData({...formData, meetingTimeFrom: e.target.value})} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-xs font-bold uppercase">वेळ पर्यंत</Label>
+                    <Input type="time" value={formData.meetingTimeTo} onChange={e => setFormData({...formData, meetingTimeTo: e.target.value})} />
+                  </div>
                 </div>
               </div>
-            </div>
-
-            <div className="space-y-3">
-              <Label className="text-xs font-bold uppercase">रूट उद्दिष्ट</Label>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                {[
-                  "दूध संकलन तपासणी",
-                  "उपकरणे / मशीन तपासणी",
-                  "तक्रार निराकरण",
-                  "शेतकरी / केंद्र चर्चा",
-                  "इतर"
-                ].map((obj) => (
-                  <div key={obj} className="flex items-center space-x-2 border p-2 rounded-lg">
-                    <Checkbox 
-                      id={`obj-${obj}`} 
-                      checked={formData.fieldObjectives.includes(obj)} 
-                      onCheckedChange={() => handleCheckboxChange('fieldObjectives', obj)} 
-                    />
-                    <Label htmlFor={`obj-${obj}`} className="text-xs">{obj}</Label>
-                  </div>
-                ))}
+              <div className="space-y-2">
+                <Label className="text-xs font-bold uppercase">चर्चेचा विषय</Label>
+                <Input value={formData.meetingSubject} onChange={e => setFormData({...formData, meetingSubject: e.target.value})} />
               </div>
-            </div>
-          </div>
+              <div className="space-y-2">
+                <Label className="text-xs font-bold uppercase">निर्णय / पुढील कार्यवाही</Label>
+                <Textarea value={formData.meetingDecision} onChange={e => setFormData({...formData, meetingDecision: e.target.value})} />
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
-          <Separator />
+        {/* फील्ड विसिट फॉर्म */}
+        <TabsContent value="field" className="space-y-6 mt-6">
+          <Card className="border-none shadow-sm bg-white">
+            <CardHeader className="bg-primary/5 border-b">
+              <CardTitle className="text-lg font-bold flex items-center gap-2">
+                <Truck className="h-5 w-5 text-primary" /> भाग ब: रूटवारी / फील्ड विसिट (Field Visit)
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-6 space-y-8">
+              <div className="space-y-4">
+                <h4 className="font-bold flex items-center gap-2 text-md text-primary">रूटवारीची माहिती</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <div className="space-y-2">
+                    <Label className="text-xs font-bold uppercase">आजचा रूट / क्षेत्र</Label>
+                    <Input value={formData.fieldRoute} onChange={e => setFormData({...formData, fieldRoute: e.target.value})} placeholder="रूट / क्षेत्र" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-xs font-bold uppercase">वाहन प्रकार</Label>
+                    <RadioGroup value={formData.vehicleType} onValueChange={v => setFormData({...formData, vehicleType: v})} className="flex gap-4 mt-2">
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="Self" id="self-v" />
+                        <Label htmlFor="self-v">स्वतःची</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="Company" id="company-v" />
+                        <Label htmlFor="company-v">कंपनीची</Label>
+                      </div>
+                    </RadioGroup>
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-xs font-bold uppercase">वाहन क्रमांक</Label>
+                    <Input value={formData.vehicleNumber} onChange={e => setFormData({...formData, vehicleNumber: e.target.value})} placeholder="वाहन क्रमांक" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-xs font-bold uppercase">ओडोमीटर सुरुवात (KM)</Label>
+                    <Input type="number" value={formData.odoStart} onChange={e => setFormData({...formData, odoStart: e.target.value})} placeholder="Start KM" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-xs font-bold uppercase">ओडोमीटर शेवट (KM)</Label>
+                    <Input type="number" value={formData.odoEnd} onChange={e => setFormData({...formData, odoEnd: e.target.value})} placeholder="End KM" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-2">
+                      <Label className="text-xs font-bold uppercase">वेळ पासून</Label>
+                      <Input type="time" value={formData.fieldTimeFrom} onChange={e => setFormData({...formData, fieldTimeFrom: e.target.value})} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-xs font-bold uppercase">ते</Label>
+                      <Input type="time" value={formData.fieldTimeTo} onChange={e => setFormData({...formData, fieldTimeTo: e.target.value})} />
+                    </div>
+                  </div>
+                </div>
 
-          {/* ६) भेटी / निरीक्षणे */}
-          <div className="space-y-6">
-            <h4 className="font-bold flex items-center gap-2 text-md text-primary">६) भेटी / निरीक्षणे</h4>
-            
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {/* Visit 1 */}
-              <div className="space-y-4 border p-4 rounded-xl bg-muted/10">
-                <h5 className="font-bold text-sm border-b pb-2">भेट १</h5>
                 <div className="space-y-3">
-                  <div className="space-y-1">
-                    <Label className="text-[10px] uppercase font-bold">नाव / केंद्र</Label>
-                    <Input value={formData.visit1.name} onChange={e => setFormData({...formData, visit1: {...formData.visit1, name: e.target.value}})} />
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-[10px] uppercase font-bold">चर्चेचा विषय / उद्देश</Label>
-                    <Input value={formData.visit1.topic} onChange={e => setFormData({...formData, visit1: {...formData.visit1, topic: e.target.value}})} />
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-[10px] uppercase font-bold">निरीक्षण / समस्या</Label>
-                    <Textarea value={formData.visit1.observation} onChange={e => setFormData({...formData, visit1: {...formData.visit1, observation: e.target.value}})} rows={2} />
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-[10px] uppercase font-bold">सूचना / शिफारस</Label>
-                    <Textarea value={formData.visit1.suggestion} onChange={e => setFormData({...formData, visit1: {...formData.visit1, suggestion: e.target.value}})} rows={2} />
-                  </div>
-                  <div className="flex items-center gap-2 pt-2">
-                    <Checkbox id="v1-media" checked={formData.visit1.media} onCheckedChange={v => setFormData({...formData, visit1: {...formData.visit1, media: !!v}})} />
-                    <Label htmlFor="v1-media" className="text-xs flex items-center gap-1"><Camera className="h-3 w-3" /> फोटो / व्हिडिओ (हो)</Label>
+                  <Label className="text-xs font-bold uppercase">रूट उद्दिष्ट</Label>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {[
+                      "दूध संकलन तपासणी",
+                      "उपकरणे / मशीन तपासणी",
+                      "तक्रार निराकरण",
+                      "शेतकरी / केंद्र चर्चा",
+                      "इतर"
+                    ].map((obj) => (
+                      <div key={obj} className="flex items-center space-x-2 border p-2 rounded-lg">
+                        <Checkbox 
+                          id={`obj-${obj}`} 
+                          checked={formData.fieldObjectives.includes(obj)} 
+                          onCheckedChange={() => handleCheckboxChange('fieldObjectives', obj)} 
+                        />
+                        <Label htmlFor={`obj-${obj}`} className="text-xs font-medium">{obj}</Label>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
 
-              {/* Visit 2 */}
-              <div className="space-y-4 border p-4 rounded-xl bg-muted/10">
-                <h5 className="font-bold text-sm border-b pb-2">भेट २</h5>
+              <Separator />
+
+              <div className="space-y-6">
+                <h4 className="font-bold flex items-center gap-2 text-md text-primary">भेटी / निरीक्षणे</h4>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  <div className="space-y-4 border p-4 rounded-xl bg-muted/10">
+                    <h5 className="font-bold text-sm border-b pb-2">भेट १</h5>
+                    <div className="space-y-3">
+                      <div className="space-y-1">
+                        <Label className="text-[10px] uppercase font-bold">नाव / केंद्र</Label>
+                        <Input value={formData.visit1.name} onChange={e => setFormData({...formData, visit1: {...formData.visit1, name: e.target.value}})} />
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-[10px] uppercase font-bold">चर्चेचा विषय / उद्देश</Label>
+                        <Input value={formData.visit1.topic} onChange={e => setFormData({...formData, visit1: {...formData.visit1, topic: e.target.value}})} />
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-[10px] uppercase font-bold">निरीक्षण / समस्या</Label>
+                        <Textarea value={formData.visit1.observation} onChange={e => setFormData({...formData, visit1: {...formData.visit1, observation: e.target.value}})} rows={2} />
+                      </div>
+                      <div className="flex items-center gap-2 pt-2">
+                        <Checkbox id="v1-media" checked={formData.visit1.media} onCheckedChange={v => setFormData({...formData, visit1: {...formData.visit1, media: !!v}})} />
+                        <Label htmlFor="v1-media" className="text-xs flex items-center gap-1"><Camera className="h-3 w-3" /> फोटो / व्हिडिओ (हो)</Label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4 border p-4 rounded-xl bg-muted/10">
+                    <h5 className="font-bold text-sm border-b pb-2">भेट २</h5>
+                    <div className="space-y-3">
+                      <div className="space-y-1">
+                        <Label className="text-[10px] uppercase font-bold">नाव / केंद्र</Label>
+                        <Input value={formData.visit2.name} onChange={e => setFormData({...formData, visit2: {...formData.visit2, name: e.target.value}})} />
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-[10px] uppercase font-bold">चर्चेचा विषय / उद्देश</Label>
+                        <Input value={formData.visit2.topic} onChange={e => setFormData({...formData, visit2: {...formData.visit2, topic: e.target.value}})} />
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-[10px] uppercase font-bold">निरीक्षण / समस्या</Label>
+                        <Textarea value={formData.visit2.observation} onChange={e => setFormData({...formData, visit2: {...formData.visit2, observation: e.target.value}})} rows={2} />
+                      </div>
+                      <div className="flex items-center gap-2 pt-2">
+                        <Checkbox id="v2-media" checked={formData.visit2.media} onCheckedChange={v => setFormData({...formData, visit2: {...formData.visit2, media: !!v}})} />
+                        <Label htmlFor="v2-media" className="text-xs flex items-center gap-1"><Camera className="h-3 w-3" /> फोटो / व्हिडिओ (हो)</Label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <Separator />
+
+              <div className="space-y-6">
+                <h4 className="font-bold flex items-center gap-2 text-md text-primary">गुणवत्ता तपासणी (Quality Check)</h4>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="space-y-2">
+                    <Label className="text-xs font-bold uppercase flex items-center gap-1"><Activity className="h-3 w-3 text-blue-500" /> SNF (%)</Label>
+                    <Input type="number" step="0.1" value={formData.qcSnf} onChange={e => setFormData({...formData, qcSnf: e.target.value})} placeholder="SNF %" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-xs font-bold uppercase flex items-center gap-1"><Activity className="h-3 w-3 text-amber-500" /> FAT (%)</Label>
+                    <Input type="number" step="0.1" value={formData.qcFat} onChange={e => setFormData({...formData, qcFat: e.target.value})} placeholder="FAT %" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-xs font-bold uppercase flex items-center gap-1"><Activity className="h-3 w-3 text-red-500" /> तापमान (°C)</Label>
+                    <Input type="number" step="0.1" value={formData.qcTemp} onChange={e => setFormData({...formData, qcTemp: e.target.value})} placeholder="Temp °C" />
+                  </div>
+                </div>
+
                 <div className="space-y-3">
-                  <div className="space-y-1">
-                    <Label className="text-[10px] uppercase font-bold">नाव / केंद्र</Label>
-                    <Input value={formData.visit2.name} onChange={e => setFormData({...formData, visit2: {...formData.visit2, name: e.target.value}})} />
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-[10px] uppercase font-bold">चर्चेचा विषय / उद्देश</Label>
-                    <Input value={formData.visit2.topic} onChange={e => setFormData({...formData, visit2: {...formData.visit2, topic: e.target.value}})} />
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-[10px] uppercase font-bold">निरीक्षण / समस्या</Label>
-                    <Textarea value={formData.visit2.observation} onChange={e => setFormData({...formData, visit2: {...formData.visit2, observation: e.target.value}})} rows={2} />
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-[10px] uppercase font-bold">सूचना / शिफारस</Label>
-                    <Textarea value={formData.visit2.suggestion} onChange={e => setFormData({...formData, visit2: {...formData.visit2, suggestion: e.target.value}})} rows={2} />
-                  </div>
-                  <div className="flex items-center gap-2 pt-2">
-                    <Checkbox id="v2-media" checked={formData.visit2.media} onCheckedChange={v => setFormData({...formData, visit2: {...formData.visit2, media: !!v}})} />
-                    <Label htmlFor="v2-media" className="text-xs flex items-center gap-1"><Camera className="h-3 w-3" /> फोटो / व्हिडिओ (हो)</Label>
+                  <Label className="text-xs font-bold uppercase">उपकरण तपासणी</Label>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    {[
+                      "वजन काटा",
+                      "फॅट मशीन",
+                      "SNF मशीन",
+                      "ढक्कन/गंज/साफसफाई"
+                    ].map((eq) => (
+                      <div key={eq} className="flex items-center space-x-2 border p-2 rounded-lg">
+                        <Checkbox 
+                          id={`eq-${eq}`} 
+                          checked={formData.qcEquipment.includes(eq)} 
+                          onCheckedChange={() => handleCheckboxChange('qcEquipment', eq)} 
+                        />
+                        <Label htmlFor={`eq-${eq}`} className="text-xs font-medium">{eq}</Label>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
-
-          <Separator />
-
-          {/* ७) गुणवत्ता तपासणी */}
-          <div className="space-y-6">
-            <h4 className="font-bold flex items-center gap-2 text-md text-primary">७) गुणवत्ता तपासणी (Quality Check)</h4>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="space-y-2">
-                <Label className="text-xs font-bold uppercase flex items-center gap-1"><Activity className="h-3 w-3 text-blue-500" /> SNF (%)</Label>
-                <Input type="number" step="0.1" value={formData.qcSnf} onChange={e => setFormData({...formData, qcSnf: e.target.value})} placeholder="SNF %" />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-xs font-bold uppercase flex items-center gap-1"><Activity className="h-3 w-3 text-amber-500" /> FAT (%)</Label>
-                <Input type="number" step="0.1" value={formData.qcFat} onChange={e => setFormData({...formData, qcFat: e.target.value})} placeholder="FAT %" />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-xs font-bold uppercase flex items-center gap-1"><Activity className="h-3 w-3 text-red-500" /> तापमान (°C)</Label>
-                <Input type="number" step="0.1" value={formData.qcTemp} onChange={e => setFormData({...formData, qcTemp: e.target.value})} placeholder="Temp °C" />
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <Label className="text-xs font-bold uppercase">उपकरण तपासणी</Label>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                {[
-                  "वजन काटा",
-                  "फॅट मशीन",
-                  "SNF मशीन",
-                  "ढक्कन/गंज/साफसफाई"
-                ].map((eq) => (
-                  <div key={eq} className="flex items-center space-x-2 border p-2 rounded-lg">
-                    <Checkbox 
-                      id={`eq-${eq}`} 
-                      checked={formData.qcEquipment.includes(eq)} 
-                      onCheckedChange={() => handleCheckboxChange('qcEquipment', eq)} 
-                    />
-                    <Label htmlFor={`eq-${eq}`} className="text-xs">{eq}</Label>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label className="text-xs font-bold uppercase">निरीक्षण निष्कर्ष</Label>
-              <Textarea value={formData.qcConclusion} onChange={e => setFormData({...formData, qcConclusion: e.target.value})} placeholder="गुणवत्ता तपासणी निष्कर्ष..." />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
 
       {/* भाग क: दिवसाचा सारांश */}
       <Card className="border-none shadow-sm bg-white">
@@ -464,7 +433,7 @@ export default function DailyReportPage() {
         </CardHeader>
         <CardContent className="p-6 space-y-6">
           <div className="space-y-2">
-            <Label className="text-xs font-bold uppercase text-green-600">८) आजची प्रमुख कामगिरी (Achievements)</Label>
+            <Label className="text-xs font-bold uppercase text-green-600">आजची प्रमुख कामगिरी (Achievements)</Label>
             <Textarea value={formData.achievements} onChange={e => setFormData({...formData, achievements: e.target.value})} placeholder="उदा. १. कामगिरी १, २. कामगिरी २" />
           </div>
           <div className="space-y-2">
@@ -480,13 +449,13 @@ export default function DailyReportPage() {
             <Textarea value={formData.tomorrowFollowUp} onChange={e => setFormData({...formData, tomorrowFollowUp: e.target.value})} placeholder="उदा. १. फॉलो-अप १" />
           </div>
           <div className="space-y-2">
-            <Label className="text-xs font-bold uppercase">९) अतिरिक्त नोंदी</Label>
+            <Label className="text-xs font-bold uppercase">अतिरिक्त नोंदी</Label>
             <Textarea value={formData.additionalNotes} onChange={e => setFormData({...formData, additionalNotes: e.target.value})} />
           </div>
         </CardContent>
       </Card>
 
-      {/* १०) प्रमाणीकरण */}
+      {/* प्रमाणीकरण */}
       <Card className="border-none shadow-sm bg-white">
         <CardHeader className="bg-primary/5 border-b">
           <CardTitle className="text-lg font-bold">१०) प्रमाणीकरण (Validation)</CardTitle>
