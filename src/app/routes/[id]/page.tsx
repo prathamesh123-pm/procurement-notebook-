@@ -12,6 +12,9 @@ import { Plus, Search, MapPin, Phone, Info, Milk, User, ChevronRight } from "luc
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogDescription } from "@/components/ui/dialog"
+import { Separator } from "@/components/ui/separator"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 export default function RouteDetailsPage() {
   const params = useParams()
@@ -22,6 +25,24 @@ export default function RouteDetailsPage() {
   const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(null)
   const [searchQuery, setSearchQuery] = useState("")
   const [mounted, setMounted] = useState(false)
+  const [isAddingSupplier, setIsAddingSupplier] = useState(false)
+
+  // Form State
+  const [formData, setFormData] = useState({
+    name: "",
+    id: "",
+    address: "",
+    mobile: "",
+    milkQuality: "A Grade",
+    competition: "",
+    additionalInfo: "",
+    cowQty: "0",
+    cowFat: "0",
+    cowSnf: "0",
+    bufQty: "0",
+    bufFat: "0",
+    bufSnf: "0"
+  })
 
   useEffect(() => {
     setMounted(true)
@@ -33,7 +54,7 @@ export default function RouteDetailsPage() {
     
     const routeSuppliers = storedSupps.filter((s: Supplier) => s.routeId === routeId)
     
-    if (routeSuppliers.length === 0 && (routeId === "1")) {
+    if (routeSuppliers.length === 0 && routeId === "1" && storedSupps.length === 0) {
       const dummySupps: Supplier[] = [
         {
           id: "SUP-001",
@@ -46,25 +67,50 @@ export default function RouteDetailsPage() {
           additionalInfo: "Preferred morning collection.",
           cowMilk: { quantity: 25, fat: 4.2, snf: 8.5 },
           buffaloMilk: { quantity: 20.5, fat: 6.8, snf: 9.0 }
-        },
-        {
-          id: "SUP-002",
-          name: "Sunlight Dairy",
-          address: "River Bend, Sector 4",
-          mobile: "+91 9988776655",
-          milkQuality: "A Grade",
-          routeId: "1",
-          competition: "Local Cooperative",
-          additionalInfo: "Requires extra cans on Mondays.",
-          cowMilk: { quantity: 15, fat: 3.8, snf: 8.2 },
-          buffaloMilk: { quantity: 12, fat: 6.5, snf: 8.8 }
         }
       ]
       setSuppliers(dummySupps)
+      localStorage.setItem('procurepal_suppliers', JSON.stringify(dummySupps))
     } else {
       setSuppliers(routeSuppliers)
     }
   }, [routeId])
+
+  const handleAddSupplier = () => {
+    if (!formData.name || !formData.id) return
+
+    const newSupplier: Supplier = {
+      id: formData.id,
+      name: formData.name,
+      address: formData.address,
+      mobile: formData.mobile,
+      milkQuality: formData.milkQuality,
+      routeId: routeId,
+      competition: formData.competition,
+      additionalInfo: formData.additionalInfo,
+      cowMilk: {
+        quantity: Number(formData.cowQty),
+        fat: Number(formData.cowFat),
+        snf: Number(formData.cowSnf)
+      },
+      buffaloMilk: {
+        quantity: Number(formData.bufQty),
+        fat: Number(formData.bufFat),
+        snf: Number(formData.bufSnf)
+      }
+    }
+
+    const allSupps = JSON.parse(localStorage.getItem('procurepal_suppliers') || '[]')
+    const updatedAllSupps = [...allSupps, newSupplier]
+    localStorage.setItem('procurepal_suppliers', JSON.stringify(updatedAllSupps))
+    
+    setSuppliers(updatedAllSupps.filter(s => s.routeId === routeId))
+    setIsAddingSupplier(false)
+    setFormData({
+      name: "", id: "", address: "", mobile: "", milkQuality: "A Grade", competition: "", additionalInfo: "",
+      cowQty: "0", cowFat: "0", cowSnf: "0", bufQty: "0", bufFat: "0", bufSnf: "0"
+    })
+  }
 
   const filteredSuppliers = useMemo(() => {
     return suppliers.filter(s => 
@@ -87,9 +133,111 @@ export default function RouteDetailsPage() {
           <CardHeader className="flex-none p-4 pb-2">
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg font-bold">Suppliers</CardTitle>
-              <Button size="sm" variant="outline" className="h-8 gap-1 font-bold">
-                <Plus className="h-4 w-4" /> Add
-              </Button>
+              
+              <Dialog open={isAddingSupplier} onOpenChange={setIsAddingSupplier}>
+                <DialogTrigger asChild>
+                  <Button size="sm" variant="outline" className="h-8 gap-1 font-bold">
+                    <Plus className="h-4 w-4" /> Add
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle>Add New Supplier</DialogTitle>
+                    <DialogDescription>Register a new supplier to this collection route.</DialogDescription>
+                  </DialogHeader>
+                  <div className="grid gap-6 py-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Supplier Name</Label>
+                        <Input placeholder="Full Name" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Supplier ID (Code)</Label>
+                        <Input placeholder="e.g. SUP-005" value={formData.id} onChange={e => setFormData({...formData, id: e.target.value})} />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Mobile Number</Label>
+                        <Input placeholder="+91" value={formData.mobile} onChange={e => setFormData({...formData, mobile: e.target.value})} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Quality Grade</Label>
+                        <Select value={formData.milkQuality} onValueChange={v => setFormData({...formData, milkQuality: v})}>
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="A+ Grade">A+ Grade</SelectItem>
+                            <SelectItem value="A Grade">A Grade</SelectItem>
+                            <SelectItem value="B Grade">B Grade</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Address</Label>
+                      <Input placeholder="Village, Plot, Sector" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} />
+                    </div>
+
+                    <Separator />
+
+                    <div className="grid grid-cols-2 gap-6">
+                      <div className="space-y-4">
+                        <Label className="text-primary font-bold">Cow Milk Metrics</Label>
+                        <div className="grid grid-cols-3 gap-2">
+                          <div className="space-y-1">
+                            <Label className="text-[10px]">QTY</Label>
+                            <Input type="number" step="0.1" value={formData.cowQty} onChange={e => setFormData({...formData, cowQty: e.target.value})} />
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-[10px]">FAT</Label>
+                            <Input type="number" step="0.1" value={formData.cowFat} onChange={e => setFormData({...formData, cowFat: e.target.value})} />
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-[10px]">SNF</Label>
+                            <Input type="number" step="0.1" value={formData.cowSnf} onChange={e => setFormData({...formData, cowSnf: e.target.value})} />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="space-y-4">
+                        <Label className="text-amber-600 font-bold">Buffalo Milk Metrics</Label>
+                        <div className="grid grid-cols-3 gap-2">
+                          <div className="space-y-1">
+                            <Label className="text-[10px]">QTY</Label>
+                            <Input type="number" step="0.1" value={formData.bufQty} onChange={e => setFormData({...formData, bufQty: e.target.value})} />
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-[10px]">FAT</Label>
+                            <Input type="number" step="0.1" value={formData.bufFat} onChange={e => setFormData({...formData, bufFat: e.target.value})} />
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-[10px]">SNF</Label>
+                            <Input type="number" step="0.1" value={formData.bufSnf} onChange={e => setFormData({...formData, bufSnf: e.target.value})} />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <Separator />
+
+                    <div className="space-y-2">
+                      <Label>Village Competition</Label>
+                      <Input placeholder="Other Dairies" value={formData.competition} onChange={e => setFormData({...formData, competition: e.target.value})} />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Additional Notes</Label>
+                      <Input placeholder="Preferred collection time, special requirements etc." value={formData.additionalInfo} onChange={e => setFormData({...formData, additionalInfo: e.target.value})} />
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button variant="outline" onClick={() => setIsAddingSupplier(false)}>Cancel</Button>
+                    <Button onClick={handleAddSupplier}>Save Supplier</Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
             </div>
             <div className="relative mt-2">
               <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
