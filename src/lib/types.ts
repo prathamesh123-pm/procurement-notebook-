@@ -1,11 +1,10 @@
-
 export type TaskStatus = 'pending' | 'completed';
 
 export interface Task {
   id: string;
   title: string;
   description?: string;
-  remark?: string; // Added remark field
+  remark?: string;
   assignedTo: string;
   status: TaskStatus;
   createdAt: string;
@@ -28,10 +27,10 @@ export interface Supplier {
   routeId: string;
   competition?: string;
   additionalInfo?: string;
-  cowMilk: MilkMetrics;
-  buffaloMilk: MilkMetrics;
+  cowMilk?: MilkMetrics;
+  buffaloMilk?: MilkMetrics;
   // Operations Fields
-  iceBlocks?: number; // Changed from iceQuantity
+  iceBlocks?: number;
   scaleBrand?: string;
   fatMachineBrand?: string;
   collectionType?: string;
