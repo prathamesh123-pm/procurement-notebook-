@@ -28,6 +28,12 @@ export interface Supplier {
   additionalInfo?: string;
   cowMilk: MilkMetrics;
   buffaloMilk: MilkMetrics;
+  // New Fields
+  iceQuantity?: number;
+  scaleBrand?: string;
+  fatMachineBrand?: string;
+  collectionType?: string;
+  cattleFeedBrand?: string;
 }
 
 export interface Route {

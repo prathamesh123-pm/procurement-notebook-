@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Supplier, Route } from "@/lib/types"
-import { Plus, Search, MapPin, Phone, Info, Milk, User, ChevronRight } from "lucide-react"
+import { Plus, Search, MapPin, Phone, Info, Milk, User, ChevronRight, Scale, Thermometer, Truck, Package } from "lucide-react"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
@@ -41,7 +41,12 @@ export default function RouteDetailsPage() {
     cowSnf: "0",
     bufQty: "0",
     bufFat: "0",
-    bufSnf: "0"
+    bufSnf: "0",
+    iceQuantity: "0",
+    scaleBrand: "",
+    fatMachineBrand: "",
+    collectionType: "Route",
+    cattleFeedBrand: ""
   })
 
   useEffect(() => {
@@ -53,27 +58,7 @@ export default function RouteDetailsPage() {
     setRoute(currentRoute || null)
     
     const routeSuppliers = storedSupps.filter((s: Supplier) => s.routeId === routeId)
-    
-    if (routeSuppliers.length === 0 && routeId === "1" && storedSupps.length === 0) {
-      const dummySupps: Supplier[] = [
-        {
-          id: "SUP-001",
-          name: "Green Valley Farm",
-          address: "Village North, Plot 42",
-          mobile: "+91 9876543210",
-          milkQuality: "A+ Grade",
-          routeId: "1",
-          competition: "Amul Local Collection Center",
-          additionalInfo: "Preferred morning collection.",
-          cowMilk: { quantity: 25, fat: 4.2, snf: 8.5 },
-          buffaloMilk: { quantity: 20.5, fat: 6.8, snf: 9.0 }
-        }
-      ]
-      setSuppliers(dummySupps)
-      localStorage.setItem('procurepal_suppliers', JSON.stringify(dummySupps))
-    } else {
-      setSuppliers(routeSuppliers)
-    }
+    setSuppliers(routeSuppliers)
   }, [routeId])
 
   const handleAddSupplier = () => {
@@ -97,7 +82,12 @@ export default function RouteDetailsPage() {
         quantity: Number(formData.bufQty),
         fat: Number(formData.bufFat),
         snf: Number(formData.bufSnf)
-      }
+      },
+      iceQuantity: Number(formData.iceQuantity),
+      scaleBrand: formData.scaleBrand,
+      fatMachineBrand: formData.fatMachineBrand,
+      collectionType: formData.collectionType,
+      cattleFeedBrand: formData.cattleFeedBrand
     }
 
     const allSupps = JSON.parse(localStorage.getItem('procurepal_suppliers') || '[]')
@@ -108,7 +98,8 @@ export default function RouteDetailsPage() {
     setIsAddingSupplier(false)
     setFormData({
       name: "", id: "", address: "", mobile: "", milkQuality: "A Grade", competition: "", additionalInfo: "",
-      cowQty: "0", cowFat: "0", cowSnf: "0", bufQty: "0", bufFat: "0", bufSnf: "0"
+      cowQty: "0", cowFat: "0", cowSnf: "0", bufQty: "0", bufFat: "0", bufSnf: "0",
+      iceQuantity: "0", scaleBrand: "", fatMachineBrand: "", collectionType: "Route", cattleFeedBrand: ""
     })
   }
 
@@ -140,10 +131,10 @@ export default function RouteDetailsPage() {
                     <Plus className="h-4 w-4" /> Add
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
                   <DialogHeader>
                     <DialogTitle>Add New Supplier</DialogTitle>
-                    <DialogDescription>Register a new supplier to this collection route.</DialogDescription>
+                    <DialogDescription>Register a new supplier with equipment and collection details.</DialogDescription>
                   </DialogHeader>
                   <div className="grid gap-6 py-4">
                     <div className="grid grid-cols-2 gap-4">
@@ -157,7 +148,7 @@ export default function RouteDetailsPage() {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-3 gap-4">
                       <div className="space-y-2">
                         <Label>Mobile Number</Label>
                         <Input placeholder="+91" value={formData.mobile} onChange={e => setFormData({...formData, mobile: e.target.value})} />
@@ -173,6 +164,17 @@ export default function RouteDetailsPage() {
                           </SelectContent>
                         </Select>
                       </div>
+                      <div className="space-y-2">
+                        <Label>Collection Type</Label>
+                        <Select value={formData.collectionType} onValueChange={v => setFormData({...formData, collectionType: v})}>
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Route">Route</SelectItem>
+                            <SelectItem value="Center">Center</SelectItem>
+                            <SelectItem value="Both">Both</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
                     </div>
 
                     <div className="space-y-2">
@@ -184,7 +186,9 @@ export default function RouteDetailsPage() {
 
                     <div className="grid grid-cols-2 gap-6">
                       <div className="space-y-4">
-                        <Label className="text-primary font-bold">Cow Milk Metrics</Label>
+                        <Label className="text-primary font-bold flex items-center gap-2">
+                          <Milk className="h-4 w-4" /> Cow Milk Metrics
+                        </Label>
                         <div className="grid grid-cols-3 gap-2">
                           <div className="space-y-1">
                             <Label className="text-[10px]">QTY</Label>
@@ -202,7 +206,9 @@ export default function RouteDetailsPage() {
                       </div>
 
                       <div className="space-y-4">
-                        <Label className="text-amber-600 font-bold">Buffalo Milk Metrics</Label>
+                        <Label className="text-amber-600 font-bold flex items-center gap-2">
+                          <Milk className="h-4 w-4" /> Buffalo Milk Metrics
+                        </Label>
                         <div className="grid grid-cols-3 gap-2">
                           <div className="space-y-1">
                             <Label className="text-[10px]">QTY</Label>
@@ -222,14 +228,47 @@ export default function RouteDetailsPage() {
 
                     <Separator />
 
-                    <div className="space-y-2">
-                      <Label>Village Competition</Label>
-                      <Input placeholder="Other Dairies" value={formData.competition} onChange={e => setFormData({...formData, competition: e.target.value})} />
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label className="flex items-center gap-2">
+                          <Scale className="h-4 w-4" /> Weighing Scale Brand
+                        </Label>
+                        <Input placeholder="e.g. Avery, Essae" value={formData.scaleBrand} onChange={e => setFormData({...formData, scaleBrand: e.target.value})} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="flex items-center gap-2">
+                          <Thermometer className="h-4 w-4" /> Fat Machine Brand
+                        </Label>
+                        <Input placeholder="e.g. Milkotester" value={formData.fatMachineBrand} onChange={e => setFormData({...formData, fatMachineBrand: e.target.value})} />
+                      </div>
                     </div>
 
-                    <div className="space-y-2">
-                      <Label>Additional Notes</Label>
-                      <Input placeholder="Preferred collection time, special requirements etc." value={formData.additionalInfo} onChange={e => setFormData({...formData, additionalInfo: e.target.value})} />
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label className="flex items-center gap-2">
+                          <Package className="h-4 w-4" /> Ice Quantity Given
+                        </Label>
+                        <Input type="number" placeholder="in kg" value={formData.iceQuantity} onChange={e => setFormData({...formData, iceQuantity: e.target.value})} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="flex items-center gap-2">
+                          <Truck className="h-4 w-4" /> Cattle Feed Brand
+                        </Label>
+                        <Input placeholder="Brand used by supplier" value={formData.cattleFeedBrand} onChange={e => setFormData({...formData, cattleFeedBrand: e.target.value})} />
+                      </div>
+                    </div>
+
+                    <Separator />
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Village Competition</Label>
+                        <Input placeholder="Other Dairies" value={formData.competition} onChange={e => setFormData({...formData, competition: e.target.value})} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Additional Notes</Label>
+                        <Input placeholder="Special requirements etc." value={formData.additionalInfo} onChange={e => setFormData({...formData, additionalInfo: e.target.value})} />
+                      </div>
                     </div>
                   </div>
                   <DialogFooter>
@@ -282,7 +321,10 @@ export default function RouteDetailsPage() {
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b pb-8">
                   <div className="space-y-1">
                     <h3 className="text-3xl font-bold font-headline text-foreground tracking-tight">{selectedSupplier.name}</h3>
-                    <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest">Supplier ID: {selectedSupplier.id}</p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest">Supplier ID: {selectedSupplier.id}</p>
+                      <Badge variant="outline" className="text-[10px] uppercase">{selectedSupplier.collectionType || 'Route'}</Badge>
+                    </div>
                   </div>
                   <div className="flex gap-3">
                     <Badge variant="secondary" className="bg-green-100 text-green-700 font-bold px-4 py-1.5 text-xs uppercase tracking-wider border-none">
@@ -317,6 +359,48 @@ export default function RouteDetailsPage() {
                           <p className="text-[10px] font-bold text-muted-foreground uppercase">Address</p>
                           <p className="text-sm font-semibold text-foreground">{selectedSupplier.address}</p>
                         </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-5">
+                    <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+                      EQUIPMENT & OPERATIONS
+                    </h4>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="p-3 bg-muted/20 rounded-lg border">
+                        <Label className="text-[9px] uppercase font-bold text-muted-foreground block mb-1">Scale Brand</Label>
+                        <p className="text-sm font-bold flex items-center gap-2">
+                          <Scale className="h-3.5 w-3.5 text-muted-foreground" /> {selectedSupplier.scaleBrand || "N/A"}
+                        </p>
+                      </div>
+                      <div className="p-3 bg-muted/20 rounded-lg border">
+                        <Label className="text-[9px] uppercase font-bold text-muted-foreground block mb-1">Fat Machine</Label>
+                        <p className="text-sm font-bold flex items-center gap-2">
+                          <Thermometer className="h-3.5 w-3.5 text-muted-foreground" /> {selectedSupplier.fatMachineBrand || "N/A"}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                  <div className="space-y-5">
+                    <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+                      ADDITIONAL ASSETS
+                    </h4>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="p-3 bg-primary/5 rounded-lg border border-primary/10">
+                        <Label className="text-[9px] uppercase font-bold text-primary block mb-1">Ice Quantity</Label>
+                        <p className="text-sm font-bold flex items-center gap-2">
+                          <Package className="h-3.5 w-3.5 text-primary" /> {selectedSupplier.iceQuantity || 0} kg
+                        </p>
+                      </div>
+                      <div className="p-3 bg-amber-50 rounded-lg border border-amber-100">
+                        <Label className="text-[9px] uppercase font-bold text-amber-700 block mb-1">Cattle Feed</Label>
+                        <p className="text-sm font-bold flex items-center gap-2">
+                          <Truck className="h-3.5 w-3.5 text-amber-700" /> {selectedSupplier.cattleFeedBrand || "Not Set"}
+                        </p>
                       </div>
                     </div>
                   </div>
