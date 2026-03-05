@@ -261,7 +261,7 @@ export default function ReportsPage() {
           <div className="text-center py-24 bg-white rounded-2xl border border-dashed flex flex-col items-center gap-4">
              <Archive className="h-16 w-16 text-muted-foreground/20" />
              <div className="space-y-1">
-               <h3 className="text-xl font-bold text-muted-foreground">कोणताही रिपोर्ट सापडला नाही</h3>
+               <h3 className="text-xl font-bold text-muted-foreground">कोणताही रिपोर्ट सापडल नाही</h3>
                <p className="text-sm text-muted-foreground/60">निवडलेली तारीख किंवा कॅटेगरी तपासा.</p>
              </div>
           </div>
@@ -301,7 +301,7 @@ export default function ReportsPage() {
                     <p className="text-sm font-bold border-b border-dashed min-w-[150px]">{selectedReport?.fullData?.name || "_________________"}</p>
                   </div>
                   <div className="space-y-1">
-                    <p className="text-[10px] font-bold text-muted-foreground uppercase">आयडी / सरकार संख्या (ID/Govt No)</p>
+                    <p className="text-[10px] font-bold text-muted-foreground uppercase">आयडी / कर्मचारी संख्या (ID)</p>
                     <p className="text-sm font-bold border-b border-dashed min-w-[100px]">{selectedReport?.fullData?.idNumber || "_________________"}</p>
                   </div>
                   <div className="space-y-1">
