@@ -12,7 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
-import { ClipboardCheck, User, Briefcase, FileText, CheckCircle2, Truck, MapPin, Activity, Trash2, Plus, ShieldCheck, Settings, Target } from "lucide-react"
+import { ClipboardCheck, User, Briefcase, FileText, CheckCircle2, Truck, MapPin, Activity, Trash2, Plus, ShieldCheck, Settings, Target, MessageSquare } from "lucide-react"
 
 interface CenterVisit {
   id: string;
@@ -22,13 +22,16 @@ interface CenterVisit {
   suggestion: string;
   objectives: string[];
   compliance: string[];
+  mixQty: string;
   mixFat: string;
   mixSnf: string;
   mixTemp: string;
+  cowQty: string;
   cowFat: string;
   cowSnf: string;
   cowTemp: string;
   equipment: string[];
+  remark: string;
 }
 
 export default function DailyReportPage() {
@@ -46,13 +49,16 @@ export default function DailyReportPage() {
     suggestion: "",
     objectives: [],
     compliance: [],
+    mixQty: "",
     mixFat: "",
     mixSnf: "",
     mixTemp: "",
+    cowQty: "",
     cowFat: "",
     cowSnf: "",
     cowTemp: "",
-    equipment: []
+    equipment: [],
+    remark: ""
   });
 
   // Form State
@@ -457,6 +463,10 @@ export default function DailyReportPage() {
                         <div className="space-y-1 col-span-2 border-b pb-1 mb-1">
                            <span className="text-[9px] font-bold text-muted-foreground uppercase">मिश्र दूध (Mix Milk)</span>
                         </div>
+                        <div className="flex flex-col gap-1 col-span-2">
+                          <Label className="text-[9px] font-bold">Quantity (Liters)</Label>
+                          <Input type="number" step="1" value={visit.mixQty} onChange={e => updateCenter(visit.id, { mixQty: e.target.value })} className="h-8 px-2" />
+                        </div>
                         <div className="flex flex-col gap-1">
                           <Label className="text-[9px] font-bold">Avg. FAT (%)</Label>
                           <Input type="number" step="0.1" value={visit.mixFat} onChange={e => updateCenter(visit.id, { mixFat: e.target.value })} className="h-8 px-2" />
@@ -472,6 +482,10 @@ export default function DailyReportPage() {
                         
                         <div className="space-y-1 col-span-2 border-b pb-1 mt-1 mb-1">
                            <span className="text-[9px] font-bold text-muted-foreground uppercase">गाय दूध (Cow Milk)</span>
+                        </div>
+                        <div className="flex flex-col gap-1 col-span-2">
+                          <Label className="text-[9px] font-bold">Quantity (Liters)</Label>
+                          <Input type="number" step="1" value={visit.cowQty} onChange={e => updateCenter(visit.id, { cowQty: e.target.value })} className="h-8 px-2" />
                         </div>
                         <div className="flex flex-col gap-1">
                           <Label className="text-[9px] font-bold">Avg. FAT (%)</Label>
@@ -538,6 +552,19 @@ export default function DailyReportPage() {
                         ))}
                       </div>
                     </div>
+                  </div>
+
+                  {/* Remark section at the end of Center Visit */}
+                  <div className="space-y-2 border-t pt-4">
+                    <Label className="text-xs font-bold text-primary flex items-center gap-2 uppercase tracking-wider">
+                      <MessageSquare className="h-3.5 w-3.5" /> शेरा / सूचना (Remarks)
+                    </Label>
+                    <Textarea 
+                      value={visit.remark} 
+                      onChange={e => updateCenter(visit.id, { remark: e.target.value })} 
+                      placeholder="केंद्र चालकास दिलेल्या सूचना किंवा इतर नोंदी लिहा..." 
+                      className="min-h-[80px] text-sm"
+                    />
                   </div>
                 </CardContent>
               </Card>
