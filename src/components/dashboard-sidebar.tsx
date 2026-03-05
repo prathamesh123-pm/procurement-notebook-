@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -79,8 +80,6 @@ export function DashboardSidebar() {
           <SidebarGroupContent>
             <SidebarMenu className="px-3 gap-1">
               {items.map((item) => {
-                // Check isActive without mounted condition to avoid hydration flicker, 
-                // but use mounted for extra safety if needed. usePathname is hydration safe.
                 const isActive = pathname === item.url || (item.url !== '/dashboard' && pathname?.startsWith(item.url));
                 return (
                   <SidebarMenuItem key={item.title}>
