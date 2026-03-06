@@ -29,13 +29,12 @@ export interface Supplier {
   additionalInfo?: string;
   cowMilk?: MilkMetrics;
   buffaloMilk?: MilkMetrics;
-  // Operations Fields
+  // Procurement specific fields
   iceBlocks?: number;
   scaleBrand?: string;
   fatMachineBrand?: string;
   collectionType?: string;
   cattleFeedBrand?: string;
-  // FSSAI Fields
   fssaiNumber?: string;
   fssaiExpiry?: string;
 }

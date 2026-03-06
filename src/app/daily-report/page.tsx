@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
 import { 
-  ClipboardCheck, User, Truck, Plus, Trash2, Hash, MapPin, Briefcase, Save, RefreshCw
+  ClipboardCheck, User, Truck, Plus, Trash2, Hash, MapPin, Briefcase, Save, RefreshCw, Gauge
 } from "lucide-react"
 
 interface RouteVisitEntry {
@@ -55,6 +55,8 @@ export default function DailyReportPage() {
     startReading: "",
     endReading: "",
     totalKm: "0",
+    shortageLiters: "0",
+    excessLiters: "0",
     routeVisitLogs: [] as RouteVisitEntry[],
     fieldObservations: "",
     officeTasks: "",
@@ -66,8 +68,6 @@ export default function DailyReportPage() {
 
   useEffect(() => {
     setMounted(true)
-    
-    // Load profile data
     const savedName = localStorage.getItem('procurenote_user_name') || ""
     const savedId = localStorage.getItem('procurenote_user_id') || ""
     
@@ -80,7 +80,6 @@ export default function DailyReportPage() {
     }))
   }, [])
 
-  // Calculate Total KM automatically
   useEffect(() => {
     if (formData.startReading && formData.endReading) {
       const total = Number(formData.endReading) - Number(formData.startReading);
@@ -113,7 +112,6 @@ export default function DailyReportPage() {
   }
 
   const handleUpdate = () => {
-    // Recalculate if needed
     if (formData.startReading && formData.endReading) {
       const total = Number(formData.endReading) - Number(formData.startReading);
       if (total >= 0) {
@@ -132,7 +130,7 @@ export default function DailyReportPage() {
 
     if (reportType === "route-visit") {
       typeDisplay = "Route Visit"
-      reportSummary = `रूट व्हिजिट: ${formData.routeVisitLogs.length} केंद्र. वाहन: ${formData.vehicleNumber}. किलोमीटर: ${formData.totalKm} किमी.`
+      reportSummary = `रूट व्हिजिट: ${formData.routeVisitLogs.length} केंद्र. वाहन: ${formData.vehicleNumber}. किलोमीटर: ${formData.totalKm} किमी. तूट: ${formData.shortageLiters}L.`
     } else if (reportType === "field-visit") {
       typeDisplay = "Field Visit"
       reportSummary = `क्षेत्र भेट अहवाल: ${formData.fieldObservations.substring(0, 50)}...`
@@ -178,11 +176,11 @@ export default function DailyReportPage() {
         <CardContent className="p-2 grid grid-cols-2 md:grid-cols-4 gap-2">
           <div className="space-y-0.5">
             <Label className="text-[9px] font-bold uppercase text-muted-foreground">नाव</Label>
-            <Input className="h-7 text-[11px] px-2" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} placeholder="नाव" />
+            <Input className="h-7 text-[11px] px-2" value={formData.name} readOnly />
           </div>
           <div className="space-y-0.5">
             <Label className="text-[9px] font-bold uppercase text-muted-foreground">आयडी</Label>
-            <Input className="h-7 text-[11px] px-2" value={formData.idNumber} onChange={e => setFormData({...formData, idNumber: e.target.value})} placeholder="ID" />
+            <Input className="h-7 text-[11px] px-2" value={formData.idNumber} readOnly />
           </div>
           <div className="space-y-0.5">
             <Label className="text-[9px] font-bold uppercase text-muted-foreground">तारीख</Label>
@@ -218,7 +216,7 @@ export default function DailyReportPage() {
                 <Truck className="h-3 w-3 text-primary" /> रूट व वाहन तपशील
               </CardTitle>
             </CardHeader>
-            <CardContent className="p-2 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-2">
+            <CardContent className="p-2 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-10 gap-2">
               <div className="space-y-0.5">
                 <Label className="text-[9px] font-bold uppercase">स्लिप नंबर</Label>
                 <Input className="h-7 text-[11px] px-2 border-primary/20" value={formData.slipNo} onChange={e => setFormData({...formData, slipNo: e.target.value})} placeholder="Slip No" />
@@ -250,6 +248,14 @@ export default function DailyReportPage() {
               <div className="space-y-0.5">
                 <Label className="text-[9px] font-bold uppercase text-blue-800">Total KM</Label>
                 <Input className="h-7 text-[11px] px-2 bg-blue-50 border-blue-300 font-bold" type="number" value={formData.totalKm} readOnly />
+              </div>
+              <div className="space-y-0.5">
+                <Label className="text-[9px] font-bold uppercase text-red-600">दूध तूट (L)</Label>
+                <Input className="h-7 text-[11px] px-2 border-red-200" type="number" step="0.1" value={formData.shortageLiters} onChange={e => setFormData({...formData, shortageLiters: e.target.value})} />
+              </div>
+              <div className="space-y-0.5">
+                <Label className="text-[9px] font-bold uppercase text-green-600">दूध वाढ (L)</Label>
+                <Input className="h-7 text-[11px] px-2 border-green-200" type="number" step="0.1" value={formData.excessLiters} onChange={e => setFormData({...formData, excessLiters: e.target.value})} />
               </div>
             </CardContent>
           </Card>
