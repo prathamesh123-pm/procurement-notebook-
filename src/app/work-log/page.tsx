@@ -61,7 +61,7 @@ export default function WorkLogPage() {
     setNewTaskSupplierId("")
     toast({
       title: "Task Saved",
-      description: "New task added. Click on it to add a remark or complete it.",
+      description: "नवीन टास्क जोडला आहे. त्यावर क्लिक करून शेरा भरा किंवा पूर्ण करा.",
     })
   }
 
@@ -80,7 +80,7 @@ export default function WorkLogPage() {
     setIsDetailOpen(false)
     toast({
       title: "Remark Updated",
-      description: "Action plan has been saved.",
+      description: "शेरा अपडेट केला आहे.",
     })
   }
 
@@ -97,10 +97,11 @@ export default function WorkLogPage() {
     // Create Report Entry with fullData
     const storedReports = JSON.parse(localStorage.getItem('procurepal_reports') || '[]')
     
-    let reportSummary = `Task: ${taskToComplete.title}.`
-    if (taskToComplete.description) reportSummary += ` Details: ${taskToComplete.description}.`
-    if (finalRemark) reportSummary += ` Action Taken (Remark): ${finalRemark}.`
-    if (taskToComplete.supplierName) reportSummary += ` [Supplier: ${taskToComplete.supplierName} (${taskToComplete.supplierId || 'N/A'})]`
+    // Construct summary that preserves the structure as requested
+    let reportSummary = `गवळी: ${taskToComplete.supplierName || 'N/A'} (${taskToComplete.supplierId || 'N/A'})\n`
+    reportSummary += `टास्क: ${taskToComplete.title}\n`
+    if (taskToComplete.description) reportSummary += `तपशील: ${taskToComplete.description}\n`
+    if (finalRemark) reportSummary += `शेरा (Action Plan): ${finalRemark}`
 
     const newReport = {
       id: crypto.randomUUID(),
@@ -124,11 +125,12 @@ export default function WorkLogPage() {
 
     toast({
       title: "Task Completed",
-      description: "Task has been moved to Management Reports.",
+      description: "टास्क पूर्ण झाला आणि अहवालात जतन केला.",
     })
   }
 
   const deleteTask = (taskId: string) => {
+    if (!confirm("तुम्हाला हा टास्क हटवायचा आहे का?")) return
     saveTasks(tasks.filter(t => t.id !== taskId))
   }
 
@@ -146,149 +148,147 @@ export default function WorkLogPage() {
   if (!mounted) return null
 
   return (
-    <div className="space-y-8 max-w-5xl mx-auto w-full">
-      <div className="flex flex-col gap-1">
-        <h2 className="text-3xl font-headline font-bold text-foreground tracking-tight">Work Log</h2>
-        <p className="text-muted-foreground font-medium">Manage and track your daily procurement duties. Click tasks to add remarks.</p>
+    <div className="space-y-6 max-w-5xl mx-auto w-full pb-10">
+      <div className="flex flex-col gap-1 border-b pb-2">
+        <h2 className="text-2xl font-headline font-bold text-foreground flex items-center gap-2">
+          <ListTodo className="h-6 w-6 text-primary" /> 
+          कामकाज नोंद (Work Log)
+        </h2>
+        <p className="text-xs text-muted-foreground font-medium">तुमची रोजची कामे येथे नोंदवा. टास्कवर क्लिक करून शेरा भरा.</p>
       </div>
 
-      <Card className="border-none shadow-sm bg-white overflow-hidden">
-        <div className="bg-primary/5 px-6 py-4 border-b">
-          <CardTitle className="text-lg font-bold flex items-center gap-2">
-            <Plus className="h-5 w-5 text-primary" /> New Task
+      <Card className="border shadow-none bg-white overflow-hidden">
+        <div className="bg-primary/5 px-4 py-2 border-b">
+          <CardTitle className="text-xs font-bold flex items-center gap-2 uppercase tracking-tight">
+            <Plus className="h-4 w-4 text-primary" /> नवीन टास्क जोडा (New Task)
           </CardTitle>
         </div>
-        <CardContent className="p-6 space-y-5">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div className="space-y-2">
-              <Label htmlFor="title" className="font-bold text-xs uppercase tracking-wider">Task Title</Label>
+        <CardContent className="p-4 space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <Label htmlFor="supplierName" className="text-[10px] font-bold uppercase text-muted-foreground">गवळ्याचे नाव (Supplier Name)</Label>
               <Input 
-                id="title" 
-                placeholder="e.g. Monthly collection review" 
-                value={newTaskTitle} 
-                onChange={(e) => setNewTaskTitle(e.target.value)} 
-                className="bg-muted/30"
+                id="supplierName" 
+                placeholder="उदा. राहुल डेअरी" 
+                value={newTaskSupplierName} 
+                onChange={(e) => setNewTaskSupplierName(e.target.value)} 
+                className="h-9 text-xs bg-muted/20"
               />
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="supplierName" className="font-bold text-xs uppercase tracking-wider">Gavlyache Nav</Label>
-                <Input 
-                  id="supplierName" 
-                  placeholder="Supplier Name" 
-                  value={newTaskSupplierName} 
-                  onChange={(e) => setNewTaskSupplierName(e.target.value)} 
-                  className="bg-muted/30"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="supplierId" className="font-bold text-xs uppercase tracking-wider">Code Numbar</Label>
-                <Input 
-                  id="supplierId" 
-                  placeholder="Code Number" 
-                  value={newTaskSupplierId} 
-                  onChange={(e) => setNewTaskSupplierId(e.target.value)} 
-                  className="bg-muted/30"
-                />
-              </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="supplierId" className="text-[10px] font-bold uppercase text-muted-foreground">कोड नंबर (Code Numbar)</Label>
+              <Input 
+                id="supplierId" 
+                placeholder="उदा. 123/45" 
+                value={newTaskSupplierId} 
+                onChange={(e) => setNewTaskSupplierId(e.target.value)} 
+                className="h-9 text-xs bg-muted/20"
+              />
             </div>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="desc" className="font-bold text-xs uppercase tracking-wider">Information about the task</Label>
-            <Textarea 
-              id="desc" 
-              placeholder="Enter task details here..." 
-              value={newTaskDesc} 
-              onChange={(e) => setNewTaskDesc(e.target.value)} 
-              className="min-h-[100px] bg-muted/30"
+          
+          <div className="space-y-1.5">
+            <Label htmlFor="title" className="text-[10px] font-bold uppercase text-muted-foreground">टास्कचे नाव (Task Title)</Label>
+            <Input 
+              id="title" 
+              placeholder="उदा. फॅट ऑडिट किंवा भेसळ तपासणी" 
+              value={newTaskTitle} 
+              onChange={(e) => setNewTaskTitle(e.target.value)} 
+              className="h-9 text-xs bg-muted/20 font-bold"
             />
           </div>
-          <Button onClick={addTask} className="w-full sm:w-auto font-bold px-12 h-11 shadow-sm">
-            Save Task
+
+          <div className="space-y-1.5">
+            <Label htmlFor="desc" className="text-[10px] font-bold uppercase text-muted-foreground">टास्कची माहिती (Information about the task)</Label>
+            <Textarea 
+              id="desc" 
+              placeholder="टास्कबद्दल सविस्तर माहिती येथे लिहा..." 
+              value={newTaskDesc} 
+              onChange={(e) => setNewTaskDesc(e.target.value)} 
+              className="min-h-[80px] text-xs bg-muted/20"
+            />
+          </div>
+          
+          <Button onClick={addTask} className="w-full sm:w-auto font-bold px-8 h-9 shadow-sm">
+            <Plus className="h-4 w-4 mr-2" /> टास्क जतन करा (Save Task)
           </Button>
         </CardContent>
       </Card>
 
-      <div className="space-y-5">
+      <div className="space-y-4">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full sm:w-auto">
-            <TabsList className="bg-muted/50 p-1 rounded-lg">
-              <TabsTrigger value="all" className="px-10 font-bold text-sm rounded-md">Pending List</TabsTrigger>
-            </TabsList>
-          </Tabs>
-          <div className="relative w-full sm:w-[350px]">
+          <div className="flex items-center gap-2">
+            <Badge variant="outline" className="px-4 py-1 font-bold text-xs bg-primary/5 text-primary border-primary/20">
+              प्रलंबित यादी (Pending List)
+            </Badge>
+          </div>
+          <div className="relative w-full sm:w-[300px]">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input 
-              placeholder="Search tasks or suppliers..." 
-              className="pl-10 h-10 bg-white shadow-sm" 
+              placeholder="शोधा (गवळी किंवा टास्क...)" 
+              className="pl-10 h-9 bg-white text-xs" 
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
             />
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-4">
+        <div className="grid grid-cols-1 gap-3">
           {filteredTasks.length > 0 ? (
             filteredTasks.map((task) => (
               <Card 
                 key={task.id} 
-                className="border-none shadow-sm group bg-white hover:shadow-md transition-all cursor-pointer border-l-4 border-primary/20 hover:border-primary"
+                className="border shadow-none group bg-white hover:bg-muted/5 transition-all cursor-pointer border-l-4 border-l-primary"
                 onClick={() => handleTaskClick(task)}
               >
-                <CardContent className="p-5 flex items-start gap-5">
+                <CardContent className="p-3 flex items-start gap-4">
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="space-y-1">
-                        <h4 className="font-bold text-lg text-foreground group-hover:text-primary transition-colors">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="space-y-0.5">
+                        <h4 className="font-bold text-sm text-foreground group-hover:text-primary transition-colors">
                           {task.title}
                         </h4>
                         {(task.supplierName || task.supplierId) && (
-                          <div className="flex items-center gap-4 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                            {task.supplierName && <span className="flex items-center gap-1.5"><User className="h-3.5 w-3.5 text-primary" /> {task.supplierName}</span>}
-                            {task.supplierId && <span className="flex items-center gap-1.5"><Hash className="h-3.5 w-3.5 text-primary" /> {task.supplierId}</span>}
+                          <div className="flex items-center gap-3 text-[10px] font-bold text-muted-foreground uppercase">
+                            {task.supplierName && <span className="flex items-center gap-1"><User className="h-3 w-3 text-primary" /> {task.supplierName}</span>}
+                            {task.supplierId && <span className="flex items-center gap-1"><Hash className="h-3 w-3 text-primary" /> {task.supplierId}</span>}
                           </div>
                         )}
                       </div>
                       <Button 
                         variant="ghost" 
                         size="icon" 
-                        className="h-8 w-8 text-destructive opacity-0 group-hover:opacity-100 transition-opacity" 
+                        className="h-7 w-7 text-destructive" 
                         onClick={(e) => {
                           e.stopPropagation()
                           deleteTask(task.id)
                         }}
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="h-3.5 w-3.5" />
                       </Button>
                     </div>
                     
-                    <p className="text-sm leading-relaxed text-muted-foreground mt-2 line-clamp-1 italic">
-                      {task.description || "No description provided."}
+                    <p className="text-xs leading-relaxed text-muted-foreground mt-1.5 line-clamp-1 italic">
+                      {task.description || "माहिती उपलब्ध नाही."}
                     </p>
 
                     {task.remark && (
-                      <div className="mt-3 flex items-center gap-2 text-primary text-xs font-bold">
-                        <MessageSquare className="h-3.5 w-3.5" />
-                        <span>Remark added</span>
+                      <div className="mt-2 flex items-center gap-1.5 text-primary text-[10px] font-bold bg-primary/5 px-2 py-0.5 rounded-full w-fit">
+                        <MessageSquare className="h-3 w-3" />
+                        <span>शेरा जोडला आहे (Remark Added)</span>
                       </div>
                     )}
-
-                    <div className="flex items-center gap-2 mt-4 text-[10px] font-bold text-muted-foreground/50 uppercase tracking-tighter">
-                      <Plus className="h-3 w-3" /> Created: {new Date(task.createdAt).toLocaleDateString()}
-                    </div>
                   </div>
                 </CardContent>
               </Card>
             ))
           ) : (
-            <div className="text-center py-24 bg-white rounded-xl border border-dashed flex flex-col items-center gap-4">
-              <div className="bg-muted/30 p-6 rounded-full">
-                 <ListTodo className="h-12 w-12 text-muted-foreground/20" />
-              </div>
-              <div className="space-y-1">
-                <h3 className="text-xl font-bold text-muted-foreground tracking-tight">No pending tasks found</h3>
-                <p className="text-sm text-muted-foreground/60 max-w-xs mx-auto">Create a new task to get started with your procurement work.</p>
-              </div>
+            <div className="text-center py-16 bg-white rounded-xl border border-dashed flex flex-col items-center gap-3">
+               <ListTodo className="h-10 w-10 text-muted-foreground/20" />
+               <div className="space-y-1">
+                 <h3 className="text-sm font-bold text-muted-foreground">एकही प्रलंबित टास्क नाही</h3>
+                 <p className="text-[10px] text-muted-foreground/60">नवीन टास्क जोडण्यासाठी वरचा फॉर्म वापरा.</p>
+               </div>
             </div>
           )}
         </div>
@@ -296,60 +296,58 @@ export default function WorkLogPage() {
 
       {/* Task Detail & Remark Dialog */}
       <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle className="text-2xl font-bold font-headline">{selectedTask?.title}</DialogTitle>
-            <DialogDescription>Review task details and add your action plan or remark.</DialogDescription>
+        <DialogContent className="max-w-xl p-0 overflow-hidden">
+          <DialogHeader className="p-4 bg-primary/5 border-b">
+            <DialogTitle className="text-lg font-bold font-headline">{selectedTask?.title}</DialogTitle>
+            <DialogDescription className="text-xs">टास्कची माहिती तपासा आणि पुढील कार्यवाहीसाठी शेरा भरा.</DialogDescription>
           </DialogHeader>
           
-          <div className="space-y-6 py-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="p-4 rounded-xl bg-muted/30 border space-y-1">
-                <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Supplier Name</Label>
-                <p className="font-bold flex items-center gap-2 text-foreground"><User className="h-4 w-4 text-primary" /> {selectedTask?.supplierName || "N/A"}</p>
+          <div className="p-4 space-y-5">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="p-2.5 rounded-lg bg-muted/30 border space-y-0.5">
+                <Label className="text-[9px] font-bold uppercase text-muted-foreground">गवळी (Supplier)</Label>
+                <p className="text-xs font-bold flex items-center gap-1.5"><User className="h-3.5 w-3.5 text-primary" /> {selectedTask?.supplierName || "N/A"}</p>
               </div>
-              <div className="p-4 rounded-xl bg-muted/30 border space-y-1">
-                <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Code Number</Label>
-                <p className="font-bold flex items-center gap-2 text-foreground"><Hash className="h-4 w-4 text-primary" /> {selectedTask?.supplierId || "N/A"}</p>
+              <div className="p-2.5 rounded-lg bg-muted/30 border space-y-0.5">
+                <Label className="text-[9px] font-bold uppercase text-muted-foreground">कोड (Code)</Label>
+                <p className="text-xs font-bold flex items-center gap-1.5"><Hash className="h-3.5 w-3.5 text-primary" /> {selectedTask?.supplierId || "N/A"}</p>
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label className="text-[9px] font-bold uppercase text-muted-foreground flex items-center gap-1">
+                <Info className="h-3 w-3" /> टास्क तपशील (Task Info)
+              </Label>
+              <div className="p-3 rounded-lg bg-primary/5 border border-primary/10 text-xs leading-relaxed italic">
+                {selectedTask?.description || "या टास्कसाठी कोणताही तपशील दिलेला नाही."}
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
-                <Info className="h-3.5 w-3.5" /> Task Information
-              </Label>
-              <div className="p-4 rounded-xl bg-primary/5 border border-primary/10 text-sm leading-relaxed text-foreground/80 italic">
-                {selectedTask?.description || "No specific details provided for this task."}
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <Label htmlFor="modal-remark" className="text-[10px] font-bold uppercase tracking-widest text-primary flex items-center gap-2">
+              <Label htmlFor="modal-remark" className="text-[10px] font-bold uppercase text-primary flex items-center gap-1.5">
                 <MessageSquare className="h-3.5 w-3.5" /> Remark / शेरा (Action Plan)
               </Label>
               <Textarea 
                 id="modal-remark" 
-                placeholder="उदा. प्रत्यक्ष भेट देऊन समस्या सोडवली, किंवा पुढील कार्यवाही केली." 
+                placeholder="उदा. प्रत्यक्ष भेट देऊन समस्या सोडवली किंवा नोटीस दिली." 
                 value={tempRemark} 
                 onChange={(e) => setTempRemark(e.target.value)} 
-                className="min-h-[120px] border-primary/20 focus:border-primary bg-background shadow-inner"
+                className="min-h-[100px] text-xs border-primary/20 focus:border-primary"
               />
-              <p className="text-[10px] text-muted-foreground italic font-medium">हा शेरा रिपोर्टमध्ये जतन केला जाईल.</p>
+              <p className="text-[9px] text-muted-foreground italic">हा शेरा अंतिम रिपोर्टमध्ये दिसणार आहे.</p>
             </div>
           </div>
 
-          <DialogFooter className="gap-3 sm:gap-0">
-            <div className="flex flex-col sm:flex-row gap-3 w-full">
-              <Button variant="outline" className="flex-1 font-bold h-12" onClick={updateRemarkOnly}>
-                Update Remark
-              </Button>
-              <Button 
-                className="flex-1 font-bold bg-primary hover:bg-primary/90 gap-2 h-12" 
-                onClick={() => selectedTask && completeTask(selectedTask.id)}
-              >
-                <CheckCircle2 className="h-4 w-4" /> Complete Task
-              </Button>
-            </div>
+          <DialogFooter className="p-4 border-t bg-muted/5 flex flex-col sm:flex-row gap-2">
+            <Button variant="outline" className="flex-1 font-bold h-9 text-xs" onClick={updateRemarkOnly}>
+              शेरा अपडेट करा (Update)
+            </Button>
+            <Button 
+              className="flex-1 font-bold bg-primary hover:bg-primary/90 gap-1.5 h-9 text-xs" 
+              onClick={() => selectedTask && completeTask(selectedTask.id)}
+            >
+              <CheckCircle2 className="h-3.5 w-3.5" /> टास्क पूर्ण करा (Complete)
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
