@@ -50,7 +50,7 @@ export interface Route {
   iceBlocks?: number;
 }
 
-export type ReportType = 'Daily Office Work' | 'Field Visit' | 'Daily Task';
+export type ReportType = 'Daily Office Work' | 'Field Visit' | 'Route Visit' | 'Daily Task';
 
 export interface Report {
   id: string;
