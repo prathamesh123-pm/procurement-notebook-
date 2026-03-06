@@ -11,7 +11,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
-import { ClipboardCheck, User, Briefcase, FileText, CheckCircle2, Truck, MapPin, Activity, Trash2, Plus, ShieldCheck, Settings, Target, MessageSquare, PhoneCall, Mail, IceCream, Database, AlertTriangle } from "lucide-react"
+import { ClipboardCheck, User, Briefcase, FileText, CheckCircle2, Truck, MapPin, Activity, Trash2, Plus, ShieldCheck, Settings, Target, MessageSquare, PhoneCall, Mail, IceCream, Database, AlertTriangle, Clock, Package, SearchCheck } from "lucide-react"
 
 interface CenterVisit {
   id: string;
@@ -22,6 +22,14 @@ interface CenterVisit {
   objectives: string[];
   compliance: string[];
   complianceRemarks: Record<string, string>;
+  // Logistics fields from photo
+  arrivalTime: string;
+  departureTime: string;
+  iceAllocated: string;
+  iceUsed: string;
+  emptyCansUnloaded: string;
+  fullCansLoaded: string;
+  // Quality data
   mixQty: string;
   mixFat: string;
   mixSnf: string;
@@ -30,8 +38,12 @@ interface CenterVisit {
   cowFat: string;
   cowSnf: string;
   cowTemp: string;
+  // Equipment
   equipment: string[];
   equipmentRemarks: Record<string, string>;
+  // Inspection specific fields
+  inspectionResult: string;
+  seizedMilk: string;
   remark: string;
 }
 
@@ -49,7 +61,7 @@ export default function DailyReportPage() {
   const { toast } = useToast()
   const router = useRouter()
   const [mounted, setMounted] = useState(false)
-  const [activeReportType, setActiveReportType] = useState<string>("office")
+  const [activeReportType, setActiveReportType] = useState<string>("field")
 
   const createEmptyVisit = (): CenterVisit => ({
     id: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2),
@@ -60,6 +72,12 @@ export default function DailyReportPage() {
     objectives: [],
     compliance: [],
     complianceRemarks: {},
+    arrivalTime: "",
+    departureTime: "",
+    iceAllocated: "",
+    iceUsed: "",
+    emptyCansUnloaded: "",
+    fullCansLoaded: "",
     mixQty: "",
     mixFat: "",
     mixSnf: "",
@@ -70,6 +88,8 @@ export default function DailyReportPage() {
     cowTemp: "",
     equipment: [],
     equipmentRemarks: {},
+    inspectionResult: "",
+    seizedMilk: "",
     remark: ""
   });
 
@@ -90,12 +110,18 @@ export default function DailyReportPage() {
     mobile: "",
     reportDate: "",
     shift: "Sakal",
+    // Slip header fields from photo
+    slipNo: "",
+    driverName: "",
+    vehicleNumber: "",
+    routeOutTime: "",
+    routeInTime: "",
+    // Existing fields
     officeTasks: [] as string[],
     officeTaskDetail: "",
     meetings: [] as Meeting[],
     fieldRoute: "",
     vehicleType: "Company",
-    vehicleNumber: "",
     odoStart: "",
     odoEnd: "",
     fieldTimeFrom: "",
@@ -109,7 +135,6 @@ export default function DailyReportPage() {
 
   useEffect(() => {
     setMounted(true)
-    // Initialize dynamic values on the client side only to avoid hydration mismatch
     setFormData(prev => ({
       ...prev,
       reportDate: new Date().toISOString().split('T')[0],
@@ -185,7 +210,7 @@ export default function DailyReportPage() {
 
   const handleSave = () => {
     const typeLabel = activeReportType === 'office' ? 'Daily Office Work' : 'Field Visit'
-    const reportSummary = `प्रतिनिधी: ${formData.name}. रिपोर्ट प्रकार: ${typeLabel}. कामगिरी: ${formData.achievements}.`
+    const reportSummary = `प्रतिनिधी: ${formData.name}. रूट: ${formData.fieldRoute}. एकूण किलोमिटर: ${totalKm}. कामगिरी: ${formData.achievements}.`
     const newReport = {
       id: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2),
       type: typeLabel,
@@ -247,10 +272,6 @@ export default function DailyReportPage() {
             <Input className="h-7 text-xs" value={formData.designation} onChange={e => setFormData({...formData, designation: e.target.value})} placeholder="पद" />
           </div>
           <div className="space-y-0.5">
-            <Label className="text-[8px] font-bold uppercase text-muted-foreground">मोबाईल</Label>
-            <Input className="h-7 text-xs" value={formData.mobile} onChange={e => setFormData({...formData, mobile: e.target.value})} placeholder="Mobile" />
-          </div>
-          <div className="space-y-0.5">
             <Label className="text-[8px] font-bold uppercase text-muted-foreground">तारीख</Label>
             <Input className="h-7 text-xs" type="date" value={formData.reportDate} onChange={e => setFormData({...formData, reportDate: e.target.value})} />
           </div>
@@ -272,11 +293,11 @@ export default function DailyReportPage() {
 
       <Tabs value={activeReportType} onValueChange={setActiveReportType} className="w-full no-print">
         <TabsList className="grid w-full grid-cols-2 h-9 bg-muted/30 p-1 rounded-lg">
-          <TabsTrigger value="office" className="rounded-md font-bold text-[11px] gap-1.5 data-[state=active]:bg-white data-[state=active]:shadow-sm">
-            <Briefcase className="h-3.5 w-3.5" /> Office Work Report
-          </TabsTrigger>
           <TabsTrigger value="field" className="rounded-md font-bold text-[11px] gap-1.5 data-[state=active]:bg-white data-[state=active]:shadow-sm">
             <Truck className="h-3.5 w-3.5" /> Field Visit Report
+          </TabsTrigger>
+          <TabsTrigger value="office" className="rounded-md font-bold text-[11px] gap-1.5 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+            <Briefcase className="h-3.5 w-3.5" /> Office Work Report
           </TabsTrigger>
         </TabsList>
       </Tabs>
@@ -385,11 +406,60 @@ export default function DailyReportPage() {
               <Truck className="h-3.5 w-3.5 text-primary no-print" /> रूटवारी / फील्ड विसिट (Field Visit)
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-3 space-y-3">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
+          <CardContent className="p-3 space-y-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+              <div className="space-y-0.5">
+                <Label className="text-[8px] font-bold uppercase">स्लिप नंबर</Label>
+                <Input className="h-7 text-xs font-bold border-primary/20" value={formData.slipNo} onChange={e => setFormData({...formData, slipNo: e.target.value})} placeholder="19026" />
+              </div>
+              <div className="space-y-0.5">
+                <Label className="text-[8px] font-bold uppercase">ड्रायव्हरचे नाव</Label>
+                <Input className="h-7 text-xs" value={formData.driverName} onChange={e => setFormData({...formData, driverName: e.target.value})} placeholder="Driver Name" />
+              </div>
+              <div className="space-y-0.5">
+                <Label className="text-[8px] font-bold uppercase">वाहन क्रमांक</Label>
+                <Input className="h-7 text-xs" value={formData.vehicleNumber} onChange={e => setFormData({...formData, vehicleNumber: e.target.value})} placeholder="MH 10 Z 1869" />
+              </div>
+              <div className="space-y-0.5">
+                <Label className="text-[8px] font-bold uppercase">निघण्याची वेळ (Out)</Label>
+                <Input className="h-7 text-xs" type="time" value={formData.routeOutTime} onChange={e => setFormData({...formData, routeOutTime: e.target.value})} />
+              </div>
+              <div className="space-y-0.5">
+                <Label className="text-[8px] font-bold uppercase">परतण्याची वेळ (In)</Label>
+                <Input className="h-7 text-xs" type="time" value={formData.routeInTime} onChange={e => setFormData({...formData, routeInTime: e.target.value})} />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 border-t pt-3">
               <div className="space-y-0.5">
                 <Label className="text-[8px] font-bold uppercase">आजचा रूट / क्षेत्र</Label>
                 <Input className="h-7 text-xs" value={formData.fieldRoute} onChange={e => setFormData({...formData, fieldRoute: e.target.value})} placeholder="रूटचे नाव" />
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                <div className="space-y-0.5">
+                  <Label className="text-[8px] font-bold uppercase">सुरुवात KM</Label>
+                  <Input className="h-7 text-xs" type="number" value={formData.odoStart} onChange={e => setFormData({...formData, odoStart: e.target.value})} />
+                </div>
+                <div className="space-y-0.5">
+                  <Label className="text-[8px] font-bold uppercase">शेवट KM</Label>
+                  <Input className="h-7 text-xs" type="number" value={formData.odoEnd} onChange={e => setFormData({...formData, odoEnd: e.target.value})} />
+                </div>
+                <div className="space-y-0.5">
+                  <Label className="text-[8px] font-bold uppercase">एकूण KM</Label>
+                  <div className="h-7 px-2 border rounded-md bg-muted/50 font-bold flex items-center text-[10px] text-primary">
+                    {totalKm > 0 ? totalKm : 0}
+                  </div>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <div className="space-y-0.5">
+                  <Label className="text-[8px] font-bold uppercase">फील्ड वेळ पासून</Label>
+                  <Input className="h-7 text-xs" type="time" value={formData.fieldTimeFrom} onChange={e => setFormData({...formData, fieldTimeFrom: e.target.value})} />
+                </div>
+                <div className="space-y-0.5">
+                  <Label className="text-[8px] font-bold uppercase">ते</Label>
+                  <Input className="h-7 text-xs" type="time" value={formData.fieldTimeTo} onChange={e => setFormData({...formData, fieldTimeTo: e.target.value})} />
+                </div>
               </div>
               <div className="space-y-0.5">
                 <Label className="text-[8px] font-bold uppercase">वाहन प्रकार</Label>
@@ -404,37 +474,6 @@ export default function DailyReportPage() {
                   </div>
                 </RadioGroup>
               </div>
-              <div className="space-y-0.5">
-                <Label className="text-[8px] font-bold uppercase">वाहन क्रमांक</Label>
-                <Input className="h-7 text-xs" value={formData.vehicleNumber} onChange={e => setFormData({...formData, vehicleNumber: e.target.value})} placeholder="MH 12 XX XXXX" />
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                <div className="space-y-0.5">
-                  <Label className="text-[8px] font-bold uppercase">वेळ पासून</Label>
-                  <Input className="h-7 text-xs" type="time" value={formData.fieldTimeFrom} onChange={e => setFormData({...formData, fieldTimeFrom: e.target.value})} />
-                </div>
-                <div className="space-y-0.5">
-                  <Label className="text-[8px] font-bold uppercase">ते</Label>
-                  <Input className="h-7 text-xs" type="time" value={formData.fieldTimeTo} onChange={e => setFormData({...formData, fieldTimeTo: e.target.value})} />
-                </div>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-3 gap-2">
-              <div className="space-y-0.5">
-                <Label className="text-[8px] font-bold uppercase">ओडोमीटर सुरुवात (KM)</Label>
-                <Input className="h-7 text-xs" type="number" value={formData.odoStart} onChange={e => setFormData({...formData, odoStart: e.target.value})} />
-              </div>
-              <div className="space-y-0.5">
-                <Label className="text-[8px] font-bold uppercase">ओडोमीटर शेवट (KM)</Label>
-                <Input className="h-7 text-xs" type="number" value={formData.odoEnd} onChange={e => setFormData({...formData, odoEnd: e.target.value})} />
-              </div>
-              <div className="space-y-0.5">
-                <Label className="text-[8px] font-bold uppercase">एकूण (Total KM)</Label>
-                <div className="h-7 px-2 border rounded-md bg-muted/50 font-bold flex items-center text-[11px] text-primary">
-                  {totalKm > 0 ? totalKm : 0} KM
-                </div>
-              </div>
             </div>
           </CardContent>
         </Card>
@@ -442,7 +481,7 @@ export default function DailyReportPage() {
         <div className="space-y-2">
           <div className="flex items-center justify-between no-print">
             <h3 className="text-xs font-bold flex items-center gap-2">
-              <MapPin className="h-3.5 w-3.5 text-primary" /> केंद्रांची माहिती (Center Visits)
+              <MapPin className="h-3.5 w-3.5 text-primary" /> केंद्रांची माहिती (Visit Logs & Logistics)
             </h3>
             <Button size="sm" onClick={addCenter} className="h-7 text-[10px] font-bold gap-1 px-3">
               <Plus className="h-3 w-3" /> केंद्राची माहिती जोडा
@@ -452,134 +491,138 @@ export default function DailyReportPage() {
           {formData.centerVisits.map((visit, index) => (
             <Card key={visit.id} className="border border-primary/10 shadow-sm bg-white overflow-hidden mb-4">
               <CardHeader className="bg-primary/5 border-b py-1 px-3 flex flex-row items-center justify-between">
-                <CardTitle className="text-[10px] font-bold uppercase tracking-wider">भेट {index + 1}: केंद्राची माहिती</CardTitle>
+                <CardTitle className="text-[10px] font-bold uppercase tracking-wider">भेट {index + 1}: केंद्राची माहिती (Center Visit Log)</CardTitle>
                 <Button variant="ghost" size="icon" onClick={() => removeCenter(visit.id)} className="h-5 w-5 text-destructive no-print" disabled={formData.centerVisits.length <= 1}>
                   <Trash2 className="h-3 w-3" />
                 </Button>
               </CardHeader>
               <CardContent className="p-2 space-y-3">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <div className="space-y-1.5">
-                    <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <div className="space-y-1.5 md:col-span-2">
+                    <div className="grid grid-cols-3 gap-2">
                       <div className="space-y-0.5">
-                        <Label className="text-[7px] uppercase font-bold text-muted-foreground">नाव / केंद्र</Label>
-                        <Input value={visit.name} onChange={e => updateCenter(visit.id, { name: e.target.value })} className="h-6 text-[11px] px-1.5" placeholder="केंद्राचे नाव" />
+                        <Label className="text-[7px] uppercase font-bold text-muted-foreground">केंद्राचे नाव</Label>
+                        <Input value={visit.name} onChange={e => updateCenter(visit.id, { name: e.target.value })} className="h-6 text-[11px] px-1.5 border-black/20" placeholder="केंद्राचे नाव" />
                       </div>
                       <div className="space-y-0.5">
-                        <Label className="text-[7px] uppercase font-bold text-muted-foreground">विषय / उद्देश</Label>
-                        <Input value={visit.topic} onChange={e => updateCenter(visit.id, { topic: e.target.value })} className="h-6 text-[11px] px-1.5" />
+                        <Label className="text-[7px] uppercase font-bold text-muted-foreground">पोहोचलेली वेळ</Label>
+                        <Input type="time" value={visit.arrivalTime} onChange={e => updateCenter(visit.id, { arrivalTime: e.target.value })} className="h-6 text-[11px] px-1.5" />
+                      </div>
+                      <div className="space-y-0.5">
+                        <Label className="text-[7px] uppercase font-bold text-muted-foreground">निघालेली वेळ</Label>
+                        <Input type="time" value={visit.departureTime} onChange={e => updateCenter(visit.id, { departureTime: e.target.value })} className="h-6 text-[11px] px-1.5" />
                       </div>
                     </div>
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2 bg-muted/5 p-1.5 rounded border border-dashed border-primary/20">
                       <div className="space-y-0.5">
-                        <Label className="text-[7px] uppercase font-bold text-muted-foreground">निरीक्षण</Label>
-                        <Input value={visit.observation} onChange={e => updateCenter(visit.id, { observation: e.target.value })} className="h-6 text-[11px] px-1.5" />
+                        <Label className="text-[7px] uppercase font-bold text-primary flex items-center gap-1">
+                          <IceCream className="h-2 w-2" /> दिलेला बर्फ
+                        </Label>
+                        <Input value={visit.iceAllocated} onChange={e => updateCenter(visit.id, { iceAllocated: e.target.value })} className="h-6 text-[11px] px-1.5 bg-white" placeholder="Allocated" />
                       </div>
                       <div className="space-y-0.5">
-                        <Label className="text-[7px] uppercase font-bold text-muted-foreground">सूचना</Label>
-                        <Input value={visit.suggestion} onChange={e => updateCenter(visit.id, { suggestion: e.target.value })} className="h-6 text-[11px] px-1.5" />
+                        <Label className="text-[7px] uppercase font-bold text-primary">वापरलेला बर्फ</Label>
+                        <Input value={visit.iceUsed} onChange={e => updateCenter(visit.id, { iceUsed: e.target.value })} className="h-6 text-[11px] px-1.5 bg-white" placeholder="Used" />
+                      </div>
+                      <div className="space-y-0.5">
+                        <Label className="text-[7px] uppercase font-bold text-amber-700 flex items-center gap-1">
+                          <Package className="h-2 w-2" /> उतरलेले कॅन
+                        </Label>
+                        <Input value={visit.emptyCansUnloaded} onChange={e => updateCenter(visit.id, { emptyCansUnloaded: e.target.value })} className="h-6 text-[11px] px-1.5 bg-white" placeholder="Empty Out" />
+                      </div>
+                      <div className="space-y-0.5">
+                        <Label className="text-[7px] uppercase font-bold text-green-700 flex items-center gap-1">
+                          <Truck className="h-2 w-2" /> भरलेले कॅन
+                        </Label>
+                        <Input value={visit.fullCansLoaded} onChange={e => updateCenter(visit.id, { fullCansLoaded: e.target.value })} className="h-6 text-[11px] px-1.5 bg-white" placeholder="Full In" />
                       </div>
                     </div>
                   </div>
 
-                  <div className="bg-muted/10 p-1.5 rounded-md border border-dashed">
-                    <Label className="text-[7px] font-bold text-primary flex items-center gap-1 uppercase mb-1 tracking-wider">
-                      <Target className="h-2 w-2 no-print" /> रूट उद्दिष्ट
-                    </Label>
-                    <div className="grid grid-cols-2 gap-x-2 gap-y-0.5">
-                      {[ "दूध संकलन तपासणी", "उपकरणे / मशीन तपासणी", "तक्रार निराकरण", "शेतकरी / केंद्र चर्चा", "इतर" ].map(obj => (
-                        <div key={obj} className="flex items-center space-x-1">
-                          <Checkbox id={`obj-${visit.id}-${obj}`} checked={visit.objectives.includes(obj)} onCheckedChange={() => toggleCenterCheckbox(visit.id, 'objectives', obj)} className="h-2.5 w-2.5 no-print" />
-                          <Label htmlFor={`obj-${visit.id}-${obj}`} className="text-[8px] font-medium leading-tight">{obj}</Label>
-                        </div>
-                      ))}
+                  <div className="bg-muted/10 p-1.5 rounded-md border border-dashed flex flex-col justify-between">
+                    <div>
+                      <Label className="text-[7px] font-bold text-primary flex items-center gap-1 uppercase mb-1 tracking-wider">
+                        <Target className="h-2 w-2 no-print" /> व्हिजिट उद्दिष्ट
+                      </Label>
+                      <div className="grid grid-cols-2 gap-x-2 gap-y-0.5">
+                        {[ "दूध संकलन तपासणी", "उपकरणे / मशीन तपासणी", "तक्रार निराकरण", "शेतकरी / केंद्र चर्चा", "इतर" ].map(obj => (
+                          <div key={obj} className="flex items-center space-x-1">
+                            <Checkbox id={`obj-${visit.id}-${obj}`} checked={visit.objectives.includes(obj)} onCheckedChange={() => toggleCenterCheckbox(visit.id, 'objectives', obj)} className="h-2.5 w-2.5 no-print" />
+                            <Label htmlFor={`obj-${visit.id}-${obj}`} className="text-[8px] font-medium leading-tight">{obj}</Label>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
-                  <div className="p-1.5 rounded-md bg-blue-50/40 border border-blue-100">
-                    <Label className="text-[7px] font-bold text-blue-700 flex items-center gap-1 uppercase mb-1 tracking-wider">
-                      <Activity className="h-2 w-2 no-print" /> गुणवत्ता व संकलन
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                  <div className="p-2 rounded-md bg-blue-50/40 border border-blue-100 space-y-2">
+                    <Label className="text-[7px] font-bold text-blue-700 flex items-center gap-1 uppercase tracking-wider">
+                      <Activity className="h-2 w-2 no-print" /> गुणवत्ता (Quality Metrics)
                     </Label>
-                    <div className="space-y-1.5">
+                    <div className="grid grid-cols-2 gap-3">
                       <div className="grid grid-cols-4 gap-1 items-end">
-                        <div className="col-span-1 text-[7px] font-bold text-blue-800">Mix Milk:</div>
+                        <div className="col-span-1 text-[7px] font-bold text-blue-800">Mix:</div>
                         <div className="space-y-0.5">
-                          <Label className="text-[6px]">Qty(L)</Label>
+                          <Label className="text-[6px]">Qty</Label>
                           <Input value={visit.mixQty} onChange={e => updateCenter(visit.id, { mixQty: e.target.value })} className="h-5 text-[9px] px-1" />
                         </div>
                         <div className="space-y-0.5">
-                          <Label className="text-[6px]">FAT%</Label>
+                          <Label className="text-[6px]">Fat</Label>
                           <Input value={visit.mixFat} onChange={e => updateCenter(visit.id, { mixFat: e.target.value })} className="h-5 text-[9px] px-1" />
                         </div>
                         <div className="space-y-0.5">
-                          <Label className="text-[6px]">SNF%</Label>
+                          <Label className="text-[6px]">SNF</Label>
                           <Input value={visit.mixSnf} onChange={e => updateCenter(visit.id, { mixSnf: e.target.value })} className="h-5 text-[9px] px-1" />
                         </div>
                       </div>
                       <div className="grid grid-cols-4 gap-1 items-end">
-                        <div className="col-span-1 text-[7px] font-bold text-blue-800">Cow Milk:</div>
+                        <div className="col-span-1 text-[7px] font-bold text-blue-800">Cow:</div>
                         <div className="space-y-0.5">
-                          <Label className="text-[6px]">Qty(L)</Label>
+                          <Label className="text-[6px]">Qty</Label>
                           <Input value={visit.cowQty} onChange={e => updateCenter(visit.id, { cowQty: e.target.value })} className="h-5 text-[9px] px-1" />
                         </div>
                         <div className="space-y-0.5">
-                          <Label className="text-[6px]">FAT%</Label>
-                          <Input value={visit.mixFat} onChange={e => updateCenter(visit.id, { cowFat: e.target.value })} className="h-5 text-[9px] px-1" />
+                          <Label className="text-[6px]">Fat</Label>
+                          <Input value={visit.cowFat} onChange={e => updateCenter(visit.id, { cowFat: e.target.value })} className="h-5 text-[9px] px-1" />
                         </div>
                         <div className="space-y-0.5">
-                          <Label className="text-[6px]">SNF%</Label>
-                          <Input value={visit.mixSnf} onChange={e => updateCenter(visit.id, { cowSnf: e.target.value })} className="h-5 text-[9px] px-1" />
+                          <Label className="text-[6px]">SNF</Label>
+                          <Input value={visit.cowSnf} onChange={e => updateCenter(visit.id, { cowSnf: e.target.value })} className="h-5 text-[9px] px-1" />
                         </div>
                       </div>
                     </div>
                   </div>
 
-                  <div className="p-1.5 rounded-md bg-green-50/40 border border-green-100">
-                    <Label className="text-[7px] font-bold text-green-700 flex items-center gap-1 uppercase mb-1 tracking-wider">
-                      <ShieldCheck className="h-2 w-2 no-print" /> स्वच्छता व FSSAI
+                  <div className="p-2 rounded-md bg-amber-50/40 border border-amber-100 space-y-2">
+                    <Label className="text-[7px] font-bold text-amber-700 flex items-center gap-1 uppercase tracking-wider">
+                      <SearchCheck className="h-2 w-2 no-print" /> तपासणी अहवाल (Inspection & Audit)
                     </Label>
-                    <div className="space-y-1">
-                      {[ "परिसर स्वच्छता", "भांडी स्वच्छता", "FSSAI डिस्प्ले", "कर्मचारी स्वच्छता" ].map(check => (
-                        <div key={check} className="space-y-0.5">
-                          <div className="flex items-center space-x-1">
-                            <Checkbox id={`comp-${visit.id}-${check}`} checked={visit.compliance.includes(check)} onCheckedChange={() => toggleCenterCheckbox(visit.id, 'compliance', check)} className="h-2.5 w-2.5 no-print" />
-                            <Label htmlFor={`comp-${visit.id}-${check}`} className="text-[8px] font-bold leading-tight">{check}</Label>
-                          </div>
-                          {visit.compliance.includes(check) && (
-                            <Input placeholder="शेरा..." value={visit.complianceRemarks[check] || ""} onChange={(e) => updateOptionRemark(visit.id, 'complianceRemarks', check, e.target.value)} className="h-5 text-[8px] px-1 ml-3.5" />
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="p-1.5 rounded-md bg-amber-50/40 border border-amber-100">
-                    <Label className="text-[7px] font-bold text-amber-700 flex items-center gap-1 uppercase mb-1 tracking-wider">
-                      <Settings className="h-2 w-2 no-print" /> उपकरण तपासणी
-                    </Label>
-                    <div className="space-y-1">
-                      {[ "वजन काटा", "फॅट मशीन", "BMC मशीन", "कॅन कुलर" ].map(eq => (
-                        <div key={eq} className="space-y-0.5">
-                          <div className="flex items-center space-x-1">
-                            <Checkbox id={`eq-${visit.id}-${eq}`} checked={visit.equipment.includes(eq)} onCheckedChange={() => toggleCenterCheckbox(visit.id, 'equipment', eq)} className="h-2.5 w-2.5 no-print" />
-                            <Label htmlFor={`eq-${visit.id}-${eq}`} className="text-[8px] font-bold leading-tight">{eq}</Label>
-                          </div>
-                          {visit.equipment.includes(eq) && (
-                            <Input placeholder="शेरा..." value={visit.equipmentRemarks[eq] || ""} onChange={(e) => updateOptionRemark(visit.id, 'equipmentRemarks', eq, e.target.value)} className="h-5 text-[8px] px-1 ml-3.5" />
-                          )}
-                        </div>
-                      ))}
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="space-y-0.5">
+                        <Label className="text-[7px] font-bold uppercase text-red-600">जप्त दूध (Seized)</Label>
+                        <Input value={visit.seizedMilk} onChange={e => updateCenter(visit.id, { seizedMilk: e.target.value })} className="h-6 text-[10px] px-1.5 bg-white border-red-200" placeholder="Liters..." />
+                      </div>
+                      <div className="space-y-0.5">
+                        <Label className="text-[7px] font-bold uppercase">तपासणी निष्कर्ष</Label>
+                        <Input value={visit.inspectionResult} onChange={e => updateCenter(visit.id, { inspectionResult: e.target.value })} className="h-6 text-[10px] px-1.5 bg-white" placeholder="Conclusion" />
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                <div className="space-y-0.5 border-t pt-1.5">
-                  <Label className="text-[7px] font-bold text-primary flex items-center gap-1 uppercase tracking-wider">
-                    <MessageSquare className="h-2 w-2 no-print" /> शेरा / सूचना (Remarks)
-                  </Label>
-                  <Textarea value={visit.remark} onChange={e => updateCenter(visit.id, { remark: e.target.value })} placeholder="सूचना लिहा..." className="min-h-[40px] text-[9px] py-1" />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 border-t pt-2">
+                  <div className="space-y-0.5">
+                    <Label className="text-[7px] font-bold text-primary flex items-center gap-1 uppercase tracking-wider">
+                      <MessageSquare className="h-2 w-2 no-print" /> शेरा / दिलेल्या सूचना (Instructions)
+                    </Label>
+                    <Textarea value={visit.remark} onChange={e => updateCenter(visit.id, { remark: e.target.value })} placeholder="सूचना लिहा..." className="min-h-[40px] text-[9px] py-1 border-black/10" />
+                  </div>
+                  <div className="space-y-0.5">
+                    <Label className="text-[7px] font-bold text-muted-foreground uppercase tracking-wider">निरीक्षण (Observations)</Label>
+                    <Textarea value={visit.observation} onChange={e => updateCenter(visit.id, { observation: e.target.value })} className="min-h-[40px] text-[9px] py-1" />
+                  </div>
                 </div>
               </CardContent>
             </Card>
