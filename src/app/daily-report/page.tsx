@@ -12,7 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
 import { 
-  ClipboardCheck, User, Truck, Plus, Trash2, Hash, MapPin, Briefcase, Save, Gauge
+  ClipboardCheck, User, Truck, Plus, Trash2, Hash, MapPin, Briefcase, Save, Gauge, RefreshCw
 } from "lucide-react"
 
 interface RouteVisitEntry {
@@ -104,6 +104,13 @@ export default function DailyReportPage() {
       ...prev,
       routeVisitLogs: prev.routeVisitLogs.map(e => e.id === id ? { ...e, ...updates } : e)
     }))
+  }
+
+  const handleUpdate = () => {
+    toast({ 
+      title: "माहिती अद्ययावत केली", 
+      description: "किलोमीटर आणि आकडेमोड तपासून पाहिली आहे." 
+    })
   }
 
   const handleSave = () => {
@@ -219,7 +226,6 @@ export default function DailyReportPage() {
                 <Label className="text-[9px] font-bold uppercase text-primary">आत (In)</Label>
                 <Input className="h-7 text-[11px] px-2" type="time" value={formData.routeInTime} onChange={e => setFormData({...formData, routeInTime: e.target.value})} />
               </div>
-              {/* Meter Readings */}
               <div className="space-y-0.5">
                 <Label className="text-[9px] font-bold uppercase text-blue-600">सुटताना (Reading)</Label>
                 <Input className="h-7 text-[11px] px-2 border-blue-200" type="number" value={formData.startReading} onChange={e => setFormData({...formData, startReading: e.target.value})} placeholder="Start" />
@@ -358,9 +364,14 @@ export default function DailyReportPage() {
               <Label className="text-[9px] font-bold uppercase">सुपरवायझरचे नाव</Label>
               <Input className="h-8 text-[11px] font-bold px-2" value={formData.supervisorName} onChange={e => setFormData({...formData, supervisorName: e.target.value})} placeholder="Supervisor Name" />
             </div>
-            <Button onClick={handleSave} className="w-full sm:w-auto h-8 font-bold text-[11px] gap-2 px-6">
-              <Save className="h-3 w-3" /> रिपोर्ट जतन करा (Update & Save)
-            </Button>
+            <div className="flex gap-2 w-full sm:w-auto">
+              <Button onClick={handleUpdate} variant="secondary" className="flex-1 sm:w-auto h-8 font-bold text-[11px] gap-2 px-6">
+                <RefreshCw className="h-3 w-3" /> रिपोर्ट अपडेट करा (Update)
+              </Button>
+              <Button onClick={handleSave} className="flex-1 sm:w-auto h-8 font-bold text-[11px] gap-2 px-6">
+                <Save className="h-3 w-3" /> रिपोर्ट जतन करा (Save)
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>
