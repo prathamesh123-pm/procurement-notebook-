@@ -299,7 +299,9 @@ export default function ReportsPage() {
                   </div>
                   <div className="flex justify-between items-end pt-10">
                     <div className="text-center min-w-[150px]">
-                      <div className="border-b-2 border-black mb-1 h-8"></div>
+                      <div className="border-b-2 border-black mb-1 h-8 flex items-end justify-center">
+                        <span className="text-[10px] font-bold mb-1">{selectedReport.fullData?.name}</span>
+                      </div>
                       <span className="text-[9px] font-bold uppercase">प्रतिनिधी स्वाक्षरी</span>
                     </div>
                     <div className="text-center min-w-[150px]">
