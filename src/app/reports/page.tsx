@@ -222,19 +222,19 @@ export default function ReportsPage() {
                       <p className="text-[10px] font-bold">{selectedReport.fullData?.vehicleNumber}</p>
                     </div>
                     <div className="space-y-1">
-                      <Label className="text-[8px] font-bold uppercase">बाहेर (Out)</Label>
+                      <Label className="text-[8px] font-bold uppercase">Out Time</Label>
                       <p className="text-[10px] font-bold">{selectedReport.fullData?.routeOutTime}</p>
                     </div>
                     <div className="space-y-1">
-                      <Label className="text-[8px] font-bold uppercase">आत (In)</Label>
+                      <Label className="text-[8px] font-bold uppercase">In Time</Label>
                       <p className="text-[10px] font-bold">{selectedReport.fullData?.routeInTime}</p>
                     </div>
                     <div className="space-y-1">
-                      <Label className="text-[8px] font-bold uppercase">एकूण किलोमीटर</Label>
+                      <Label className="text-[8px] font-bold uppercase text-blue-700">Total KM</Label>
                       <p className="text-[11px] font-bold text-blue-700">{selectedReport.fullData?.totalKm} KM</p>
                     </div>
                     <div className="space-y-1">
-                      <Label className="text-[8px] font-bold uppercase">रीडिंग (S/E)</Label>
+                      <Label className="text-[8px] font-bold uppercase">Reading (S/E)</Label>
                       <p className="text-[10px] font-bold">{selectedReport.fullData?.startReading} / {selectedReport.fullData?.endReading}</p>
                     </div>
                   </div>

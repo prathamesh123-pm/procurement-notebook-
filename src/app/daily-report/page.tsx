@@ -219,23 +219,23 @@ export default function DailyReportPage() {
                 <Input className="h-7 text-[11px] px-2" value={formData.driverName} onChange={e => setFormData({...formData, driverName: e.target.value})} placeholder="Driver" />
               </div>
               <div className="space-y-0.5">
-                <Label className="text-[9px] font-bold uppercase text-primary">बाहेर (Out)</Label>
+                <Label className="text-[9px] font-bold uppercase text-primary">Out Time</Label>
                 <Input className="h-7 text-[11px] px-2" type="time" value={formData.routeOutTime} onChange={e => setFormData({...formData, routeOutTime: e.target.value})} />
               </div>
               <div className="space-y-0.5">
-                <Label className="text-[9px] font-bold uppercase text-primary">आत (In)</Label>
+                <Label className="text-[9px] font-bold uppercase text-primary">In Time</Label>
                 <Input className="h-7 text-[11px] px-2" type="time" value={formData.routeInTime} onChange={e => setFormData({...formData, routeInTime: e.target.value})} />
               </div>
               <div className="space-y-0.5">
-                <Label className="text-[9px] font-bold uppercase text-blue-600">सुटताना (Reading)</Label>
+                <Label className="text-[9px] font-bold uppercase text-blue-600">Start Reading</Label>
                 <Input className="h-7 text-[11px] px-2 border-blue-200" type="number" value={formData.startReading} onChange={e => setFormData({...formData, startReading: e.target.value})} placeholder="Start" />
               </div>
               <div className="space-y-0.5">
-                <Label className="text-[9px] font-bold uppercase text-blue-600">पोहोचल्यावर (End)</Label>
+                <Label className="text-[9px] font-bold uppercase text-blue-600">End Reading</Label>
                 <Input className="h-7 text-[11px] px-2 border-blue-200" type="number" value={formData.endReading} onChange={e => setFormData({...formData, endReading: e.target.value})} placeholder="End" />
               </div>
               <div className="space-y-0.5">
-                <Label className="text-[9px] font-bold uppercase text-blue-800">एकूण (Total KM)</Label>
+                <Label className="text-[9px] font-bold uppercase text-blue-800">Total KM</Label>
                 <Input className="h-7 text-[11px] px-2 bg-blue-50 border-blue-300 font-bold" type="number" value={formData.totalKm} readOnly />
               </div>
             </CardContent>
