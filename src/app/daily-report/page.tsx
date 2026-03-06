@@ -55,7 +55,7 @@ export default function DailyReportPage() {
     routeInTime: "",
     startReading: "",
     endReading: "",
-    totalKm: "",
+    totalKm: "0",
     routeVisitLogs: [] as RouteVisitEntry[],
     fieldObservations: "",
     officeTasks: "",
@@ -107,8 +107,15 @@ export default function DailyReportPage() {
   }
 
   const handleUpdate = () => {
+    // Recalculate if needed
+    if (formData.startReading && formData.endReading) {
+      const total = Number(formData.endReading) - Number(formData.startReading);
+      if (total >= 0) {
+        setFormData(prev => ({ ...prev, totalKm: total.toString() }));
+      }
+    }
     toast({ 
-      title: "माहिती अद्ययावत केली", 
+      title: "माहिती अपडेट केली", 
       description: "किलोमीटर आणि आकडेमोड तपासून पाहिली आहे." 
     })
   }
@@ -119,7 +126,7 @@ export default function DailyReportPage() {
 
     if (reportType === "route-visit") {
       typeDisplay = "Route Visit"
-      reportSummary = `रूट व्हिजिट: ${formData.routeVisitLogs.length} गवळी/सेंटर. वाहन: ${formData.vehicleNumber}. किलोमीटर: ${formData.totalKm} किमी.`
+      reportSummary = `रूट व्हिजिट: ${formData.routeVisitLogs.length} केंद्र. वाहन: ${formData.vehicleNumber}. किलोमीटर: ${formData.totalKm} किमी.`
     } else if (reportType === "field-visit") {
       typeDisplay = "Field Visit"
       reportSummary = `क्षेत्र भेट अहवाल: ${formData.fieldObservations.substring(0, 50)}...`
@@ -156,6 +163,7 @@ export default function DailyReportPage() {
         </h2>
       </div>
 
+      {/* 1) Basic Info */}
       <Card className="border shadow-none bg-white overflow-hidden">
         <CardHeader className="bg-primary/5 border-b py-1 px-3">
           <CardTitle className="text-[10px] font-bold flex items-center gap-1 uppercase tracking-tight">
@@ -199,6 +207,7 @@ export default function DailyReportPage() {
         </TabsList>
 
         <TabsContent value="route-visit" className="space-y-2">
+          {/* Route & Vehicle Details */}
           <Card className="border shadow-none bg-white overflow-hidden">
             <CardHeader className="bg-primary/5 border-b py-1 px-3">
               <CardTitle className="text-[10px] font-bold flex items-center gap-1 uppercase tracking-tight">
@@ -241,6 +250,7 @@ export default function DailyReportPage() {
             </CardContent>
           </Card>
 
+          {/* Route Visit Log */}
           <Card className="border shadow-none bg-white overflow-hidden">
             <CardHeader className="bg-primary/5 border-b py-1 px-3 flex flex-row items-center justify-between">
               <CardTitle className="text-[10px] font-bold flex items-center gap-1 uppercase tracking-tight">
@@ -340,6 +350,7 @@ export default function DailyReportPage() {
         </TabsContent>
       </Tabs>
 
+      {/* Summary Section */}
       <Card className="border shadow-none bg-white overflow-hidden mt-1">
         <CardHeader className="bg-primary/5 border-b py-1 px-3">
           <CardTitle className="text-[10px] font-bold uppercase tracking-tight">सारांश व सुपरवायझर (Summary)</CardTitle>
