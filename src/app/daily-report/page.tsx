@@ -22,7 +22,7 @@ interface CenterVisit {
   objectives: string[];
   compliance: string[];
   complianceRemarks: Record<string, string>;
-  // Logistics fields from photo
+  // Logistics fields from photo requirements
   arrivalTime: string;
   departureTime: string;
   iceAllocated: string;
@@ -110,7 +110,7 @@ export default function DailyReportPage() {
     mobile: "",
     reportDate: "",
     shift: "Sakal",
-    // Slip header fields from photo
+    // Slip header fields from photo requirements
     slipNo: "",
     driverName: "",
     vehicleNumber: "",

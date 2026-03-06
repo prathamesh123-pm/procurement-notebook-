@@ -70,7 +70,7 @@ export function DashboardSidebar() {
             className="font-headline text-lg font-bold tracking-tight group-data-[collapsible=icon]:hidden text-foreground"
             suppressHydrationWarning
           >
-            Procurement Notebook
+            {mounted ? "Procurement Notebook" : "Procurement Notebook"}
           </span>
         </div>
       </SidebarHeader>
