@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect } from "react"
@@ -67,8 +66,15 @@ export default function DailyReportPage() {
 
   useEffect(() => {
     setMounted(true)
+    
+    // Load profile data
+    const savedName = localStorage.getItem('procurenote_user_name') || ""
+    const savedId = localStorage.getItem('procurenote_user_id') || ""
+    
     setFormData(prev => ({
       ...prev,
+      name: savedName,
+      idNumber: savedId,
       reportDate: new Date().toISOString().split('T')[0],
       routeVisitLogs: [createEmptyRouteEntry()]
     }))
@@ -163,7 +169,6 @@ export default function DailyReportPage() {
         </h2>
       </div>
 
-      {/* 1) Basic Info */}
       <Card className="border shadow-none bg-white overflow-hidden">
         <CardHeader className="bg-primary/5 border-b py-1 px-3">
           <CardTitle className="text-[10px] font-bold flex items-center gap-1 uppercase tracking-tight">
@@ -207,7 +212,6 @@ export default function DailyReportPage() {
         </TabsList>
 
         <TabsContent value="route-visit" className="space-y-2">
-          {/* Route & Vehicle Details */}
           <Card className="border shadow-none bg-white overflow-hidden">
             <CardHeader className="bg-primary/5 border-b py-1 px-3">
               <CardTitle className="text-[10px] font-bold flex items-center gap-1 uppercase tracking-tight">
@@ -250,7 +254,6 @@ export default function DailyReportPage() {
             </CardContent>
           </Card>
 
-          {/* Route Visit Log */}
           <Card className="border shadow-none bg-white overflow-hidden">
             <CardHeader className="bg-primary/5 border-b py-1 px-3 flex flex-row items-center justify-between">
               <CardTitle className="text-[10px] font-bold flex items-center gap-1 uppercase tracking-tight">
@@ -350,7 +353,6 @@ export default function DailyReportPage() {
         </TabsContent>
       </Tabs>
 
-      {/* Summary Section */}
       <Card className="border shadow-none bg-white overflow-hidden mt-1">
         <CardHeader className="bg-primary/5 border-b py-1 px-3">
           <CardTitle className="text-[10px] font-bold uppercase tracking-tight">सारांश व सुपरवायझर (Summary)</CardTitle>

@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { LayoutDashboard, ListTodo, MapPin, LogOut, Milk, ClipboardCheck, Archive, ShieldCheck } from "lucide-react"
+import { LayoutDashboard, ListTodo, MapPin, LogOut, Milk, ClipboardCheck, Archive, ShieldCheck, UserCircle } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
@@ -48,6 +48,11 @@ const items = [
     title: "Permissions",
     url: "/permissions",
     icon: ShieldCheck,
+  },
+  {
+    title: "Profile",
+    url: "/profile",
+    icon: UserCircle,
   },
 ]
 
