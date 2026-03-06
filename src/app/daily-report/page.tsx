@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect } from "react"
@@ -8,13 +9,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
 import { 
-  ClipboardCheck, User, Briefcase, FileText, CheckCircle2, 
-  Truck, MapPin, Plus, Trash2, IceCream, 
-  Package, SearchCheck, Beaker, Clock, Hash
+  ClipboardCheck, User, Briefcase, CheckCircle2, 
+  Truck, MapPin, Plus, Trash2, Hash
 } from "lucide-react"
 
 interface RouteVisitEntry {
@@ -23,12 +22,13 @@ interface RouteVisitEntry {
   supplierName: string;
   iceAllocated: string;
   arrivalTime: string;
+  departureTime: string;
   emptyCans: string;
   fullCans: string;
-  testSoda: boolean;
-  testSugar: boolean;
-  testCOB: boolean;
-  testMalto: boolean;
+  testSoda: string;
+  testSugar: string;
+  testCOB: string;
+  testMalto: string;
   seizedMilk: string;
   instructions: string;
 }
@@ -79,12 +79,13 @@ export default function DailyReportPage() {
     supplierName: "",
     iceAllocated: "",
     arrivalTime: "",
+    departureTime: "",
     emptyCans: "",
     fullCans: "",
-    testSoda: false,
-    testSugar: false,
-    testCOB: false,
-    testMalto: false,
+    testSoda: "-",
+    testSugar: "-",
+    testCOB: "-",
+    testMalto: "-",
     seizedMilk: "",
     instructions: ""
   });
@@ -186,7 +187,6 @@ export default function DailyReportPage() {
         <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">Collection Department - Daily Work Report</p>
       </div>
 
-      {/* 1. Basic Info Card */}
       <Card className="border-none shadow-sm bg-white overflow-hidden">
         <CardHeader className="bg-primary/5 border-b py-2 px-4">
           <CardTitle className="text-xs font-bold flex items-center gap-2">
@@ -222,7 +222,6 @@ export default function DailyReportPage() {
         </CardContent>
       </Card>
 
-      {/* Report Type Selector */}
       <div className="bg-muted/30 p-1 rounded-lg no-print">
         <div className="flex gap-1">
           {[
@@ -243,7 +242,6 @@ export default function DailyReportPage() {
         </div>
       </div>
 
-      {/* ROUTE VISIT REPORT CONTENT */}
       {activeReportType === 'route' && (
         <div className="space-y-4">
           <Card className="border-none shadow-sm bg-white overflow-hidden">
@@ -290,14 +288,15 @@ export default function DailyReportPage() {
                 <thead>
                   <tr className="bg-muted/50 border-b text-center uppercase tracking-tighter">
                     <th className="p-2 border-r w-10">Sr.</th>
-                    <th className="p-2 border-r min-w-[100px]">सेंटर / कोड</th>
-                    <th className="p-2 border-r min-w-[150px]">गवल्याचे नाव</th>
-                    <th className="p-2 border-r w-24">दिलेला बर्फ</th>
+                    <th className="p-2 border-r min-w-[80px]">सेंटर कोड</th>
+                    <th className="p-2 border-r min-w-[120px]">गवल्याचे नाव</th>
+                    <th className="p-2 border-r w-20">दिलेला बर्फ</th>
                     <th className="p-2 border-r w-24">पोहोचलेली वेळ</th>
-                    <th className="p-2 border-r w-20">उतरलेले कॅन</th>
-                    <th className="p-2 border-r w-20">भरलेले कॅन</th>
-                    <th className="p-2 border-r w-40">तपासणी (S/U/C/M)</th>
-                    <th className="p-2 border-r w-24">जप्त दूध (L)</th>
+                    <th className="p-2 border-r w-24">निघालेली वेळ</th>
+                    <th className="p-2 border-r w-16">उतरलेले कॅन</th>
+                    <th className="p-2 border-r w-16">भरलेले कॅन</th>
+                    <th className="p-2 border-r w-32">तपासणी (S/U/C/M)</th>
+                    <th className="p-2 border-r w-20">जप्त दूध (L)</th>
                     <th className="p-2 border-r">सूचना / शेरा</th>
                     <th className="p-2 w-10 no-print"></th>
                   </tr>
@@ -319,36 +318,40 @@ export default function DailyReportPage() {
                         <Input className="h-7 text-[10px] border-none shadow-none focus-visible:ring-0 px-1 text-center" type="time" value={entry.arrivalTime} onChange={e => updateRouteEntry(entry.id, { arrivalTime: e.target.value })} />
                       </td>
                       <td className="p-1 border-r">
-                        <Input className="h-7 text-[10px] border-none shadow-none focus-visible:ring-0 px-1 text-center" type="number" value={entry.emptyCans} onChange={e => updateRouteEntry(entry.id, { emptyCans: e.target.value })} placeholder="Empty" />
+                        <Input className="h-7 text-[10px] border-none shadow-none focus-visible:ring-0 px-1 text-center" type="time" value={entry.departureTime} onChange={e => updateRouteEntry(entry.id, { departureTime: e.target.value })} />
                       </td>
                       <td className="p-1 border-r">
-                        <Input className="h-7 text-[10px] border-none shadow-none focus-visible:ring-0 px-1 text-center" type="number" value={entry.fullCans} onChange={e => updateRouteEntry(entry.id, { fullCans: e.target.value })} placeholder="Full" />
+                        <Input className="h-7 text-[10px] border-none shadow-none focus-visible:ring-0 px-1 text-center" type="number" value={entry.emptyCans} onChange={e => updateRouteEntry(entry.id, { emptyCans: e.target.value })} placeholder="E" />
                       </td>
                       <td className="p-1 border-r">
-                        <div className="flex items-center justify-center gap-2">
-                          <label className="flex items-center gap-0.5 cursor-pointer">
-                            <Checkbox checked={entry.testSoda} onCheckedChange={v => updateRouteEntry(entry.id, { testSoda: !!v })} className="h-2.5 w-2.5" />
-                            <span className="text-[8px] font-bold">SO</span>
-                          </label>
-                          <label className="flex items-center gap-0.5 cursor-pointer">
-                            <Checkbox checked={entry.testSugar} onCheckedChange={v => updateRouteEntry(entry.id, { testSugar: !!v })} className="h-2.5 w-2.5" />
-                            <span className="text-[8px] font-bold">SU</span>
-                          </label>
-                          <label className="flex items-center gap-0.5 cursor-pointer">
-                            <Checkbox checked={entry.testCOB} onCheckedChange={v => updateRouteEntry(entry.id, { testCOB: !!v })} className="h-2.5 w-2.5" />
-                            <span className="text-[8px] font-bold">CO</span>
-                          </label>
-                          <label className="flex items-center gap-0.5 cursor-pointer">
-                            <Checkbox checked={entry.testMalto} onCheckedChange={v => updateRouteEntry(entry.id, { testMalto: !!v })} className="h-2.5 w-2.5" />
-                            <span className="text-[8px] font-bold">MA</span>
-                          </label>
+                        <Input className="h-7 text-[10px] border-none shadow-none focus-visible:ring-0 px-1 text-center" type="number" value={entry.fullCans} onChange={e => updateRouteEntry(entry.id, { fullCans: e.target.value })} placeholder="F" />
+                      </td>
+                      <td className="p-1 border-r">
+                        <div className="flex items-center justify-center gap-1">
+                          {['Soda', 'Sugar', 'COB', 'Malto'].map((test) => {
+                            const key = `test${test}` as keyof RouteVisitEntry;
+                            return (
+                              <div key={test} className="flex flex-col items-center">
+                                <span className="text-[7px] font-bold uppercase">{test.substring(0, 1)}</span>
+                                <select 
+                                  className="text-[8px] bg-transparent border rounded p-0 h-4"
+                                  value={entry[key] as string}
+                                  onChange={e => updateRouteEntry(entry.id, { [key]: e.target.value })}
+                                >
+                                  <option value="-">-</option>
+                                  <option value="OK">OK</option>
+                                  <option value="+">+</option>
+                                </select>
+                              </div>
+                            );
+                          })}
                         </div>
                       </td>
                       <td className="p-1 border-r">
-                        <Input className="h-7 text-[10px] border-none shadow-none focus-visible:ring-0 px-1 text-center text-red-600 font-bold" value={entry.seizedMilk} onChange={e => updateRouteEntry(entry.id, { seizedMilk: e.target.value })} placeholder="Liters" />
+                        <Input className="h-7 text-[10px] border-none shadow-none focus-visible:ring-0 px-1 text-center text-red-600 font-bold" value={entry.seizedMilk} onChange={e => updateRouteEntry(entry.id, { seizedMilk: e.target.value })} placeholder="L" />
                       </td>
                       <td className="p-1 border-r">
-                        <Input className="h-7 text-[10px] border-none shadow-none focus-visible:ring-0 px-1 italic" value={entry.instructions} onChange={e => updateRouteEntry(entry.id, { instructions: e.target.value })} placeholder="Instructions..." />
+                        <Input className="h-7 text-[10px] border-none shadow-none focus-visible:ring-0 px-1 italic" value={entry.instructions} onChange={e => updateRouteEntry(entry.id, { instructions: e.target.value })} placeholder="शेरा..." />
                       </td>
                       <td className="p-1 no-print">
                         <Button variant="ghost" size="icon" onClick={() => removeRouteEntry(entry.id)} className="h-6 w-6 text-destructive" disabled={formData.routeVisitLogs.length <= 1}>
@@ -364,7 +367,6 @@ export default function DailyReportPage() {
         </div>
       )}
 
-      {/* EXISTING FIELD VISIT & OFFICE CONTENT (Hidden if Route Visit is active) */}
       {activeReportType === 'office' && (
         <Card className="border-none shadow-sm bg-white mb-4">
           <CardHeader className="bg-primary/5 border-b py-2 px-4">
@@ -402,7 +404,6 @@ export default function DailyReportPage() {
         </Card>
       )}
 
-      {/* Day Summary Section */}
       <Card className="border-none shadow-sm bg-white overflow-hidden mt-4">
         <CardHeader className="bg-primary/5 border-b py-2 px-4">
           <CardTitle className="text-xs font-bold">दिवसाचा सारांश (Day Summary)</CardTitle>

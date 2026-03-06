@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
@@ -6,13 +7,13 @@ import { Card, CardContent } from "@/components/ui/card"
 import { 
   Archive, Calendar, FileText, ClipboardList, 
   Briefcase, ListTodo, Truck, Download, Trash2, 
-  Eye, Hash, Clock
+  Eye, Hash, Clock, MapPin
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { ReportType } from "@/lib/types"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Label } from "@/components/ui/label"
 
@@ -199,7 +200,6 @@ export default function ReportsPage() {
 
           <ScrollArea className="flex-grow">
             <div className="p-8 space-y-6 bg-white" id="printable-report-content">
-              {/* PDF Header */}
               <div className="flex flex-col items-center border-b-2 border-black pb-4 text-center">
                 <h1 className="text-xl font-bold uppercase tracking-tight">Procurement Notebook - Collection Report</h1>
                 <h2 className="text-md font-bold">संकलन विभाग - दैनिक अहवाल ({selectedReport?.type})</h2>
@@ -212,7 +212,6 @@ export default function ReportsPage() {
 
               {selectedReport?.type === 'Route Visit' && (
                 <div className="space-y-4">
-                  {/* Route Info */}
                   <div className="grid grid-cols-4 gap-4 p-3 border-2 border-black rounded-lg bg-muted/5">
                     <div className="space-y-1">
                       <Label className="text-[8px] font-bold uppercase">स्लिप नंबर</Label>
@@ -232,18 +231,18 @@ export default function ReportsPage() {
                     </div>
                   </div>
 
-                  {/* Table */}
                   <div className="border-2 border-black rounded-lg overflow-hidden">
-                    <table className="w-full text-[9px] border-collapse">
+                    <table className="w-full text-[8px] border-collapse">
                       <thead className="bg-black text-white">
                         <tr className="uppercase">
                           <th className="p-1 border border-white">Sr.</th>
                           <th className="p-1 border border-white">Code</th>
                           <th className="p-1 border border-white">Supplier</th>
                           <th className="p-1 border border-white">Ice</th>
-                          <th className="p-1 border border-white">Time</th>
+                          <th className="p-1 border border-white">Arr.</th>
+                          <th className="p-1 border border-white">Dep.</th>
                           <th className="p-1 border border-white">Cans</th>
-                          <th className="p-1 border border-white">Quality (S/U/C/M)</th>
+                          <th className="p-1 border border-white">Tests (S/U/C/M)</th>
                           <th className="p-1 border border-white">Seized</th>
                           <th className="p-1 border border-white">Remarks</th>
                         </tr>
@@ -256,9 +255,10 @@ export default function ReportsPage() {
                             <td className="p-1 border-r border-black font-bold">{log.supplierName}</td>
                             <td className="p-1 border-r border-black text-center">{log.iceAllocated}</td>
                             <td className="p-1 border-r border-black text-center">{log.arrivalTime}</td>
+                            <td className="p-1 border-r border-black text-center">{log.departureTime}</td>
                             <td className="p-1 border-r border-black text-center">E:{log.emptyCans} F:{log.fullCans}</td>
                             <td className="p-1 border-r border-black text-center">
-                              {log.testSoda && 'S '} {log.testSugar && 'U '} {log.testCOB && 'C '} {log.testMalto && 'M '}
+                              {log.testSoda}/{log.testSugar}/{log.testCOB}/{log.testMalto}
                             </td>
                             <td className="p-1 border-r border-black text-center font-bold text-red-600">{log.seizedMilk}</td>
                             <td className="p-1 italic">{log.instructions}</td>
@@ -270,7 +270,6 @@ export default function ReportsPage() {
                 </div>
               )}
 
-              {/* Summary Footer */}
               <div className="space-y-4 pt-4 border-t border-black/20">
                 <div className="grid grid-cols-3 gap-4">
                   <div className="space-y-1">
