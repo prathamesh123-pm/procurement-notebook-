@@ -12,7 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
 import { 
-  ClipboardCheck, User, Truck, Plus, Trash2, Hash, CheckCircle2, MapPin, Briefcase, Save
+  ClipboardCheck, User, Truck, Plus, Trash2, Hash, MapPin, Briefcase, Save, Gauge
 } from "lucide-react"
 
 interface RouteVisitEntry {
@@ -53,6 +53,9 @@ export default function DailyReportPage() {
     vehicleNumber: "",
     routeOutTime: "",
     routeInTime: "",
+    startReading: "",
+    endReading: "",
+    totalKm: "",
     routeVisitLogs: [] as RouteVisitEntry[],
     fieldObservations: "",
     officeTasks: "",
@@ -70,6 +73,16 @@ export default function DailyReportPage() {
       routeVisitLogs: [createEmptyRouteEntry()]
     }))
   }, [])
+
+  // Calculate Total KM automatically
+  useEffect(() => {
+    if (formData.startReading && formData.endReading) {
+      const total = Number(formData.endReading) - Number(formData.startReading);
+      if (total >= 0) {
+        setFormData(prev => ({ ...prev, totalKm: total.toString() }));
+      }
+    }
+  }, [formData.startReading, formData.endReading]);
 
   const addRouteEntry = () => {
     setFormData(prev => ({
@@ -99,7 +112,7 @@ export default function DailyReportPage() {
 
     if (reportType === "route-visit") {
       typeDisplay = "Route Visit"
-      reportSummary = `रूट व्हिजिट: ${formData.routeVisitLogs.length} गवळी/सेंटर. वाहन: ${formData.vehicleNumber}.`
+      reportSummary = `रूट व्हिजिट: ${formData.routeVisitLogs.length} गवळी/सेंटर. वाहन: ${formData.vehicleNumber}. किलोमीटर: ${formData.totalKm} किमी.`
     } else if (reportType === "field-visit") {
       typeDisplay = "Field Visit"
       reportSummary = `क्षेत्र भेट अहवाल: ${formData.fieldObservations.substring(0, 50)}...`
@@ -185,7 +198,7 @@ export default function DailyReportPage() {
                 <Truck className="h-3 w-3 text-primary" /> रूट व वाहन तपशील
               </CardTitle>
             </CardHeader>
-            <CardContent className="p-2 grid grid-cols-2 md:grid-cols-5 gap-2">
+            <CardContent className="p-2 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-2">
               <div className="space-y-0.5">
                 <Label className="text-[9px] font-bold uppercase">स्लिप नंबर</Label>
                 <Input className="h-7 text-[11px] px-2 border-primary/20" value={formData.slipNo} onChange={e => setFormData({...formData, slipNo: e.target.value})} placeholder="Slip No" />
@@ -205,6 +218,19 @@ export default function DailyReportPage() {
               <div className="space-y-0.5">
                 <Label className="text-[9px] font-bold uppercase text-primary">आत (In)</Label>
                 <Input className="h-7 text-[11px] px-2" type="time" value={formData.routeInTime} onChange={e => setFormData({...formData, routeInTime: e.target.value})} />
+              </div>
+              {/* Meter Readings */}
+              <div className="space-y-0.5">
+                <Label className="text-[9px] font-bold uppercase text-blue-600">सुटताना (Reading)</Label>
+                <Input className="h-7 text-[11px] px-2 border-blue-200" type="number" value={formData.startReading} onChange={e => setFormData({...formData, startReading: e.target.value})} placeholder="Start" />
+              </div>
+              <div className="space-y-0.5">
+                <Label className="text-[9px] font-bold uppercase text-blue-600">पोहोचल्यावर (End)</Label>
+                <Input className="h-7 text-[11px] px-2 border-blue-200" type="number" value={formData.endReading} onChange={e => setFormData({...formData, endReading: e.target.value})} placeholder="End" />
+              </div>
+              <div className="space-y-0.5">
+                <Label className="text-[9px] font-bold uppercase text-blue-800">एकूण (Total KM)</Label>
+                <Input className="h-7 text-[11px] px-2 bg-blue-50 border-blue-300 font-bold" type="number" value={formData.totalKm} readOnly />
               </div>
             </CardContent>
           </Card>

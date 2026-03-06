@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { 
   Archive, Calendar, FileText, ClipboardList, 
   Briefcase, ListTodo, Truck, Download, Trash2, 
-  Eye, Hash, Clock, MapPin
+  Eye, Hash, Clock, MapPin, Gauge
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { ReportType } from "@/lib/types"
@@ -102,7 +102,7 @@ export default function ReportsPage() {
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 no-print">
         <div>
-          <h2 className="text-2xl font-bold text-foreground tracking-tight">View Reports</h2>
+          <h2 className="text-2xl font-bold text-foreground tracking-tight">अहवाल तपासा (View Reports)</h2>
           <p className="text-muted-foreground mt-1 text-sm">दैनंदिन कामकाजाचे अहवाल तपासा आणि पीडीएफ डाउनलोड करा.</p>
         </div>
         <div className="flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-lg text-primary font-bold border border-primary/5 text-sm">
@@ -212,22 +212,30 @@ export default function ReportsPage() {
 
               {selectedReport?.type === 'Route Visit' && (
                 <div className="space-y-4">
-                  <div className="grid grid-cols-4 gap-4 p-3 border-2 border-black rounded-lg bg-muted/5">
+                  <div className="grid grid-cols-4 lg:grid-cols-6 gap-2 p-3 border-2 border-black rounded-lg bg-muted/5">
                     <div className="space-y-1">
                       <Label className="text-[8px] font-bold uppercase">स्लिप नंबर</Label>
-                      <p className="text-[11px] font-bold">{selectedReport.fullData?.slipNo}</p>
+                      <p className="text-[10px] font-bold">{selectedReport.fullData?.slipNo}</p>
                     </div>
                     <div className="space-y-1">
                       <Label className="text-[8px] font-bold uppercase">वाहन क्र.</Label>
-                      <p className="text-[11px] font-bold">{selectedReport.fullData?.vehicleNumber}</p>
+                      <p className="text-[10px] font-bold">{selectedReport.fullData?.vehicleNumber}</p>
                     </div>
                     <div className="space-y-1">
                       <Label className="text-[8px] font-bold uppercase">बाहेर (Out)</Label>
-                      <p className="text-[11px] font-bold">{selectedReport.fullData?.routeOutTime}</p>
+                      <p className="text-[10px] font-bold">{selectedReport.fullData?.routeOutTime}</p>
                     </div>
                     <div className="space-y-1">
                       <Label className="text-[8px] font-bold uppercase">आत (In)</Label>
-                      <p className="text-[11px] font-bold">{selectedReport.fullData?.routeInTime}</p>
+                      <p className="text-[10px] font-bold">{selectedReport.fullData?.routeInTime}</p>
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-[8px] font-bold uppercase">एकूण किलोमीटर</Label>
+                      <p className="text-[11px] font-bold text-blue-700">{selectedReport.fullData?.totalKm} KM</p>
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-[8px] font-bold uppercase">रीडिंग (S/E)</Label>
+                      <p className="text-[10px] font-bold">{selectedReport.fullData?.startReading} / {selectedReport.fullData?.endReading}</p>
                     </div>
                   </div>
 
