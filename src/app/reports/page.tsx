@@ -313,22 +313,8 @@ export default function ReportsPage() {
                   </div>
                 )}
 
-                <div className="space-y-4 pt-4 border-t border-black/20">
-                  <div className="grid grid-cols-3 gap-4">
-                    <div className="space-y-1">
-                      <Label className="text-[8px] font-bold uppercase text-green-700">कामगिरी</Label>
-                      <p className="text-[10px] border p-2 min-h-[50px] rounded-md bg-muted/5">{selectedReport.fullData?.achievements || "N/A"}</p>
-                    </div>
-                    <div className="space-y-1">
-                      <Label className="text-[8px] font-bold uppercase text-red-700">समस्या</Label>
-                      <p className="text-[10px] border p-2 min-h-[50px] rounded-md bg-muted/5">{selectedReport.fullData?.problems || "N/A"}</p>
-                    </div>
-                    <div className="space-y-1">
-                      <Label className="text-[8px] font-bold uppercase text-blue-700">कार्यवाही</Label>
-                      <p className="text-[10px] border p-2 min-h-[50px] rounded-md bg-muted/5">{selectedReport.fullData?.actionsTaken || "N/A"}</p>
-                    </div>
-                  </div>
-                  <div className="flex justify-between items-end pt-10">
+                <div className="pt-20">
+                  <div className="flex justify-between items-end">
                     <div className="text-center min-w-[150px]">
                       <div className="border-b-2 border-black mb-1 h-8 flex items-end justify-center">
                         <span className="text-[10px] font-bold mb-1">{selectedReport.fullData?.name || selectedReport.fullData?.userName}</span>
