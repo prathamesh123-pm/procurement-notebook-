@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { 
   Archive, Calendar, FileText, ClipboardList, 
   Briefcase, ListTodo, Truck, Download, Trash2, 
-  Eye, Hash, Clock, MapPin, Gauge
+  Eye, Hash, Clock, MapPin, Gauge, User
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { ReportType } from "@/lib/types"
@@ -205,9 +205,9 @@ export default function ReportsPage() {
                   <h1 className="text-xl font-bold uppercase tracking-tight">Procurement Notebook - Collection Report</h1>
                   <h2 className="text-md font-bold">संकलन विभाग - दैनिक अहवाल ({selectedReport.type})</h2>
                   <div className="grid grid-cols-3 w-full mt-4 text-[10px] font-bold uppercase border-t pt-2">
-                    <span>प्रतिनिधी: {selectedReport.fullData?.name}</span>
+                    <span>प्रतिनिधी: {selectedReport.fullData?.name || selectedReport.fullData?.userName}</span>
                     <span>दिनांक: {selectedReport.date}</span>
-                    <span>शिफ्ट: {selectedReport.fullData?.shift}</span>
+                    <span>शिफ्ट: {selectedReport.fullData?.shift || 'N/A'}</span>
                   </div>
                 </div>
 
@@ -271,13 +271,44 @@ export default function ReportsPage() {
                   </div>
                 )}
 
+                {selectedReport.type === 'Daily Task' && (
+                  <div className="space-y-4">
+                    <div className="p-4 border-2 border-black rounded-lg bg-muted/5">
+                      <div className="grid grid-cols-2 gap-4 mb-4 border-b pb-2 border-black/10">
+                        <div>
+                          <Label className="text-[9px] font-bold uppercase text-muted-foreground">गवळ्याचे नाव</Label>
+                          <p className="text-sm font-bold flex items-center gap-1.5"><User className="h-3.5 w-3.5" /> {selectedReport.fullData?.supplierName || "N/A"}</p>
+                        </div>
+                        <div>
+                          <Label className="text-[9px] font-bold uppercase text-muted-foreground">कोड नंबर</Label>
+                          <p className="text-sm font-bold flex items-center gap-1.5"><Hash className="h-3.5 w-3.5" /> {selectedReport.fullData?.supplierId || "N/A"}</p>
+                        </div>
+                      </div>
+                      <div className="space-y-3">
+                        <div>
+                          <Label className="text-[9px] font-bold uppercase text-muted-foreground">टास्क</Label>
+                          <p className="text-sm font-bold">{selectedReport.fullData?.title}</p>
+                        </div>
+                        <div>
+                          <Label className="text-[9px] font-bold uppercase text-muted-foreground">तपशील</Label>
+                          <p className="text-xs italic leading-relaxed">{selectedReport.fullData?.description || "तपशील नाही."}</p>
+                        </div>
+                        <div className="p-3 bg-primary/5 border-l-4 border-primary rounded-r-md">
+                          <Label className="text-[9px] font-bold uppercase text-primary">शेरा (Action Plan)</Label>
+                          <p className="text-sm font-bold mt-1">{selectedReport.fullData?.remark || "शेरा दिलेला नाही."}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 {(selectedReport.type === 'Field Visit' || selectedReport.type === 'Daily Office Work') && (
                   <div className="p-4 border-2 border-black rounded-lg bg-muted/5 min-h-[200px]">
                     <Label className="text-[10px] font-bold uppercase mb-2 block">अहवाल तपशील (Report Details)</Label>
                     <p className="text-sm leading-relaxed whitespace-pre-wrap">
                       {selectedReport.type === 'Field Visit' 
-                        ? selectedReport.fullData?.fieldObservations 
-                        : selectedReport.fullData?.officeTasks}
+                        ? (selectedReport.fullData?.fieldObservations || "माहिती उपलब्ध नाही.") 
+                        : (selectedReport.fullData?.officeTasks || "माहिती उपलब्ध नाही.")}
                     </p>
                   </div>
                 )}
@@ -286,27 +317,27 @@ export default function ReportsPage() {
                   <div className="grid grid-cols-3 gap-4">
                     <div className="space-y-1">
                       <Label className="text-[8px] font-bold uppercase text-green-700">कामगिरी</Label>
-                      <p className="text-[10px] border p-2 min-h-[50px] rounded-md bg-muted/5">{selectedReport.fullData?.achievements}</p>
+                      <p className="text-[10px] border p-2 min-h-[50px] rounded-md bg-muted/5">{selectedReport.fullData?.achievements || "N/A"}</p>
                     </div>
                     <div className="space-y-1">
                       <Label className="text-[8px] font-bold uppercase text-red-700">समस्या</Label>
-                      <p className="text-[10px] border p-2 min-h-[50px] rounded-md bg-muted/5">{selectedReport.fullData?.problems}</p>
+                      <p className="text-[10px] border p-2 min-h-[50px] rounded-md bg-muted/5">{selectedReport.fullData?.problems || "N/A"}</p>
                     </div>
                     <div className="space-y-1">
                       <Label className="text-[8px] font-bold uppercase text-blue-700">कार्यवाही</Label>
-                      <p className="text-[10px] border p-2 min-h-[50px] rounded-md bg-muted/5">{selectedReport.fullData?.actionsTaken}</p>
+                      <p className="text-[10px] border p-2 min-h-[50px] rounded-md bg-muted/5">{selectedReport.fullData?.actionsTaken || "N/A"}</p>
                     </div>
                   </div>
                   <div className="flex justify-between items-end pt-10">
                     <div className="text-center min-w-[150px]">
                       <div className="border-b-2 border-black mb-1 h-8 flex items-end justify-center">
-                        <span className="text-[10px] font-bold mb-1">{selectedReport.fullData?.name}</span>
+                        <span className="text-[10px] font-bold mb-1">{selectedReport.fullData?.name || selectedReport.fullData?.userName}</span>
                       </div>
                       <span className="text-[9px] font-bold uppercase">प्रतिनिधी स्वाक्षरी</span>
                     </div>
                     <div className="text-center min-w-[150px]">
                       <div className="border-b-2 border-black mb-1 h-8 flex items-end justify-center">
-                        <span className="text-[10px] font-bold mb-1">{selectedReport.fullData?.supervisorName}</span>
+                        <span className="text-[10px] font-bold mb-1">{selectedReport.fullData?.supervisorName || "N/A"}</span>
                       </div>
                       <span className="text-[9px] font-bold uppercase">सुपरवायझर स्वाक्षरी</span>
                     </div>
