@@ -4,7 +4,6 @@
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
@@ -23,12 +22,6 @@ interface RouteVisitEntry {
   departureTime: string;
   emptyCans: string;
   fullCans: string;
-  testSoda: string;
-  testSugar: string;
-  testCOB: string;
-  testMalto: string;
-  seizedMilk: string;
-  instructions: string;
 }
 
 export default function DailyReportPage() {
@@ -44,13 +37,7 @@ export default function DailyReportPage() {
     arrivalTime: "",
     departureTime: "",
     emptyCans: "",
-    fullCans: "",
-    testSoda: "-",
-    testSugar: "-",
-    testCOB: "-",
-    testMalto: "-",
-    seizedMilk: "",
-    instructions: ""
+    fullCans: ""
   });
 
   const [formData, setFormData] = useState({
@@ -220,9 +207,6 @@ export default function DailyReportPage() {
                   <th className="p-2 border-r w-24">निघालेली वेळ</th>
                   <th className="p-2 border-r w-16">उतरलेले कॅन</th>
                   <th className="p-2 border-r w-16">भरलेले कॅन</th>
-                  <th className="p-2 border-r w-32">तपासणी (S/U/C/M)</th>
-                  <th className="p-2 border-r w-20">जप्त दूध (L)</th>
-                  <th className="p-2 border-r">सूचना / शेरा</th>
                   <th className="p-2 w-10 no-print"></th>
                 </tr>
               </thead>
@@ -250,33 +234,6 @@ export default function DailyReportPage() {
                     </td>
                     <td className="p-1 border-r">
                       <Input className="h-7 text-[10px] border-none shadow-none focus-visible:ring-0 px-1 text-center" type="number" value={entry.fullCans} onChange={e => updateRouteEntry(entry.id, { fullCans: e.target.value })} placeholder="F" />
-                    </td>
-                    <td className="p-1 border-r">
-                      <div className="flex items-center justify-center gap-1">
-                        {['Soda', 'Sugar', 'COB', 'Malto'].map((test) => {
-                          const key = `test${test}` as keyof RouteVisitEntry;
-                          return (
-                            <div key={test} className="flex flex-col items-center">
-                              <span className="text-[7px] font-bold uppercase">{test.substring(0, 1)}</span>
-                              <select 
-                                className="text-[8px] bg-transparent border rounded p-0 h-4"
-                                value={entry[key] as string}
-                                onChange={e => updateRouteEntry(entry.id, { [key]: e.target.value })}
-                              >
-                                <option value="-">-</option>
-                                <option value="OK">OK</option>
-                                <option value="+">+</option>
-                              </select>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </td>
-                    <td className="p-1 border-r">
-                      <Input className="h-7 text-[10px] border-none shadow-none focus-visible:ring-0 px-1 text-center text-red-600 font-bold" value={entry.seizedMilk} onChange={e => updateRouteEntry(entry.id, { seizedMilk: e.target.value })} placeholder="L" />
-                    </td>
-                    <td className="p-1 border-r">
-                      <Input className="h-7 text-[10px] border-none shadow-none focus-visible:ring-0 px-1 italic" value={entry.instructions} onChange={e => updateRouteEntry(entry.id, { instructions: e.target.value })} placeholder="शेरा..." />
                     </td>
                     <td className="p-1 no-print">
                       <Button variant="ghost" size="icon" onClick={() => removeRouteEntry(entry.id)} className="h-6 w-6 text-destructive" disabled={formData.routeVisitLogs.length <= 1}>

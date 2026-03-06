@@ -242,9 +242,6 @@ export default function ReportsPage() {
                           <th className="p-1 border border-white">Arr.</th>
                           <th className="p-1 border border-white">Dep.</th>
                           <th className="p-1 border border-white">Cans</th>
-                          <th className="p-1 border border-white">Tests (S/U/C/M)</th>
-                          <th className="p-1 border border-white">Seized</th>
-                          <th className="p-1 border border-white">Remarks</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -257,11 +254,6 @@ export default function ReportsPage() {
                             <td className="p-1 border-r border-black text-center">{log.arrivalTime}</td>
                             <td className="p-1 border-r border-black text-center">{log.departureTime}</td>
                             <td className="p-1 border-r border-black text-center">E:{log.emptyCans} F:{log.fullCans}</td>
-                            <td className="p-1 border-r border-black text-center">
-                              {log.testSoda}/{log.testSugar}/{log.testCOB}/{log.testMalto}
-                            </td>
-                            <td className="p-1 border-r border-black text-center font-bold text-red-600">{log.seizedMilk}</td>
-                            <td className="p-1 italic">{log.instructions}</td>
                           </tr>
                         ))}
                       </tbody>
