@@ -12,7 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
 import { 
-  ClipboardCheck, User, Truck, Plus, Trash2, Hash, MapPin, Briefcase, Save, Gauge, RefreshCw
+  ClipboardCheck, User, Truck, Plus, Trash2, Hash, MapPin, Briefcase, Save, RefreshCw
 } from "lucide-react"
 
 interface RouteVisitEntry {
