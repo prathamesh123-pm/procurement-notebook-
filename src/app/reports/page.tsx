@@ -22,6 +22,7 @@ export default function ReportsPage() {
   const [mounted, setMounted] = useState(false)
   const [activeFilter, setActiveFilter] = useState<ReportType | 'All'>('All')
   const [filterDate, setFilterDate] = useState<string>("")
+  const [profileName, setProfileName] = useState("")
   const { toast } = useToast()
 
   const [selectedReport, setSelectedReport] = useState<any | null>(null)
@@ -31,6 +32,10 @@ export default function ReportsPage() {
     setMounted(true)
     const stored = JSON.parse(localStorage.getItem('procurepal_reports') || '[]')
     setReports(stored)
+    
+    // Get profile name for signature
+    const savedName = localStorage.getItem('procurenote_user_name') || ""
+    setProfileName(savedName)
   }, [])
 
   const filteredReports = useMemo(() => {
@@ -205,7 +210,7 @@ export default function ReportsPage() {
                   <h1 className="text-xl font-bold uppercase tracking-tight">Procurement Notebook - Collection Report</h1>
                   <h2 className="text-md font-bold">संकलन विभाग - दैनिक अहवाल ({selectedReport.type})</h2>
                   <div className="grid grid-cols-3 w-full mt-4 text-[10px] font-bold uppercase border-t pt-2">
-                    <span>प्रतिनिधी: {selectedReport.fullData?.name || selectedReport.fullData?.userName}</span>
+                    <span>प्रतिनिधी: {profileName || selectedReport.fullData?.name || selectedReport.fullData?.userName}</span>
                     <span>दिनांक: {selectedReport.date}</span>
                     <span>शिफ्ट: {selectedReport.fullData?.shift || 'N/A'}</span>
                   </div>
@@ -291,11 +296,11 @@ export default function ReportsPage() {
                         </div>
                         <div>
                           <Label className="text-[9px] font-bold uppercase text-muted-foreground">तपशील</Label>
-                          <p className="text-xs italic leading-relaxed">{selectedReport.fullData?.description || "तपशील नाही."}</p>
+                          <p className="text-xs italic leading-relaxed whitespace-pre-wrap">{selectedReport.fullData?.description || "तपशील नाही."}</p>
                         </div>
                         <div className="p-3 bg-primary/5 border-l-4 border-primary rounded-r-md">
                           <Label className="text-[9px] font-bold uppercase text-primary">शेरा (Action Plan)</Label>
-                          <p className="text-sm font-bold mt-1">{selectedReport.fullData?.remark || "शेरा दिलेला नाही."}</p>
+                          <p className="text-sm font-bold mt-1 whitespace-pre-wrap">{selectedReport.fullData?.remark || "शेरा दिलेला नाही."}</p>
                         </div>
                       </div>
                     </div>
@@ -317,7 +322,7 @@ export default function ReportsPage() {
                   <div className="flex justify-between items-end">
                     <div className="text-center min-w-[150px]">
                       <div className="border-b-2 border-black mb-1 h-8 flex items-end justify-center">
-                        <span className="text-[10px] font-bold mb-1">{selectedReport.fullData?.name || selectedReport.fullData?.userName}</span>
+                        <span className="text-[10px] font-bold mb-1">{profileName || selectedReport.fullData?.name || selectedReport.fullData?.userName}</span>
                       </div>
                       <span className="text-[9px] font-bold uppercase">प्रतिनिधी स्वाक्षरी</span>
                     </div>
