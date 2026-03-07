@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
@@ -5,8 +6,8 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { 
   Archive, Calendar, FileText, ClipboardList, 
-  Briefcase, ListTodo, Truck, Download, Trash2, 
-  Eye, User, Printer, X, Milk, ChevronDown, FileDown, Edit, AlertCircle
+  Briefcase, ListTodo, Truck, Trash2, 
+  Eye, Printer, X, Milk, FileDown, Edit, AlertCircle
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { ReportType } from "@/lib/types"
@@ -69,25 +70,20 @@ export default function ReportsPage() {
     }
   }
 
-  const handleDelete = (id: string) => {
+  const handleDelete = (id: any) => {
     if (!confirm("तुम्हाला हा रिपोर्ट कायमचा हटवायचा आहे का?")) return
     
-    // Get latest from storage to be safe
     const storedReports = JSON.parse(localStorage.getItem('procurepal_reports') || '[]')
     const updatedReports = storedReports.filter((r: any) => String(r.id) !== String(id))
     
-    // Update storage
     localStorage.setItem('procurepal_reports', JSON.stringify(updatedReports))
-    
-    // Update local state
     setReports(updatedReports)
     
-    // Cleanup related breakdowns
+    // Also cleanup related breakdowns if any
     const storedBreakdowns = JSON.parse(localStorage.getItem('procurepal_breakdowns') || '[]')
     const updatedBreakdowns = storedBreakdowns.filter((b: any) => String(b.id) !== String(id))
     localStorage.setItem('procurepal_breakdowns', JSON.stringify(updatedBreakdowns))
 
-    // Close dialog if open
     if (selectedReport?.id === id) {
       setIsViewOpen(false)
       setSelectedReport(null)
@@ -141,7 +137,7 @@ export default function ReportsPage() {
 
       <div className="px-3 space-y-1 no-print">
         <h2 className="text-xl font-black text-slate-900 tracking-tight">View Reports</h2>
-        <p className="text-[11px] font-bold text-slate-500 uppercase tracking-widest leading-none">अहवाल व्यवस्थापन डॅशबोर्ड</p>
+        <p className="text-[11px] font-bold text-slate-500 uppercase tracking-widest leading-none">अहवाल व्यवस्थापन</p>
       </div>
 
       <div className="mt-4 px-3 no-print">
@@ -202,9 +198,9 @@ export default function ReportsPage() {
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-1 shrink-0 relative z-10">
+                    <div className="flex items-center gap-1 shrink-0 relative z-30">
                       <Badge variant="outline" className="text-[8px] font-mono text-slate-400 border-slate-200 h-5 px-1.5 rounded-md bg-slate-50">
-                        ID: {report.id?.slice(0, 6)}
+                        ID: {String(report.id)?.slice(0, 6)}
                       </Badge>
                       <Button 
                         variant="ghost" 
@@ -294,7 +290,6 @@ export default function ReportsPage() {
           <ScrollArea className="flex-grow bg-slate-50/30">
             {selectedReport && (
               <div className="p-4 sm:p-8 space-y-5 bg-white" id="printable-report-content">
-                {/* Official Colorful Header */}
                 <div className="flex flex-col items-center border-b-4 border-primary pb-4 text-center space-y-2 bg-gradient-to-b from-primary/5 to-white pt-2 rounded-t-xl">
                   <div className="flex items-center gap-3">
                     <div className="p-2 bg-primary rounded-xl shadow-lg">
@@ -402,7 +397,6 @@ export default function ReportsPage() {
                   </div>
                 )}
 
-                {/* Footer Signatures */}
                 <div className="pt-12 pb-4">
                   <div className="flex justify-between items-end gap-12 px-6">
                     <div className="text-center flex-1 space-y-3">

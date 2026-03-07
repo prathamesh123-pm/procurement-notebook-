@@ -1,7 +1,8 @@
+
 "use client"
 
 import * as React from "react"
-import { LayoutDashboard, ListTodo, MapPin, LogOut, Milk, ClipboardCheck, Archive, UserCircle, Warehouse, AlertTriangle } from "lucide-react"
+import { LayoutDashboard, ListTodo, MapPin, LogOut, Milk, ClipboardCheck, Archive, UserCircle, Warehouse } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
@@ -72,10 +73,16 @@ export function DashboardSidebar() {
             <Milk className="h-6 w-6" />
           </div>
           <div className="flex flex-col group-data-[collapsible=icon]:hidden min-w-0">
-            <span className="font-headline text-sm font-black tracking-tight text-foreground truncate">
-              संकलन नोंदवही
-            </span>
-            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest truncate">Daily Notebook</span>
+            {mounted ? (
+              <>
+                <span className="font-headline text-sm font-black tracking-tight text-foreground truncate">
+                  संकलन नोंदवही
+                </span>
+                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest truncate">Daily Notebook</span>
+              </>
+            ) : (
+              <span className="h-4 w-24 bg-muted animate-pulse rounded" />
+            )}
           </div>
         </div>
       </SidebarHeader>
