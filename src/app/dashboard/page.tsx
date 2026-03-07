@@ -2,17 +2,20 @@
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ListTodo, MapPin, Users, PlusCircle, ClipboardCheck, Milk, TrendingUp } from "lucide-react"
+import { ListTodo, MapPin, Users, ClipboardCheck, Milk, TrendingUp, Warehouse, ArrowRight } from "lucide-react"
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import { Supplier, CollectionCenter, Route, Task } from "@/lib/types"
+import { Badge } from "@/components/ui/badge"
 
 export default function DashboardOverview() {
   const [mounted, setMounted] = useState(false)
   const [stats, setStats] = useState({
     totalMilk: 0,
+    cowMilk: 0,
+    bufMilk: 0,
     activeRoutes: 0,
-    totalSuppliers: 0,
+    totalPoints: 0,
     pendingTasks: 0
   })
 
@@ -26,127 +29,149 @@ export default function DashboardOverview() {
     const tasks: Task[] = JSON.parse(localStorage.getItem('procurepal_tasks') || '[]')
 
     // Calculate Dynamic Stats
-    const totalSuppMilk = suppliers.reduce((acc, s) => acc + (s.cowMilk?.quantity || 0) + (s.buffaloMilk?.quantity || 0), 0)
-    const totalCenterMilk = centers.reduce((acc, c) => acc + (c.cowMilk?.quantity || 0) + (c.buffaloMilk?.quantity || 0), 0)
+    const suppCow = suppliers.reduce((acc, s) => acc + (s.cowMilk?.quantity || 0), 0)
+    const suppBuf = suppliers.reduce((acc, s) => acc + (s.buffaloMilk?.quantity || 0), 0)
+    
+    const centerCow = centers.reduce((acc, c) => acc + (c.cowMilk?.quantity || 0), 0)
+    const centerBuf = centers.reduce((acc, c) => acc + (c.buffaloMilk?.quantity || 0), 0)
     
     setStats({
-      totalMilk: totalSuppMilk + totalCenterMilk,
+      cowMilk: suppCow + centerCow,
+      bufMilk: suppBuf + centerBuf,
+      totalMilk: suppCow + suppBuf + centerCow + centerBuf,
       activeRoutes: routes.length,
-      totalSuppliers: suppliers.length + centers.length,
+      totalPoints: suppliers.length + centers.length,
       pendingTasks: tasks.filter(t => t.status === 'pending').length
     })
   }, [])
 
   if (!mounted) {
-    return <div className="flex items-center justify-center h-full text-muted-foreground italic">Loading overview...</div>
+    return <div className="flex items-center justify-center h-[80vh] text-muted-foreground italic">माहिती लोड होत आहे...</div>
   }
 
   const statCards = [
     {
-      title: "Today's Milk",
+      title: "एकूण दूध संकलन",
       value: `${stats.totalMilk.toFixed(1)} L`,
-      subValue: "Total collection",
+      subValue: `गाय: ${stats.cowMilk.toFixed(1)} | म्हैस: ${stats.bufMilk.toFixed(1)}`,
       icon: Milk,
       color: "text-blue-600",
-      bg: "bg-blue-100",
+      bg: "bg-blue-500/10",
+      border: "border-blue-200",
     },
     {
-      title: "Active Routes",
+      title: "सक्रिय रूट (Routes)",
       value: stats.activeRoutes,
-      subValue: "Collection paths",
+      subValue: "वाहन आणि लॉजिस्टिक",
       icon: MapPin,
-      color: "text-amber-600",
-      bg: "bg-amber-100",
+      color: "text-emerald-600",
+      bg: "bg-emerald-500/10",
+      border: "border-emerald-200",
     },
     {
-      title: "Total Points",
-      value: stats.totalSuppliers,
-      subValue: "Suppliers & Centers",
-      icon: Users,
+      title: "एकूण संकलन केंद्र",
+      value: stats.totalPoints,
+      subValue: "गवळी व सेंटर्स",
+      icon: Warehouse,
       color: "text-purple-600",
-      bg: "bg-purple-100",
+      bg: "bg-purple-500/10",
+      border: "border-purple-200",
     },
     {
-      title: "Pending Tasks",
+      title: "प्रलंबित कामे",
       value: stats.pendingTasks,
-      subValue: "Needs attention",
+      subValue: "तात्काळ लक्ष द्या",
       icon: ListTodo,
-      color: "text-red-600",
-      bg: "bg-red-100",
+      color: "text-rose-600",
+      bg: "bg-rose-500/10",
+      border: "border-rose-200",
     },
   ]
 
   const actions = [
     {
-      title: "Daily Report",
-      description: "Submit daily log",
+      title: "दैनिक रिपोर्ट",
+      description: "Daily Route Log",
       icon: ClipboardCheck,
       href: "/daily-report",
+      color: "bg-blue-500",
     },
     {
-      title: "Work Log",
-      description: "Manage tasks",
+      title: "कामकाज नोंद",
+      description: "Task & Remarks",
       icon: ListTodo,
       href: "/work-log",
+      color: "bg-orange-500",
     },
     {
-      title: "Centers",
-      description: "Manage centers",
-      icon: PlusCircle,
+      title: "संकलन केंद्र",
+      description: "Manage Centers",
+      icon: Warehouse,
       href: "/centers",
+      color: "bg-purple-500",
     },
     {
-      title: "Routes",
-      description: "Manage paths",
+      title: "रूट व्यवस्थापन",
+      description: "Manage Routes",
       icon: MapPin,
       href: "/routes",
+      color: "bg-emerald-500",
     },
   ]
 
   return (
-    <div className="space-y-8 max-w-6xl mx-auto w-full">
-      <div className="flex flex-col gap-1">
-        <h2 className="text-3xl font-headline font-bold text-foreground tracking-tight flex items-center gap-2">
-          <TrendingUp className="h-8 w-8 text-primary" /> 
-          Procurement Dashboard
-        </h2>
-        <p className="text-muted-foreground font-medium">येथे तुमच्या संकलनाची आणि कामाची सद्यस्थिती दिसेल.</p>
+    <div className="space-y-10 max-w-6xl mx-auto w-full pb-10 animate-in fade-in duration-500">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="space-y-1">
+          <h2 className="text-4xl font-headline font-bold text-foreground tracking-tight flex items-center gap-3">
+            <TrendingUp className="h-10 w-10 text-primary animate-pulse" /> 
+            Procurement Dashboard
+          </h2>
+          <p className="text-muted-foreground font-medium ml-1">येथे तुमच्या संकलनाची आणि कामाची सद्यस्थिती दिसेल.</p>
+        </div>
+        <Badge variant="outline" className="px-4 py-1.5 rounded-full border-primary/20 bg-primary/5 text-primary font-bold">
+          Updated: Today, {new Date().toLocaleDateString()}
+        </Badge>
       </div>
 
-      <div className="grid gap-6 grid-cols-2 md:grid-cols-4">
+      <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         {statCards.map((stat) => (
-          <Card key={stat.title} className="border-none shadow-sm overflow-hidden bg-white">
-            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0 px-4 pt-4">
-              <CardTitle className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{stat.title}</CardTitle>
-              <div className={`${stat.bg} p-1.5 rounded-lg`}>
-                <stat.icon className={`h-3.5 w-3.5 ${stat.color}`} />
+          <Card key={stat.title} className={`border ${stat.border} shadow-sm hover:shadow-md transition-all duration-300 bg-white overflow-hidden group`}>
+            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0 px-5 pt-5">
+              <CardTitle className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">{stat.title}</CardTitle>
+              <div className={`${stat.bg} p-2 rounded-xl group-hover:scale-110 transition-transform`}>
+                <stat.icon className={`h-5 w-5 ${stat.color}`} />
               </div>
             </CardHeader>
-            <CardContent className="px-4 pb-4">
-              <div className="text-2xl font-bold tracking-tight">{stat.value}</div>
-              <p className="text-[9px] text-muted-foreground mt-0.5 font-bold uppercase">{stat.subValue}</p>
+            <CardContent className="px-5 pb-5">
+              <div className="text-3xl font-bold tracking-tight text-foreground">{stat.value}</div>
+              <p className="text-[10px] text-muted-foreground mt-1.5 font-bold uppercase">{stat.subValue}</p>
             </CardContent>
           </Card>
         ))}
       </div>
 
-      <div className="space-y-4">
-        <h3 className="text-lg font-bold font-headline px-1">Quick Actions (झटपट पर्याय)</h3>
-        <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
+      <div className="space-y-6">
+        <h3 className="text-xl font-bold font-headline flex items-center gap-2">
+          Quick Actions <span className="text-muted-foreground font-normal">(झटपट पर्याय)</span>
+        </h3>
+        <div className="grid gap-5 grid-cols-2 lg:grid-cols-4">
           {actions.map((action) => (
-            <Card key={action.title} asChild className="border-none shadow-sm hover:shadow-md transition-all cursor-pointer bg-white group">
-              <Link href={action.href}>
-                <CardContent className="p-6 flex flex-col items-center text-center gap-3">
-                  <div className="p-3 rounded-2xl bg-primary/5 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                    <action.icon className="h-6 w-6" />
+            <Link key={action.title} href={action.href} className="group">
+              <Card className="border-none shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer bg-white overflow-hidden relative">
+                <div className={`absolute top-0 left-0 w-1 h-full ${action.color}`} />
+                <CardContent className="p-6 flex flex-col items-center text-center gap-4">
+                  <div className={`p-4 rounded-2xl ${action.color} text-white shadow-lg group-hover:rotate-12 transition-transform`}>
+                    <action.icon className="h-7 w-7" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-sm text-foreground">{action.title}</h4>
-                    <p className="text-[10px] text-muted-foreground mt-1 font-medium">{action.description}</p>
+                    <h4 className="font-bold text-base text-foreground">{action.title}</h4>
+                    <p className="text-[11px] text-muted-foreground mt-1 font-medium">{action.description}</p>
                   </div>
+                  <ArrowRight className="h-4 w-4 text-muted-foreground/30 absolute bottom-4 right-4 group-hover:text-primary group-hover:translate-x-1 transition-all" />
                 </CardContent>
-              </Link>
-            </Card>
+              </Card>
+            </Link>
           ))}
         </div>
       </div>
