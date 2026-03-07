@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -48,22 +47,23 @@
   }
 }
 
-/* Custom Utilities for more color */
+/* Compact Utilities */
 .bg-milk-cow { @apply bg-blue-50 border-blue-100 text-blue-700; }
 .bg-milk-buf { @apply bg-amber-50 border-amber-100 text-amber-700; }
 .glass-card { @apply bg-white/80 backdrop-blur-md border-white/20 shadow-xl; }
 
-/* Mobile Table Responsiveness */
 .responsive-table-container {
-  @apply w-full overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0;
+  @apply w-full overflow-x-auto -mx-2 px-2 sm:mx-0 sm:px-0;
 }
 
-/* Compact inputs for mobile */
 @media (max-width: 640px) {
   .compact-input {
-    @apply h-9 text-xs py-1 px-3;
+    @apply h-8 text-[11px] py-1 px-2;
   }
   .compact-label {
-    @apply text-[10px] mb-1;
+    @apply text-[10px] mb-0.5 font-black uppercase text-muted-foreground;
+  }
+  .compact-card {
+    @apply p-3;
   }
 }
