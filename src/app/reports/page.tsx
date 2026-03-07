@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { 
   Archive, Calendar, FileText, ClipboardList, 
   Briefcase, ListTodo, Truck, Download, Trash2, 
-  Eye, Hash, User, ChevronRight, Search, Printer, X
+  Eye, Hash, User, ChevronRight, Search, Printer, X, AlertTriangle, Milk
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { ReportType } from "@/lib/types"
@@ -20,7 +20,7 @@ import { Label } from "@/components/ui/label"
 export default function ReportsPage() {
   const [reports, setReports] = useState<any[]>([])
   const [mounted, setMounted] = useState(false)
-  const [activeFilter, setActiveFilter] = useState<ReportType | 'All'>('All')
+  const [activeFilter, setActiveFilter] = useState<ReportType | 'All' | 'Breakdown'>('All')
   const [filterDate, setFilterDate] = useState<string>("")
   const [profileName, setProfileName] = useState("")
   const { toast } = useToast()
@@ -32,8 +32,6 @@ export default function ReportsPage() {
     setMounted(true)
     const stored = JSON.parse(localStorage.getItem('procurepal_reports') || '[]')
     setReports(stored)
-    
-    // Get profile name for signature
     const savedName = localStorage.getItem('procurenote_user_name') || ""
     setProfileName(savedName)
   }, [])
@@ -52,6 +50,7 @@ export default function ReportsPage() {
       case 'Route Visit': return <Truck className="h-4 w-4" />
       case 'Daily Office Work': return <Briefcase className="h-4 w-4" />
       case 'Daily Task': return <ListTodo className="h-4 w-4" />
+      case 'Breakdown': return <Truck className="h-4 w-4" />
       default: return <ClipboardList className="h-4 w-4" />
     }
   }
@@ -62,6 +61,7 @@ export default function ReportsPage() {
       case 'Route Visit': return 'bg-emerald-500/10 text-emerald-600'
       case 'Daily Office Work': return 'bg-blue-500/10 text-blue-600'
       case 'Daily Task': return 'bg-orange-500/10 text-orange-600'
+      case 'Breakdown': return 'bg-red-500/10 text-red-600'
       default: return 'bg-muted text-muted-foreground'
     }
   }
@@ -118,11 +118,10 @@ export default function ReportsPage() {
         </div>
       </div>
 
-      {/* Filter Section */}
       <div className="flex flex-col gap-2 no-print mx-2">
         <ScrollArea className="w-full whitespace-nowrap pb-1">
           <div className="flex gap-1">
-            {['All', 'Route Visit', 'Field Visit', 'Daily Office Work', 'Daily Task'].map((type) => (
+            {['All', 'Route Visit', 'Field Visit', 'Daily Office Work', 'Daily Task', 'Breakdown'].map((type) => (
               <Button 
                 key={type}
                 variant={activeFilter === type ? 'default' : 'outline'} 
@@ -146,7 +145,6 @@ export default function ReportsPage() {
         </div>
       </div>
 
-      {/* Reports List */}
       <div className="grid grid-cols-1 gap-1.5 no-print px-2">
         {filteredReports.length > 0 ? (
           filteredReports.map((report) => (
@@ -194,7 +192,6 @@ export default function ReportsPage() {
         )}
       </div>
 
-      {/* Full Screen Report View Dialog */}
       <Dialog open={isViewOpen} onOpenChange={setIsViewOpen}>
         <DialogContent className="max-w-3xl h-[95vh] sm:h-[85vh] flex flex-col p-0 bg-white overflow-hidden rounded-none sm:rounded-xl border-none">
           <DialogHeader className="p-2 border-b no-print bg-primary/5 flex flex-row items-center justify-between shrink-0">
@@ -210,7 +207,6 @@ export default function ReportsPage() {
           <ScrollArea className="flex-grow">
             {selectedReport && (
               <div className="p-3 sm:p-6 space-y-4 bg-white" id="printable-report-content">
-                {/* Compact Header */}
                 <div className="flex flex-col items-center border-b border-black pb-2 text-center space-y-1">
                   <div className="flex items-center gap-1.5">
                     <Truck className="h-4 w-4 text-black" />
@@ -226,7 +222,6 @@ export default function ReportsPage() {
                   </div>
                 </div>
 
-                {/* Route Visit Content */}
                 {selectedReport.type === 'Route Visit' && (
                   <div className="space-y-3">
                     <div className="grid grid-cols-4 gap-2 p-2 border rounded-lg bg-gray-50/50">
@@ -264,7 +259,55 @@ export default function ReportsPage() {
                   </div>
                 )}
 
-                {/* Daily Task Content - Highly Optimized for Space */}
+                {selectedReport.type === 'Breakdown' && (
+                  <div className="space-y-3">
+                    <div className="p-2 border-2 border-red-600 rounded-lg bg-red-50/30 space-y-2">
+                      <div className="grid grid-cols-2 gap-2 border-b border-red-100 pb-1.5">
+                        <div><Label className="text-[6px] font-black text-gray-400 uppercase">रूट (Route)</Label><p className="text-[9px] font-black">{selectedReport.fullData?.routeName}</p></div>
+                        <div className="text-right"><Label className="text-[6px] font-black text-gray-400 uppercase">गाडी (Vehicle)</Label><p className="text-[9px] font-black">{selectedReport.fullData?.vehicleNumber}</p></div>
+                      </div>
+                      <div className="grid grid-cols-3 gap-2 py-1">
+                        <div><Label className="text-[6px] font-black text-gray-400 uppercase">ड्रायव्हर</Label><p className="text-[8px] font-bold">{selectedReport.fullData?.driverName}</p></div>
+                        <div className="col-span-2 text-right"><Label className="text-[6px] font-black text-gray-400 uppercase">लोकेशन</Label><p className="text-[8px] font-bold">{selectedReport.fullData?.location}</p></div>
+                      </div>
+                      <div className="p-1.5 bg-white border rounded">
+                        <Label className="text-[6px] font-black text-red-600 uppercase">ब्रेकडाऊन कारण (Reason)</Label>
+                        <p className="text-[8px] font-medium leading-tight">{selectedReport.fullData?.reason}</p>
+                      </div>
+                    </div>
+
+                    <div className="border rounded-lg overflow-hidden border-gray-200">
+                      <table className="w-full text-[8px] border-collapse">
+                        <thead className="bg-gray-100 border-b border-gray-200">
+                          <tr className="uppercase font-black text-[6px] tracking-wider text-gray-600">
+                            <th className="p-1.5 text-left">गवळी (Supplier)</th>
+                            <th className="p-1.5 text-center">म्हेस (L)</th>
+                            <th className="p-1.5 text-center">गाय (L)</th>
+                            <th className="p-1.5 text-right">नुकसान रक्कम</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {selectedReport.fullData?.losses?.map((loss: any, idx: number) => (
+                            <tr key={idx} className="border-b border-gray-100 last:border-0 odd:bg-white even:bg-gray-50/30">
+                              <td className="p-1.5">
+                                <p className="font-black text-[8px]">{loss.supplierName}</p>
+                                <p className="text-[6px] text-gray-400">#{loss.supplierCode}</p>
+                              </td>
+                              <td className="p-1.5 text-center font-bold">{loss.bufMilkLossLiters || '0'}</td>
+                              <td className="p-1.5 text-center font-bold">{loss.cowMilkLossLiters || '0'}</td>
+                              <td className="p-1.5 text-right font-black text-red-600">₹{loss.lossAmount || '0'}</td>
+                            </tr>
+                          ))}
+                          <tr className="bg-gray-50">
+                            <td className="p-1.5 font-black text-[8px]">एकूण नुकसान</td>
+                            <td colSpan={3} className="p-1.5 text-right font-black text-[10px] text-red-700">₹{selectedReport.fullData?.totalLossAmount}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+
                 {selectedReport.type === 'Daily Task' && (
                   <div className="space-y-2">
                     <div className="p-2.5 border-2 border-black rounded-lg bg-gray-50 space-y-2">
@@ -292,7 +335,6 @@ export default function ReportsPage() {
                   </div>
                 )}
 
-                {/* Field Visit & Office Work Content */}
                 {(selectedReport.type === 'Field Visit' || selectedReport.type === 'Daily Office Work') && (
                   <div className="p-2.5 border border-black rounded-lg bg-gray-50/30">
                     <Label className="text-[7px] font-black uppercase mb-1.5 block text-gray-400 tracking-widest">Observations / Work Detail</Label>
@@ -306,7 +348,6 @@ export default function ReportsPage() {
                   </div>
                 )}
 
-                {/* Optimized Signature View */}
                 <div className="pt-6 pb-2">
                   <div className="flex justify-between items-end gap-10 px-4">
                     <div className="text-center flex-1 space-y-1">

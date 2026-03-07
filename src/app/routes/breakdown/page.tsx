@@ -69,11 +69,12 @@ export default function BreakdownPage() {
     }
 
     const totalLoss = formData.losses.reduce((acc, curr) => acc + (Number(curr.lossAmount) || 0), 0)
-
+    const reportDate = new Date().toISOString().split('T')[0];
+    
     let updatedRecords: BreakdownRecord[]
+    let recordIdForReport = editingId;
 
     if (editingId) {
-      // Update existing record
       updatedRecords = records.map(r => 
         r.id === editingId 
           ? { ...r, ...formData, totalLossAmount: totalLoss } 
@@ -81,11 +82,11 @@ export default function BreakdownPage() {
       )
       toast({ title: "अद्ययावत केले", description: "रेकॉर्ड यशस्वीरित्या अपडेट झाला." })
     } else {
-      // Create new record
+      recordIdForReport = crypto.randomUUID();
       const newRecord: BreakdownRecord = {
-        id: crypto.randomUUID(),
+        id: recordIdForReport as string,
         ...formData,
-        date: new Date().toISOString().split('T')[0],
+        date: reportDate,
         totalLossAmount: totalLoss
       }
       updatedRecords = [newRecord, ...records]
@@ -95,7 +96,22 @@ export default function BreakdownPage() {
     setRecords(updatedRecords)
     localStorage.setItem('procurepal_breakdowns', JSON.stringify(updatedRecords))
 
-    // Reset Form and State
+    // Push to central reports
+    const storedReports = JSON.parse(localStorage.getItem('procurepal_reports') || '[]')
+    const reportSummary = `ब्रेकडाऊन: ${formData.routeName} | गाडी: ${formData.vehicleNumber} | नुकसान: ₹${totalLoss}`
+    
+    const reportData = {
+      id: recordIdForReport,
+      type: 'Breakdown',
+      date: reportDate,
+      summary: reportSummary,
+      fullData: { ...formData, totalLossAmount: totalLoss, date: reportDate }
+    }
+
+    // Update or Add Report
+    const updatedReports = storedReports.filter((r: any) => r.id !== recordIdForReport);
+    localStorage.setItem('procurepal_reports', JSON.stringify([reportData, ...updatedReports]))
+
     resetForm()
   }
 
@@ -110,7 +126,6 @@ export default function BreakdownPage() {
       reason: record.reason,
       losses: record.losses
     })
-    // Scroll to form
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
@@ -127,6 +142,12 @@ export default function BreakdownPage() {
     const updated = records.filter(r => r.id !== id)
     setRecords(updated)
     localStorage.setItem('procurepal_breakdowns', JSON.stringify(updated))
+    
+    // Also remove from reports
+    const storedReports = JSON.parse(localStorage.getItem('procurepal_reports') || '[]')
+    const updatedReports = storedReports.filter((r: any) => r.id !== id)
+    localStorage.setItem('procurepal_reports', JSON.stringify(updatedReports))
+
     if (editingId === id) resetForm()
     toast({ title: "हटवले", description: "रेकॉर्ड काढून टाकला आहे." })
   }
@@ -143,7 +164,6 @@ export default function BreakdownPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
-        {/* Form Panel */}
         <Card className={`lg:col-span-7 border-none shadow-sm bg-white rounded-2xl overflow-hidden ${editingId ? 'ring-2 ring-primary' : ''}`}>
           <CardHeader className={`${editingId ? 'bg-primary/5' : 'bg-destructive/5'} py-3 border-b flex flex-row items-center justify-between`}>
             <CardTitle className="text-sm font-black flex items-center gap-2 uppercase">
@@ -243,14 +263,13 @@ export default function BreakdownPage() {
                 </Button>
               )}
               <Button onClick={handleSaveRecord} className={`flex-[2] font-black h-11 rounded-xl shadow-lg ${editingId ? 'bg-primary hover:bg-primary/90 shadow-primary/20' : 'bg-destructive hover:bg-destructive/90 shadow-destructive/20'}`}>
-                {editingId ? <Save className="h-4 w-4 mr-2" /> : <Save className="h-4 w-4 mr-2" />}
+                <Save className="h-4 w-4 mr-2" />
                 {editingId ? 'अपडेट करा (Update Record)' : 'रेकॉर्ड जतन करा (Save Record)'}
               </Button>
             </div>
           </CardContent>
         </Card>
 
-        {/* List Panel */}
         <div className="lg:col-span-5 space-y-4">
           <Card className="border-none shadow-sm bg-white rounded-2xl overflow-hidden">
             <CardHeader className="bg-muted/5 py-3 border-b">
@@ -270,10 +289,10 @@ export default function BreakdownPage() {
                             <p className="text-[9px] font-black text-muted-foreground uppercase">{record.vehicleNumber} | {record.vehicleType} | {record.date}</p>
                           </div>
                           <div className="flex gap-1">
-                            <Button variant="ghost" size="icon" onClick={() => handleEditRecord(record)} className="h-7 w-7 text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+                            <Button variant="ghost" size="icon" onClick={() => handleEditRecord(record)} className="h-7 w-7 text-primary">
                               <Edit className="h-3.5 w-3.5" />
                             </Button>
-                            <Button variant="ghost" size="icon" onClick={() => handleDeleteRecord(record.id)} className="h-7 w-7 text-destructive opacity-0 group-hover:opacity-100 transition-opacity">
+                            <Button variant="ghost" size="icon" onClick={() => handleDeleteRecord(record.id)} className="h-7 w-7 text-destructive">
                               <Trash2 className="h-3.5 w-3.5" />
                             </Button>
                           </div>
