@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect } from "react"
@@ -8,7 +9,7 @@ import { Label } from "@/components/ui/label"
 import { 
   Warehouse, Plus, Search, MapPin, User, Phone, 
   Trash2, Edit, Package, Info, ChevronRight,
-  Milk, Truck, PlusCircle, ShieldCheck, Battery, FlaskConical
+  Milk, Truck, PlusCircle, ShieldCheck, Battery, FlaskConical, MessageSquare, Target
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
@@ -327,9 +328,9 @@ export default function CentersPage() {
                   </div>
                 </div>
 
-                <div className="space-y-6">
-                  <h4 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">दूध संकलन व लॉजिस्टिक (Milk & Logistics)</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="space-y-6">
+                    <h4 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">दूध संकलन सरांश (Milk Metrics)</h4>
                     <div className="border rounded-2xl p-5 bg-blue-50/20">
                       <p className="text-[9px] font-black text-primary uppercase mb-3 tracking-widest">दूध सरासरी आकडेवारी (Milk Avg)</p>
                       <div className="grid grid-cols-3 gap-4">
@@ -338,11 +339,33 @@ export default function CentersPage() {
                         <div><p className="text-[8px] text-muted-foreground uppercase font-black">बर्फ (Ice)</p><p className="font-black">{selectedCenter.iceBlocks || 0}</p></div>
                       </div>
                     </div>
-                    <div className="border rounded-2xl p-5 bg-amber-50/20">
-                      <p className="text-[9px] font-black text-amber-700 uppercase mb-3 tracking-widest">लॉजिस्टिक माहिती (Logistics)</p>
-                      <div className="space-y-2">
-                        <p className="text-[10px] text-muted-foreground font-black uppercase">पशुखाद्य (Feed): <span className="text-foreground">{selectedCenter.cattleFeedBrand || "N/A"}</span></p>
-                        <p className="text-[10px] text-muted-foreground font-black uppercase">स्पर्धा (Competition): <span className="text-foreground">{selectedCenter.competition || "N/A"}</span></p>
+                  </div>
+
+                  <div className="space-y-6">
+                    <h4 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">लॉजिस्टिक आणि गाव माहिती (Logistics & Village)</h4>
+                    <div className="border rounded-2xl p-5 bg-amber-50/20 space-y-4">
+                      <div className="grid grid-cols-1 gap-3">
+                        <div className="flex items-start gap-2">
+                          <Truck className="h-4 w-4 text-amber-700 mt-0.5" />
+                          <div className="space-y-0.5">
+                            <p className="text-[8px] font-black text-amber-700 uppercase tracking-widest">पशुखाद्य (Cattle Feed)</p>
+                            <p className="text-sm font-bold">{selectedCenter.cattleFeedBrand || "N/A"}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <Target className="h-4 w-4 text-amber-700 mt-0.5" />
+                          <div className="space-y-0.5">
+                            <p className="text-[8px] font-black text-amber-700 uppercase tracking-widest">गाव स्पर्धा (Competition)</p>
+                            <p className="text-sm font-bold">{selectedCenter.competition || "N/A"}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-start gap-2 border-t pt-2">
+                          <MessageSquare className="h-4 w-4 text-amber-700 mt-0.5" />
+                          <div className="space-y-0.5">
+                            <p className="text-[8px] font-black text-amber-700 uppercase tracking-widest">अतिरिक्त टिप्पणी (Notes)</p>
+                            <p className="text-sm font-medium italic">{selectedCenter.additionalNotes || "कोणतीही टिप्पणी नाही."}</p>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -452,7 +475,8 @@ export default function CentersPage() {
                   <div className="space-y-1.5"><Label className="text-[10px] uppercase font-black">बॅटरी स्थिती (Battery Status)</Label><Input value={formData.batteryCondition} onChange={e => setFormData({...formData, batteryCondition: e.target.value})} className="h-10 bg-muted/20 border-none text-xs rounded-xl" placeholder="उदा. Good, Poor" /></div>
                   <div className="space-y-1.5"><Label className="text-[10px] uppercase font-black">बर्फाचे प्रमाण (Ice Blocks)</Label><Input type="number" value={formData.iceBlocks} onChange={e => setFormData({...formData, iceBlocks: e.target.value})} className="h-10 bg-muted/20 border-none text-xs rounded-xl" /></div>
                   <div className="space-y-1.5"><Label className="text-[10px] uppercase font-black">पशुखाद्य (Cattle Feed)</Label><Input value={formData.cattleFeedBrand} onChange={e => setFormData({...formData, cattleFeedBrand: e.target.value})} className="h-10 bg-muted/20 border-none text-xs rounded-xl" /></div>
-                  <div className="col-span-2 space-y-1.5"><Label className="text-[10px] uppercase font-black">अतिरिक्त टिप्पणी (Additional Notes)</Label><Input value={formData.additionalNotes} onChange={e => setFormData({...formData, additionalNotes: e.target.value})} className="h-10 bg-muted/20 border-none text-xs rounded-xl" /></div>
+                  <div className="space-y-1.5"><Label className="text-[10px] uppercase font-black">गाव स्पर्धा (Competition)</Label><Input value={formData.competition} onChange={e => setFormData({...formData, competition: e.target.value})} className="h-10 bg-muted/20 border-none text-xs rounded-xl" placeholder="उदा. इतर स्थानिक डेअरी" /></div>
+                  <div className="space-y-1.5"><Label className="text-[10px] uppercase font-black">अतिरिक्त टिप्पणी (Notes)</Label><Input value={formData.additionalNotes} onChange={e => setFormData({...formData, additionalNotes: e.target.value})} className="h-10 bg-muted/20 border-none text-xs rounded-xl" placeholder="काही विशेष माहिती..." /></div>
                 </div>
               </div>
             </div>
