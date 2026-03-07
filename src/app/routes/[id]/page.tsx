@@ -170,7 +170,8 @@ export default function RouteDetailsPage() {
     setIsDialogOpen(false)
   }
 
-  const handleDeleteSupplier = (id: string) => {
+  const handleDeleteSupplier = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation()
     if (!confirm("तुम्हाला खात्री आहे की हा पुरवठादार हटवायचा आहे?")) return
     const allSupps = JSON.parse(localStorage.getItem('procurepal_suppliers') || '[]')
     const updated = allSupps.filter((s: Supplier) => s.id !== id)
@@ -231,7 +232,12 @@ export default function RouteDetailsPage() {
                       <span className="text-[9px] text-muted-foreground font-bold truncate">| {s.address}</span>
                     </div>
                   </div>
-                  <ChevronRight className="h-3.5 w-3.5 text-muted-foreground opacity-50 shrink-0" />
+                  <div className="flex items-center gap-1">
+                    <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive rounded-md" onClick={(e) => handleDeleteSupplier(e, s.id)}>
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                    <ChevronRight className="h-3.5 w-3.5 text-muted-foreground opacity-50 shrink-0" />
+                  </div>
                 </div>
               )) : (
                 <div className="p-10 text-center"><p className="text-[10px] font-black text-muted-foreground uppercase">नोंद नाही</p></div>
@@ -255,7 +261,7 @@ export default function RouteDetailsPage() {
                   <Button variant="outline" size="icon" className="h-7 w-7 rounded-md border-primary/20 text-primary" onClick={() => openEditDialog(selectedSupplier)}>
                     <Edit className="h-3 w-3" />
                   </Button>
-                  <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive rounded-md" onClick={() => handleDeleteSupplier(selectedSupplier.id)}>
+                  <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive rounded-md" onClick={(e) => handleDeleteSupplier(e, selectedSupplier.id)}>
                     <Trash2 className="h-3 w-3" />
                   </Button>
                 </div>
@@ -340,6 +346,8 @@ export default function RouteDetailsPage() {
                   <div className="space-y-1"><Label className="text-[9px] uppercase font-black">आयडी</Label><Input value={formData.id} onChange={e => setFormData({...formData, id: e.target.value})} className="h-9 text-xs rounded-md bg-muted/20 border-none" /></div>
                   <div className="space-y-1"><Label className="text-[9px] uppercase font-black">मोबाईल</Label><Input value={formData.mobile} onChange={e => setFormData({...formData, mobile: e.target.value})} className="h-9 text-xs rounded-md bg-muted/20 border-none" /></div>
                   <div className="col-span-2 space-y-1"><Label className="text-[9px] uppercase font-black">पत्ता</Label><Input value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} className="h-9 text-xs rounded-md bg-muted/20 border-none" /></div>
+                  <div className="space-y-1"><Label className="text-[9px] uppercase font-black">FSSAI क्र.</Label><Input value={formData.fssaiNumber} onChange={e => setFormData({...formData, fssaiNumber: e.target.value})} className="h-9 text-xs rounded-md bg-muted/20 border-none" /></div>
+                  <div className="space-y-1"><Label className="text-[9px] uppercase font-black">मुदत</Label><Input value={formData.fssaiExpiry} onChange={e => setFormData({...formData, fssaiExpiry: e.target.value})} className="h-9 text-xs rounded-md bg-muted/20 border-none" placeholder="DD/MM/YYYY" /></div>
                 </div>
                 <div className="p-2 border rounded-lg bg-blue-50/20 space-y-1.5">
                   <p className="text-[9px] font-black text-blue-700 uppercase text-center">गाय दूध (Cow)</p>
@@ -355,6 +363,10 @@ export default function RouteDetailsPage() {
                 <div className="grid grid-cols-2 gap-2.5">
                   <div className="space-y-1"><Label className="text-[9px] uppercase font-black">काटा ब्रँड</Label><Input value={formData.scaleBrand} onChange={e => setFormData({...formData, scaleBrand: e.target.value})} className="h-9 text-xs rounded-md bg-muted/20 border-none" /></div>
                   <div className="space-y-1"><Label className="text-[9px] uppercase font-black">मशीन ब्रँड</Label><Input value={formData.fatMachineBrand} onChange={e => setFormData({...formData, fatMachineBrand: e.target.value})} className="h-9 text-xs rounded-md bg-muted/20 border-none" /></div>
+                  <div className="space-y-1"><Label className="text-[9px] uppercase font-black">बर्फ लाद्या</Label><Input type="number" value={formData.iceBlocks} onChange={e => setFormData({...formData, iceBlocks: e.target.value})} className="h-9 text-xs rounded-md bg-muted/20 border-none" /></div>
+                  <div className="space-y-1"><Label className="text-[9px] uppercase font-black">खाद्य ब्रँड</Label><Input value={formData.cattleFeedBrand} onChange={e => setFormData({...formData, cattleFeedBrand: e.target.value})} className="h-9 text-xs rounded-md bg-muted/20 border-none" /></div>
+                  <div className="col-span-2 space-y-1"><Label className="text-[9px] uppercase font-black">गाव स्पर्धा</Label><Input value={formData.competition} onChange={e => setFormData({...formData, competition: e.target.value})} className="h-9 text-xs rounded-md bg-muted/20 border-none" /></div>
+                  <div className="col-span-2 space-y-1"><Label className="text-[9px] uppercase font-black">अतिरिक्त टिप</Label><Input value={formData.additionalInfo} onChange={e => setFormData({...formData, additionalInfo: e.target.value})} className="h-9 text-xs rounded-md bg-muted/20 border-none" /></div>
                 </div>
                 <div className="p-2 border rounded-lg bg-amber-50/20 space-y-1.5">
                   <p className="text-[9px] font-black text-amber-700 uppercase text-center">म्हेस दूध (Buf)</p>
@@ -381,7 +393,7 @@ export default function RouteDetailsPage() {
           </ScrollArea>
           <DialogFooter className="p-3 border-t bg-muted/5 gap-2 flex flex-row shrink-0 justify-end">
             <Button variant="outline" onClick={() => setIsDialogOpen(false)} className="font-black h-9 text-[11px] px-5 rounded-lg">रद्द</Button>
-            <Button onClick={handleSaveSupplier} className="font-black h-9 text-[11px] px-8 rounded-lg">जतन करा</Button>
+            <Button onClick={handleSaveSupplier} className="font-black h-9 text-[11px] px-8 rounded-lg">जतन करा (Save)</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
