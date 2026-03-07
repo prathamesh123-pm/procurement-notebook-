@@ -33,17 +33,26 @@ export default function WorkLogPage() {
 
   const saveTasks = (updatedTasks: Task[]) => {
     setTasks(updatedTasks)
-    // Only save pending ones to the active tasks list in storage if desired,
-    // or keep all and filter. For simplicity with current code, we update the whole list.
     const allStored = JSON.parse(localStorage.getItem('procurepal_tasks') || '[]')
-    const others = allStored.filter((t: any) => t.status !== 'pending')
-    localStorage.setItem('procurepal_tasks', JSON.stringify([...updatedTasks, ...others]))
+    const completedTasks = allStored.filter((t: any) => t.status === 'completed')
+    localStorage.setItem('procurepal_tasks', JSON.stringify([...updatedTasks, ...completedTasks]))
   }
 
   const addTask = () => {
     if (!newTaskTitle) return
-    const newTask: Task = { id: crypto.randomUUID(), title: newTaskTitle, description: newTaskDesc, remark: "", supplierName: newTaskSupplierName, supplierId: newTaskSupplierId, assignedTo: "Manager", status: 'pending', createdAt: new Date().toISOString() }
-    saveTasks([newTask, ...tasks])
+    const newTask: Task = { 
+      id: crypto.randomUUID(), 
+      title: newTaskTitle, 
+      description: newTaskDesc, 
+      remark: "", 
+      supplierName: newTaskSupplierName, 
+      supplierId: newTaskSupplierId, 
+      assignedTo: "Manager", 
+      status: 'pending', 
+      createdAt: new Date().toISOString() 
+    }
+    const updated = [newTask, ...tasks]
+    saveTasks(updated)
     setNewTaskTitle(""); setNewTaskDesc(""); setNewTaskSupplierName(""); setNewTaskSupplierId("")
     toast({ title: "Task Saved", description: "टास्क जतन झाला." })
   }
@@ -53,9 +62,23 @@ export default function WorkLogPage() {
     if (!task) return
     const updated = tasks.filter(t => t.id !== taskId)
     saveTasks(updated)
-    const stored = JSON.parse(localStorage.getItem('procurepal_reports') || '[]')
-    const newReport = { id: crypto.randomUUID(), type: 'Daily Task', date: new Date().toISOString().split('T')[0], summary: `गवळी: ${task.supplierName}. टास्क: ${task.title}. शेरा: ${tempRemark}`, fullData: { ...task, remark: tempRemark, status: 'completed' } }
-    localStorage.setItem('procurepal_reports', JSON.stringify([newReport, ...stored]))
+    
+    // Add to reports
+    const storedReports = JSON.parse(localStorage.getItem('procurepal_reports') || '[]')
+    const newReport = { 
+      id: crypto.randomUUID(), 
+      type: 'Daily Task', 
+      date: new Date().toISOString().split('T')[0], 
+      summary: `गवळी: ${task.supplierName}. टास्क: ${task.title}. शेरा: ${tempRemark}`, 
+      fullData: { ...task, remark: tempRemark, status: 'completed' } 
+    }
+    localStorage.setItem('procurepal_reports', JSON.stringify([newReport, ...storedReports]))
+    
+    // Update the master task list to mark as completed
+    const allStored = JSON.parse(localStorage.getItem('procurepal_tasks') || '[]')
+    const updatedMaster = allStored.map((t: any) => t.id === taskId ? { ...t, status: 'completed', remark: tempRemark } : t)
+    localStorage.setItem('procurepal_tasks', JSON.stringify(updatedMaster))
+
     setIsDetailOpen(false)
     toast({ title: "Completed", description: "टास्क पूर्ण झाला." })
   }
@@ -63,8 +86,16 @@ export default function WorkLogPage() {
   const deleteTask = (e: React.MouseEvent, taskId: string) => {
     e.stopPropagation()
     if (!confirm("हा टास्क हटवायचा आहे का?")) return
+    
+    // Remove from local state
     const updated = tasks.filter(t => t.id !== taskId)
-    saveTasks(updated)
+    setTasks(updated)
+    
+    // Remove from localStorage master list
+    const allStored = JSON.parse(localStorage.getItem('procurepal_tasks') || '[]')
+    const updatedMaster = allStored.filter((t: any) => t.id !== taskId)
+    localStorage.setItem('procurepal_tasks', JSON.stringify(updatedMaster))
+    
     toast({ title: "Deleted", description: "टास्क हटवला आहे." })
   }
 
@@ -98,7 +129,7 @@ export default function WorkLogPage() {
       <div className="space-y-2">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-          <Input placeholder="शोधा..." className="pl-9 h-9 text-[11px] bg-white rounded-lg shadow-sm border-none" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
+          <input placeholder="शोधा..." className="pl-9 h-9 w-full text-[11px] bg-white rounded-lg shadow-sm border-none outline-none focus:ring-1 focus:ring-primary" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
         </div>
 
         <div className="grid grid-cols-1 gap-2">
@@ -118,6 +149,12 @@ export default function WorkLogPage() {
               </div>
             </Card>
           ))}
+          {filteredTasks.length === 0 && (
+            <div className="text-center py-10 opacity-30">
+              <ListTodo className="h-10 w-10 mx-auto" />
+              <p className="text-[10px] font-black uppercase mt-2">प्रलंबित टास्क नाहीत</p>
+            </div>
+          )}
         </div>
       </div>
 

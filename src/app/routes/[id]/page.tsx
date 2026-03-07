@@ -168,14 +168,14 @@ export default function RouteDetailsPage() {
       equipment: formData.equipment
     }
 
-    const allSupps = JSON.parse(localStorage.getItem('procurepal_suppliers') || '[]')
+    const allStored = JSON.parse(localStorage.getItem('procurepal_suppliers') || '[]')
     let updatedAllSupps: Supplier[]
 
     if (dialogMode === 'add') {
-      updatedAllSupps = [...allSupps, supplierData]
+      updatedAllSupps = [...allStored, supplierData]
       toast({ title: "यशस्वी", description: "नवीन पुरवठादार जोडला गेला." })
     } else {
-      updatedAllSupps = allSupps.map((s: Supplier) => s.id === editingId ? supplierData : s)
+      updatedAllSupps = allStored.map((s: Supplier) => s.id === editingId ? supplierData : s)
       toast({ title: "यशस्वी", description: "माहिती अद्ययावत केली गेली." })
     }
 
@@ -188,9 +188,11 @@ export default function RouteDetailsPage() {
   const handleDeleteSupplier = (e: React.MouseEvent, id: string) => {
     e.stopPropagation()
     if (!confirm("तुम्हाला खात्री आहे की हा पुरवठादार हटवायचा आहे?")) return
-    const allSupps = JSON.parse(localStorage.getItem('procurepal_suppliers') || '[]')
-    const updated = allSupps.filter((s: Supplier) => s.id !== id)
+    
+    const allStored = JSON.parse(localStorage.getItem('procurepal_suppliers') || '[]')
+    const updated = allStored.filter((s: Supplier) => s.id !== id)
     localStorage.setItem('procurepal_suppliers', JSON.stringify(updated))
+    
     setSuppliers(updated.filter((s: Supplier) => s.routeId === routeId))
     if (selectedSupplier?.id === id) setSelectedSupplier(null)
     toast({ title: "हटवले", description: "पुरवठादार काढून टाकला आहे." })

@@ -73,7 +73,8 @@ export default function ReportsPage() {
   const handleDelete = (id: string) => {
     if (!confirm("तुम्हाला हा रिपोर्ट कायमचा हटवायचा आहे का?")) return
     
-    const updatedReports = reports.filter(r => r.id !== id)
+    const storedReports = JSON.parse(localStorage.getItem('procurepal_reports') || '[]')
+    const updatedReports = storedReports.filter((r: any) => r.id !== id)
     setReports(updatedReports)
     localStorage.setItem('procurepal_reports', JSON.stringify(updatedReports))
     
@@ -290,29 +291,29 @@ export default function ReportsPage() {
               <div className="p-4 sm:p-8 space-y-5 bg-white" id="printable-report-content">
                 <div className="flex flex-col items-center border-b-2 border-slate-900 pb-4 text-center space-y-2">
                   <div className="flex items-center gap-2">
-                    <Milk className="h-6 w-6 text-primary" />
-                    <h1 className="text-lg sm:text-xl font-black uppercase tracking-tighter text-slate-900">PROCUREMENT NOTEBOOK</h1>
+                    <Milk className="h-8 w-8 text-primary" />
+                    <h1 className="text-xl sm:text-2xl font-black uppercase tracking-tighter text-slate-900">अधिनिर्णय अहवाल</h1>
                   </div>
-                  <div className="bg-slate-900 text-white px-4 py-1 rounded-full text-[8px] font-black uppercase tracking-[0.2em]">
+                  <div className="bg-primary text-white px-6 py-1 rounded-full text-[9px] font-black uppercase tracking-[0.2em] shadow-sm">
                     OFFICIAL WORK REPORT
                   </div>
                   <div className="grid grid-cols-3 w-full mt-3 text-[9px] font-black uppercase border-t border-slate-100 pt-4">
-                    <div className="flex flex-col text-left"><span className="text-slate-400 text-[7px] tracking-widest">AGENT:</span> {profileName || selectedReport.fullData?.name || 'N/A'}</div>
-                    <div className="flex flex-col text-center"><span className="text-slate-400 text-[7px] tracking-widest">DATE:</span> {selectedReport.date}</div>
-                    <div className="flex flex-col text-right"><span className="text-slate-400 text-[7px] tracking-widest">SHIFT:</span> {selectedReport.fullData?.shift || 'N/A'}</div>
+                    <div className="flex flex-col text-left"><span className="text-slate-400 text-[7px] tracking-widest">प्रतिनिधी:</span> <span className="text-primary">{profileName || selectedReport.fullData?.name || 'N/A'}</span></div>
+                    <div className="flex flex-col text-center"><span className="text-slate-400 text-[7px] tracking-widest">तारीख:</span> <span className="text-slate-900">{selectedReport.date}</span></div>
+                    <div className="flex flex-col text-right"><span className="text-slate-400 text-[7px] tracking-widest">शिफ्ट:</span> <span className="text-orange-600">{selectedReport.fullData?.shift || 'N/A'}</span></div>
                   </div>
                 </div>
 
                 {selectedReport.type === 'Route Visit' && (
                   <div className="space-y-3">
-                    <div className="grid grid-cols-4 gap-2 p-3 border rounded-xl bg-slate-50/50">
+                    <div className="grid grid-cols-4 gap-2 p-3 border rounded-xl bg-blue-50/30 border-blue-100">
                       <div><Label className="text-[7px] font-black uppercase text-slate-400">VEHICLE</Label><p className="text-[11px] font-black text-slate-900">{selectedReport.fullData?.vehicleNumber || '-'}</p></div>
                       <div><Label className="text-[7px] font-black uppercase text-slate-400">DISTANCE</Label><p className="text-[11px] font-black text-primary">{selectedReport.fullData?.totalKm || '0'} KM</p></div>
                       <div><Label className="text-[7px] font-black uppercase text-slate-400">TIME</Label><p className="text-[11px] font-black text-slate-900">{selectedReport.fullData?.routeOutTime || '-'}</p></div>
                       <div className="text-right"><Label className="text-[7px] font-black uppercase text-slate-400">SHORTAGE</Label><p className="text-[11px] font-black text-red-600">{selectedReport.fullData?.shortageLiters || '0'} L</p></div>
                     </div>
 
-                    <div className="border rounded-xl overflow-hidden border-slate-200 overflow-x-auto">
+                    <div className="border rounded-xl overflow-hidden border-slate-200 overflow-x-auto shadow-sm">
                       <table className="w-full text-[10px] border-collapse min-w-[300px]">
                         <thead className="bg-slate-900 text-white">
                           <tr className="uppercase font-black text-[8px] tracking-widest">
@@ -328,11 +329,11 @@ export default function ReportsPage() {
                               <td className="p-2 text-center font-bold text-slate-300">{idx + 1}</td>
                               <td className="p-2">
                                 <p className="font-black text-slate-900">{log.centerCode}</p>
-                                <p className="text-[8px] text-slate-400 font-bold uppercase truncate max-w-[80px]">{log.supplierName}</p>
+                                <p className="text-[8px] text-primary font-bold uppercase truncate max-w-[80px]">{log.supplierName}</p>
                               </td>
                               <td className="p-2 text-center font-black text-slate-700">{log.iceAllocated || '0'}</td>
                               <td className="p-2 text-center font-black">
-                                <span className="text-slate-400">E:</span>{log.emptyCans} <span className="mx-0.5 text-slate-200">|</span> <span className="text-primary">F:</span>{log.fullCans}
+                                <span className="text-slate-400">E:</span>{log.emptyCans} <span className="mx-0.5 text-slate-200">|</span> <span className="text-emerald-600">F:</span>{log.fullCans}
                               </td>
                             </tr>
                           ))}
@@ -344,15 +345,15 @@ export default function ReportsPage() {
 
                 {selectedReport.type === 'Breakdown' && (
                   <div className="space-y-4">
-                    <div className="grid grid-cols-2 gap-3 p-3 border rounded-xl bg-red-50/30">
-                      <div><Label className="text-[7px] font-black uppercase text-slate-400">ROUTE</Label><p className="text-[11px] font-black">{selectedReport.fullData?.routeName}</p></div>
+                    <div className="grid grid-cols-2 gap-3 p-3 border rounded-xl bg-red-50/30 border-red-100">
+                      <div><Label className="text-[7px] font-black uppercase text-slate-400">ROUTE</Label><p className="text-[11px] font-black text-red-700">{selectedReport.fullData?.routeName}</p></div>
                       <div><Label className="text-[7px] font-black uppercase text-slate-400">VEHICLE</Label><p className="text-[11px] font-black">{selectedReport.fullData?.vehicleNumber} ({selectedReport.fullData?.vehicleType})</p></div>
                       <div><Label className="text-[7px] font-black uppercase text-slate-400">LOCATION</Label><p className="text-[11px] font-black">{selectedReport.fullData?.location}</p></div>
                       <div><Label className="text-[7px] font-black uppercase text-slate-400">TOTAL LOSS</Label><p className="text-[11px] font-black text-red-600">₹{selectedReport.fullData?.totalLossAmount}</p></div>
                     </div>
-                    <div className="border rounded-xl overflow-hidden border-slate-200">
+                    <div className="border rounded-xl overflow-hidden border-red-100 shadow-sm">
                       <table className="w-full text-[10px] border-collapse">
-                        <thead className="bg-slate-900 text-white">
+                        <thead className="bg-red-600 text-white">
                           <tr className="uppercase font-black text-[8px] tracking-widest">
                             <th className="p-2 text-left">SUPPLIER</th>
                             <th className="p-2 text-center">BUF</th>
@@ -362,13 +363,13 @@ export default function ReportsPage() {
                         </thead>
                         <tbody>
                           {selectedReport.fullData?.losses?.map((loss: any, idx: number) => (
-                            <tr key={idx} className="border-b border-slate-100 last:border-0 odd:bg-white even:bg-slate-50/30">
+                            <tr key={idx} className="border-b border-red-50 last:border-0 odd:bg-white even:bg-red-50/20">
                               <td className="p-2">
                                 <p className="font-black text-slate-900">{loss.supplierCode}</p>
-                                <p className="text-[8px] text-slate-400 font-bold uppercase">{loss.supplierName}</p>
+                                <p className="text-[8px] text-red-500 font-bold uppercase">{loss.supplierName}</p>
                               </td>
-                              <td className="p-2 text-center font-black">{loss.bufMilkLossLiters}L</td>
-                              <td className="p-2 text-center font-black">{loss.cowMilkLossLiters}L</td>
+                              <td className="p-2 text-center font-black text-amber-700">{loss.bufMilkLossLiters}L</td>
+                              <td className="p-2 text-center font-black text-blue-700">{loss.cowMilkLossLiters}L</td>
                               <td className="p-2 text-right font-black text-red-600">₹{loss.lossAmount}</td>
                             </tr>
                           ))}
@@ -380,9 +381,9 @@ export default function ReportsPage() {
 
                 {(selectedReport.type === 'Field Visit' || selectedReport.type === 'Daily Office Work' || selectedReport.type === 'Daily Task') && (
                   <div className="p-4 border border-slate-200 rounded-xl bg-slate-50/30 space-y-2">
-                    <Label className="text-[8px] font-black uppercase text-slate-400 tracking-widest block border-b pb-1">OBSERVATIONS & NOTES</Label>
-                    <div className="bg-white p-3 rounded-lg border border-slate-100 min-h-[100px]">
-                      <p className="text-[11px] leading-relaxed whitespace-pre-wrap font-medium text-slate-800">
+                    <Label className="text-[8px] font-black uppercase text-primary tracking-widest block border-b border-primary/10 pb-1">निरीक्षण आणि टिप्पणी (OBSERVATIONS)</Label>
+                    <div className="bg-white p-3 rounded-lg border border-slate-100 min-h-[100px] shadow-inner">
+                      <p className="text-[11px] leading-relaxed whitespace-pre-wrap font-medium text-slate-800 italic">
                         {selectedReport.summary || "No data available."}
                       </p>
                     </div>
@@ -395,13 +396,13 @@ export default function ReportsPage() {
                       <div className="border-b border-slate-900 pb-1">
                         <span className="text-[10px] font-black text-slate-900">{profileName || '_________________'}</span>
                       </div>
-                      <span className="text-[7px] font-black uppercase text-slate-400 tracking-widest">AGENT SIGNATURE</span>
+                      <span className="text-[7px] font-black uppercase text-slate-400 tracking-widest">प्रतिनिधी स्वाक्षरी</span>
                     </div>
                     <div className="text-center flex-1 space-y-2">
                       <div className="border-b border-slate-900 pb-1">
                         <span className="text-[10px] font-black text-transparent">SIGNATURE</span>
                       </div>
-                      <span className="text-[7px] font-black uppercase text-slate-400 tracking-widest">SUPERVISOR SIGNATURE</span>
+                      <span className="text-[7px] font-black uppercase text-slate-400 tracking-widest">पर्यवेक्षक स्वाक्षरी</span>
                     </div>
                   </div>
                 </div>

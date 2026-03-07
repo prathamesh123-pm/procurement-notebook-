@@ -128,7 +128,14 @@ export default function CentersPage() {
       }
     }
 
-    const updated = dialogMode === 'add' ? [...centers, centerData] : centers.map(c => c.id === editingId ? centerData : c)
+    const allStored = JSON.parse(localStorage.getItem('procurepal_centers') || '[]')
+    let updated: CollectionCenter[]
+    if (dialogMode === 'add') {
+      updated = [...allStored, centerData]
+    } else {
+      updated = allStored.map((c: any) => c.id === editingId ? centerData : c)
+    }
+    
     setCenters(updated)
     localStorage.setItem('procurepal_centers', JSON.stringify(updated))
     if (selectedCenter?.id === centerData.id) setSelectedCenter(centerData)
@@ -139,9 +146,12 @@ export default function CentersPage() {
   const handleDeleteCenter = (e: React.MouseEvent, id: string) => {
     e.stopPropagation()
     if (!confirm("तुम्हाला खात्री आहे की हे केंद्र हटवायचे आहे?")) return
-    const updated = centers.filter(c => c.id !== id)
+    
+    const allStored = JSON.parse(localStorage.getItem('procurepal_centers') || '[]')
+    const updated = allStored.filter((c: any) => c.id !== id)
     setCenters(updated)
     localStorage.setItem('procurepal_centers', JSON.stringify(updated))
+    
     if (selectedCenter?.id === id) setSelectedCenter(null)
     toast({ title: "हटवले", description: "केंद्र काढून टाकले आहे." })
   }
