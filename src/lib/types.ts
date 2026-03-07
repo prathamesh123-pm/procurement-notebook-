@@ -58,6 +58,13 @@ export interface CollectionCenter {
   mobile: string;
   village: string;
   routeId?: string;
+  // Expanded metrics and logistics
+  cowMilk?: MilkMetrics;
+  buffaloMilk?: MilkMetrics;
+  iceBlocks?: number;
+  cattleFeedBrand?: string;
+  competition?: string;
+  additionalNotes?: string;
   material: CenterMaterial;
 }
 

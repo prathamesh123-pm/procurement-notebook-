@@ -8,7 +8,8 @@ import { Label } from "@/components/ui/label"
 import { 
   Warehouse, Plus, Search, MapPin, User, Phone, 
   Trash2, Edit, Scale, Thermometer, Laptop, 
-  Battery, Sun, Package, Info, ChevronRight, Hash
+  Battery, Sun, Package, Info, ChevronRight, Hash,
+  Milk, IceCream, Truck, MessageSquare
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
@@ -17,10 +18,10 @@ import { CollectionCenter, Route } from "@/lib/types"
 import { useToast } from "@/hooks/use-toast"
 import { Separator } from "@/components/ui/separator"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
 export default function CentersPage() {
   const [centers, setCenters] = useState<CollectionCenter[]>([])
-  const [routes, setRoutes] = useState<Route[]>([])
   const [searchQuery, setSearchQuery] = useState("")
   const [mounted, setMounted] = useState(false)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -30,7 +31,7 @@ export default function CentersPage() {
   
   const { toast } = useToast()
 
-  // Form State
+  // Expanded Form State
   const [formData, setFormData] = useState({
     name: "",
     code: "",
@@ -44,15 +45,21 @@ export default function CentersPage() {
     upsInverterAvailable: false,
     solarAvailable: false,
     chemicalsStock: "",
-    batteryCondition: ""
+    batteryCondition: "",
+    // Milk Metrics
+    cowQty: "0", cowFat: "0", cowSnf: "0",
+    bufQty: "0", bufFat: "0", bufSnf: "0",
+    // Logistics
+    iceBlocks: "0",
+    cattleFeedBrand: "",
+    competition: "",
+    additionalNotes: ""
   })
 
   useEffect(() => {
     setMounted(true)
     const storedCenters = JSON.parse(localStorage.getItem('procurepal_centers') || '[]')
-    const storedRoutes = JSON.parse(localStorage.getItem('procurepal_routes') || '[]')
     setCenters(storedCenters)
-    setRoutes(storedRoutes)
   }, [])
 
   const handleOpenAdd = () => {
@@ -62,7 +69,10 @@ export default function CentersPage() {
       name: "", code: "", operatorName: "", mobile: "", village: "",
       weighingScaleBrand: "", fatMachineBrand: "", milkCansCount: "0",
       computerAvailable: false, upsInverterAvailable: false, solarAvailable: false,
-      chemicalsStock: "", batteryCondition: ""
+      chemicalsStock: "", batteryCondition: "",
+      cowQty: "0", cowFat: "0", cowSnf: "0",
+      bufQty: "0", bufFat: "0", bufSnf: "0",
+      iceBlocks: "0", cattleFeedBrand: "", competition: "", additionalNotes: ""
     })
     setIsDialogOpen(true)
   }
@@ -83,7 +93,17 @@ export default function CentersPage() {
       upsInverterAvailable: !!center.material.upsInverterAvailable,
       solarAvailable: !!center.material.solarAvailable,
       chemicalsStock: center.material.chemicalsStock || "",
-      batteryCondition: center.material.batteryCondition || ""
+      batteryCondition: center.material.batteryCondition || "",
+      cowQty: String(center.cowMilk?.quantity || 0),
+      cowFat: String(center.cowMilk?.fat || 0),
+      cowSnf: String(center.cowMilk?.snf || 0),
+      bufQty: String(center.buffaloMilk?.quantity || 0),
+      bufFat: String(center.buffaloMilk?.fat || 0),
+      bufSnf: String(center.buffaloMilk?.snf || 0),
+      iceBlocks: String(center.iceBlocks || 0),
+      cattleFeedBrand: center.cattleFeedBrand || "",
+      competition: center.competition || "",
+      additionalNotes: center.additionalNotes || ""
     })
     setIsDialogOpen(true)
   }
@@ -101,6 +121,20 @@ export default function CentersPage() {
       operatorName: formData.operatorName,
       mobile: formData.mobile,
       village: formData.village,
+      cowMilk: {
+        quantity: Number(formData.cowQty),
+        fat: Number(formData.cowFat),
+        snf: Number(formData.cowSnf)
+      },
+      buffaloMilk: {
+        quantity: Number(formData.bufQty),
+        fat: Number(formData.bufFat),
+        snf: Number(formData.bufSnf)
+      },
+      iceBlocks: Number(formData.iceBlocks),
+      cattleFeedBrand: formData.cattleFeedBrand,
+      competition: formData.competition,
+      additionalNotes: formData.additionalNotes,
       material: {
         weighingScaleBrand: formData.weighingScaleBrand,
         fatMachineBrand: formData.fatMachineBrand,
@@ -152,7 +186,7 @@ export default function CentersPage() {
           <h2 className="text-3xl font-headline font-bold text-foreground flex items-center gap-3">
             <Warehouse className="h-8 w-8 text-primary" /> संकलन केंद्र (Collection Centers)
           </h2>
-          <p className="text-muted-foreground font-medium">केंद्राची माहिती आणि उपलब्ध साहित्याची नोंद ठेवा.</p>
+          <p className="text-muted-foreground font-medium">केंद्राची माहिती, मटेरिअल इन्व्हेंटरी आणि दूध संकलनाची नोंद.</p>
         </div>
         <Button onClick={handleOpenAdd} className="font-bold h-11 px-8 gap-2">
           <Plus className="h-5 w-5" /> केंद्र जोडा
@@ -161,7 +195,7 @@ export default function CentersPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* Left List */}
-        <Card className="lg:col-span-4 border-none shadow-sm bg-white overflow-hidden flex flex-col h-[700px]">
+        <Card className="lg:col-span-4 border-none shadow-sm bg-white overflow-hidden flex flex-col h-[750px]">
           <CardHeader className="p-4 border-b">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -201,116 +235,198 @@ export default function CentersPage() {
         </Card>
 
         {/* Right Details */}
-        <Card className="lg:col-span-8 border-none shadow-sm bg-white min-h-[700px]">
+        <Card className="lg:col-span-8 border-none shadow-sm bg-white min-h-[750px]">
           {selectedCenter ? (
-            <CardContent className="p-6 sm:p-10 space-y-10">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b pb-8">
-                <div className="space-y-2">
-                  <h3 className="text-3xl font-bold font-headline text-foreground tracking-tight">{selectedCenter.name}</h3>
-                  <div className="flex flex-wrap items-center gap-3">
-                    <Badge variant="outline" className="font-bold border-primary text-primary px-3">CODE: {selectedCenter.code}</Badge>
-                    <span className="text-sm font-bold text-muted-foreground flex items-center gap-1.5">
-                      <MapPin className="h-4 w-4 text-primary" /> {selectedCenter.village}
-                    </span>
+            <ScrollArea className="h-[750px]">
+              <CardContent className="p-6 sm:p-10 space-y-10">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b pb-8">
+                  <div className="space-y-2">
+                    <h3 className="text-3xl font-bold font-headline text-foreground tracking-tight">{selectedCenter.name}</h3>
+                    <div className="flex flex-wrap items-center gap-3">
+                      <Badge variant="outline" className="font-bold border-primary text-primary px-3">CODE: {selectedCenter.code}</Badge>
+                      <span className="text-sm font-bold text-muted-foreground flex items-center gap-1.5">
+                        <MapPin className="h-4 w-4 text-primary" /> {selectedCenter.village}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex gap-2 no-print">
+                    <Button variant="outline" size="sm" className="font-bold gap-2" onClick={() => handleOpenEdit(selectedCenter)}>
+                      <Edit className="h-4 w-4" /> Edit
+                    </Button>
+                    <Button variant="destructive" size="sm" className="font-bold gap-2" onClick={() => handleDeleteCenter(selectedCenter.id)}>
+                      <Trash2 className="h-4 w-4" /> Delete
+                    </Button>
                   </div>
                 </div>
-                <div className="flex gap-2 no-print">
-                  <Button variant="outline" size="sm" className="font-bold gap-2" onClick={() => handleOpenEdit(selectedCenter)}>
-                    <Edit className="h-4 w-4" /> Edit
-                  </Button>
-                  <Button variant="destructive" size="sm" className="font-bold gap-2" onClick={() => handleDeleteCenter(selectedCenter.id)}>
-                    <Trash2 className="h-4 w-4" /> Delete
-                  </Button>
-                </div>
-              </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                {/* Basic Info */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                  {/* Basic Info */}
+                  <div className="space-y-6">
+                    <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2">
+                      <User className="h-3.5 w-3.5" /> ऑपरेटर माहिती (Operator Info)
+                    </h4>
+                    <div className="space-y-4 bg-muted/20 p-5 rounded-xl border">
+                      <div className="flex items-center gap-4">
+                        <div className="p-2.5 rounded-full bg-primary/10">
+                          <User className="h-5 w-5 text-primary" />
+                        </div>
+                        <div>
+                          <Label className="text-[9px] uppercase font-bold text-muted-foreground">नाव (Operator Name)</Label>
+                          <p className="text-sm font-bold">{selectedCenter.operatorName || "N/A"}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <div className="p-2.5 rounded-full bg-primary/10">
+                          <Phone className="h-5 w-5 text-primary" />
+                        </div>
+                        <div>
+                          <Label className="text-[9px] uppercase font-bold text-muted-foreground">संपर्क (Contact)</Label>
+                          <p className="text-sm font-bold">{selectedCenter.mobile || "N/A"}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Material Summary */}
+                  <div className="space-y-6">
+                    <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2">
+                      <Package className="h-3.5 w-3.5" /> साहित्य सारांश (Material Summary)
+                    </h4>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className={`p-4 rounded-xl border flex flex-col items-center gap-2 text-center ${selectedCenter.material.computerAvailable ? 'bg-green-50 border-green-200' : 'bg-muted/30 opacity-60'}`}>
+                        <Laptop className={`h-6 w-6 ${selectedCenter.material.computerAvailable ? 'text-green-600' : 'text-muted-foreground'}`} />
+                        <span className="text-[10px] font-bold uppercase">Computer</span>
+                      </div>
+                      <div className={`p-4 rounded-xl border flex flex-col items-center gap-2 text-center ${selectedCenter.material.upsInverterAvailable ? 'bg-green-50 border-green-200' : 'bg-muted/30 opacity-60'}`}>
+                        <Battery className={`h-6 w-6 ${selectedCenter.material.upsInverterAvailable ? 'text-green-600' : 'text-muted-foreground'}`} />
+                        <span className="text-[10px] font-bold uppercase">Inverter</span>
+                      </div>
+                      <div className={`p-4 rounded-xl border flex flex-col items-center gap-2 text-center ${selectedCenter.material.solarAvailable ? 'bg-green-50 border-green-200' : 'bg-muted/30 opacity-60'}`}>
+                        <Sun className={`h-6 w-6 ${selectedCenter.material.solarAvailable ? 'text-green-600' : 'text-muted-foreground'}`} />
+                        <span className="text-[10px] font-bold uppercase">Solar</span>
+                      </div>
+                      <div className="p-4 rounded-xl border bg-blue-50 border-blue-200 flex flex-col items-center gap-2 text-center">
+                        <Package className="h-6 w-6 text-blue-600" />
+                        <span className="text-[10px] font-bold uppercase">{selectedCenter.material.milkCansCount || 0} Cans</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Milk Metrics Section */}
                 <div className="space-y-6">
                   <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2">
-                    <User className="h-3.5 w-3.5" /> ऑपरेटर माहिती (Operator Info)
+                    <Milk className="h-3.5 w-3.5" /> दूध संकलन आकडेवारी (Milk Metrics)
                   </h4>
-                  <div className="space-y-4 bg-muted/20 p-5 rounded-xl border">
-                    <div className="flex items-center gap-4">
-                      <div className="p-2.5 rounded-full bg-primary/10">
-                        <User className="h-5 w-5 text-primary" />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="border rounded-xl overflow-hidden shadow-sm">
+                      <div className="bg-primary/5 p-2 px-4 border-b font-bold text-[10px] uppercase flex items-center gap-2">
+                        <Milk className="h-3 w-3 text-primary" /> Cow Milk (गाय दूध)
                       </div>
-                      <div>
-                        <Label className="text-[9px] uppercase font-bold text-muted-foreground">नाव (Operator Name)</Label>
-                        <p className="text-sm font-bold">{selectedCenter.operatorName || "N/A"}</p>
-                      </div>
+                      <Table>
+                        <TableBody>
+                          <TableRow>
+                            <TableCell className="py-2 text-xs font-bold text-muted-foreground uppercase">Quantity</TableCell>
+                            <TableCell className="py-2 text-sm font-bold">{selectedCenter.cowMilk?.quantity || 0} L</TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableCell className="py-2 text-xs font-bold text-muted-foreground uppercase">Avg FAT</TableCell>
+                            <TableCell className="py-2 text-sm font-bold">{selectedCenter.cowMilk?.fat || 0} %</TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableCell className="py-2 text-xs font-bold text-muted-foreground uppercase">Avg SNF</TableCell>
+                            <TableCell className="py-2 text-sm font-bold">{selectedCenter.cowMilk?.snf || 0} %</TableCell>
+                          </TableRow>
+                        </TableBody>
+                      </Table>
                     </div>
-                    <div className="flex items-center gap-4">
-                      <div className="p-2.5 rounded-full bg-primary/10">
-                        <Phone className="h-5 w-5 text-primary" />
+                    <div className="border rounded-xl overflow-hidden shadow-sm">
+                      <div className="bg-amber-50 p-2 px-4 border-b font-bold text-[10px] uppercase flex items-center gap-2 text-amber-700">
+                        <Milk className="h-3 w-3" /> Buffalo Milk (म्हैस दूध)
                       </div>
-                      <div>
-                        <Label className="text-[9px] uppercase font-bold text-muted-foreground">संपर्क (Contact)</Label>
-                        <p className="text-sm font-bold">{selectedCenter.mobile || "N/A"}</p>
-                      </div>
+                      <Table>
+                        <TableBody>
+                          <TableRow>
+                            <TableCell className="py-2 text-xs font-bold text-muted-foreground uppercase">Quantity</TableCell>
+                            <TableCell className="py-2 text-sm font-bold text-amber-900">{selectedCenter.buffaloMilk?.quantity || 0} L</TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableCell className="py-2 text-xs font-bold text-muted-foreground uppercase">Avg FAT</TableCell>
+                            <TableCell className="py-2 text-sm font-bold text-amber-900">{selectedCenter.buffaloMilk?.fat || 0} %</TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableCell className="py-2 text-xs font-bold text-muted-foreground uppercase">Avg SNF</TableCell>
+                            <TableCell className="py-2 text-sm font-bold text-amber-900">{selectedCenter.buffaloMilk?.snf || 0} %</TableCell>
+                          </TableRow>
+                        </TableBody>
+                      </Table>
                     </div>
                   </div>
                 </div>
 
-                {/* Material Summary */}
+                {/* Logistics & Competition */}
                 <div className="space-y-6">
                   <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2">
-                    <Package className="h-3.5 w-3.5" /> साहित्य सारांश (Material Summary)
+                    <Truck className="h-3.5 w-3.5" /> ऑपरेशन आणि लॉजिस्टिक (Logistics)
                   </h4>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className={`p-4 rounded-xl border flex flex-col items-center gap-2 text-center ${selectedCenter.material.computerAvailable ? 'bg-green-50 border-green-200' : 'bg-muted/30 opacity-60'}`}>
-                      <Laptop className={`h-6 w-6 ${selectedCenter.material.computerAvailable ? 'text-green-600' : 'text-muted-foreground'}`} />
-                      <span className="text-[10px] font-bold uppercase">Computer</span>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-4">
+                      <div className="p-4 border rounded-xl flex items-center justify-between">
+                        <span className="text-xs font-bold text-muted-foreground uppercase flex items-center gap-2"><IceCream className="h-4 w-4" /> बर्फाचे प्रमाण (Ice Blocks)</span>
+                        <Badge variant="secondary" className="font-bold text-lg">{selectedCenter.iceBlocks || 0}</Badge>
+                      </div>
+                      <div className="p-4 border rounded-xl flex items-center justify-between">
+                        <span className="text-xs font-bold text-muted-foreground uppercase flex items-center gap-2"><Package className="h-4 w-4" /> पशुखाद्य ब्रँड (Cattle Feed)</span>
+                        <span className="text-sm font-bold">{selectedCenter.cattleFeedBrand || "N/A"}</span>
+                      </div>
                     </div>
-                    <div className={`p-4 rounded-xl border flex flex-col items-center gap-2 text-center ${selectedCenter.material.upsInverterAvailable ? 'bg-green-50 border-green-200' : 'bg-muted/30 opacity-60'}`}>
-                      <Battery className={`h-6 w-6 ${selectedCenter.material.upsInverterAvailable ? 'text-green-600' : 'text-muted-foreground'}`} />
-                      <span className="text-[10px] font-bold uppercase">Inverter</span>
+                    <div className="space-y-4">
+                      <div className="p-4 border rounded-xl space-y-2">
+                        <span className="text-xs font-bold text-muted-foreground uppercase flex items-center gap-2"><Info className="h-4 w-4" /> गाव स्पर्धा (Competition)</span>
+                        <p className="text-sm font-semibold italic">{selectedCenter.competition || "No data"}</p>
+                      </div>
                     </div>
-                    <div className={`p-4 rounded-xl border flex flex-col items-center gap-2 text-center ${selectedCenter.material.solarAvailable ? 'bg-green-50 border-green-200' : 'bg-muted/30 opacity-60'}`}>
-                      <Sun className={`h-6 w-6 ${selectedCenter.material.solarAvailable ? 'text-green-600' : 'text-muted-foreground'}`} />
-                      <span className="text-[10px] font-bold uppercase">Solar</span>
+                  </div>
+                  <div className="p-4 border rounded-xl bg-muted/5 space-y-2">
+                    <span className="text-xs font-bold text-muted-foreground uppercase flex items-center gap-2"><MessageSquare className="h-4 w-4" /> अतिरिक्त टिप्पणी (Additional Notes)</span>
+                    <p className="text-sm italic">{selectedCenter.additionalNotes || "कोणतीही टीप नाही."}</p>
+                  </div>
+                </div>
+
+                <Separator />
+
+                {/* Detailed Material Info */}
+                <div className="space-y-6">
+                  <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">मटेरिअल तपशील (Detailed Material Info)</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-4">
+                      <div className="p-4 border rounded-xl space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-bold text-muted-foreground uppercase flex items-center gap-2"><Scale className="h-4 w-4" /> वजन काटा ब्रँड (Scale)</span>
+                          <Badge>{selectedCenter.material.weighingScaleBrand || "N/A"}</Badge>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-bold text-muted-foreground uppercase flex items-center gap-2"><Thermometer className="h-4 w-4" /> फॅट मशीन ब्रँड (Fat Machine)</span>
+                          <Badge variant="secondary">{selectedCenter.material.fatMachineBrand || "N/A"}</Badge>
+                        </div>
+                      </div>
                     </div>
-                    <div className="p-4 rounded-xl border bg-blue-50 border-blue-200 flex flex-col items-center gap-2 text-center">
-                      <Package className="h-6 w-6 text-blue-600" />
-                      <span className="text-[10px] font-bold uppercase">{selectedCenter.material.milkCansCount || 0} Cans</span>
+                    <div className="space-y-4">
+                      <div className="p-4 border rounded-xl space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-bold text-muted-foreground uppercase flex items-center gap-2"><Info className="h-4 w-4" /> केमिकल स्टॉक (Chemicals)</span>
+                          <span className="text-sm font-bold">{selectedCenter.material.chemicalsStock || "N/A"}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-bold text-muted-foreground uppercase flex items-center gap-2"><Battery className="h-4 w-4" /> बॅटरी कंडिशन (Battery)</span>
+                          <span className="text-sm font-bold">{selectedCenter.material.batteryCondition || "N/A"}</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-
-              <Separator />
-
-              {/* Detailed Material Info */}
-              <div className="space-y-6">
-                <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">मटेरिअल तपशील (Detailed Material Info)</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-4">
-                    <div className="p-4 border rounded-xl space-y-3">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold text-muted-foreground uppercase flex items-center gap-2"><Scale className="h-4 w-4" /> वजन काटा (Scale)</span>
-                        <Badge>{selectedCenter.material.weighingScaleBrand || "N/A"}</Badge>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold text-muted-foreground uppercase flex items-center gap-2"><Thermometer className="h-4 w-4" /> फॅट मशीन (Fat Machine)</span>
-                        <Badge variant="secondary">{selectedCenter.material.fatMachineBrand || "N/A"}</Badge>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="space-y-4">
-                    <div className="p-4 border rounded-xl space-y-3">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold text-muted-foreground uppercase flex items-center gap-2"><Info className="h-4 w-4" /> केमिकल स्टॉक (Chemicals)</span>
-                        <span className="text-sm font-bold">{selectedCenter.material.chemicalsStock || "N/A"}</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold text-muted-foreground uppercase flex items-center gap-2"><Battery className="h-4 w-4" /> बॅटरी कंडिशन (Battery)</span>
-                        <span className="text-sm font-bold">{selectedCenter.material.batteryCondition || "N/A"}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
+              </CardContent>
+            </ScrollArea>
           ) : (
             <div className="flex flex-col items-center justify-center h-full p-12 text-center gap-5">
               <div className="p-8 rounded-full bg-muted/20">
@@ -318,7 +434,7 @@ export default function CentersPage() {
               </div>
               <div className="space-y-2">
                 <h4 className="text-xl font-bold text-foreground">केंद्र निवडा (Select Center)</h4>
-                <p className="text-sm text-muted-foreground max-w-xs mx-auto">मटेरिअल आणि केंद्राची माहिती पाहण्यासाठी डावीकडील यादीतून एक केंद्र निवडा.</p>
+                <p className="text-sm text-muted-foreground max-w-xs mx-auto">मटेरिअल आणि दूध संकलनाची माहिती पाहण्यासाठी डावीकडील यादीतून एक केंद्र निवडा.</p>
               </div>
               <Button onClick={handleOpenAdd} variant="outline" className="font-bold border-primary text-primary">
                 नवीन केंद्र जोडा
@@ -330,18 +446,18 @@ export default function CentersPage() {
 
       {/* Add/Edit Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-hidden flex flex-col p-0 bg-white">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col p-0 bg-white">
           <DialogHeader className="p-6 bg-primary/5 border-b">
             <DialogTitle className="text-xl font-bold font-headline">{dialogMode === 'add' ? 'नवीन केंद्र जोडा' : 'केंद्राची माहिती अपडेट करा'}</DialogTitle>
-            <DialogDescription className="font-medium">केंद्राचा तपशील आणि मटेरिअल इन्व्हेंटरी भरा.</DialogDescription>
+            <DialogDescription className="font-medium">केंद्राचा तपशील, दूध आकडेवारी आणि मटेरिअल इन्व्हेंटरी भरा.</DialogDescription>
           </DialogHeader>
           
           <ScrollArea className="flex-1 p-6">
-            <div className="space-y-8">
+            <div className="space-y-10">
               {/* Section 1: Basic Info */}
               <div className="space-y-5">
-                <h4 className="text-[10px] font-bold uppercase tracking-widest text-primary flex items-center gap-2">
-                   <Info className="h-3.5 w-3.5" /> १) केंद्राची प्राथमिक माहिती
+                <h4 className="text-[11px] font-bold uppercase tracking-widest text-primary flex items-center gap-2">
+                   <Info className="h-4 w-4" /> १) केंद्राची प्राथमिक माहिती
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
@@ -369,51 +485,116 @@ export default function CentersPage() {
 
               <Separator />
 
-              {/* Section 2: Materials */}
+              {/* Section 2: Milk Metrics */}
               <div className="space-y-5">
-                <h4 className="text-[10px] font-bold uppercase tracking-widest text-primary flex items-center gap-2">
-                   <Package className="h-3.5 w-3.5" /> २) मटेरिअल तपशील (Material List)
+                <h4 className="text-[11px] font-bold uppercase tracking-widest text-primary flex items-center gap-2">
+                   <Milk className="h-4 w-4" /> २) दूध संकलन सरांश (Milk Metrics)
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="space-y-4 p-4 border rounded-xl bg-blue-50/30">
+                    <Label className="text-xs font-bold uppercase text-primary">गाय दूध (Cow Milk)</Label>
+                    <div className="grid grid-cols-3 gap-3">
+                      <div className="space-y-1.5">
+                        <Label className="text-[10px] uppercase font-bold text-muted-foreground">Qty (L)</Label>
+                        <Input type="number" step="0.1" value={formData.cowQty} onChange={e => setFormData({...formData, cowQty: e.target.value})} className="bg-white" />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label className="text-[10px] uppercase font-bold text-muted-foreground">Fat (%)</Label>
+                        <Input type="number" step="0.1" value={formData.cowFat} onChange={e => setFormData({...formData, cowFat: e.target.value})} className="bg-white" />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label className="text-[10px] uppercase font-bold text-muted-foreground">SNF (%)</Label>
+                        <Input type="number" step="0.1" value={formData.cowSnf} onChange={e => setFormData({...formData, cowSnf: e.target.value})} className="bg-white" />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="space-y-4 p-4 border rounded-xl bg-amber-50/30">
+                    <Label className="text-xs font-bold uppercase text-amber-700">म्हैस दूध (Buffalo Milk)</Label>
+                    <div className="grid grid-cols-3 gap-3">
+                      <div className="space-y-1.5">
+                        <Label className="text-[10px] uppercase font-bold text-muted-foreground">Qty (L)</Label>
+                        <Input type="number" step="0.1" value={formData.bufQty} onChange={e => setFormData({...formData, bufQty: e.target.value})} className="bg-white" />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label className="text-[10px] uppercase font-bold text-muted-foreground">Fat (%)</Label>
+                        <Input type="number" step="0.1" value={formData.bufFat} onChange={e => setFormData({...formData, bufFat: e.target.value})} className="bg-white" />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label className="text-[10px] uppercase font-bold text-muted-foreground">SNF (%)</Label>
+                        <Input type="number" step="0.1" value={formData.bufSnf} onChange={e => setFormData({...formData, bufSnf: e.target.value})} className="bg-white" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <Separator />
+
+              {/* Section 3: Materials & Equipment */}
+              <div className="space-y-5">
+                <h4 className="text-[11px] font-bold uppercase tracking-widest text-primary flex items-center gap-2">
+                   <Package className="h-4 w-4" /> ३) मटेरिअल आणि साहित्य (Equipment List)
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-4">
                     <div className="space-y-2">
-                      <Label className="text-xs font-bold uppercase flex items-center gap-2"><Scale className="h-3.5 w-3.5" /> वजन काटा ब्रँड</Label>
-                      <Input placeholder="उदा. Essae, Avery" value={formData.weighingScaleBrand} onChange={e => setFormData({...formData, weighingScaleBrand: e.target.value})} className="h-9 bg-muted/20" />
+                      <Label className="text-xs font-bold uppercase flex items-center gap-2"><Scale className="h-4 w-4" /> वजन काटा ब्रँड</Label>
+                      <Input placeholder="उदा. Essae, Avery" value={formData.weighingScaleBrand} onChange={e => setFormData({...formData, weighingScaleBrand: e.target.value})} className="h-10 bg-muted/20" />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-xs font-bold uppercase flex items-center gap-2"><Thermometer className="h-3.5 w-3.5" /> फॅट मशीन ब्रँड</Label>
-                      <Input placeholder="उदा. Milkotester" value={formData.fatMachineBrand} onChange={e => setFormData({...formData, fatMachineBrand: e.target.value})} className="h-9 bg-muted/20" />
+                      <Label className="text-xs font-bold uppercase flex items-center gap-2"><Thermometer className="h-4 w-4" /> फॅट मशीन ब्रँड</Label>
+                      <Input placeholder="उदा. Milkotester" value={formData.fatMachineBrand} onChange={e => setFormData({...formData, fatMachineBrand: e.target.value})} className="h-10 bg-muted/20" />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-xs font-bold uppercase flex items-center gap-2"><Package className="h-3.5 w-3.5" /> कॅन्सची संख्या (Milk Cans)</Label>
-                      <Input type="number" value={formData.milkCansCount} onChange={e => setFormData({...formData, milkCansCount: e.target.value})} className="h-9 bg-muted/20" />
+                      <Label className="text-xs font-bold uppercase flex items-center gap-2"><Package className="h-4 w-4" /> कॅन्सची संख्या (Milk Cans)</Label>
+                      <Input type="number" value={formData.milkCansCount} onChange={e => setFormData({...formData, milkCansCount: e.target.value})} className="h-10 bg-muted/20" />
                     </div>
                   </div>
                   
-                  <div className="space-y-5 pt-2">
-                    <div className="flex items-center space-x-3 p-3 rounded-lg bg-muted/20">
+                  <div className="space-y-4 pt-1">
+                    <div className="flex items-center space-x-3 p-3 rounded-lg bg-muted/10 border">
                       <Checkbox id="comp" checked={formData.computerAvailable} onCheckedChange={(v) => setFormData({...formData, computerAvailable: !!v})} />
                       <Label htmlFor="comp" className="text-xs font-bold cursor-pointer flex items-center gap-2"><Laptop className="h-4 w-4" /> कॉम्प्युटर उपलब्ध आहे?</Label>
                     </div>
-                    <div className="flex items-center space-x-3 p-3 rounded-lg bg-muted/20">
+                    <div className="flex items-center space-x-3 p-3 rounded-lg bg-muted/10 border">
                       <Checkbox id="ups" checked={formData.upsInverterAvailable} onCheckedChange={(v) => setFormData({...formData, upsInverterAvailable: !!v})} />
                       <Label htmlFor="ups" className="text-xs font-bold cursor-pointer flex items-center gap-2"><Battery className="h-4 w-4" /> इन्व्हर्टर/UPS उपलब्ध आहे?</Label>
                     </div>
-                    <div className="flex items-center space-x-3 p-3 rounded-lg bg-muted/20">
+                    <div className="flex items-center space-x-3 p-3 rounded-lg bg-muted/10 border">
                       <Checkbox id="solar" checked={formData.solarAvailable} onCheckedChange={(v) => setFormData({...formData, solarAvailable: !!v})} />
                       <Label htmlFor="solar" className="text-xs font-bold cursor-pointer flex items-center gap-2"><Sun className="h-4 w-4" /> सोलर प्लेट उपलब्ध आहे?</Label>
                     </div>
                   </div>
                 </div>
+              </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label className="text-xs font-bold uppercase">केमिकल स्टॉक स्थिती</Label>
-                    <Input placeholder="उदा. ५ लिटर उपलब्ध" value={formData.chemicalsStock} onChange={e => setFormData({...formData, chemicalsStock: e.target.value})} className="h-9 bg-muted/20" />
+              <Separator />
+
+              {/* Section 4: Logistics & Notes */}
+              <div className="space-y-5">
+                <h4 className="text-[11px] font-bold uppercase tracking-widest text-primary flex items-center gap-2">
+                   <Truck className="h-4 w-4" /> ४) लॉजिस्टिक आणि गाव माहिती (Logistics)
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label className="text-xs font-bold uppercase flex items-center gap-2"><IceCream className="h-4 w-4" /> बर्फाचे प्रमाण (Ice Blocks)</Label>
+                      <Input type="number" value={formData.iceBlocks} onChange={e => setFormData({...formData, iceBlocks: e.target.value})} className="h-10 bg-muted/20" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-xs font-bold uppercase flex items-center gap-2"><Truck className="h-4 w-4" /> पशुखाद्य ब्रँड (Cattle Feed)</Label>
+                      <Input placeholder="उदा. कपिला, गोदरेज" value={formData.cattleFeedBrand} onChange={e => setFormData({...formData, cattleFeedBrand: e.target.value})} className="h-10 bg-muted/20" />
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label className="text-xs font-bold uppercase">बॅटरी कंडिशन</Label>
-                    <Input placeholder="उदा. चांगली, जुनी" value={formData.batteryCondition} onChange={e => setFormData({...formData, batteryCondition: e.target.value})} className="h-9 bg-muted/20" />
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label className="text-xs font-bold uppercase">गाव स्पर्धा (Competition)</Label>
+                      <Input placeholder="इतर स्थानिक डेअरी सेंटर्स" value={formData.competition} onChange={e => setFormData({...formData, competition: e.target.value})} className="h-10 bg-muted/20" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-xs font-bold uppercase">अतिरिक्त टिप्पणी (Notes)</Label>
+                      <Input placeholder="काही विशेष माहिती..." value={formData.additionalNotes} onChange={e => setFormData({...formData, additionalNotes: e.target.value})} className="h-10 bg-muted/20" />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -421,8 +602,8 @@ export default function CentersPage() {
           </ScrollArea>
 
           <DialogFooter className="p-6 border-t bg-muted/5 gap-3">
-            <Button variant="outline" onClick={() => setIsDialogOpen(false)} className="font-bold h-10 px-8">रद्द करा</Button>
-            <Button onClick={handleSaveCenter} className="font-bold h-10 px-10 shadow-sm">माहिती जतन करा</Button>
+            <Button variant="outline" onClick={() => setIsDialogOpen(false)} className="font-bold h-11 px-8">रद्द करा</Button>
+            <Button onClick={handleSaveCenter} className="font-bold h-11 px-12 shadow-md">माहिती जतन करा</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
