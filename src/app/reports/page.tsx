@@ -33,7 +33,7 @@ export default function ReportsPage() {
     const stored = JSON.parse(localStorage.getItem('procurepal_reports') || '[]')
     setReports(stored)
     
-    // Get profile name for signature from correctly stored key
+    // Get profile name for signature
     const savedName = localStorage.getItem('procurenote_user_name') || ""
     setProfileName(savedName)
   }, [])
@@ -212,6 +212,7 @@ export default function ReportsPage() {
           <ScrollArea className="flex-grow">
             {selectedReport && (
               <div className="p-10 space-y-8 bg-white" id="printable-report-content">
+                {/* Document Header */}
                 <div className="flex flex-col items-center border-b-4 border-black pb-6 text-center space-y-2">
                   <h1 className="text-2xl font-black uppercase tracking-tighter">PROCUREMENT NOTEBOOK</h1>
                   <h2 className="text-lg font-bold text-gray-800">संकलन विभाग - दैनिक कामकाज अहवाल ({selectedReport.type})</h2>
@@ -222,6 +223,7 @@ export default function ReportsPage() {
                   </div>
                 </div>
 
+                {/* Route Visit Specific Section */}
                 {selectedReport.type === 'Route Visit' && (
                   <div className="space-y-6">
                     <div className="grid grid-cols-4 lg:grid-cols-6 gap-4 p-5 border-2 border-black rounded-2xl bg-gray-50/50">
@@ -280,6 +282,7 @@ export default function ReportsPage() {
                   </div>
                 )}
 
+                {/* Daily Task Specific Section */}
                 {selectedReport.type === 'Daily Task' && (
                   <div className="space-y-6">
                     <div className="p-6 border-2 border-black rounded-3xl bg-gray-50 space-y-6">
@@ -310,6 +313,7 @@ export default function ReportsPage() {
                   </div>
                 )}
 
+                {/* Field Visit & Office Work Common Layout */}
                 {(selectedReport.type === 'Field Visit' || selectedReport.type === 'Daily Office Work') && (
                   <div className="p-8 border-2 border-black rounded-3xl bg-gray-50/50 min-h-[300px] shadow-inner">
                     <Label className="text-[11px] font-black uppercase mb-4 block text-gray-500 tracking-widest">अहवाल सविस्तर माहिती (Detailed Report)</Label>
@@ -323,6 +327,7 @@ export default function ReportsPage() {
                   </div>
                 )}
 
+                {/* Signature Section */}
                 <div className="pt-24 pb-10">
                   <div className="flex justify-between items-end">
                     <div className="text-center min-w-[200px] space-y-3">
