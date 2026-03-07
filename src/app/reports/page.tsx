@@ -71,12 +71,18 @@ export default function ReportsPage() {
   }
 
   const handleDelete = (id: any) => {
-    if (!confirm("तुम्हाला हा रिपोर्ट कायमचा हटवायचा आहे का?")) return
+    if (!id) return
+    const confirmDelete = window.confirm("तुम्हाला हा रिपोर्ट कायमचा हटवायचा आहे का?")
+    if (!confirmDelete) return
     
+    // Get latest data from localStorage to ensure we're filtering correctly
     const storedReports = JSON.parse(localStorage.getItem('procurepal_reports') || '[]')
     const updatedReports = storedReports.filter((r: any) => String(r.id) !== String(id))
     
+    // Update Storage
     localStorage.setItem('procurepal_reports', JSON.stringify(updatedReports))
+    
+    // Update Local State
     setReports(updatedReports)
     
     // Also cleanup related breakdowns if any
@@ -84,6 +90,7 @@ export default function ReportsPage() {
     const updatedBreakdowns = storedBreakdowns.filter((b: any) => String(b.id) !== String(id))
     localStorage.setItem('procurepal_breakdowns', JSON.stringify(updatedBreakdowns))
 
+    // Close Dialogs if open
     if (selectedReport?.id === id) {
       setIsViewOpen(false)
       setSelectedReport(null)
@@ -206,7 +213,11 @@ export default function ReportsPage() {
                         variant="ghost" 
                         size="icon" 
                         className="h-8 w-8 text-destructive rounded-full hover:bg-red-50" 
-                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleDelete(report.id); }}
+                        onClick={(e) => { 
+                          e.preventDefault(); 
+                          e.stopPropagation(); 
+                          handleDelete(report.id); 
+                        }}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>

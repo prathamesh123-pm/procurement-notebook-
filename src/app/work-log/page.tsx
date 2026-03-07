@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect } from "react"
@@ -31,10 +32,13 @@ export default function WorkLogPage() {
   }, [])
 
   const saveTasks = (updatedTasks: Task[]) => {
-    setTasks(updatedTasks)
+    // Save only pending tasks to the local state
+    setTasks(updatedTasks.filter(t => t.status === 'pending'))
+    
+    // Master data needs to include both completed and pending
     const allStored = JSON.parse(localStorage.getItem('procurepal_tasks') || '[]')
     const completedTasks = allStored.filter((t: any) => t.status === 'completed')
-    localStorage.setItem('procurepal_tasks', JSON.stringify([...updatedTasks, ...completedTasks]))
+    localStorage.setItem('procurepal_tasks', JSON.stringify([...updatedTasks.filter(t => t.status === 'pending'), ...completedTasks]))
   }
 
   const addTask = () => {
@@ -59,8 +63,9 @@ export default function WorkLogPage() {
   const completeTask = (taskId: string) => {
     const task = tasks.find(t => t.id === taskId)
     if (!task) return
-    const updated = tasks.filter(t => t.id !== taskId)
-    saveTasks(updated)
+    
+    const updatedPending = tasks.filter(t => t.id !== taskId)
+    setTasks(updatedPending)
     
     // Add to reports
     const storedReports = JSON.parse(localStorage.getItem('procurepal_reports') || '[]')
@@ -83,12 +88,16 @@ export default function WorkLogPage() {
   }
 
   const deleteTask = (e: React.MouseEvent, taskId: string) => {
+    e.preventDefault()
     e.stopPropagation()
-    if (!confirm("हा टास्क कायमचा हटवायचा आहे का?")) return
+    const confirmDelete = window.confirm("हा टास्क कायमचा हटवायचा आहे का?")
+    if (!confirmDelete) return
     
-    const updated = tasks.filter(t => t.id !== taskId)
-    setTasks(updated)
+    // Filter out from local state
+    const updatedPending = tasks.filter(t => String(t.id) !== String(taskId))
+    setTasks(updatedPending)
     
+    // Filter out from master localStorage
     const allStored = JSON.parse(localStorage.getItem('procurepal_tasks') || '[]')
     const updatedMaster = allStored.filter((t: any) => String(t.id) !== String(taskId))
     localStorage.setItem('procurepal_tasks', JSON.stringify(updatedMaster))
