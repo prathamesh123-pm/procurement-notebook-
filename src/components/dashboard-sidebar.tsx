@@ -35,12 +35,7 @@ const items = [
     icon: ListTodo,
   },
   {
-    title: "वाहन ब्रेकडाऊन (Breakdown)",
-    url: "/routes/breakdown",
-    icon: AlertTriangle,
-  },
-  {
-    title: "केंद्र (Centers)",
+    title: "संकलन केंद्र (Centers)",
     url: "/centers",
     icon: Warehouse,
   },
