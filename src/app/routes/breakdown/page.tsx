@@ -110,8 +110,8 @@ export default function BreakdownPage() {
       fullData: { ...formData, totalLossAmount: totalLoss, date: reportDate }
     }
 
-    const updatedReports = storedReports.filter((r: any) => r.id !== recordIdForReport);
-    localStorage.setItem('procurepal_reports', JSON.stringify([reportData, ...updatedReports]))
+    const updatedReports = [reportData, ...storedReports.filter((r: any) => r.id !== recordIdForReport)];
+    localStorage.setItem('procurepal_reports', JSON.stringify(updatedReports))
 
     resetForm()
   }
@@ -139,17 +139,18 @@ export default function BreakdownPage() {
   }
 
   const handleDeleteRecord = (id: string) => {
-    if (!confirm("हा रेकॉर्ड हटवायचा आहे का?")) return
+    if (!confirm("हा रेकॉर्ड कायमचा हटवायचा आहे का?")) return
     const updated = records.filter(r => r.id !== id)
     setRecords(updated)
     localStorage.setItem('procurepal_breakdowns', JSON.stringify(updated))
     
+    // Also remove from reports
     const storedReports = JSON.parse(localStorage.getItem('procurepal_reports') || '[]')
     const updatedReports = storedReports.filter((r: any) => r.id !== id)
     localStorage.setItem('procurepal_reports', JSON.stringify(updatedReports))
 
     if (editingId === id) resetForm()
-    toast({ title: "हटवले", description: "रेकॉर्ड काढून टाकला आहे." })
+    toast({ title: "हटवले", description: "रेकॉर्ड आणि संबंधित अहवाल काढून टाकला आहे." })
   }
 
   if (!mounted) return null

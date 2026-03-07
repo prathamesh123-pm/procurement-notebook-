@@ -7,15 +7,16 @@ import { Card, CardContent } from "@/components/ui/card"
 import { 
   Archive, Calendar, FileText, ClipboardList, 
   Briefcase, ListTodo, Truck, Download, Trash2, 
-  Eye, User, Printer, X, Milk, ChevronDown, FileDown
+  Eye, User, Printer, X, Milk, ChevronDown, FileDown, Edit
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { ReportType } from "@/lib/types"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
 
 export default function ReportsPage() {
   const [reports, setReports] = useState<any[]>([])
@@ -27,6 +28,9 @@ export default function ReportsPage() {
 
   const [selectedReport, setSelectedReport] = useState<any | null>(null)
   const [isViewOpen, setIsViewOpen] = useState(false)
+  
+  const [isEditOpen, setIsEditOpen] = useState(false)
+  const [editData, setEditData] = useState({ id: "", summary: "" })
 
   useEffect(() => {
     setMounted(true)
@@ -67,11 +71,24 @@ export default function ReportsPage() {
   }
 
   const handleDelete = (id: string) => {
-    if (!confirm("तुम्हाला हा रिपोर्ट हटवायचा आहे का?")) return
+    if (!confirm("तुम्हाला हा रिपोर्ट कायमचा हटवायचा आहे का?")) return
     const updated = reports.filter(r => r.id !== id)
     setReports(updated)
     localStorage.setItem('procurepal_reports', JSON.stringify(updated))
     toast({ title: "अहवाल हटवला", description: "माहिती यशस्वीरित्या काढून टाकली आहे." })
+  }
+
+  const handleEditClick = (report: any) => {
+    setEditData({ id: report.id, summary: report.summary })
+    setIsEditOpen(true)
+  }
+
+  const handleSaveEdit = () => {
+    const updated = reports.map(r => r.id === editData.id ? { ...r, summary: editData.summary } : r)
+    setReports(updated)
+    localStorage.setItem('procurepal_reports', JSON.stringify(updated))
+    setIsEditOpen(false)
+    toast({ title: "अद्ययावत केले", description: "अहवालाचा सारांश बदलला आहे." })
   }
 
   const handleDownloadPDF = () => {
@@ -126,7 +143,7 @@ export default function ReportsPage() {
           <CardContent className="p-3 space-y-3">
             <ScrollArea className="w-full whitespace-nowrap">
               <div className="flex gap-1.5 pb-1">
-                {['All', 'Field Visit', 'Daily Office Work', 'Daily Task'].map((type) => (
+                {['All', 'Field Visit', 'Route Visit', 'Daily Task', 'Breakdown'].map((type) => (
                   <Button 
                     key={type}
                     variant={activeFilter === type ? 'default' : 'ghost'} 
@@ -159,7 +176,6 @@ export default function ReportsPage() {
             <Card key={report.id} className="border shadow-none overflow-hidden bg-white rounded-2xl">
               <CardContent className="p-3.5">
                 <div className="flex flex-col gap-3">
-                  {/* Top Header Row */}
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex items-center gap-2 min-w-0">
                       <div className={`p-2 rounded-xl shrink-0 ${getIconBg(report.type)}`}>
@@ -182,25 +198,30 @@ export default function ReportsPage() {
                     </div>
                   </div>
                   
-                  {/* Summary Box */}
                   <div className="text-[11px] text-slate-500 bg-slate-50/50 p-3 rounded-xl italic leading-relaxed border border-slate-100 whitespace-normal break-words shadow-inner">
                     {report.summary}
                   </div>
 
-                  {/* Actions Column (Compact Side by Side) */}
-                  <div className="grid grid-cols-2 gap-2 pt-1">
+                  <div className="grid grid-cols-3 gap-2 pt-1">
                     <Button 
                       variant="outline" 
                       onClick={() => handleViewReport(report)} 
-                      className="w-full font-black text-[10px] h-8 rounded-lg border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 flex gap-1.5"
+                      className="w-full font-black text-[10px] h-8 rounded-lg border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 flex gap-1.5 px-1"
                     >
-                      <Eye className="h-3 w-3" /> पहा (View)
+                      <Eye className="h-3 w-3" /> पहा
+                    </Button>
+                    <Button 
+                      variant="outline"
+                      onClick={() => handleEditClick(report)}
+                      className="w-full font-black text-[10px] h-8 rounded-lg border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 flex gap-1.5 px-1"
+                    >
+                      <Edit className="h-3 w-3" /> एडिट
                     </Button>
                     <Button 
                       onClick={() => { setSelectedReport(report); setTimeout(handleDownloadPDF, 100); }} 
-                      className="w-full font-black text-[10px] h-8 rounded-lg bg-primary text-white shadow-sm flex gap-1.5"
+                      className="w-full font-black text-[10px] h-8 rounded-lg bg-primary text-white shadow-sm flex gap-1.5 px-1"
                     >
-                      <FileDown className="h-3 w-3" /> प्रिंट (PDF)
+                      <FileDown className="h-3 w-3" /> प्रिंट
                     </Button>
                   </div>
                 </div>
@@ -218,6 +239,27 @@ export default function ReportsPage() {
         )}
       </div>
 
+      {/* Edit Modal */}
+      <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
+        <DialogContent className="max-w-md p-4 rounded-xl">
+          <DialogHeader>
+            <DialogTitle className="text-sm font-black uppercase">रिपोर्ट एडिट करा</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3 py-4">
+            <Label className="text-[10px] font-black uppercase">सारांश / टिप (Summary)</Label>
+            <Textarea 
+              value={editData.summary} 
+              onChange={e => setEditData({...editData, summary: e.target.value})} 
+              className="min-h-[120px] text-xs font-bold bg-muted/20"
+            />
+          </div>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setIsEditOpen(false)} className="h-9 text-xs font-black">रद्द</Button>
+            <Button onClick={handleSaveEdit} className="h-9 text-xs font-black px-8">जतन करा</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Report Modal View */}
       <Dialog open={isViewOpen} onOpenChange={setIsViewOpen}>
         <DialogContent className="max-w-2xl h-[95vh] sm:h-[90vh] flex flex-col p-0 bg-white overflow-hidden rounded-none sm:rounded-xl border-none">
@@ -234,7 +276,6 @@ export default function ReportsPage() {
           <ScrollArea className="flex-grow">
             {selectedReport && (
               <div className="p-4 sm:p-8 space-y-5 bg-white" id="printable-report-content">
-                {/* PDF Header Branding */}
                 <div className="flex flex-col items-center border-b-2 border-slate-900 pb-4 text-center space-y-2">
                   <div className="flex items-center gap-2">
                     <Milk className="h-6 w-6 text-primary" />
@@ -250,7 +291,6 @@ export default function ReportsPage() {
                   </div>
                 </div>
 
-                {/* Specific Report Sections */}
                 {selectedReport.type === 'Route Visit' && (
                   <div className="space-y-3">
                     <div className="grid grid-cols-4 gap-2 p-3 border rounded-xl bg-slate-50/50">
@@ -290,21 +330,53 @@ export default function ReportsPage() {
                   </div>
                 )}
 
-                {/* Other report types */}
-                {(selectedReport.type === 'Field Visit' || selectedReport.type === 'Daily Office Work') && (
+                {selectedReport.type === 'Breakdown' && (
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-2 gap-3 p-3 border rounded-xl bg-red-50/30">
+                      <div><Label className="text-[7px] font-black uppercase text-slate-400">ROUTE</Label><p className="text-[11px] font-black">{selectedReport.fullData?.routeName}</p></div>
+                      <div><Label className="text-[7px] font-black uppercase text-slate-400">VEHICLE</Label><p className="text-[11px] font-black">{selectedReport.fullData?.vehicleNumber} ({selectedReport.fullData?.vehicleType})</p></div>
+                      <div><Label className="text-[7px] font-black uppercase text-slate-400">LOCATION</Label><p className="text-[11px] font-black">{selectedReport.fullData?.location}</p></div>
+                      <div><Label className="text-[7px] font-black uppercase text-slate-400">TOTAL LOSS</Label><p className="text-[11px] font-black text-red-600">₹{selectedReport.fullData?.totalLossAmount}</p></div>
+                    </div>
+                    <div className="border rounded-xl overflow-hidden border-slate-200">
+                      <table className="w-full text-[10px] border-collapse">
+                        <thead className="bg-slate-900 text-white">
+                          <tr className="uppercase font-black text-[8px] tracking-widest">
+                            <th className="p-2 text-left">SUPPLIER</th>
+                            <th className="p-2 text-center">BUF</th>
+                            <th className="p-2 text-center">COW</th>
+                            <th className="p-2 text-right">AMT</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {selectedReport.fullData?.losses?.map((loss: any, idx: number) => (
+                            <tr key={idx} className="border-b border-slate-100 last:border-0 odd:bg-white even:bg-slate-50/30">
+                              <td className="p-2">
+                                <p className="font-black text-slate-900">{loss.supplierCode}</p>
+                                <p className="text-[8px] text-slate-400 font-bold uppercase">{loss.supplierName}</p>
+                              </td>
+                              <td className="p-2 text-center font-black">{loss.bufMilkLossLiters}L</td>
+                              <td className="p-2 text-center font-black">{loss.cowMilkLossLiters}L</td>
+                              <td className="p-2 text-right font-black text-red-600">₹{loss.lossAmount}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+
+                {(selectedReport.type === 'Field Visit' || selectedReport.type === 'Daily Office Work' || selectedReport.type === 'Daily Task') && (
                   <div className="p-4 border border-slate-200 rounded-xl bg-slate-50/30 space-y-2">
                     <Label className="text-[8px] font-black uppercase text-slate-400 tracking-widest block border-b pb-1">OBSERVATIONS & NOTES</Label>
                     <div className="bg-white p-3 rounded-lg border border-slate-100 min-h-[100px]">
                       <p className="text-[11px] leading-relaxed whitespace-pre-wrap font-medium text-slate-800">
-                        {selectedReport.type === 'Field Visit' 
-                          ? (selectedReport.fullData?.fieldObservations || "No data available.") 
-                          : (selectedReport.fullData?.officeTasks || "No data available.")}
+                        {selectedReport.summary || "No data available."}
                       </p>
                     </div>
                   </div>
                 )}
 
-                {/* PDF Footer Signatures */}
                 <div className="pt-8 pb-2">
                   <div className="flex justify-between items-end gap-10 px-4">
                     <div className="text-center flex-1 space-y-2">
