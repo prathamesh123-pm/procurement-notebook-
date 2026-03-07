@@ -75,6 +75,13 @@ export default function ReportsPage() {
     const updated = reports.filter(r => r.id !== id)
     setReports(updated)
     localStorage.setItem('procurepal_reports', JSON.stringify(updated))
+    
+    // If it's a breakdown report, also remove from breakdowns
+    const storedBreakdowns = JSON.parse(localStorage.getItem('procurepal_breakdowns') || '[]')
+    const updatedBreakdowns = storedBreakdowns.filter((b: any) => b.id !== id)
+    localStorage.setItem('procurepal_breakdowns', JSON.stringify(updatedBreakdowns))
+
+    if (selectedReport?.id === id) setIsViewOpen(false)
     toast({ title: "अहवाल हटवला", description: "माहिती यशस्वीरित्या काढून टाकली आहे." })
   }
 
@@ -173,7 +180,7 @@ export default function ReportsPage() {
       <div className="grid grid-cols-1 gap-3 mt-4 no-print px-3">
         {filteredReports.length > 0 ? (
           filteredReports.map((report) => (
-            <Card key={report.id} className="border shadow-none overflow-hidden bg-white rounded-2xl">
+            <Card key={report.id} className="border shadow-none overflow-hidden bg-white rounded-2xl transition-all active:scale-[0.98]">
               <CardContent className="p-3.5">
                 <div className="flex flex-col gap-3">
                   <div className="flex items-start justify-between gap-2">
@@ -188,11 +195,16 @@ export default function ReportsPage() {
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-1.5 shrink-0">
+                    <div className="flex items-center gap-1 shrink-0">
                       <Badge variant="outline" className="text-[8px] font-mono text-slate-400 border-slate-200 h-5 px-1.5 rounded-md bg-slate-50">
                         ID: {report.id?.slice(0, 6)}
                       </Badge>
-                      <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive rounded-full hover:bg-red-50" onClick={() => handleDelete(report.id)}>
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-7 w-7 text-destructive rounded-full hover:bg-red-50" 
+                        onClick={(e) => { e.stopPropagation(); handleDelete(report.id); }}
+                      >
                         <Trash2 className="h-3.5 w-3.5" />
                       </Button>
                     </div>
@@ -268,6 +280,7 @@ export default function ReportsPage() {
               <FileText className="h-3.5 w-3.5 text-primary" /> Document View
             </DialogTitle>
             <div className="flex gap-1.5 pr-8">
+              <Button size="sm" variant="ghost" className="h-8 text-[10px] font-black text-destructive" onClick={() => handleDelete(selectedReport.id)}><Trash2 className="h-3.5 w-3.5 mr-1" /> डिलीट</Button>
               <Button size="sm" className="gap-1.5 font-black rounded-lg bg-primary h-8 text-[10px] px-3" onClick={handleDownloadPDF}><Printer className="h-3.5 w-3.5" /> Print</Button>
               <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={() => setIsViewOpen(false)}><X className="h-4 w-4" /></Button>
             </div>

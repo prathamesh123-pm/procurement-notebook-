@@ -268,7 +268,7 @@ export default function BreakdownPage() {
               </div>
             </div>
 
-            <Button onClick={handleSaveRecord} className={`w-full font-black h-9 rounded-lg shadow-md text-xs ${editingId ? 'bg-primary' : 'bg-destructive'}`}>
+            <Button onClick={handleSaveRecord} className={`w-full font-black h-9 rounded-lg shadow-md text-xs transition-all active:scale-[0.98] ${editingId ? 'bg-primary' : 'bg-destructive'}`}>
               <Save className="h-4 w-4 mr-1.5" />
               {editingId ? 'अपडेट करा (Update)' : 'रेकॉर्ड जतन करा (Save)'}
             </Button>
@@ -288,7 +288,7 @@ export default function BreakdownPage() {
                     <Card key={record.id} className={`border shadow-none transition-all rounded-lg overflow-hidden ${editingId === record.id ? 'bg-primary/5 ring-1 ring-primary' : 'bg-white hover:bg-muted/5'}`}>
                       <div className="p-2.5 space-y-1.5">
                         <div className="flex items-start justify-between">
-                          <div className="min-w-0">
+                          <div className="min-w-0" onClick={() => handleEditRecord(record)}>
                             <h4 className="font-black text-[11px] text-foreground truncate">{record.routeName}</h4>
                             <p className="text-[9px] font-black text-muted-foreground uppercase">{record.vehicleNumber} | {record.date}</p>
                           </div>
