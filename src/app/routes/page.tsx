@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect } from "react"
@@ -5,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
-import { Route, Supplier } from "@/lib/types"
+import { Route, Supplier, CollectionCenter } from "@/lib/types"
 import { Plus, MapPin, Truck, Users, IndianRupee, Trash2, ArrowRight, Edit, IceCream, Milk } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
 import Link from "next/link"
@@ -14,6 +15,7 @@ import { useToast } from "@/hooks/use-toast"
 export default function RoutesPage() {
   const [routes, setRoutes] = useState<Route[]>([])
   const [suppliers, setSuppliers] = useState<Supplier[]>([])
+  const [centers, setCenters] = useState<CollectionCenter[]>([])
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [currentRouteId, setCurrentRouteId] = useState<string | null>(null)
@@ -33,7 +35,10 @@ export default function RoutesPage() {
     setMounted(true)
     const storedRoutes = JSON.parse(localStorage.getItem('procurepal_routes') || '[]')
     const storedSupps = JSON.parse(localStorage.getItem('procurepal_suppliers') || '[]')
+    const storedCenters = JSON.parse(localStorage.getItem('procurepal_centers') || '[]')
+    
     setSuppliers(storedSupps)
+    setCenters(storedCenters)
 
     if (storedRoutes.length === 0) {
       const initialRoutes: Route[] = [
@@ -44,15 +49,6 @@ export default function RoutesPage() {
           distanceKm: 45,
           costPerKm: 0.85,
           iceBlocks: 10,
-          supplierIds: []
-        },
-        {
-          id: "2",
-          name: "Eastern Valley Loop",
-          vehicle: "Tata Ace",
-          distanceKm: 32,
-          costPerKm: 0.75,
-          iceBlocks: 5,
           supplierIds: []
         }
       ]
@@ -135,12 +131,22 @@ export default function RoutesPage() {
     }
   }
 
-  // Calculate totals for a specific route
+  // Calculate totals for a specific route including both Suppliers and Centers
   const getRouteMilkTotals = (routeId: string) => {
     const routeSupps = suppliers.filter(s => s.routeId === routeId)
-    const totalCow = routeSupps.reduce((acc, s) => acc + (s.cowMilk?.quantity || 0), 0)
-    const totalBuf = routeSupps.reduce((acc, s) => acc + (s.buffaloMilk?.quantity || 0), 0)
-    return { totalCow, totalBuf, count: routeSupps.length }
+    const routeCenters = centers.filter(c => c.routeId === routeId)
+    
+    const totalCow = routeSupps.reduce((acc, s) => acc + (s.cowMilk?.quantity || 0), 0) + 
+                     routeCenters.reduce((acc, c) => acc + (c.cowMilk?.quantity || 0), 0)
+                     
+    const totalBuf = routeSupps.reduce((acc, s) => acc + (s.buffaloMilk?.quantity || 0), 0) + 
+                     routeCenters.reduce((acc, c) => acc + (c.buffaloMilk?.quantity || 0), 0)
+                     
+    return { 
+      totalCow, 
+      totalBuf, 
+      pointsCount: routeSupps.length + routeCenters.length 
+    }
   }
 
   if (!mounted) return null
@@ -202,7 +208,7 @@ export default function RoutesPage() {
                   <div className="space-y-2">
                     <div className="flex items-center gap-2 text-muted-foreground">
                       <Users className="h-4 w-4 text-primary" />
-                      <span className="font-medium text-foreground">{totals.count} Active Suppliers</span>
+                      <span className="font-medium text-foreground">{totals.pointsCount} Active Points</span>
                     </div>
                     <div className="flex items-center gap-2 text-muted-foreground">
                       <MapPin className="h-4 w-4 text-primary" />
