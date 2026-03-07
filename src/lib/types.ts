@@ -73,6 +73,8 @@ export interface CollectionCenter {
   mobile: string;
   village: string;
   routeId?: string;
+  fssaiNumber?: string;
+  fssaiExpiry?: string;
   // Expanded metrics and logistics
   cowMilk?: MilkMetrics;
   buffaloMilk?: MilkMetrics;
