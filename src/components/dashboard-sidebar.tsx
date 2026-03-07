@@ -1,8 +1,7 @@
-
 "use client"
 
 import * as React from "react"
-import { LayoutDashboard, ListTodo, MapPin, LogOut, Milk, ClipboardCheck, Archive, UserCircle } from "lucide-react"
+import { LayoutDashboard, ListTodo, MapPin, LogOut, Milk, ClipboardCheck, Archive, UserCircle, Warehouse } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
@@ -34,6 +33,11 @@ const items = [
     title: "Work Log",
     url: "/work-log",
     icon: ListTodo,
+  },
+  {
+    title: "Centers",
+    url: "/centers",
+    icon: Warehouse,
   },
   {
     title: "Routes",

@@ -39,6 +39,28 @@ export interface Supplier {
   fssaiExpiry?: string;
 }
 
+export interface CenterMaterial {
+  weighingScaleBrand?: string;
+  fatMachineBrand?: string;
+  milkCansCount?: number;
+  computerAvailable?: boolean;
+  upsInverterAvailable?: boolean;
+  solarAvailable?: boolean;
+  chemicalsStock?: string;
+  batteryCondition?: string;
+}
+
+export interface CollectionCenter {
+  id: string;
+  name: string;
+  code: string;
+  operatorName: string;
+  mobile: string;
+  village: string;
+  routeId?: string;
+  material: CenterMaterial;
+}
+
 export interface Route {
   id: string;
   name: string;
