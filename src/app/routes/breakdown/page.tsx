@@ -1,0 +1,253 @@
+"use client"
+
+import { useState, useEffect } from "react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Label } from "@/components/ui/label"
+import { 
+  Truck, AlertTriangle, MapPin, User, Hash, 
+  Trash2, Plus, Save, History, PlusCircle, Milk, IndianRupee, X
+} from "lucide-react"
+import { useToast } from "@/hooks/use-toast"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Badge } from "@/components/ui/badge"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { BreakdownRecord, BreakdownLoss } from "@/lib/types"
+
+export default function BreakdownPage() {
+  const [records, setRecords] = useState<BreakdownRecord[]>([])
+  const [mounted, setMounted] = useState(false)
+  const { toast } = useToast()
+
+  const [formData, setFormData] = useState({
+    routeName: "",
+    vehicleType: "",
+    vehicleNumber: "",
+    driverName: "",
+    location: "",
+    reason: "",
+    losses: [] as BreakdownLoss[]
+  })
+
+  useEffect(() => {
+    setMounted(true)
+    const stored = JSON.parse(localStorage.getItem('procurepal_breakdowns') || '[]')
+    setRecords(stored)
+  }, [])
+
+  const handleAddLossRow = () => {
+    const newLoss: BreakdownLoss = {
+      id: crypto.randomUUID(),
+      supplierCode: "",
+      supplierName: "",
+      bufMilkLossLiters: "",
+      cowMilkLossLiters: "",
+      lossAmount: ""
+    }
+    setFormData({ ...formData, losses: [...formData.losses, newLoss] })
+  }
+
+  const handleRemoveLossRow = (id: string) => {
+    setFormData({ ...formData, losses: formData.losses.filter(l => l.id !== id) })
+  }
+
+  const updateLossRow = (id: string, updates: Partial<BreakdownLoss>) => {
+    setFormData({
+      ...formData,
+      losses: formData.losses.map(l => l.id === id ? { ...l, ...updates } : l)
+    })
+  }
+
+  const handleSaveRecord = () => {
+    if (!formData.routeName || !formData.vehicleNumber) {
+      toast({ title: "त्रुटी", description: "रूट आणि गाडी नंबर आवश्यक आहे.", variant: "destructive" })
+      return
+    }
+
+    const totalLoss = formData.losses.reduce((acc, curr) => acc + (Number(curr.lossAmount) || 0), 0)
+
+    const newRecord: BreakdownRecord = {
+      id: crypto.randomUUID(),
+      ...formData,
+      date: new Date().toISOString().split('T')[0],
+      totalLossAmount: totalLoss
+    }
+
+    const updated = [newRecord, ...records]
+    setRecords(updated)
+    localStorage.setItem('procurepal_breakdowns', JSON.stringify(updated))
+
+    // Reset Form
+    setFormData({
+      routeName: "", vehicleType: "", vehicleNumber: "", driverName: "",
+      location: "", reason: "", losses: []
+    })
+
+    toast({ title: "जतन केले", description: "ब्रेकडाऊन रेकॉर्ड यशस्वीरित्या सेव्ह झाला." })
+  }
+
+  const handleDeleteRecord = (id: string) => {
+    if (!confirm("हा रेकॉर्ड हटवायचा आहे का?")) return
+    const updated = records.filter(r => r.id !== id)
+    setRecords(updated)
+    localStorage.setItem('procurepal_breakdowns', JSON.stringify(updated))
+  }
+
+  if (!mounted) return null
+
+  return (
+    <div className="space-y-4 max-w-6xl mx-auto w-full pb-10 px-2 sm:px-0 animate-in fade-in duration-500">
+      <div className="flex flex-col gap-1 border-b pb-2">
+        <h2 className="text-xl font-headline font-black text-foreground flex items-center gap-2">
+          <Truck className="h-5 w-5 text-destructive" /> वाहन ब्रेकडाऊन (Vehicle Breakdown)
+        </h2>
+        <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-tight">Breakdown & Loss Records</p>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+        {/* Form Panel */}
+        <Card className="lg:col-span-7 border-none shadow-sm bg-white rounded-2xl overflow-hidden">
+          <CardHeader className="bg-destructive/5 py-3 border-b">
+            <CardTitle className="text-sm font-black flex items-center gap-2 uppercase">
+              <AlertTriangle className="h-4 w-4 text-destructive" /> नवीन नोंद (New Entry)
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-4 space-y-6">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <Label className="text-[9px] font-black uppercase text-muted-foreground">रूट नाव (Route)</Label>
+                <Input value={formData.routeName} onChange={e => setFormData({...formData, routeName: e.target.value})} className="h-9 text-xs rounded-xl" placeholder="उदा. रस्तापूर रूट" />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-[9px] font-black uppercase text-muted-foreground">गाडी नंबर (Vehicle No)</Label>
+                <Input value={formData.vehicleNumber} onChange={e => setFormData({...formData, vehicleNumber: e.target.value})} className="h-9 text-xs rounded-xl" placeholder="MH 10 AB 1234" />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-[9px] font-black uppercase text-muted-foreground">गाडी प्रकार (Type)</Label>
+                <Input value={formData.vehicleType} onChange={e => setFormData({...formData, vehicleType: e.target.value})} className="h-9 text-xs rounded-xl" placeholder="उदा. Tata Ace" />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-[9px] font-black uppercase text-muted-foreground">ड्रायव्हर नाव (Driver)</Label>
+                <Input value={formData.driverName} onChange={e => setFormData({...formData, driverName: e.target.value})} className="h-9 text-xs rounded-xl" placeholder="नाव" />
+              </div>
+              <div className="col-span-2 space-y-1">
+                <Label className="text-[9px] font-black uppercase text-muted-foreground">लोकेशन (Location)</Label>
+                <Input value={formData.location} onChange={e => setFormData({...formData, location: e.target.value})} className="h-9 text-xs rounded-xl" placeholder="उदा. मुख्य चौक, रस्तापूर" />
+              </div>
+              <div className="col-span-2 space-y-1">
+                <Label className="text-[9px] font-black uppercase text-muted-foreground">कारण (Reason)</Label>
+                <Textarea value={formData.reason} onChange={e => setFormData({...formData, reason: e.target.value})} className="min-h-[60px] text-xs rounded-xl" placeholder="ब्रेकडाऊनचे कारण..." />
+              </div>
+            </div>
+
+            <div className="space-y-3 pt-2">
+              <div className="flex items-center justify-between">
+                <h4 className="text-[10px] font-black uppercase text-destructive flex items-center gap-1.5">
+                  <Milk className="h-3.5 w-3.5" /> नुकसान तपशील (Loss Details)
+                </h4>
+                <Button size="sm" variant="outline" onClick={handleAddLossRow} className="h-7 text-[8px] font-black gap-1 uppercase rounded-lg border-destructive/20 text-destructive">
+                  <PlusCircle className="h-3 w-3" /> गवळ्याची नोंद जोडा
+                </Button>
+              </div>
+
+              <div className="responsive-table-container rounded-xl border border-dashed p-1">
+                <table className="w-full text-[10px]">
+                  <thead>
+                    <tr className="bg-muted/30 text-[8px] font-black uppercase text-muted-foreground border-b">
+                      <th className="p-2 text-left">गवळी (Supplier)</th>
+                      <th className="p-2 text-center">म्हैस (Buf)</th>
+                      <th className="p-2 text-center">गाय (Cow)</th>
+                      <th className="p-2 text-right">रक्कम</th>
+                      <th className="p-2"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {formData.losses.map((loss) => (
+                      <tr key={loss.id} className="border-b last:border-0">
+                        <td className="p-1 space-y-1">
+                          <Input value={loss.supplierCode} onChange={e => updateLossRow(loss.id, { supplierCode: e.target.value })} className="h-7 text-[9px] px-1.5" placeholder="कोड" />
+                          <Input value={loss.supplierName} onChange={e => updateLossRow(loss.id, { supplierName: e.target.value })} className="h-7 text-[9px] px-1.5" placeholder="नाव" />
+                        </td>
+                        <td className="p-1">
+                          <Input value={loss.bufMilkLossLiters} onChange={e => updateLossRow(loss.id, { bufMilkLossLiters: e.target.value })} className="h-7 text-[9px] text-center" placeholder="Liters" />
+                        </td>
+                        <td className="p-1">
+                          <Input value={loss.cowMilkLossLiters} onChange={e => updateLossRow(loss.id, { cowMilkLossLiters: e.target.value })} className="h-7 text-[9px] text-center" placeholder="Liters" />
+                        </td>
+                        <td className="p-1">
+                          <Input value={loss.lossAmount} onChange={e => updateLossRow(loss.id, { lossAmount: e.target.value })} className="h-7 text-[9px] text-right font-black" placeholder="₹" />
+                        </td>
+                        <td className="p-1 text-center">
+                          <Button variant="ghost" size="icon" onClick={() => handleRemoveLossRow(loss.id)} className="h-6 w-6 text-destructive"><X className="h-3 w-3" /></Button>
+                        </td>
+                      </tr>
+                    ))}
+                    {formData.losses.length === 0 && (
+                      <tr>
+                        <td colSpan={5} className="text-center py-6 text-[9px] italic text-muted-foreground">कोणतीही नुकसान नोंद नाही.</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <Button onClick={handleSaveRecord} className="w-full font-black h-11 rounded-xl shadow-lg shadow-destructive/20 bg-destructive hover:bg-destructive/90">
+              <Save className="h-4 w-4 mr-2" /> रेकॉर्ड जतन करा (Save Record)
+            </Button>
+          </CardContent>
+        </Card>
+
+        {/* List Panel */}
+        <div className="lg:col-span-5 space-y-4">
+          <Card className="border-none shadow-sm bg-white rounded-2xl overflow-hidden">
+            <CardHeader className="bg-muted/5 py-3 border-b">
+              <CardTitle className="text-sm font-black flex items-center gap-2 uppercase">
+                <History className="h-4 w-4 text-primary" /> जुने रेकॉर्ड (History)
+              </CardTitle>
+            </CardHeader>
+            <ScrollArea className="h-[500px] lg:h-[700px]">
+              <div className="p-3 space-y-3">
+                {records.length > 0 ? (
+                  records.map((record) => (
+                    <Card key={record.id} className="border-none shadow-sm bg-muted/20 hover:bg-muted/30 transition-all rounded-xl overflow-hidden group">
+                      <div className="p-3 space-y-2">
+                        <div className="flex items-start justify-between">
+                          <div>
+                            <h4 className="font-black text-xs text-foreground">{record.routeName}</h4>
+                            <p className="text-[9px] font-black text-muted-foreground uppercase">{record.vehicleNumber} | {record.date}</p>
+                          </div>
+                          <Button variant="ghost" size="icon" onClick={() => handleDeleteRecord(record.id)} className="h-7 w-7 text-destructive opacity-0 group-hover:opacity-100 transition-opacity">
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </Button>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2 text-[9px] font-bold">
+                          <div className="flex items-center gap-1.5"><MapPin className="h-3 w-3 text-destructive" /> {record.location}</div>
+                          <div className="flex items-center gap-1.5"><User className="h-3 w-3 text-primary" /> {record.driverName}</div>
+                        </div>
+                        <div className="p-2 bg-white rounded-lg border border-dashed text-[9px] italic line-clamp-2">
+                          कारण: {record.reason}
+                        </div>
+                        <div className="flex items-center justify-between pt-1 border-t border-dashed">
+                          <span className="text-[8px] font-black uppercase text-muted-foreground">{record.losses.length} गवळ्यांचे नुकसान</span>
+                          <Badge variant="destructive" className="h-4 text-[9px] font-black px-1.5">₹{record.totalLossAmount}</Badge>
+                        </div>
+                      </div>
+                    </Card>
+                  ))
+                ) : (
+                  <div className="text-center py-20 flex flex-col items-center gap-2">
+                    <History className="h-10 w-10 text-muted-foreground/20" />
+                    <p className="text-[10px] font-black uppercase text-muted-foreground">रेकॉर्ड सापडले नाही</p>
+                  </div>
+                )}
+              </div>
+            </ScrollArea>
+          </Card>
+        </div>
+      </div>
+    </div>
+  )
+}

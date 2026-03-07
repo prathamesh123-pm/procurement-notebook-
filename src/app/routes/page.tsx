@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Route, Supplier, CollectionCenter } from "@/lib/types"
-import { Plus, MapPin, Truck, Users, IndianRupee, Trash2, ArrowRight, Edit, IceCream, Milk, ChevronRight } from "lucide-react"
+import { Plus, MapPin, Truck, Users, IndianRupee, Trash2, ArrowRight, Edit, IceCream, Milk, ChevronRight, AlertTriangle } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
 import Link from "next/link"
 import { useToast } from "@/hooks/use-toast"
@@ -140,9 +140,16 @@ export default function RoutesPage() {
           </h2>
           <p className="text-muted-foreground font-black text-sm">लॉजिस्टिक, वाहन खर्च आणि संकलित दूध माहिती. (Logistics & Costing)</p>
         </div>
-        <Button onClick={handleOpenAdd} className="gap-2 shadow-lg font-black h-11 px-8 rounded-2xl bg-primary hover:bg-primary/90 transition-all">
-          <Plus className="h-5 w-5" /> नवीन रूट जोडा (Add New Route)
-        </Button>
+        <div className="flex gap-2 w-full sm:w-auto">
+          <Button asChild variant="outline" className="flex-1 sm:flex-none gap-2 font-black h-11 px-6 rounded-2xl border-destructive text-destructive hover:bg-destructive/5">
+            <Link href="/routes/breakdown">
+              <AlertTriangle className="h-5 w-5" /> ब्रेकडाऊन नोंद (Breakdown)
+            </Link>
+          </Button>
+          <Button onClick={handleOpenAdd} className="flex-1 sm:flex-none gap-2 shadow-lg font-black h-11 px-8 rounded-2xl bg-primary hover:bg-primary/90 transition-all">
+            <Plus className="h-5 w-5" /> नवीन रूट जोडा (Add New Route)
+          </Button>
+        </div>
       </div>
 
       <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 px-4 sm:px-0">

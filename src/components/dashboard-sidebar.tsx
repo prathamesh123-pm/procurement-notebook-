@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { LayoutDashboard, ListTodo, MapPin, LogOut, Milk, ClipboardCheck, Archive, UserCircle, Warehouse } from "lucide-react"
+import { LayoutDashboard, ListTodo, MapPin, LogOut, Milk, ClipboardCheck, Archive, UserCircle, Warehouse, AlertTriangle } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
@@ -33,6 +33,11 @@ const items = [
     title: "कामकाज नोंद (Work Log)",
     url: "/work-log",
     icon: ListTodo,
+  },
+  {
+    title: "वाहन ब्रेकडाऊन (Breakdown)",
+    url: "/routes/breakdown",
+    icon: AlertTriangle,
   },
   {
     title: "केंद्र (Centers)",

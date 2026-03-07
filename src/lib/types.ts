@@ -95,7 +95,29 @@ export interface Route {
   iceBlocks?: number;
 }
 
-export type ReportType = 'Daily Office Work' | 'Field Visit' | 'Route Visit' | 'Daily Task';
+export interface BreakdownLoss {
+  id: string;
+  supplierCode: string;
+  supplierName: string;
+  bufMilkLossLiters: string;
+  cowMilkLossLiters: string;
+  lossAmount: string;
+}
+
+export interface BreakdownRecord {
+  id: string;
+  routeName: string;
+  vehicleType: string;
+  vehicleNumber: string;
+  driverName: string;
+  location: string;
+  reason: string;
+  losses: BreakdownLoss[];
+  date: string;
+  totalLossAmount: number;
+}
+
+export type ReportType = 'Daily Office Work' | 'Field Visit' | 'Route Visit' | 'Daily Task' | 'Breakdown';
 
 export interface Report {
   id: string;
