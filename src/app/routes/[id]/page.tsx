@@ -11,7 +11,8 @@ import { Supplier, Route, EquipmentItem } from "@/lib/types"
 import { 
   Plus, Search, MapPin, Phone, Info, Milk, User, 
   Truck, Package, ShieldCheck, 
-  Trash2, Edit, ChevronRight, PlusCircle, ArrowLeft, X, CheckCircle2
+  Trash2, Edit, ChevronRight, PlusCircle, ArrowLeft, X, CheckCircle2,
+  Laptop, Zap, Sun
 } from "lucide-react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
@@ -19,6 +20,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useToast } from "@/hooks/use-toast"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { Checkbox } from "@/components/ui/checkbox"
 
 export default function RouteDetailsPage() {
   const params = useParams()
@@ -52,6 +54,10 @@ export default function RouteDetailsPage() {
     fssaiExpiry: "",
     scaleBrand: "",
     fatMachineBrand: "",
+    milkCansCount: "0",
+    computerAvailable: false,
+    upsInverterAvailable: false,
+    solarAvailable: false,
     equipment: [] as EquipmentItem[]
   })
 
@@ -73,6 +79,7 @@ export default function RouteDetailsPage() {
       iceBlocks: "0", collectionType: "Route", cattleFeedBrand: "",
       fssaiNumber: "", fssaiExpiry: "",
       scaleBrand: "", fatMachineBrand: "",
+      milkCansCount: "0", computerAvailable: false, upsInverterAvailable: false, solarAvailable: false,
       equipment: []
     })
     setIsDialogOpen(true)
@@ -101,6 +108,10 @@ export default function RouteDetailsPage() {
       fssaiExpiry: supplier.fssaiExpiry || "",
       scaleBrand: supplier.scaleBrand || "",
       fatMachineBrand: supplier.fatMachineBrand || "",
+      milkCansCount: String(supplier.milkCansCount || 0),
+      computerAvailable: supplier.computerAvailable || false,
+      upsInverterAvailable: supplier.upsInverterAvailable || false,
+      solarAvailable: supplier.solarAvailable || false,
       equipment: supplier.equipment || []
     })
     setIsDialogOpen(true)
@@ -150,6 +161,10 @@ export default function RouteDetailsPage() {
       fssaiExpiry: formData.fssaiExpiry,
       scaleBrand: formData.scaleBrand,
       fatMachineBrand: formData.fatMachineBrand,
+      milkCansCount: Number(formData.milkCansCount),
+      computerAvailable: formData.computerAvailable,
+      upsInverterAvailable: formData.upsInverterAvailable,
+      solarAvailable: formData.solarAvailable,
       equipment: formData.equipment
     }
 
@@ -282,6 +297,21 @@ export default function RouteDetailsPage() {
                     </div>
                   </div>
 
+                  <div className="grid grid-cols-3 gap-2">
+                    <div className={`p-2 rounded-lg border flex flex-col items-center gap-1 ${selectedSupplier.computerAvailable ? 'bg-green-50 border-green-100' : 'bg-muted/20 opacity-50'}`}>
+                      <Laptop className={`h-4 w-4 ${selectedSupplier.computerAvailable ? 'text-green-600' : 'text-muted-foreground'}`} />
+                      <span className="text-[8px] font-black uppercase">कॉम्प्युटर</span>
+                    </div>
+                    <div className={`p-2 rounded-lg border flex flex-col items-center gap-1 ${selectedSupplier.upsInverterAvailable ? 'bg-orange-50 border-orange-100' : 'bg-muted/20 opacity-50'}`}>
+                      <Zap className={`h-4 w-4 ${selectedSupplier.upsInverterAvailable ? 'text-orange-600' : 'text-muted-foreground'}`} />
+                      <span className="text-[8px] font-black uppercase">UPS/Inv</span>
+                    </div>
+                    <div className={`p-2 rounded-lg border flex flex-col items-center gap-1 ${selectedSupplier.solarAvailable ? 'bg-amber-50 border-amber-100' : 'bg-muted/20 opacity-50'}`}>
+                      <Sun className={`h-4 w-4 ${selectedSupplier.solarAvailable ? 'text-amber-600' : 'text-muted-foreground'}`} />
+                      <span className="text-[8px] font-black uppercase">सोलर</span>
+                    </div>
+                  </div>
+
                   <div className="space-y-1.5">
                     <h4 className="text-[9px] font-black uppercase text-primary">दूध आकडेवारी (Milk Stats)</h4>
                     <div className="grid grid-cols-2 gap-2">
@@ -307,8 +337,9 @@ export default function RouteDetailsPage() {
                     <div className="bg-muted/10 p-2.5 rounded-lg border border-dashed grid grid-cols-2 gap-x-4 gap-y-1.5">
                       <div className="flex justify-between border-b pb-1"><p className="text-[8px] font-black text-muted-foreground uppercase">काटा</p><p className="text-[10px] font-black">{selectedSupplier.scaleBrand || "-"}</p></div>
                       <div className="flex justify-between border-b pb-1"><p className="text-[8px] font-black text-muted-foreground uppercase">मशीन</p><p className="text-[10px] font-black">{selectedSupplier.fatMachineBrand || "-"}</p></div>
-                      <div className="flex justify-between"><p className="text-[8px] font-black text-muted-foreground uppercase">बर्फ</p><p className="text-[10px] font-black">{selectedSupplier.iceBlocks || "0"}</p></div>
-                      <div className="flex justify-between"><p className="text-[8px] font-black text-muted-foreground uppercase">खाद्य</p><p className="text-[10px] font-black">{selectedSupplier.cattleFeedBrand || "-"}</p></div>
+                      <div className="flex justify-between border-b pb-1"><p className="text-[8px] font-black text-muted-foreground uppercase">बर्फ</p><p className="text-[10px] font-black">{selectedSupplier.iceBlocks || "0"}</p></div>
+                      <div className="flex justify-between border-b pb-1"><p className="text-[8px] font-black text-muted-foreground uppercase">खाद्य</p><p className="text-[10px] font-black">{selectedSupplier.cattleFeedBrand || "-"}</p></div>
+                      <div className="flex justify-between col-span-2"><p className="text-[8px] font-black text-muted-foreground uppercase">कॅन संख्या</p><p className="text-[10px] font-black">{selectedSupplier.milkCansCount || "0"}</p></div>
                     </div>
                     <div className="bg-orange-50/30 p-2.5 rounded-lg border border-orange-100"><p className="text-[8px] font-black text-orange-600 uppercase">गाव स्पर्धा (Competition)</p><p className="text-[10px] font-medium leading-tight">{selectedSupplier.competition || "-"}</p></div>
                   </div>
@@ -357,17 +388,6 @@ export default function RouteDetailsPage() {
                     <Input type="number" placeholder="SNF" value={formData.cowSnf} onChange={e => setFormData({...formData, cowSnf: e.target.value})} className="h-8 text-[10px] text-center" />
                   </div>
                 </div>
-              </div>
-              <div className="space-y-4">
-                <h4 className="text-[10px] font-black uppercase text-primary border-b pb-1">२) तांत्रिक व इन्व्हेंटरी</h4>
-                <div className="grid grid-cols-2 gap-2.5">
-                  <div className="space-y-1"><Label className="text-[9px] uppercase font-black">काटा ब्रँड</Label><Input value={formData.scaleBrand} onChange={e => setFormData({...formData, scaleBrand: e.target.value})} className="h-9 text-xs rounded-md bg-muted/20 border-none" /></div>
-                  <div className="space-y-1"><Label className="text-[9px] uppercase font-black">मशीन ब्रँड</Label><Input value={formData.fatMachineBrand} onChange={e => setFormData({...formData, fatMachineBrand: e.target.value})} className="h-9 text-xs rounded-md bg-muted/20 border-none" /></div>
-                  <div className="space-y-1"><Label className="text-[9px] uppercase font-black">बर्फ लाद्या</Label><Input type="number" value={formData.iceBlocks} onChange={e => setFormData({...formData, iceBlocks: e.target.value})} className="h-9 text-xs rounded-md bg-muted/20 border-none" /></div>
-                  <div className="space-y-1"><Label className="text-[9px] uppercase font-black">खाद्य ब्रँड</Label><Input value={formData.cattleFeedBrand} onChange={e => setFormData({...formData, cattleFeedBrand: e.target.value})} className="h-9 text-xs rounded-md bg-muted/20 border-none" /></div>
-                  <div className="col-span-2 space-y-1"><Label className="text-[9px] uppercase font-black">गाव स्पर्धा</Label><Input value={formData.competition} onChange={e => setFormData({...formData, competition: e.target.value})} className="h-9 text-xs rounded-md bg-muted/20 border-none" /></div>
-                  <div className="col-span-2 space-y-1"><Label className="text-[9px] uppercase font-black">अतिरिक्त टिप</Label><Input value={formData.additionalInfo} onChange={e => setFormData({...formData, additionalInfo: e.target.value})} className="h-9 text-xs rounded-md bg-muted/20 border-none" /></div>
-                </div>
                 <div className="p-2 border rounded-lg bg-amber-50/20 space-y-1.5">
                   <p className="text-[9px] font-black text-amber-700 uppercase text-center">म्हेस दूध (Buf)</p>
                   <div className="grid grid-cols-3 gap-1.5">
@@ -376,7 +396,36 @@ export default function RouteDetailsPage() {
                     <Input type="number" placeholder="SNF" value={formData.bufSnf} onChange={e => setFormData({...formData, bufSnf: e.target.value})} className="h-8 text-[10px] text-center" />
                   </div>
                 </div>
-                <div className="space-y-2">
+              </div>
+              <div className="space-y-4">
+                <h4 className="text-[10px] font-black uppercase text-primary border-b pb-1">२) तांत्रिक व इन्व्हेंटरी</h4>
+                <div className="grid grid-cols-2 gap-2.5">
+                  <div className="space-y-1"><Label className="text-[9px] uppercase font-black">काटा ब्रँड</Label><Input value={formData.scaleBrand} onChange={e => setFormData({...formData, scaleBrand: e.target.value})} className="h-9 text-xs rounded-md bg-muted/20 border-none" /></div>
+                  <div className="space-y-1"><Label className="text-[9px] uppercase font-black">मशीन ब्रँड</Label><Input value={formData.fatMachineBrand} onChange={e => setFormData({...formData, fatMachineBrand: e.target.value})} className="h-9 text-xs rounded-md bg-muted/20 border-none" /></div>
+                  <div className="space-y-1"><Label className="text-[9px] uppercase font-black">बर्फ लाद्या</Label><Input type="number" value={formData.iceBlocks} onChange={e => setFormData({...formData, iceBlocks: e.target.value})} className="h-9 text-xs rounded-md bg-muted/20 border-none" /></div>
+                  <div className="space-y-1"><Label className="text-[9px] uppercase font-black">खाद्य ब्रँड</Label><Input value={formData.cattleFeedBrand} onChange={e => setFormData({...formData, cattleFeedBrand: e.target.value})} className="h-9 text-xs rounded-md bg-muted/20 border-none" /></div>
+                  <div className="space-y-1"><Label className="text-[9px] uppercase font-black">एकूण कॅन</Label><Input type="number" value={formData.milkCansCount} onChange={e => setFormData({...formData, milkCansCount: e.target.value})} className="h-9 text-xs rounded-md bg-muted/20 border-none" /></div>
+                </div>
+
+                <div className="grid grid-cols-1 gap-2 pt-2">
+                  <div className="flex items-center space-x-2 bg-muted/10 p-2 rounded-lg">
+                    <Checkbox id="comp-s" checked={formData.computerAvailable} onCheckedChange={(v) => setFormData({...formData, computerAvailable: !!v})} />
+                    <Label htmlFor="comp-s" className="text-[10px] font-black uppercase cursor-pointer">कॉम्प्युटर आहे का?</Label>
+                  </div>
+                  <div className="flex items-center space-x-2 bg-muted/10 p-2 rounded-lg">
+                    <Checkbox id="ups-s" checked={formData.upsInverterAvailable} onCheckedChange={(v) => setFormData({...formData, upsInverterAvailable: !!v})} />
+                    <Label htmlFor="ups-s" className="text-[10px] font-black uppercase cursor-pointer">UPS / इनव्हर्टर आहे का?</Label>
+                  </div>
+                  <div className="flex items-center space-x-2 bg-muted/10 p-2 rounded-lg">
+                    <Checkbox id="solar-s" checked={formData.solarAvailable} onCheckedChange={(v) => setFormData({...formData, solarAvailable: !!v})} />
+                    <Label htmlFor="solar-s" className="text-[10px] font-black uppercase cursor-pointer">सोलर उपलब्ध आहे का?</Label>
+                  </div>
+                </div>
+
+                <div className="col-span-2 space-y-1 mt-2"><Label className="text-[9px] uppercase font-black">गाव स्पर्धा</Label><Input value={formData.competition} onChange={e => setFormData({...formData, competition: e.target.value})} className="h-9 text-xs rounded-md bg-muted/20 border-none" /></div>
+                <div className="col-span-2 space-y-1"><Label className="text-[9px] uppercase font-black">अतिरिक्त टिप</Label><Input value={formData.additionalInfo} onChange={e => setFormData({...formData, additionalInfo: e.target.value})} className="h-9 text-xs rounded-md bg-muted/20 border-none" /></div>
+
+                <div className="space-y-2 mt-4">
                   <div className="flex items-center justify-between"><Label className="text-[9px] font-black uppercase">साहित्य यादी</Label><Button variant="outline" size="sm" onClick={handleAddEquipmentRow} className="h-6 text-[8px] font-black rounded px-2">जोडा</Button></div>
                   <div className="space-y-1.5">
                     {formData.equipment.map((item) => (

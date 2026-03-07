@@ -9,18 +9,21 @@ import { Label } from "@/components/ui/label"
 import { 
   Warehouse, Plus, Search, MapPin, User, Phone, 
   Trash2, Edit, Package, Info, ChevronRight,
-  Milk, Truck, PlusCircle, ShieldCheck, Battery, FlaskConical, MessageSquare, Target, X
+  Milk, Truck, PlusCircle, ShieldCheck, Battery, FlaskConical, MessageSquare, Target, X,
+  Laptop, Zap, Sun
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
-import { CollectionCenter, EquipmentItem } from "@/lib/types"
+import { CollectionCenter, EquipmentItem, Route } from "@/lib/types"
 import { useToast } from "@/hooks/use-toast"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Checkbox } from "@/components/ui/checkbox"
 
 export default function CentersPage() {
   const [centers, setCenters] = useState<CollectionCenter[]>([])
+  const [routes, setRoutes] = useState<Route[]>([])
   const [searchQuery, setSearchQuery] = useState("")
   const [mounted, setMounted] = useState(false)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -31,32 +34,37 @@ export default function CentersPage() {
   const { toast } = useToast()
 
   const [formData, setFormData] = useState({
-    name: "", code: "", operatorName: "", mobile: "", village: "",
+    name: "", code: "", operatorName: "", mobile: "", village: "", routeId: "",
     fssaiNumber: "", fssaiExpiry: "",
     cowQty: "0", cowFat: "0", cowSnf: "0",
     bufQty: "0", bufFat: "0", bufSnf: "0",
     iceBlocks: "0", cattleFeedBrand: "", competition: "", additionalNotes: "",
     weighingScaleBrand: "", fatMachineBrand: "", chemicalsStock: "",
-    batteryCondition: "", equipment: [] as EquipmentItem[]
+    batteryCondition: "", milkCansCount: "0",
+    computerAvailable: false, upsInverterAvailable: false, solarAvailable: false,
+    equipment: [] as EquipmentItem[]
   })
 
   useEffect(() => {
     setMounted(true)
     const storedCenters = JSON.parse(localStorage.getItem('procurepal_centers') || '[]')
+    const storedRoutes = JSON.parse(localStorage.getItem('procurepal_routes') || '[]')
     setCenters(storedCenters)
+    setRoutes(storedRoutes)
   }, [])
 
   const handleOpenAdd = () => {
     setDialogMode('add')
     setEditingId(null)
     setFormData({
-      name: "", code: "", operatorName: "", mobile: "", village: "",
+      name: "", code: "", operatorName: "", mobile: "", village: "", routeId: "",
       fssaiNumber: "", fssaiExpiry: "",
       cowQty: "0", cowFat: "0", cowSnf: "0",
       bufQty: "0", bufFat: "0", bufSnf: "0",
       iceBlocks: "0", cattleFeedBrand: "", competition: "", additionalNotes: "",
       weighingScaleBrand: "", fatMachineBrand: "",
-      chemicalsStock: "", batteryCondition: "",
+      chemicalsStock: "", batteryCondition: "", milkCansCount: "0",
+      computerAvailable: false, upsInverterAvailable: false, solarAvailable: false,
       equipment: []
     })
     setIsDialogOpen(true)
@@ -67,7 +75,7 @@ export default function CentersPage() {
     setEditingId(center.id)
     setFormData({
       name: center.name, code: center.code, operatorName: center.operatorName,
-      mobile: center.mobile, village: center.village,
+      mobile: center.mobile, village: center.village, routeId: center.routeId || "",
       fssaiNumber: center.fssaiNumber || "", fssaiExpiry: center.fssaiExpiry || "",
       cowQty: String(center.cowMilk?.quantity || 0),
       cowFat: String(center.cowMilk?.fat || 0),
@@ -83,6 +91,10 @@ export default function CentersPage() {
       fatMachineBrand: center.material.fatMachineBrand || "",
       chemicalsStock: center.material.chemicalsStock || "",
       batteryCondition: center.material.batteryCondition || "",
+      milkCansCount: String(center.material.milkCansCount || 0),
+      computerAvailable: center.material.computerAvailable || false,
+      upsInverterAvailable: center.material.upsInverterAvailable || false,
+      solarAvailable: center.material.solarAvailable || false,
       equipment: center.material.equipment || []
     })
     setIsDialogOpen(true)
@@ -98,7 +110,7 @@ export default function CentersPage() {
       id: editingId || crypto.randomUUID(),
       name: formData.name, code: formData.code, operatorName: formData.operatorName,
       mobile: formData.mobile, village: formData.village, fssaiNumber: formData.fssaiNumber,
-      fssaiExpiry: formData.fssaiExpiry,
+      fssaiExpiry: formData.fssaiExpiry, routeId: formData.routeId,
       cowMilk: { quantity: Number(formData.cowQty), fat: Number(formData.cowFat), snf: Number(formData.cowSnf) },
       buffaloMilk: { quantity: Number(formData.bufQty), fat: Number(formData.bufFat), snf: Number(formData.bufSnf) },
       iceBlocks: Number(formData.iceBlocks), cattleFeedBrand: formData.cattleFeedBrand,
@@ -108,6 +120,10 @@ export default function CentersPage() {
         fatMachineBrand: formData.fatMachineBrand,
         chemicalsStock: formData.chemicalsStock,
         batteryCondition: formData.batteryCondition,
+        milkCansCount: Number(formData.milkCansCount),
+        computerAvailable: formData.computerAvailable,
+        upsInverterAvailable: formData.upsInverterAvailable,
+        solarAvailable: formData.solarAvailable,
         equipment: formData.equipment
       }
     }
@@ -244,6 +260,24 @@ export default function CentersPage() {
                   </div>
 
                   <div className="space-y-1.5">
+                    <h4 className="text-[9px] font-black uppercase text-primary">उपलब्ध सुविधा</h4>
+                    <div className="grid grid-cols-3 gap-2">
+                      <div className={`p-2 rounded-lg border flex flex-col items-center gap-1 ${selectedCenter.material.computerAvailable ? 'bg-green-50 border-green-100' : 'bg-muted/20 opacity-50'}`}>
+                        <Laptop className={`h-4 w-4 ${selectedCenter.material.computerAvailable ? 'text-green-600' : 'text-muted-foreground'}`} />
+                        <span className="text-[8px] font-black uppercase">कॉम्प्युटर</span>
+                      </div>
+                      <div className={`p-2 rounded-lg border flex flex-col items-center gap-1 ${selectedCenter.material.upsInverterAvailable ? 'bg-orange-50 border-orange-100' : 'bg-muted/20 opacity-50'}`}>
+                        <Zap className={`h-4 w-4 ${selectedCenter.material.upsInverterAvailable ? 'text-orange-600' : 'text-muted-foreground'}`} />
+                        <span className="text-[8px] font-black uppercase">UPS/Inv</span>
+                      </div>
+                      <div className={`p-2 rounded-lg border flex flex-col items-center gap-1 ${selectedCenter.material.solarAvailable ? 'bg-amber-50 border-amber-100' : 'bg-muted/20 opacity-50'}`}>
+                        <Sun className={`h-4 w-4 ${selectedCenter.material.solarAvailable ? 'text-amber-600' : 'text-muted-foreground'}`} />
+                        <span className="text-[8px] font-black uppercase">सोलर</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5">
                     <h4 className="text-[9px] font-black uppercase text-primary">दूध संकलन सरांश (Avg Milk)</h4>
                     <div className="grid grid-cols-3 gap-2">
                       <div className="p-2.5 bg-blue-50/50 border border-blue-100 rounded-lg text-center">
@@ -279,6 +313,7 @@ export default function CentersPage() {
                   <div className="space-y-1.5">
                     <h4 className="text-[9px] font-black uppercase text-primary">इतर माहिती (Notes)</h4>
                     <div className="bg-muted/10 p-2.5 rounded-lg border border-dashed text-[10px] font-medium leading-relaxed italic">
+                      <p className="mb-1"><span className="font-black">कॅन संख्या:</span> {selectedCenter.material.milkCansCount || 0}</p>
                       {selectedCenter.cattleFeedBrand && <p className="mb-1"><span className="font-black">खाद्य:</span> {selectedCenter.cattleFeedBrand}</p>}
                       {selectedCenter.additionalNotes || "कोणतीही विशेष टिप्पणी नाही."}
                     </div>
@@ -314,6 +349,15 @@ export default function CentersPage() {
                   <div className="space-y-1"><Label className="text-[9px] uppercase font-black">मोबाईल</Label><Input value={formData.mobile} onChange={e => setFormData({...formData, mobile: e.target.value})} className="h-9 text-xs rounded-md bg-muted/20 border-none" /></div>
                   <div className="space-y-1"><Label className="text-[9px] uppercase font-black">ऑपरेटर</Label><Input value={formData.operatorName} onChange={e => setFormData({...formData, operatorName: e.target.value})} className="h-9 text-xs rounded-md bg-muted/20 border-none" /></div>
                   <div className="space-y-1"><Label className="text-[9px] uppercase font-black">गाव/पत्ता</Label><Input value={formData.village} onChange={e => setFormData({...formData, village: e.target.value})} className="h-9 text-xs rounded-md bg-muted/20 border-none" /></div>
+                  <div className="col-span-2 space-y-1">
+                    <Label className="text-[9px] uppercase font-black">रूट (Route)</Label>
+                    <Select value={formData.routeId} onValueChange={v => setFormData({...formData, routeId: v})}>
+                      <SelectTrigger className="h-9 text-xs bg-muted/20 border-none"><SelectValue placeholder="रूट निवडा" /></SelectTrigger>
+                      <SelectContent>
+                        {routes.map(r => <SelectItem key={r.id} value={r.id} className="text-xs">{r.name}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                  </div>
                   <div className="space-y-1"><Label className="text-[9px] uppercase font-black">FSSAI क्र.</Label><Input value={formData.fssaiNumber} onChange={e => setFormData({...formData, fssaiNumber: e.target.value})} className="h-9 text-xs rounded-md bg-muted/20 border-none" /></div>
                   <div className="space-y-1"><Label className="text-[9px] uppercase font-black">मुदत (Expiry)</Label><Input value={formData.fssaiExpiry} onChange={e => setFormData({...formData, fssaiExpiry: e.target.value})} className="h-9 text-xs rounded-md bg-muted/20 border-none" placeholder="DD/MM/YYYY" /></div>
                 </div>
@@ -342,13 +386,30 @@ export default function CentersPage() {
               </div>
 
               <div className="space-y-4">
-                <h4 className="text-[10px] font-black uppercase text-primary border-b pb-1">३) साहित्य व इन्व्हेंटरी</h4>
+                <h4 className="text-[10px] font-black uppercase text-primary border-b pb-1">३) तांत्रिक व इन्व्हेंटरी</h4>
                 <div className="grid grid-cols-2 gap-2.5">
                   <div className="space-y-1"><Label className="text-[9px] uppercase font-black">वजन काटा ब्रँड</Label><Input value={formData.weighingScaleBrand} onChange={e => setFormData({...formData, weighingScaleBrand: e.target.value})} className="h-9 text-xs rounded-md bg-muted/20 border-none" /></div>
                   <div className="space-y-1"><Label className="text-[9px] uppercase font-black">फॅट मशीन ब्रँड</Label><Input value={formData.fatMachineBrand} onChange={e => setFormData({...formData, fatMachineBrand: e.target.value})} className="h-9 text-xs rounded-md bg-muted/20 border-none" /></div>
                   <div className="space-y-1"><Label className="text-[9px] uppercase font-black">केमिकल्स</Label><Input value={formData.chemicalsStock} onChange={e => setFormData({...formData, chemicalsStock: e.target.value})} className="h-9 text-xs rounded-md bg-muted/20 border-none" /></div>
                   <div className="space-y-1"><Label className="text-[9px] uppercase font-black">बॅटरी स्थिती</Label><Input value={formData.batteryCondition} onChange={e => setFormData({...formData, batteryCondition: e.target.value})} className="h-9 text-xs rounded-md bg-muted/20 border-none" /></div>
+                  <div className="space-y-1"><Label className="text-[9px] uppercase font-black">एकूण कॅन</Label><Input type="number" value={formData.milkCansCount} onChange={e => setFormData({...formData, milkCansCount: e.target.value})} className="h-9 text-xs rounded-md bg-muted/20 border-none" /></div>
                 </div>
+
+                <div className="grid grid-cols-1 gap-2 pt-2">
+                  <div className="flex items-center space-x-2 bg-muted/10 p-2 rounded-lg">
+                    <Checkbox id="computer" checked={formData.computerAvailable} onCheckedChange={(v) => setFormData({...formData, computerAvailable: !!v})} />
+                    <Label htmlFor="computer" className="text-[10px] font-black uppercase cursor-pointer">कॉम्प्युटर उपलब्ध आहे का?</Label>
+                  </div>
+                  <div className="flex items-center space-x-2 bg-muted/10 p-2 rounded-lg">
+                    <Checkbox id="ups" checked={formData.upsInverterAvailable} onCheckedChange={(v) => setFormData({...formData, upsInverterAvailable: !!v})} />
+                    <Label htmlFor="ups" className="text-[10px] font-black uppercase cursor-pointer">UPS / इनव्हर्टर उपलब्ध आहे का?</Label>
+                  </div>
+                  <div className="flex items-center space-x-2 bg-muted/10 p-2 rounded-lg">
+                    <Checkbox id="solar" checked={formData.solarAvailable} onCheckedChange={(v) => setFormData({...formData, solarAvailable: !!v})} />
+                    <Label htmlFor="solar" className="text-[10px] font-black uppercase cursor-pointer">सोलर उपलब्ध आहे का?</Label>
+                  </div>
+                </div>
+
                 <div className="space-y-2">
                   <div className="flex items-center justify-between"><Label className="text-[9px] font-black uppercase">साहित्य यादी</Label><Button variant="outline" size="sm" onClick={() => setFormData({...formData, equipment: [...formData.equipment, {id: crypto.randomUUID(), name: "", quantity: 1, ownership: 'Self'}]})} className="h-6 text-[8px] font-black rounded-md px-2">जोडा</Button></div>
                   <div className="space-y-1.5">
