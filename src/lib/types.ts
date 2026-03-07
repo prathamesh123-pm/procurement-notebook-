@@ -37,6 +37,11 @@ export interface Supplier {
   cattleFeedBrand?: string;
   fssaiNumber?: string;
   fssaiExpiry?: string;
+  // Material tracking for Supplier/Point
+  milkCansCount?: number;
+  computerAvailable?: boolean;
+  upsInverterAvailable?: boolean;
+  solarAvailable?: boolean;
 }
 
 export interface CenterMaterial {
