@@ -6,8 +6,8 @@ import { Separator } from "@/components/ui/separator"
 import { Toaster } from "@/components/ui/toaster"
 
 export const metadata: Metadata = {
-  title: 'Procurement Notebook - Operations Management',
-  description: 'Streamlined daily work logs, route management, and supplier profiles for milk procurement.',
+  title: 'संकलन नोंदवही - Notebook',
+  description: 'दूध संकलन व्यवस्थापन आणि दैनंदिन कार्य नोंदवही.',
 };
 
 export default function RootLayout({
@@ -26,14 +26,14 @@ export default function RootLayout({
         <SidebarProvider defaultOpen={true}>
           <DashboardSidebar />
           <SidebarInset className="bg-background">
-            <header className="flex h-16 shrink-0 items-center gap-2 border-b bg-card px-4 md:px-6 sticky top-0 z-10">
+            <header className="flex h-14 shrink-0 items-center gap-2 border-b bg-card px-4 md:px-6 sticky top-0 z-30">
               <SidebarTrigger className="-ml-1" />
               <Separator orientation="vertical" className="mr-2 h-4" />
               <div className="flex flex-1 items-center justify-between">
-                <h1 className="text-lg font-headline font-bold text-foreground tracking-tight">Procurement Notebook</h1>
+                <h1 className="text-base font-headline font-black text-foreground tracking-tight">संकलन नोंदवही</h1>
               </div>
             </header>
-            <main className="flex flex-1 flex-col gap-4 p-4 md:p-8 overflow-x-hidden">
+            <main className="flex flex-1 flex-col gap-4 p-3 md:p-8 overflow-x-hidden">
               {children}
             </main>
           </SidebarInset>

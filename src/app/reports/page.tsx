@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
@@ -7,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { 
   Archive, Calendar, FileText, ClipboardList, 
   Briefcase, ListTodo, Truck, Download, Trash2, 
-  Eye, User, Printer, X, Milk, ChevronDown, FileDown, Edit
+  Eye, User, Printer, X, Milk, ChevronDown, FileDown, Edit, AlertCircle
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { ReportType } from "@/lib/types"
@@ -54,7 +53,7 @@ export default function ReportsPage() {
       case 'Route Visit': return <Truck className="h-4 w-4" />
       case 'Daily Office Work': return <Briefcase className="h-4 w-4" />
       case 'Daily Task': return <ListTodo className="h-4 w-4" />
-      case 'Breakdown': return <Truck className="h-4 w-4" />
+      case 'Breakdown': return <AlertCircle className="h-4 w-4" />
       default: return <ClipboardList className="h-4 w-4" />
     }
   }
@@ -73,16 +72,22 @@ export default function ReportsPage() {
   const handleDelete = (id: string) => {
     if (!confirm("तुम्हाला हा रिपोर्ट कायमचा हटवायचा आहे का?")) return
     
+    // Get latest from storage to be safe
     const storedReports = JSON.parse(localStorage.getItem('procurepal_reports') || '[]')
-    const updatedReports = storedReports.filter((r: any) => r.id !== id)
-    setReports(updatedReports)
+    const updatedReports = storedReports.filter((r: any) => String(r.id) !== String(id))
+    
+    // Update storage
     localStorage.setItem('procurepal_reports', JSON.stringify(updatedReports))
     
-    // Also cleanup breakdowns if it was a breakdown report
+    // Update local state
+    setReports(updatedReports)
+    
+    // Cleanup related breakdowns
     const storedBreakdowns = JSON.parse(localStorage.getItem('procurepal_breakdowns') || '[]')
-    const updatedBreakdowns = storedBreakdowns.filter((b: any) => b.id !== id)
+    const updatedBreakdowns = storedBreakdowns.filter((b: any) => String(b.id) !== String(id))
     localStorage.setItem('procurepal_breakdowns', JSON.stringify(updatedBreakdowns))
 
+    // Close dialog if open
     if (selectedReport?.id === id) {
       setIsViewOpen(false)
       setSelectedReport(null)
@@ -136,13 +141,13 @@ export default function ReportsPage() {
 
       <div className="px-3 space-y-1 no-print">
         <h2 className="text-xl font-black text-slate-900 tracking-tight">View Reports</h2>
-        <p className="text-[11px] font-medium text-slate-500 uppercase tracking-widest leading-none">Management Dashboard</p>
+        <p className="text-[11px] font-bold text-slate-500 uppercase tracking-widest leading-none">अहवाल व्यवस्थापन डॅशबोर्ड</p>
       </div>
 
       <div className="mt-4 px-3 no-print">
         <div className="bg-blue-50/80 border border-blue-100 rounded-xl p-3 flex items-center gap-3 shadow-sm">
-          <div className="p-2 bg-blue-100 rounded-lg">
-            <Archive className="h-4 w-4 text-blue-600" />
+          <div className="p-2 bg-blue-600 rounded-lg">
+            <Archive className="h-4 w-4 text-white" />
           </div>
           <span className="text-[11px] font-black text-blue-700 uppercase tracking-tight">{reports.length} Reports Archived</span>
         </div>
@@ -150,7 +155,7 @@ export default function ReportsPage() {
 
       <div className="mt-4 px-3 no-print">
         <Card className="border shadow-none rounded-xl overflow-hidden bg-white">
-          <CardContent className="p-3 space-y-3">
+          <CardContent className="p-2.5 space-y-3">
             <ScrollArea className="w-full whitespace-nowrap">
               <div className="flex gap-1.5 pb-1">
                 {['All', 'Field Visit', 'Route Visit', 'Daily Task', 'Breakdown'].map((type) => (
@@ -161,13 +166,13 @@ export default function ReportsPage() {
                     onClick={() => setActiveFilter(type as any)}
                     className={`font-black rounded-lg px-3 h-8 text-[10px] transition-all ${activeFilter === type ? 'bg-primary text-white' : 'text-slate-600'}`}
                   >
-                    {type}
+                    {type === 'All' ? 'सर्व' : type === 'Field Visit' ? 'क्षेत्र भेट' : type === 'Route Visit' ? 'रूट भेट' : type === 'Daily Task' ? 'टास्क' : 'ब्रेकडाऊन'}
                   </Button>
                 ))}
               </div>
             </ScrollArea>
             <div className="flex items-center gap-2 pt-2 border-t">
-              <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Date:</span>
+              <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">तारीख:</span>
               <Input 
                 type="date" 
                 className="h-8 w-full text-[11px] font-bold bg-slate-50 border-slate-200 rounded-lg focus-visible:ring-primary py-0" 
@@ -182,7 +187,7 @@ export default function ReportsPage() {
       <div className="grid grid-cols-1 gap-3 mt-4 no-print px-3">
         {filteredReports.length > 0 ? (
           filteredReports.map((report) => (
-            <Card key={report.id} className="border shadow-none overflow-hidden bg-white rounded-2xl transition-all active:scale-[0.98]">
+            <Card key={report.id} className="border shadow-none overflow-hidden bg-white rounded-2xl transition-all relative">
               <CardContent className="p-3.5">
                 <div className="flex flex-col gap-3">
                   <div className="flex items-start justify-between gap-2">
@@ -197,17 +202,17 @@ export default function ReportsPage() {
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-1 shrink-0">
+                    <div className="flex items-center gap-1 shrink-0 relative z-10">
                       <Badge variant="outline" className="text-[8px] font-mono text-slate-400 border-slate-200 h-5 px-1.5 rounded-md bg-slate-50">
                         ID: {report.id?.slice(0, 6)}
                       </Badge>
                       <Button 
                         variant="ghost" 
                         size="icon" 
-                        className="h-7 w-7 text-destructive rounded-full hover:bg-red-50" 
-                        onClick={(e) => { e.stopPropagation(); handleDelete(report.id); }}
+                        className="h-8 w-8 text-destructive rounded-full hover:bg-red-50" 
+                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleDelete(report.id); }}
                       >
-                        <Trash2 className="h-3.5 w-3.5" />
+                        <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
                   </div>
@@ -220,20 +225,20 @@ export default function ReportsPage() {
                     <Button 
                       variant="outline" 
                       onClick={() => handleViewReport(report)} 
-                      className="w-full font-black text-[10px] h-8 rounded-lg border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 flex gap-1.5 px-1"
+                      className="w-full font-black text-[10px] h-8 rounded-lg border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 flex gap-1 px-1"
                     >
                       <Eye className="h-3 w-3" /> पहा
                     </Button>
                     <Button 
                       variant="outline"
                       onClick={() => handleEditClick(report)}
-                      className="w-full font-black text-[10px] h-8 rounded-lg border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 flex gap-1.5 px-1"
+                      className="w-full font-black text-[10px] h-8 rounded-lg border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 flex gap-1 px-1"
                     >
                       <Edit className="h-3 w-3" /> एडिट
                     </Button>
                     <Button 
                       onClick={() => { setSelectedReport(report); setTimeout(handleDownloadPDF, 100); }} 
-                      className="w-full font-black text-[10px] h-8 rounded-lg bg-primary text-white shadow-sm flex gap-1.5 px-1"
+                      className="w-full font-black text-[10px] h-8 rounded-lg bg-primary text-white shadow-sm flex gap-1 px-1"
                     >
                       <FileDown className="h-3 w-3" /> प्रिंट
                     </Button>
@@ -247,7 +252,7 @@ export default function ReportsPage() {
              <Archive className="h-8 w-8 text-slate-200" />
              <div className="space-y-0.5">
                <h3 className="text-[11px] font-black text-slate-400 uppercase tracking-widest">No reports found</h3>
-               <p className="text-[9px] text-slate-300 font-bold uppercase tracking-tight">Try adjusting filters</p>
+               <p className="text-[9px] text-slate-300 font-bold uppercase tracking-tight">कृपया फिल्टर तपासा</p>
              </div>
           </div>
         )}
@@ -275,65 +280,70 @@ export default function ReportsPage() {
 
       <Dialog open={isViewOpen} onOpenChange={setIsViewOpen}>
         <DialogContent className="max-w-2xl h-[95vh] sm:h-[90vh] flex flex-col p-0 bg-white overflow-hidden rounded-none sm:rounded-xl border-none">
-          <DialogHeader className="p-2 border-b no-print bg-slate-50 flex flex-row items-center justify-between shrink-0">
-            <DialogTitle className="text-[10px] font-black flex items-center gap-2 px-2 uppercase tracking-widest text-slate-500">
-              <FileText className="h-3.5 w-3.5 text-primary" /> Document View
+          <DialogHeader className="p-2 border-b no-print bg-slate-100 flex flex-row items-center justify-between shrink-0">
+            <DialogTitle className="text-[10px] font-black flex items-center gap-2 px-2 uppercase tracking-widest text-slate-600">
+              <FileText className="h-3.5 w-3.5 text-primary" /> अहवाल पाहणी
             </DialogTitle>
             <div className="flex gap-1.5 pr-8">
-              <Button size="sm" variant="ghost" className="h-8 text-[10px] font-black text-destructive" onClick={() => selectedReport && handleDelete(selectedReport.id)}><Trash2 className="h-3.5 w-3.5 mr-1" /> डिलीट</Button>
-              <Button size="sm" className="gap-1.5 font-black rounded-lg bg-primary h-8 text-[10px] px-3" onClick={handleDownloadPDF}><Printer className="h-3.5 w-3.5" /> Print</Button>
+              <Button size="sm" variant="ghost" className="h-8 text-[10px] font-black text-destructive" onClick={() => selectedReport && handleDelete(selectedReport.id)}><Trash2 className="h-3.5 w-3.5 mr-1" /> हटवा</Button>
+              <Button size="sm" className="gap-1.5 font-black rounded-lg bg-primary h-8 text-[10px] px-3 shadow-md" onClick={handleDownloadPDF}><Printer className="h-3.5 w-3.5" /> प्रिंट</Button>
               <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={() => setIsViewOpen(false)}><X className="h-4 w-4" /></Button>
             </div>
           </DialogHeader>
 
-          <ScrollArea className="flex-grow">
+          <ScrollArea className="flex-grow bg-slate-50/30">
             {selectedReport && (
               <div className="p-4 sm:p-8 space-y-5 bg-white" id="printable-report-content">
-                <div className="flex flex-col items-center border-b-2 border-slate-900 pb-4 text-center space-y-2">
-                  <div className="flex items-center gap-2">
-                    <Milk className="h-8 w-8 text-primary" />
-                    <h1 className="text-xl sm:text-2xl font-black uppercase tracking-tighter text-slate-900">अधिनिर्णय अहवाल</h1>
+                {/* Official Colorful Header */}
+                <div className="flex flex-col items-center border-b-4 border-primary pb-4 text-center space-y-2 bg-gradient-to-b from-primary/5 to-white pt-2 rounded-t-xl">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-primary rounded-xl shadow-lg">
+                      <Milk className="h-8 w-8 text-white" />
+                    </div>
+                    <h1 className="text-2xl sm:text-3xl font-black uppercase tracking-tighter text-slate-900">अधिनिर्णय अहवाल</h1>
                   </div>
-                  <div className="bg-primary text-white px-6 py-1 rounded-full text-[9px] font-black uppercase tracking-[0.2em] shadow-sm">
-                    OFFICIAL WORK REPORT
+                  <div className="bg-primary text-white px-8 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.3em] shadow-md">
+                    OFFICIAL REPORT
                   </div>
-                  <div className="grid grid-cols-3 w-full mt-3 text-[9px] font-black uppercase border-t border-slate-100 pt-4">
-                    <div className="flex flex-col text-left"><span className="text-slate-400 text-[7px] tracking-widest">प्रतिनिधी:</span> <span className="text-primary">{profileName || selectedReport.fullData?.name || 'N/A'}</span></div>
-                    <div className="flex flex-col text-center"><span className="text-slate-400 text-[7px] tracking-widest">तारीख:</span> <span className="text-slate-900">{selectedReport.date}</span></div>
-                    <div className="flex flex-col text-right"><span className="text-slate-400 text-[7px] tracking-widest">शिफ्ट:</span> <span className="text-orange-600">{selectedReport.fullData?.shift || 'N/A'}</span></div>
+                  <div className="grid grid-cols-3 w-full mt-4 text-[10px] font-black uppercase px-4">
+                    <div className="flex flex-col text-left border-l-2 border-primary/20 pl-2"><span className="text-slate-400 text-[8px] tracking-widest">प्रतिनिधी:</span> <span className="text-primary truncate">{profileName || selectedReport.fullData?.name || 'N/A'}</span></div>
+                    <div className="flex flex-col text-center border-l-2 border-primary/20"><span className="text-slate-400 text-[8px] tracking-widest">तारीख:</span> <span className="text-slate-900">{selectedReport.date}</span></div>
+                    <div className="flex flex-col text-right border-l-2 border-primary/20"><span className="text-slate-400 text-[8px] tracking-widest">शिफ्ट:</span> <span className="text-orange-600">{selectedReport.fullData?.shift || 'N/A'}</span></div>
                   </div>
                 </div>
 
                 {selectedReport.type === 'Route Visit' && (
-                  <div className="space-y-3">
-                    <div className="grid grid-cols-4 gap-2 p-3 border rounded-xl bg-blue-50/30 border-blue-100">
-                      <div><Label className="text-[7px] font-black uppercase text-slate-400">VEHICLE</Label><p className="text-[11px] font-black text-slate-900">{selectedReport.fullData?.vehicleNumber || '-'}</p></div>
-                      <div><Label className="text-[7px] font-black uppercase text-slate-400">DISTANCE</Label><p className="text-[11px] font-black text-primary">{selectedReport.fullData?.totalKm || '0'} KM</p></div>
-                      <div><Label className="text-[7px] font-black uppercase text-slate-400">TIME</Label><p className="text-[11px] font-black text-slate-900">{selectedReport.fullData?.routeOutTime || '-'}</p></div>
-                      <div className="text-right"><Label className="text-[7px] font-black uppercase text-slate-400">SHORTAGE</Label><p className="text-[11px] font-black text-red-600">{selectedReport.fullData?.shortageLiters || '0'} L</p></div>
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-4 gap-2 p-4 border rounded-xl bg-blue-600 text-white shadow-lg">
+                      <div><Label className="text-[8px] font-black uppercase text-blue-100">वाहन</Label><p className="text-[12px] font-black">{selectedReport.fullData?.vehicleNumber || '-'}</p></div>
+                      <div><Label className="text-[8px] font-black uppercase text-blue-100">अंतर</Label><p className="text-[12px] font-black">{selectedReport.fullData?.totalKm || '0'} KM</p></div>
+                      <div><Label className="text-[8px] font-black uppercase text-blue-100">वेळ</Label><p className="text-[12px] font-black">{selectedReport.fullData?.routeOutTime || '-'}</p></div>
+                      <div className="text-right"><Label className="text-[8px] font-black uppercase text-blue-100">तूट</Label><p className="text-[12px] font-black text-red-200">{selectedReport.fullData?.shortageLiters || '0'} L</p></div>
                     </div>
 
-                    <div className="border rounded-xl overflow-hidden border-slate-200 overflow-x-auto shadow-sm">
-                      <table className="w-full text-[10px] border-collapse min-w-[300px]">
+                    <div className="border rounded-xl overflow-hidden border-slate-200 shadow-lg bg-white">
+                      <table className="w-full text-[11px] border-collapse min-w-[300px]">
                         <thead className="bg-slate-900 text-white">
-                          <tr className="uppercase font-black text-[8px] tracking-widest">
-                            <th className="p-2 text-left w-8">#</th>
-                            <th className="p-2 text-left">CENTER</th>
-                            <th className="p-2 text-center">ICE</th>
-                            <th className="p-2 text-center">CANS (E/F)</th>
+                          <tr className="uppercase font-black text-[9px] tracking-widest">
+                            <th className="p-3 text-left w-10">#</th>
+                            <th className="p-3 text-left">केंद्र (Center)</th>
+                            <th className="p-3 text-center">बर्फ (Ice)</th>
+                            <th className="p-3 text-center">कॅन (E/F)</th>
                           </tr>
                         </thead>
                         <tbody>
                           {selectedReport.fullData?.routeVisitLogs?.map((log: any, idx: number) => (
-                            <tr key={idx} className="border-b border-slate-100 last:border-0 odd:bg-white even:bg-slate-50/30">
-                              <td className="p-2 text-center font-bold text-slate-300">{idx + 1}</td>
-                              <td className="p-2">
-                                <p className="font-black text-slate-900">{log.centerCode}</p>
-                                <p className="text-[8px] text-primary font-bold uppercase truncate max-w-[80px]">{log.supplierName}</p>
+                            <tr key={idx} className="border-b border-slate-100 last:border-0 odd:bg-white even:bg-slate-50/50 hover:bg-primary/5 transition-colors">
+                              <td className="p-3 text-center font-black text-slate-300">{idx + 1}</td>
+                              <td className="p-3">
+                                <p className="font-black text-slate-900 text-[12px]">{log.centerCode}</p>
+                                <p className="text-[9px] text-primary font-black uppercase truncate max-w-[120px]">{log.supplierName}</p>
                               </td>
-                              <td className="p-2 text-center font-black text-slate-700">{log.iceAllocated || '0'}</td>
-                              <td className="p-2 text-center font-black">
-                                <span className="text-slate-400">E:</span>{log.emptyCans} <span className="mx-0.5 text-slate-200">|</span> <span className="text-emerald-600">F:</span>{log.fullCans}
+                              <td className="p-3 text-center">
+                                <Badge variant="outline" className="font-black text-slate-700 border-slate-300">{log.iceAllocated || '0'}</Badge>
+                              </td>
+                              <td className="p-3 text-center font-black">
+                                <span className="text-slate-400">E:</span>{log.emptyCans} <span className="mx-1 text-slate-200">|</span> <span className="text-emerald-600 font-bold">F:</span>{log.fullCans}
                               </td>
                             </tr>
                           ))}
@@ -345,32 +355,32 @@ export default function ReportsPage() {
 
                 {selectedReport.type === 'Breakdown' && (
                   <div className="space-y-4">
-                    <div className="grid grid-cols-2 gap-3 p-3 border rounded-xl bg-red-50/30 border-red-100">
-                      <div><Label className="text-[7px] font-black uppercase text-slate-400">ROUTE</Label><p className="text-[11px] font-black text-red-700">{selectedReport.fullData?.routeName}</p></div>
-                      <div><Label className="text-[7px] font-black uppercase text-slate-400">VEHICLE</Label><p className="text-[11px] font-black">{selectedReport.fullData?.vehicleNumber} ({selectedReport.fullData?.vehicleType})</p></div>
-                      <div><Label className="text-[7px] font-black uppercase text-slate-400">LOCATION</Label><p className="text-[11px] font-black">{selectedReport.fullData?.location}</p></div>
-                      <div><Label className="text-[7px] font-black uppercase text-slate-400">TOTAL LOSS</Label><p className="text-[11px] font-black text-red-600">₹{selectedReport.fullData?.totalLossAmount}</p></div>
+                    <div className="grid grid-cols-2 gap-3 p-4 border-2 border-red-200 rounded-xl bg-red-50 shadow-md">
+                      <div><Label className="text-[8px] font-black uppercase text-red-400">रूट</Label><p className="text-[12px] font-black text-red-700">{selectedReport.fullData?.routeName}</p></div>
+                      <div><Label className="text-[8px] font-black uppercase text-red-400">वाहन</Label><p className="text-[12px] font-black">{selectedReport.fullData?.vehicleNumber}</p></div>
+                      <div><Label className="text-[8px] font-black uppercase text-red-400">ठिकाण</Label><p className="text-[12px] font-black">{selectedReport.fullData?.location}</p></div>
+                      <div className="text-right"><Label className="text-[8px] font-black uppercase text-red-400">एकूण नुकसान</Label><p className="text-[14px] font-black text-red-600">₹{selectedReport.fullData?.totalLossAmount}</p></div>
                     </div>
-                    <div className="border rounded-xl overflow-hidden border-red-100 shadow-sm">
-                      <table className="w-full text-[10px] border-collapse">
+                    <div className="border rounded-xl overflow-hidden border-red-100 shadow-lg bg-white">
+                      <table className="w-full text-[11px] border-collapse">
                         <thead className="bg-red-600 text-white">
-                          <tr className="uppercase font-black text-[8px] tracking-widest">
-                            <th className="p-2 text-left">SUPPLIER</th>
-                            <th className="p-2 text-center">BUF</th>
-                            <th className="p-2 text-center">COW</th>
-                            <th className="p-2 text-right">AMT</th>
+                          <tr className="uppercase font-black text-[9px] tracking-widest">
+                            <th className="p-3 text-left">गवळी (Supplier)</th>
+                            <th className="p-3 text-center">म्हेस</th>
+                            <th className="p-3 text-center">गाय</th>
+                            <th className="p-3 text-right">रक्कम</th>
                           </tr>
                         </thead>
                         <tbody>
                           {selectedReport.fullData?.losses?.map((loss: any, idx: number) => (
-                            <tr key={idx} className="border-b border-red-50 last:border-0 odd:bg-white even:bg-red-50/20">
-                              <td className="p-2">
+                            <tr key={idx} className="border-b border-red-50 last:border-0 odd:bg-white even:bg-red-50/30">
+                              <td className="p-3">
                                 <p className="font-black text-slate-900">{loss.supplierCode}</p>
-                                <p className="text-[8px] text-red-500 font-bold uppercase">{loss.supplierName}</p>
+                                <p className="text-[9px] text-red-500 font-black uppercase">{loss.supplierName}</p>
                               </td>
-                              <td className="p-2 text-center font-black text-amber-700">{loss.bufMilkLossLiters}L</td>
-                              <td className="p-2 text-center font-black text-blue-700">{loss.cowMilkLossLiters}L</td>
-                              <td className="p-2 text-right font-black text-red-600">₹{loss.lossAmount}</td>
+                              <td className="p-3 text-center font-black text-amber-700 bg-amber-50/30">{loss.bufMilkLossLiters}L</td>
+                              <td className="p-3 text-center font-black text-blue-700 bg-blue-50/30">{loss.cowMilkLossLiters}L</td>
+                              <td className="p-3 text-right font-black text-red-600">₹{loss.lossAmount}</td>
                             </tr>
                           ))}
                         </tbody>
@@ -380,29 +390,30 @@ export default function ReportsPage() {
                 )}
 
                 {(selectedReport.type === 'Field Visit' || selectedReport.type === 'Daily Office Work' || selectedReport.type === 'Daily Task') && (
-                  <div className="p-4 border border-slate-200 rounded-xl bg-slate-50/30 space-y-2">
-                    <Label className="text-[8px] font-black uppercase text-primary tracking-widest block border-b border-primary/10 pb-1">निरीक्षण आणि टिप्पणी (OBSERVATIONS)</Label>
-                    <div className="bg-white p-3 rounded-lg border border-slate-100 min-h-[100px] shadow-inner">
-                      <p className="text-[11px] leading-relaxed whitespace-pre-wrap font-medium text-slate-800 italic">
-                        {selectedReport.summary || "No data available."}
+                  <div className="p-5 border-2 border-primary/10 rounded-2xl bg-gradient-to-br from-white to-primary/5 space-y-3 shadow-md">
+                    <Label className="text-[10px] font-black uppercase text-primary tracking-[0.2em] block border-b-2 border-primary/10 pb-2 flex items-center gap-2">
+                      <FileText className="h-4 w-4" /> निरीक्षण आणि टिप्पणी (OBSERVATIONS)
+                    </Label>
+                    <div className="bg-white p-4 rounded-xl border border-primary/5 min-h-[150px] shadow-inner">
+                      <p className="text-[12px] leading-relaxed whitespace-pre-wrap font-bold text-slate-800 italic">
+                        {selectedReport.summary || "माहिती उपलब्ध नाही."}
                       </p>
                     </div>
                   </div>
                 )}
 
-                <div className="pt-8 pb-2">
-                  <div className="flex justify-between items-end gap-10 px-4">
-                    <div className="text-center flex-1 space-y-2">
-                      <div className="border-b border-slate-900 pb-1">
-                        <span className="text-[10px] font-black text-slate-900">{profileName || '_________________'}</span>
+                {/* Footer Signatures */}
+                <div className="pt-12 pb-4">
+                  <div className="flex justify-between items-end gap-12 px-6">
+                    <div className="text-center flex-1 space-y-3">
+                      <div className="border-b-2 border-slate-900 pb-1 h-10 flex items-end justify-center">
+                        <span className="text-[11px] font-black text-primary">{profileName || '_________________'}</span>
                       </div>
-                      <span className="text-[7px] font-black uppercase text-slate-400 tracking-widest">प्रतिनिधी स्वाक्षरी</span>
+                      <span className="text-[8px] font-black uppercase text-slate-400 tracking-widest">प्रतिनिधी स्वाक्षरी</span>
                     </div>
-                    <div className="text-center flex-1 space-y-2">
-                      <div className="border-b border-slate-900 pb-1">
-                        <span className="text-[10px] font-black text-transparent">SIGNATURE</span>
-                      </div>
-                      <span className="text-[7px] font-black uppercase text-slate-400 tracking-widest">पर्यवेक्षक स्वाक्षरी</span>
+                    <div className="text-center flex-1 space-y-3">
+                      <div className="border-b-2 border-slate-900 pb-1 h-10"></div>
+                      <span className="text-[8px] font-black uppercase text-slate-400 tracking-widest">पर्यवेक्षक स्वाक्षरी</span>
                     </div>
                   </div>
                 </div>
