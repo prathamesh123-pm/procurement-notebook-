@@ -1,28 +1,53 @@
+
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { useToast } from "@/hooks/use-toast"
-import { UserCircle, Save, IdCard } from "lucide-react"
+import { 
+  UserCircle, 
+  Save, 
+  IdCard, 
+  ShieldCheck, 
+  Upload, 
+  Trash2, 
+  Maximize2, 
+  X, 
+  Image as ImageIcon 
+} from "lucide-react"
+import Image from "next/image"
 
 export default function ProfilePage() {
+  // Profile State
   const [name, setName] = useState("")
   const [employeeId, setEmployeeId] = useState("")
+  
+  // Permission Photo State
+  const [photo, setPhoto] = useState<string | null>(null)
+  const [isFullView, setIsFullView] = useState(false)
   const [mounted, setMounted] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const { toast } = useToast()
 
   useEffect(() => {
     setMounted(true)
+    // Load Profile Data
     const savedName = localStorage.getItem('procurenote_user_name') || ""
     const savedId = localStorage.getItem('procurenote_user_id') || ""
     setName(savedName)
     setEmployeeId(savedId)
+
+    // Load Permission Photo
+    const storedPhoto = localStorage.getItem('procurenote_permission_photo')
+    if (storedPhoto) {
+      setPhoto(storedPhoto)
+    }
   }, [])
 
-  const handleSave = () => {
+  const handleSaveProfile = () => {
     localStorage.setItem('procurenote_user_name', name)
     localStorage.setItem('procurenote_user_id', employeeId)
     toast({
@@ -31,55 +56,195 @@ export default function ProfilePage() {
     })
   }
 
+  const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) { // 5MB Limit
+        toast({
+          title: "मोठी फाईल",
+          description: "कृपया ५ एमबी पेक्षा कमी आकाराचा फोटो निवडा.",
+          variant: "destructive"
+        })
+        return
+      }
+
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        const base64String = reader.result as string
+        setPhoto(base64String)
+        localStorage.setItem('procurenote_permission_photo', base64String)
+        toast({
+          title: "फोटो जतन केला",
+          description: "तुमचे परवानगी पत्र यशस्वीरित्या अपलोड झाले आहे."
+        })
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  const handleDeletePhoto = () => {
+    if (confirm("तुम्हाला हा फोटो हटवायचा आहे का?")) {
+      setPhoto(null)
+      localStorage.removeItem('procurenote_permission_photo')
+      toast({
+        title: "फोटो हटवला",
+        description: "परवानगी पत्राचा फोटो काढून टाकला आहे."
+      })
+    }
+  }
+
   if (!mounted) return null
 
   return (
-    <div className="space-y-8 max-w-2xl mx-auto w-full pb-10">
+    <div className="space-y-8 max-w-4xl mx-auto w-full pb-20">
       <div className="flex flex-col gap-1">
         <h2 className="text-3xl font-headline font-bold text-foreground tracking-tight flex items-center gap-3">
           <UserCircle className="h-8 w-8 text-primary" /> 
-          तुमची प्रोफाईल (Your Profile)
+          प्रोफाईल आणि ओळख (Profile & Identity)
         </h2>
-        <p className="text-muted-foreground font-medium">येथे तुमची मूलभूत माहिती जतन करा जेणेकरून अहवाल भरताना ती आपोआप येईल.</p>
+        <p className="text-muted-foreground font-medium">येथे तुमची वैयक्तिक माहिती आणि कामाचे परवानगी पत्र जतन करा.</p>
       </div>
 
-      <Card className="border-none shadow-sm bg-white overflow-hidden">
-        <CardHeader className="bg-primary/5 border-b">
-          <CardTitle className="text-lg font-bold">वैयक्तिक माहिती (Personal Details)</CardTitle>
-          <CardDescription>अहवालावर दिसणारे तुमचे नाव आणि आयडी.</CardDescription>
-        </CardHeader>
-        <CardContent className="p-6 space-y-6">
-          <div className="space-y-2">
-            <Label htmlFor="userName" className="font-bold flex items-center gap-2">
-              <UserCircle className="h-4 w-4 text-primary" /> पूर्ण नाव (Full Name)
-            </Label>
-            <Input 
-              id="userName" 
-              placeholder="तुमचे पूर्ण नाव लिहा" 
-              value={name} 
-              onChange={(e) => setName(e.target.value)} 
-              className="h-11 bg-muted/30"
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="userId" className="font-bold flex items-center gap-2">
-              <IdCard className="h-4 w-4 text-primary" /> कर्मचारी आयडी (Employee ID)
-            </Label>
-            <Input 
-              id="userId" 
-              placeholder="तुमचा आयडी नंबर लिहा" 
-              value={employeeId} 
-              onChange={(e) => setEmployeeId(e.target.value)} 
-              className="h-11 bg-muted/30"
-            />
-          </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Left Column: Personal Info */}
+        <div className="space-y-8">
+          <Card className="border-none shadow-sm bg-white overflow-hidden">
+            <CardHeader className="bg-primary/5 border-b">
+              <CardTitle className="text-lg font-bold flex items-center gap-2">
+                <IdCard className="h-5 w-5 text-primary" /> वैयक्तिक माहिती (Personal Info)
+              </CardTitle>
+              <CardDescription>अहवालावर दिसणारे तुमचे नाव आणि आयडी.</CardDescription>
+            </CardHeader>
+            <CardContent className="p-6 space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="userName" className="font-bold flex items-center gap-2">
+                  पूर्ण नाव (Full Name)
+                </Label>
+                <Input 
+                  id="userName" 
+                  placeholder="तुमचे पूर्ण नाव लिहा" 
+                  value={name} 
+                  onChange={(e) => setName(e.target.value)} 
+                  className="h-11 bg-muted/30"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="userId" className="font-bold flex items-center gap-2">
+                  कर्मचारी आयडी (Employee ID)
+                </Label>
+                <Input 
+                  id="userId" 
+                  placeholder="तुमचा आयडी नंबर लिहा" 
+                  value={employeeId} 
+                  onChange={(e) => setEmployeeId(e.target.value)} 
+                  className="h-11 bg-muted/30"
+                />
+              </div>
 
-          <Button onClick={handleSave} className="w-full gap-2 font-bold h-11 shadow-sm mt-4">
-            <Save className="h-4 w-4" /> माहिती जतन करा (Save Profile)
+              <Button onClick={handleSaveProfile} className="w-full gap-2 font-bold h-11 shadow-sm mt-4">
+                <Save className="h-4 w-4" /> माहिती जतन करा (Save Profile)
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Right Column: Permission Letter */}
+        <div className="space-y-8">
+          <Card className="border-none shadow-sm bg-white overflow-hidden h-full">
+            <CardHeader className="bg-primary/5 border-b">
+              <CardTitle className="text-lg font-bold flex items-center gap-2">
+                <ShieldCheck className="h-5 w-5 text-primary" /> परवानगी पत्र (Auth Letter)
+              </CardTitle>
+              <CardDescription>
+                तुमचे अधिकृत परवानगी पत्र अपलोड करा.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="p-6 flex flex-col items-center justify-center min-h-[300px]">
+              {photo ? (
+                <div className="relative w-full group">
+                  <div className="relative aspect-[3/4] w-full rounded-xl overflow-hidden border-2 border-primary/20 shadow-lg bg-muted">
+                    <Image 
+                      src={photo} 
+                      alt="Permission Letter" 
+                      fill 
+                      className="object-contain"
+                      unoptimized
+                    />
+                  </div>
+                  <div className="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Button 
+                      size="icon" 
+                      variant="secondary" 
+                      className="h-9 w-9 rounded-full shadow-md"
+                      onClick={() => setIsFullView(true)}
+                    >
+                      <Maximize2 className="h-4 w-4" />
+                    </Button>
+                    <Button 
+                      size="icon" 
+                      variant="destructive" 
+                      className="h-9 w-9 rounded-full shadow-md"
+                      onClick={handleDeletePhoto}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <div className="mt-4 flex justify-center">
+                    <Button variant="outline" size="sm" onClick={() => setIsFullView(true)} className="gap-2 font-bold">
+                      <Maximize2 className="h-3 w-3" /> पूर्ण स्क्रीनवर पहा
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center gap-4 text-center py-10">
+                  <div className="p-6 rounded-full bg-primary/5 border-2 border-dashed border-primary/20">
+                    <ImageIcon className="h-10 w-10 text-muted-foreground/40" />
+                  </div>
+                  <div className="space-y-1">
+                    <h3 className="font-bold text-sm">फोटो अपलोड नाही</h3>
+                    <p className="text-[10px] text-muted-foreground max-w-[150px]">परवानगी पत्राचा स्पष्ट फोटो अपलोड करा.</p>
+                  </div>
+                  <Button onClick={() => fileInputRef.current?.click()} size="sm" className="gap-2 font-bold">
+                    <Upload className="h-3 w-3" /> फोटो निवडा
+                  </Button>
+                </div>
+              )}
+              <input 
+                type="file" 
+                ref={fileInputRef} 
+                className="hidden" 
+                accept="image/*" 
+                onChange={handlePhotoUpload} 
+              />
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+      {/* Full Screen View Modal */}
+      {isFullView && photo && (
+        <div className="fixed inset-0 z-[100] bg-black/95 flex flex-col items-center justify-center p-4">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="absolute top-4 right-4 text-white hover:bg-white/10 h-12 w-12 rounded-full"
+            onClick={() => setIsFullView(false)}
+          >
+            <X className="h-8 w-8" />
           </Button>
-        </CardContent>
-      </Card>
+          <div className="relative w-full h-full max-w-4xl max-h-[90vh]">
+            <Image 
+              src={photo} 
+              alt="Permission Full View" 
+              fill 
+              className="object-contain"
+              unoptimized
+            />
+          </div>
+          <p className="mt-4 text-white/60 font-bold text-xs uppercase tracking-widest">परवानगी पत्र - {name || 'Representative'}</p>
+        </div>
+      )}
     </div>
   )
 }
