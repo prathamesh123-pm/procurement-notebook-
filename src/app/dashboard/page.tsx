@@ -42,7 +42,7 @@ export default function DashboardOverview() {
   }, [])
 
   if (!mounted) {
-    return <div className="flex items-center justify-center h-[80vh] text-muted-foreground italic">माहिती लोड होत आहे... (Loading...)</div>
+    return <div className="flex items-center justify-center h-[80vh] text-muted-foreground italic text-sm">माहिती लोड होत आहे... (Loading...)</div>
   }
 
   const statCards = [
@@ -99,10 +99,10 @@ export default function DashboardOverview() {
             <TrendingUp className="h-6 w-6 sm:h-8 sm:w-8 text-primary" /> 
             डॅशबोर्ड (Dashboard)
           </h2>
-          <p className="text-muted-foreground font-bold text-[10px] sm:text-xs uppercase tracking-widest ml-1">Today's Overview</p>
+          <p className="text-muted-foreground font-bold text-[11px] sm:text-sm uppercase tracking-widest ml-1">Today's Overview</p>
         </div>
-        <Badge variant="outline" className="w-fit px-3 py-1 rounded-full border-primary/20 bg-primary/5 text-primary font-black text-[10px] uppercase">
-          <Calendar className="h-3 w-3 mr-1.5" /> {new Date().toLocaleDateString('mr-IN')}
+        <Badge variant="outline" className="w-fit px-3 py-1 rounded-full border-primary/20 bg-primary/5 text-primary font-black text-[11px] uppercase">
+          <Calendar className="h-3.5 w-3.5 mr-1.5" /> {new Date().toLocaleDateString('mr-IN')}
         </Badge>
       </div>
 
@@ -117,9 +117,9 @@ export default function DashboardOverview() {
                 </div>
               </div>
               <div>
-                <p className="text-[9px] font-black uppercase text-muted-foreground truncate">{stat.title}</p>
+                <p className="text-[10px] font-black uppercase text-muted-foreground truncate">{stat.title}</p>
                 <div className="text-lg sm:text-2xl font-black tracking-tight text-foreground mt-0.5">{stat.value}</div>
-                <p className="text-[8px] text-muted-foreground mt-1 font-bold uppercase truncate">{stat.subValue}</p>
+                <p className="text-[9px] text-muted-foreground mt-1 font-bold uppercase truncate">{stat.subValue}</p>
               </div>
             </div>
           </Card>
@@ -141,7 +141,7 @@ export default function DashboardOverview() {
                   </div>
                   <div>
                     <h4 className="font-black text-xs text-foreground leading-tight">{action.title}</h4>
-                    <p className="text-[9px] text-muted-foreground mt-0.5 font-bold uppercase">{action.sub}</p>
+                    <p className="text-[10px] text-muted-foreground mt-0.5 font-bold uppercase">{action.sub}</p>
                   </div>
                 </CardContent>
               </Card>

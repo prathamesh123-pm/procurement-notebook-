@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -75,17 +76,17 @@ export function DashboardSidebar() {
             <span className="font-headline text-base font-bold tracking-tight text-foreground">
               Procurement Notebook
             </span>
-            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">दूध संकलन नोंदवही</span>
+            <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest">दूध संकलन नोंदवही</span>
           </div>
         </div>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel className="px-6 py-6 uppercase tracking-[0.2em] text-[10px] font-bold text-muted-foreground/60 group-data-[collapsible=icon]:hidden">
+          <SidebarGroupLabel className="px-6 py-6 uppercase tracking-[0.2em] text-[11px] font-bold text-muted-foreground/60 group-data-[collapsible=icon]:hidden">
             मुख्य मेनू (Main Menu)
           </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu className="px-3 gap-1">
+            <SidebarMenu className="px-3 gap-1.5">
               {items.map((item) => {
                 const isActive = pathname === item.url || (item.url !== '/dashboard' && pathname?.startsWith(item.url));
                 return (
@@ -97,8 +98,8 @@ export function DashboardSidebar() {
                       className="flex h-12 items-center gap-4 rounded-xl px-4 transition-all hover:bg-primary/5 hover:text-primary data-[active=true]:bg-primary data-[active=true]:text-primary-foreground data-[active=true]:shadow-md data-[active=true]:shadow-primary/20"
                     >
                       <Link href={item.url}>
-                        <item.icon className="h-5 w-5" />
-                        <span className="font-bold tracking-wide text-xs">{item.title}</span>
+                        <item.icon className="h-5.5 w-5.5" />
+                        <span className="font-bold tracking-wide text-sm">{item.title}</span>
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -113,8 +114,8 @@ export function DashboardSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton asChild className="text-destructive hover:text-destructive hover:bg-destructive/10 h-12 rounded-xl px-4 font-bold">
               <Link href="/">
-                <LogOut className="h-5 w-5" />
-                <span className="text-xs">बाहेर पडा (Sign Out)</span>
+                <LogOut className="h-5.5 w-5.5" />
+                <span className="text-sm">बाहेर पडा (Sign Out)</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
