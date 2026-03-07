@@ -20,37 +20,37 @@ import {
 
 const items = [
   {
-    title: "Dashboard",
+    title: "डॅशबोर्ड (Dashboard)",
     url: "/dashboard",
     icon: LayoutDashboard,
   },
   {
-    title: "Daily Report",
+    title: "दैनिक रिपोर्ट (Daily Report)",
     url: "/daily-report",
     icon: ClipboardCheck,
   },
   {
-    title: "Work Log",
+    title: "कामकाज नोंद (Work Log)",
     url: "/work-log",
     icon: ListTodo,
   },
   {
-    title: "Centers",
+    title: "केंद्र (Centers)",
     url: "/centers",
     icon: Warehouse,
   },
   {
-    title: "Routes",
+    title: "रूट (Routes)",
     url: "/routes",
     icon: MapPin,
   },
   {
-    title: "View Report",
+    title: "अहवाल पहा (View Reports)",
     url: "/reports",
     icon: Archive,
   },
   {
-    title: "Profile",
+    title: "प्रोफाईल (Profile)",
     url: "/profile",
     icon: UserCircle,
   },
@@ -71,18 +71,18 @@ export function DashboardSidebar() {
           <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/20">
             <Milk className="h-7 w-7" />
           </div>
-          <span 
-            className="font-headline text-lg font-bold tracking-tight group-data-[collapsible=icon]:hidden text-foreground"
-            suppressHydrationWarning
-          >
-            {mounted ? "Procurement Notebook" : "Procurement Notebook"}
-          </span>
+          <div className="flex flex-col group-data-[collapsible=icon]:hidden">
+            <span className="font-headline text-base font-bold tracking-tight text-foreground">
+              Procurement Notebook
+            </span>
+            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">दूध संकलन नोंदवही</span>
+          </div>
         </div>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel className="px-6 py-6 uppercase tracking-[0.2em] text-[10px] font-bold text-muted-foreground/60 group-data-[collapsible=icon]:hidden">
-            Procurement Manager
+            मुख्य मेनू (Main Menu)
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="px-3 gap-1">
@@ -98,7 +98,7 @@ export function DashboardSidebar() {
                     >
                       <Link href={item.url}>
                         <item.icon className="h-5 w-5" />
-                        <span className="font-bold tracking-wide">{item.title}</span>
+                        <span className="font-bold tracking-wide text-xs">{item.title}</span>
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -114,7 +114,7 @@ export function DashboardSidebar() {
             <SidebarMenuButton asChild className="text-destructive hover:text-destructive hover:bg-destructive/10 h-12 rounded-xl px-4 font-bold">
               <Link href="/">
                 <LogOut className="h-5 w-5" />
-                <span>Sign Out</span>
+                <span className="text-xs">बाहेर पडा (Sign Out)</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>

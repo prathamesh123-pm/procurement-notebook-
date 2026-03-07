@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect, useRef } from "react"
@@ -97,52 +96,52 @@ export default function ProfilePage() {
 
   return (
     <div className="space-y-8 max-w-4xl mx-auto w-full pb-20">
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-1 px-2 sm:px-0">
         <h2 className="text-3xl font-headline font-bold text-foreground tracking-tight flex items-center gap-3">
           <UserCircle className="h-8 w-8 text-primary" /> 
           प्रोफाईल आणि ओळख (Profile & Identity)
         </h2>
-        <p className="text-muted-foreground font-medium">येथे तुमची वैयक्तिक माहिती आणि कामाचे परवानगी पत्र जतन करा.</p>
+        <p className="text-muted-foreground font-bold text-sm">येथे तुमची वैयक्तिक माहिती आणि कामाचे परवानगी पत्र जतन करा. (Manage your info & auth letter here.)</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Left Column: Personal Info */}
         <div className="space-y-8">
-          <Card className="border-none shadow-sm bg-white overflow-hidden">
-            <CardHeader className="bg-primary/5 border-b">
-              <CardTitle className="text-lg font-bold flex items-center gap-2">
-                <IdCard className="h-5 w-5 text-primary" /> वैयक्तिक माहिती (Personal Info)
+          <Card className="border-none shadow-sm bg-white rounded-2xl overflow-hidden">
+            <CardHeader className="bg-primary/5 border-b py-4">
+              <CardTitle className="text-lg font-black flex items-center gap-2 uppercase tracking-tight text-primary">
+                <IdCard className="h-5 w-5" /> वैयक्तिक माहिती (Personal Info)
               </CardTitle>
-              <CardDescription>अहवालावर दिसणारे तुमचे नाव आणि आयडी.</CardDescription>
+              <CardDescription className="text-xs font-bold">अहवालावर दिसणारे तुमचे नाव आणि आयडी.</CardDescription>
             </CardHeader>
             <CardContent className="p-6 space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="userName" className="font-bold flex items-center gap-2">
+                <Label htmlFor="userName" className="font-black text-[10px] uppercase text-muted-foreground tracking-widest">
                   पूर्ण नाव (Full Name)
                 </Label>
                 <Input 
                   id="userName" 
-                  placeholder="तुमचे पूर्ण नाव लिहा" 
+                  placeholder="तुमचे पूर्ण नाव लिहा (Write full name)" 
                   value={name} 
                   onChange={(e) => setName(e.target.value)} 
-                  className="h-11 bg-muted/30"
+                  className="h-11 bg-muted/30 border-none rounded-xl font-bold"
                 />
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="userId" className="font-bold flex items-center gap-2">
+                <Label htmlFor="userId" className="font-black text-[10px] uppercase text-muted-foreground tracking-widest">
                   कर्मचारी आयडी (Employee ID)
                 </Label>
                 <Input 
                   id="userId" 
-                  placeholder="तुमचा आयडी नंबर लिहा" 
+                  placeholder="तुमचा आयडी नंबर लिहा (Write ID number)" 
                   value={employeeId} 
                   onChange={(e) => setEmployeeId(e.target.value)} 
-                  className="h-11 bg-muted/30"
+                  className="h-11 bg-muted/30 border-none rounded-xl font-bold"
                 />
               </div>
 
-              <Button onClick={handleSaveProfile} className="w-full gap-2 font-bold h-11 shadow-sm mt-4">
+              <Button onClick={handleSaveProfile} className="w-full gap-2 font-black h-11 shadow-lg rounded-xl mt-4">
                 <Save className="h-4 w-4" /> माहिती जतन करा (Save Profile)
               </Button>
             </CardContent>
@@ -151,19 +150,19 @@ export default function ProfilePage() {
 
         {/* Right Column: Permission Letter */}
         <div className="space-y-8">
-          <Card className="border-none shadow-sm bg-white overflow-hidden h-full">
-            <CardHeader className="bg-primary/5 border-b">
-              <CardTitle className="text-lg font-bold flex items-center gap-2">
-                <ShieldCheck className="h-5 w-5 text-primary" /> परवानगी पत्र (Auth Letter)
+          <Card className="border-none shadow-sm bg-white rounded-2xl overflow-hidden h-full">
+            <CardHeader className="bg-primary/5 border-b py-4">
+              <CardTitle className="text-lg font-black flex items-center gap-2 uppercase tracking-tight text-primary">
+                <ShieldCheck className="h-5 w-5" /> परवानगी पत्र (Auth Letter)
               </CardTitle>
-              <CardDescription>
-                तुमचे अधिकृत परवानगी पत्र अपलोड करा.
+              <CardDescription className="text-xs font-bold">
+                तुमचे अधिकृत परवानगी पत्र अपलोड करा. (Upload authorization letter.)
               </CardDescription>
             </CardHeader>
             <CardContent className="p-6 flex flex-col items-center justify-center min-h-[300px]">
               {photo ? (
                 <div className="relative w-full group">
-                  <div className="relative aspect-[3/4] w-full rounded-xl overflow-hidden border-2 border-primary/20 shadow-lg bg-muted">
+                  <div className="relative aspect-[3/4] w-full rounded-2xl overflow-hidden border-2 border-primary/20 shadow-xl bg-muted">
                     <Image 
                       src={photo} 
                       alt="Permission Letter" 
@@ -190,23 +189,23 @@ export default function ProfilePage() {
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
-                  <div className="mt-4 flex justify-center">
-                    <Button variant="outline" size="sm" onClick={() => setIsFullView(true)} className="gap-2 font-bold">
-                      <Maximize2 className="h-3 w-3" /> पूर्ण स्क्रीनवर पहा
+                  <div className="mt-6 flex justify-center">
+                    <Button variant="outline" size="sm" onClick={() => setIsFullView(true)} className="gap-2 font-black rounded-xl border-2 px-6">
+                      <Maximize2 className="h-3.5 w-3.5" /> पूर्ण स्क्रीनवर पहा
                     </Button>
                   </div>
                 </div>
               ) : (
-                <div className="flex flex-col items-center gap-4 text-center py-10">
-                  <div className="p-6 rounded-full bg-primary/5 border-2 border-dashed border-primary/20">
-                    <ImageIcon className="h-10 w-10 text-muted-foreground/40" />
+                <div className="flex flex-col items-center gap-6 text-center py-10">
+                  <div className="p-8 rounded-full bg-primary/5 border-2 border-dashed border-primary/20">
+                    <ImageIcon className="h-12 w-12 text-muted-foreground/40" />
                   </div>
                   <div className="space-y-1">
-                    <h3 className="font-bold text-sm">फोटो अपलोड नाही</h3>
-                    <p className="text-[10px] text-muted-foreground max-w-[150px]">परवानगी पत्राचा स्पष्ट फोटो अपलोड करा.</p>
+                    <h3 className="font-black text-sm text-foreground">कोणताही फोटो अपलोड नाही</h3>
+                    <p className="text-[10px] text-muted-foreground font-bold uppercase">परवानगी पत्राचा स्पष्ट फोटो निवडा. (Upload clear photo)</p>
                   </div>
-                  <Button onClick={() => fileInputRef.current?.click()} size="sm" className="gap-2 font-bold">
-                    <Upload className="h-3 w-3" /> फोटो निवडा
+                  <Button onClick={() => fileInputRef.current?.click()} size="sm" className="gap-2 font-black rounded-xl px-8 h-10 shadow-md">
+                    <Upload className="h-4 w-4" /> फोटो निवडा (Upload)
                   </Button>
                 </div>
               )}
@@ -224,7 +223,7 @@ export default function ProfilePage() {
 
       {/* Full Screen View Modal */}
       {isFullView && photo && (
-        <div className="fixed inset-0 z-[100] bg-black/95 flex flex-col items-center justify-center p-4">
+        <div className="fixed inset-0 z-[100] bg-black/95 flex flex-col items-center justify-center p-4 animate-in fade-in duration-300">
           <Button 
             variant="ghost" 
             size="icon" 
@@ -242,7 +241,7 @@ export default function ProfilePage() {
               unoptimized
             />
           </div>
-          <p className="mt-4 text-white/60 font-bold text-xs uppercase tracking-widest">परवानगी पत्र - {name || 'Representative'}</p>
+          <p className="mt-4 text-white/60 font-black text-xs uppercase tracking-widest">परवानगी पत्र - {name || 'Representative'}</p>
         </div>
       )}
     </div>
