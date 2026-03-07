@@ -72,16 +72,21 @@ export default function ReportsPage() {
 
   const handleDelete = (id: string) => {
     if (!confirm("तुम्हाला हा रिपोर्ट कायमचा हटवायचा आहे का?")) return
-    const updated = reports.filter(r => r.id !== id)
-    setReports(updated)
-    localStorage.setItem('procurepal_reports', JSON.stringify(updated))
     
-    // If it's a breakdown report, also remove from breakdowns
+    const updatedReports = reports.filter(r => r.id !== id)
+    setReports(updatedReports)
+    localStorage.setItem('procurepal_reports', JSON.stringify(updatedReports))
+    
+    // Also cleanup breakdowns if it was a breakdown report
     const storedBreakdowns = JSON.parse(localStorage.getItem('procurepal_breakdowns') || '[]')
     const updatedBreakdowns = storedBreakdowns.filter((b: any) => b.id !== id)
     localStorage.setItem('procurepal_breakdowns', JSON.stringify(updatedBreakdowns))
 
-    if (selectedReport?.id === id) setIsViewOpen(false)
+    if (selectedReport?.id === id) {
+      setIsViewOpen(false)
+      setSelectedReport(null)
+    }
+    
     toast({ title: "अहवाल हटवला", description: "माहिती यशस्वीरित्या काढून टाकली आहे." })
   }
 
@@ -128,13 +133,11 @@ export default function ReportsPage() {
         }
       `}</style>
 
-      {/* Header Section */}
       <div className="px-3 space-y-1 no-print">
         <h2 className="text-xl font-black text-slate-900 tracking-tight">View Reports</h2>
         <p className="text-[11px] font-medium text-slate-500 uppercase tracking-widest leading-none">Management Dashboard</p>
       </div>
 
-      {/* Stats Badge Box */}
       <div className="mt-4 px-3 no-print">
         <div className="bg-blue-50/80 border border-blue-100 rounded-xl p-3 flex items-center gap-3 shadow-sm">
           <div className="p-2 bg-blue-100 rounded-lg">
@@ -144,7 +147,6 @@ export default function ReportsPage() {
         </div>
       </div>
 
-      {/* Filter Tabs Section */}
       <div className="mt-4 px-3 no-print">
         <Card className="border shadow-none rounded-xl overflow-hidden bg-white">
           <CardContent className="p-3 space-y-3">
@@ -176,7 +178,6 @@ export default function ReportsPage() {
         </Card>
       </div>
 
-      {/* Reports List */}
       <div className="grid grid-cols-1 gap-3 mt-4 no-print px-3">
         {filteredReports.length > 0 ? (
           filteredReports.map((report) => (
@@ -251,7 +252,6 @@ export default function ReportsPage() {
         )}
       </div>
 
-      {/* Edit Modal */}
       <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
         <DialogContent className="max-w-md p-4 rounded-xl">
           <DialogHeader>
@@ -272,7 +272,6 @@ export default function ReportsPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Report Modal View */}
       <Dialog open={isViewOpen} onOpenChange={setIsViewOpen}>
         <DialogContent className="max-w-2xl h-[95vh] sm:h-[90vh] flex flex-col p-0 bg-white overflow-hidden rounded-none sm:rounded-xl border-none">
           <DialogHeader className="p-2 border-b no-print bg-slate-50 flex flex-row items-center justify-between shrink-0">
@@ -280,7 +279,7 @@ export default function ReportsPage() {
               <FileText className="h-3.5 w-3.5 text-primary" /> Document View
             </DialogTitle>
             <div className="flex gap-1.5 pr-8">
-              <Button size="sm" variant="ghost" className="h-8 text-[10px] font-black text-destructive" onClick={() => handleDelete(selectedReport.id)}><Trash2 className="h-3.5 w-3.5 mr-1" /> डिलीट</Button>
+              <Button size="sm" variant="ghost" className="h-8 text-[10px] font-black text-destructive" onClick={() => selectedReport && handleDelete(selectedReport.id)}><Trash2 className="h-3.5 w-3.5 mr-1" /> डिलीट</Button>
               <Button size="sm" className="gap-1.5 font-black rounded-lg bg-primary h-8 text-[10px] px-3" onClick={handleDownloadPDF}><Printer className="h-3.5 w-3.5" /> Print</Button>
               <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={() => setIsViewOpen(false)}><X className="h-4 w-4" /></Button>
             </div>

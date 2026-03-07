@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect } from "react"
@@ -7,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Task } from "@/lib/types"
-import { Plus, Search, ListTodo, User, Hash } from "lucide-react"
+import { Plus, Search, ListTodo, User, Hash, Trash2 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 
@@ -32,7 +33,11 @@ export default function WorkLogPage() {
 
   const saveTasks = (updatedTasks: Task[]) => {
     setTasks(updatedTasks)
-    localStorage.setItem('procurepal_tasks', JSON.stringify(updatedTasks))
+    // Only save pending ones to the active tasks list in storage if desired,
+    // or keep all and filter. For simplicity with current code, we update the whole list.
+    const allStored = JSON.parse(localStorage.getItem('procurepal_tasks') || '[]')
+    const others = allStored.filter((t: any) => t.status !== 'pending')
+    localStorage.setItem('procurepal_tasks', JSON.stringify([...updatedTasks, ...others]))
   }
 
   const addTask = () => {
@@ -49,10 +54,18 @@ export default function WorkLogPage() {
     const updated = tasks.filter(t => t.id !== taskId)
     saveTasks(updated)
     const stored = JSON.parse(localStorage.getItem('procurepal_reports') || '[]')
-    const newReport = { id: crypto.randomUUID(), type: 'Daily Task', date: new Date().toISOString().split('T')[0], summary: `गवळी: ${task.supplierName}. टास्क: ${task.title}. शेरा: ${tempRemark}`, fullData: { ...task, remark: tempRemark } }
+    const newReport = { id: crypto.randomUUID(), type: 'Daily Task', date: new Date().toISOString().split('T')[0], summary: `गवळी: ${task.supplierName}. टास्क: ${task.title}. शेरा: ${tempRemark}`, fullData: { ...task, remark: tempRemark, status: 'completed' } }
     localStorage.setItem('procurepal_reports', JSON.stringify([newReport, ...stored]))
     setIsDetailOpen(false)
     toast({ title: "Completed", description: "टास्क पूर्ण झाला." })
+  }
+
+  const deleteTask = (e: React.MouseEvent, taskId: string) => {
+    e.stopPropagation()
+    if (!confirm("हा टास्क हटवायचा आहे का?")) return
+    const updated = tasks.filter(t => t.id !== taskId)
+    saveTasks(updated)
+    toast({ title: "Deleted", description: "टास्क हटवला आहे." })
   }
 
   const filteredTasks = tasks.filter(t => {
@@ -91,12 +104,17 @@ export default function WorkLogPage() {
         <div className="grid grid-cols-1 gap-2">
           {filteredTasks.map(task => (
             <Card key={task.id} className="border-none shadow-sm bg-white hover:bg-muted/5 cursor-pointer border-l-4 border-l-primary rounded-lg overflow-hidden" onClick={() => { setSelectedTask(task); setTempRemark(task.remark || ""); setIsDetailOpen(true); }}>
-              <div className="p-3 flex flex-col gap-1">
-                <h4 className="font-black text-[12px] text-foreground truncate">{task.title}</h4>
-                <div className="flex items-center gap-3 text-[9px] font-black text-muted-foreground uppercase">
-                  {task.supplierName && <span className="flex items-center gap-1"><User className="h-3 w-3 text-primary" /> {task.supplierName}</span>}
-                  {task.supplierId && <span className="flex items-center gap-1"><Hash className="h-3 w-3 text-primary" /> {task.supplierId}</span>}
+              <div className="p-3 flex items-center justify-between gap-2">
+                <div className="flex flex-col gap-1 min-w-0">
+                  <h4 className="font-black text-[12px] text-foreground truncate">{task.title}</h4>
+                  <div className="flex items-center gap-3 text-[9px] font-black text-muted-foreground uppercase">
+                    {task.supplierName && <span className="flex items-center gap-1"><User className="h-3 w-3 text-primary" /> {task.supplierName}</span>}
+                    {task.supplierId && <span className="flex items-center gap-1"><Hash className="h-3 w-3 text-primary" /> {task.supplierId}</span>}
+                  </div>
                 </div>
+                <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive rounded-full" onClick={(e) => deleteTask(e, task.id)}>
+                  <Trash2 className="h-4 w-4" />
+                </Button>
               </div>
             </Card>
           ))}
