@@ -5,26 +5,26 @@
 
 @layer base {
   :root {
-    --background: 210 20% 98%; /* Lighter, cleaner background */
+    --background: 210 20% 98%;
     --foreground: 222 47% 11%;
     --card: 0 0% 100%;
     --card-foreground: 222 47% 11%;
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
-    --primary: 210 100% 45%; /* More vibrant blue */
+    --primary: 210 100% 45%;
     --primary-foreground: 210 40% 98%;
     --secondary: 210 20% 90%;
     --secondary-foreground: 222 47% 11%;
     --muted: 210 20% 96%;
     --muted-foreground: 215 16% 47%;
-    --accent: 252 55% 45%; /* Vibrant Purple */
+    --accent: 252 55% 45%;
     --accent-foreground: 210 40% 98%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
     --border: 214 32% 91%;
     --input: 214 32% 91%;
     --ring: 210 100% 45%;
-    --radius: 1rem; /* More rounded for modern look */
+    --radius: 0.75rem;
     --sidebar-background: 0 0% 100%;
     --sidebar-foreground: 222 47% 11%;
     --sidebar-primary: 210 100% 45%;
@@ -41,7 +41,7 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground font-body transition-colors duration-300;
+    @apply bg-background text-foreground font-body transition-colors duration-300 overflow-x-hidden;
   }
   h1, h2, h3, h4, h5, h6 {
     @apply font-headline tracking-tight;
@@ -52,3 +52,18 @@
 .bg-milk-cow { @apply bg-blue-50 border-blue-100 text-blue-700; }
 .bg-milk-buf { @apply bg-amber-50 border-amber-100 text-amber-700; }
 .glass-card { @apply bg-white/80 backdrop-blur-md border-white/20 shadow-xl; }
+
+/* Mobile Table Responsiveness */
+.responsive-table-container {
+  @apply w-full overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0;
+}
+
+/* Compact inputs for mobile */
+@media (max-width: 640px) {
+  .compact-input {
+    @apply h-9 text-xs py-1 px-3;
+  }
+  .compact-label {
+    @apply text-[10px] mb-1;
+  }
+}
