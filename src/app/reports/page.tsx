@@ -75,23 +75,18 @@ export default function ReportsPage() {
     const confirmDelete = window.confirm("तुम्हाला हा रिपोर्ट कायमचा हटवायचा आहे का?")
     if (!confirmDelete) return
     
-    // Get latest data from localStorage to ensure we're filtering correctly
+    // Use fresh storage data to ensure accurate filtering
     const storedReports = JSON.parse(localStorage.getItem('procurepal_reports') || '[]')
-    const updatedReports = storedReports.filter((r: any) => String(r.id) !== String(id))
+    const updatedReports = storedReports.filter((r: any) => String(r.id || r._id) !== String(id))
     
-    // Update Storage
+    // Save to localStorage
     localStorage.setItem('procurepal_reports', JSON.stringify(updatedReports))
     
-    // Update Local State
+    // Update local state
     setReports(updatedReports)
     
-    // Also cleanup related breakdowns if any
-    const storedBreakdowns = JSON.parse(localStorage.getItem('procurepal_breakdowns') || '[]')
-    const updatedBreakdowns = storedBreakdowns.filter((b: any) => String(b.id) !== String(id))
-    localStorage.setItem('procurepal_breakdowns', JSON.stringify(updatedBreakdowns))
-
-    // Close Dialogs if open
-    if (selectedReport?.id === id) {
+    // Close View Dialog if it was the same report
+    if (selectedReport && String(selectedReport.id || selectedReport._id) === String(id)) {
       setIsViewOpen(false)
       setSelectedReport(null)
     }
@@ -210,6 +205,7 @@ export default function ReportsPage() {
                         ID: {String(report.id)?.slice(0, 6)}
                       </Badge>
                       <Button 
+                        type="button"
                         variant="ghost" 
                         size="icon" 
                         className="h-8 w-8 text-destructive rounded-full hover:bg-red-50" 

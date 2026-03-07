@@ -7,7 +7,7 @@ import { Separator } from "@/components/ui/separator"
 import { Toaster } from "@/components/ui/toaster"
 
 export const metadata: Metadata = {
-  title: 'संकलन नोंदवही - Notebook',
+  title: 'संकलन नोंदवही',
   description: 'दूध संकलन व्यवस्थापन आणि दैनंदिन कार्य नोंदवही.',
 };
 

@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Task } from "@/lib/types"
-import { Plus, Search, ListTodo, User, Hash, Trash2, CheckCircle2 } from "lucide-react"
+import { Plus, Search, ListTodo, User, Hash, Trash2, CheckCircle2, X, Edit } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 
@@ -31,14 +31,27 @@ export default function WorkLogPage() {
     setTasks(stored.filter((t: Task) => t.status === 'pending'))
   }, [])
 
-  const saveTasks = (updatedTasks: Task[]) => {
-    // Save only pending tasks to the local state
-    setTasks(updatedTasks.filter(t => t.status === 'pending'))
-    
-    // Master data needs to include both completed and pending
+  const saveTasksToStorage = (updatedTasks: Task[]) => {
+    // Separate current view state (pending) and master storage
     const allStored = JSON.parse(localStorage.getItem('procurepal_tasks') || '[]')
-    const completedTasks = allStored.filter((t: any) => t.status === 'completed')
-    localStorage.setItem('procurepal_tasks', JSON.stringify([...updatedTasks.filter(t => t.status === 'pending'), ...completedTasks]))
+    
+    // Create map of new changes to merge into master list
+    const updatedMaster = allStored.map((t: any) => {
+      const match = updatedTasks.find(ut => ut.id === t.id)
+      return match ? match : t
+    }).filter((t: any) => {
+      // Also handle deletions if items were removed from updatedTasks list
+      // Only keep it if it exists in updatedTasks OR it's a completed task not in this view context
+      if (t.status === 'completed') return true
+      return updatedTasks.some(ut => ut.id === t.id)
+    })
+
+    // Add brand new tasks
+    const newTasks = updatedTasks.filter(ut => !allStored.some((st: any) => st.id === ut.id))
+    const finalMaster = [...updatedMaster, ...newTasks]
+
+    localStorage.setItem('procurepal_tasks', JSON.stringify(finalMaster))
+    setTasks(finalMaster.filter((t: any) => t.status === 'pending'))
   }
 
   const addTask = () => {
@@ -55,17 +68,15 @@ export default function WorkLogPage() {
       createdAt: new Date().toISOString() 
     }
     const updated = [newTask, ...tasks]
-    saveTasks(updated)
+    saveTasksToStorage(updated)
     setNewTaskTitle(""); setNewTaskDesc(""); setNewTaskSupplierName(""); setNewTaskSupplierId("")
     toast({ title: "टास्क जतन झाला", description: "माहिती यशस्वीरित्या सेव्ह झाली." })
   }
 
   const completeTask = (taskId: string) => {
-    const task = tasks.find(t => t.id === taskId)
+    const allStored = JSON.parse(localStorage.getItem('procurepal_tasks') || '[]')
+    const task = allStored.find((t: any) => t.id === taskId)
     if (!task) return
-    
-    const updatedPending = tasks.filter(t => t.id !== taskId)
-    setTasks(updatedPending)
     
     // Add to reports
     const storedReports = JSON.parse(localStorage.getItem('procurepal_reports') || '[]')
@@ -78,11 +89,12 @@ export default function WorkLogPage() {
     }
     localStorage.setItem('procurepal_reports', JSON.stringify([newReport, ...storedReports]))
     
-    // Update the master task list
-    const allStored = JSON.parse(localStorage.getItem('procurepal_tasks') || '[]')
-    const updatedMaster = allStored.map((t: any) => t.id === taskId ? { ...t, status: 'completed', remark: tempRemark } : t)
+    // Update master list
+    const updatedMaster = allStored.map((t: any) => t.id === taskId ? { ...t, status: 'completed', remark: tempRemark, completedAt: new Date().toISOString() } : t)
     localStorage.setItem('procurepal_tasks', JSON.stringify(updatedMaster))
-
+    
+    // Update local view
+    setTasks(updatedMaster.filter((t: any) => t.status === 'pending'))
     setIsDetailOpen(false)
     toast({ title: "पूर्ण झाले", description: "टास्क पूर्ण झाला आणि अहवालात जोडला गेला." })
   }
@@ -93,14 +105,13 @@ export default function WorkLogPage() {
     const confirmDelete = window.confirm("हा टास्क कायमचा हटवायचा आहे का?")
     if (!confirmDelete) return
     
-    // Filter out from local state
-    const updatedPending = tasks.filter(t => String(t.id) !== String(taskId))
-    setTasks(updatedPending)
-    
     // Filter out from master localStorage
     const allStored = JSON.parse(localStorage.getItem('procurepal_tasks') || '[]')
     const updatedMaster = allStored.filter((t: any) => String(t.id) !== String(taskId))
     localStorage.setItem('procurepal_tasks', JSON.stringify(updatedMaster))
+    
+    // Update local state
+    setTasks(updatedMaster.filter((t: any) => t.status === 'pending'))
     
     toast({ title: "हटवले", description: "टास्क यशस्वीरित्या काढून टाकला आहे." })
   }
@@ -150,7 +161,7 @@ export default function WorkLogPage() {
                   </div>
                 </div>
                 <div className="flex items-center gap-1 shrink-0 relative z-10">
-                  <Button variant="ghost" size="icon" className="h-9 w-9 text-destructive rounded-full hover:bg-red-50" onClick={(e) => deleteTask(e, task.id)}>
+                  <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-destructive rounded-full hover:bg-red-50" onClick={(e) => deleteTask(e, task.id)}>
                     <Trash2 className="h-4.5 w-4.5" />
                   </Button>
                 </div>

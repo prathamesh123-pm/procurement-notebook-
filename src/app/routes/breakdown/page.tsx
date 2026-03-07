@@ -110,7 +110,7 @@ export default function BreakdownPage() {
       fullData: { ...formData, totalLossAmount: totalLoss, date: reportDate }
     }
 
-    const updatedReports = [reportData, ...storedReports.filter((r: any) => r.id !== recordIdForReport)];
+    const updatedReports = [reportData, ...storedReports.filter((r: any) => String(r.id) !== String(recordIdForReport))];
     localStorage.setItem('procurepal_reports', JSON.stringify(updatedReports))
 
     resetForm()
@@ -140,13 +140,16 @@ export default function BreakdownPage() {
 
   const handleDeleteRecord = (id: string) => {
     if (!confirm("हा रेकॉर्ड कायमचा हटवायचा आहे का?")) return
-    const updated = records.filter(r => r.id !== id)
-    setRecords(updated)
-    localStorage.setItem('procurepal_breakdowns', JSON.stringify(updated))
     
-    // Also remove from reports
+    // Update breakdowns
+    const storedBreakdowns = JSON.parse(localStorage.getItem('procurepal_breakdowns') || '[]')
+    const updatedBreakdowns = storedBreakdowns.filter((r: any) => String(r.id) !== String(id))
+    localStorage.setItem('procurepal_breakdowns', JSON.stringify(updatedBreakdowns))
+    setRecords(updatedBreakdowns)
+    
+    // Update reports
     const storedReports = JSON.parse(localStorage.getItem('procurepal_reports') || '[]')
-    const updatedReports = storedReports.filter((r: any) => r.id !== id)
+    const updatedReports = storedReports.filter((r: any) => String(r.id) !== String(id))
     localStorage.setItem('procurepal_reports', JSON.stringify(updatedReports))
 
     if (editingId === id) resetForm()
@@ -177,7 +180,7 @@ export default function BreakdownPage() {
             )}
           </CardHeader>
           <CardContent className="p-3 space-y-4">
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <div className="grid grid-cols-2 gap-2">
               <div className="space-y-0.5">
                 <Label className="text-[9px] font-black uppercase text-muted-foreground">रूट (Route)</Label>
                 <Input value={formData.routeName} onChange={e => setFormData({...formData, routeName: e.target.value})} className="h-8 text-[11px] bg-muted/20 border-none rounded-md" placeholder="रस्तापूर" />
@@ -247,7 +250,7 @@ export default function BreakdownPage() {
                           <Input value={loss.lossAmount} onChange={e => updateLossRow(loss.id, { lossAmount: e.target.value })} className="h-7 text-[10px] border-none text-right px-1.5 font-black text-destructive" placeholder="₹" />
                         </td>
                         <td className="p-1 flex justify-center">
-                          <Button variant="ghost" size="icon" onClick={() => handleRemoveLossRow(loss.id)} className="h-6 w-6 text-destructive rounded-full"><X className="h-3 w-3" /></Button>
+                          <Button type="button" variant="ghost" size="icon" onClick={() => handleRemoveLossRow(loss.id)} className="h-6 w-6 text-destructive rounded-full"><X className="h-3 w-3" /></Button>
                         </td>
                       </tr>
                     ))}
