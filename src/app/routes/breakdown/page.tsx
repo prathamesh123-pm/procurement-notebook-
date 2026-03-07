@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect } from "react"
@@ -8,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Label } from "@/components/ui/label"
 import { 
   Truck, AlertTriangle, MapPin, User, Hash, 
-  Trash2, Plus, Save, History, PlusCircle, Milk, IndianRupee, X
+  Trash2, Plus, Save, History, PlusCircle, Milk, IndianRupee, X, Edit, RotateCcw
 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -19,6 +20,7 @@ import { BreakdownRecord, BreakdownLoss } from "@/lib/types"
 export default function BreakdownPage() {
   const [records, setRecords] = useState<BreakdownRecord[]>([])
   const [mounted, setMounted] = useState(false)
+  const [editingId, setEditingId] = useState<string | null>(null)
   const { toast } = useToast()
 
   const [formData, setFormData] = useState({
@@ -68,24 +70,56 @@ export default function BreakdownPage() {
 
     const totalLoss = formData.losses.reduce((acc, curr) => acc + (Number(curr.lossAmount) || 0), 0)
 
-    const newRecord: BreakdownRecord = {
-      id: crypto.randomUUID(),
-      ...formData,
-      date: new Date().toISOString().split('T')[0],
-      totalLossAmount: totalLoss
+    let updatedRecords: BreakdownRecord[]
+
+    if (editingId) {
+      // Update existing record
+      updatedRecords = records.map(r => 
+        r.id === editingId 
+          ? { ...r, ...formData, totalLossAmount: totalLoss } 
+          : r
+      )
+      toast({ title: "अद्ययावत केले", description: "रेकॉर्ड यशस्वीरित्या अपडेट झाला." })
+    } else {
+      // Create new record
+      const newRecord: BreakdownRecord = {
+        id: crypto.randomUUID(),
+        ...formData,
+        date: new Date().toISOString().split('T')[0],
+        totalLossAmount: totalLoss
+      }
+      updatedRecords = [newRecord, ...records]
+      toast({ title: "जतन केले", description: "ब्रेकडाऊन रेकॉर्ड यशस्वीरित्या सेव्ह झाला." })
     }
 
-    const updated = [newRecord, ...records]
-    setRecords(updated)
-    localStorage.setItem('procurepal_breakdowns', JSON.stringify(updated))
+    setRecords(updatedRecords)
+    localStorage.setItem('procurepal_breakdowns', JSON.stringify(updatedRecords))
 
-    // Reset Form
+    // Reset Form and State
+    resetForm()
+  }
+
+  const handleEditRecord = (record: BreakdownRecord) => {
+    setEditingId(record.id)
+    setFormData({
+      routeName: record.routeName,
+      vehicleType: record.vehicleType,
+      vehicleNumber: record.vehicleNumber,
+      driverName: record.driverName,
+      location: record.location,
+      reason: record.reason,
+      losses: record.losses
+    })
+    // Scroll to form
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const resetForm = () => {
+    setEditingId(null)
     setFormData({
       routeName: "", vehicleType: "", vehicleNumber: "", driverName: "",
       location: "", reason: "", losses: []
     })
-
-    toast({ title: "जतन केले", description: "ब्रेकडाऊन रेकॉर्ड यशस्वीरित्या सेव्ह झाला." })
   }
 
   const handleDeleteRecord = (id: string) => {
@@ -93,6 +127,8 @@ export default function BreakdownPage() {
     const updated = records.filter(r => r.id !== id)
     setRecords(updated)
     localStorage.setItem('procurepal_breakdowns', JSON.stringify(updated))
+    if (editingId === id) resetForm()
+    toast({ title: "हटवले", description: "रेकॉर्ड काढून टाकला आहे." })
   }
 
   if (!mounted) return null
@@ -108,11 +144,17 @@ export default function BreakdownPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
         {/* Form Panel */}
-        <Card className="lg:col-span-7 border-none shadow-sm bg-white rounded-2xl overflow-hidden">
-          <CardHeader className="bg-destructive/5 py-3 border-b">
+        <Card className={`lg:col-span-7 border-none shadow-sm bg-white rounded-2xl overflow-hidden ${editingId ? 'ring-2 ring-primary' : ''}`}>
+          <CardHeader className={`${editingId ? 'bg-primary/5' : 'bg-destructive/5'} py-3 border-b flex flex-row items-center justify-between`}>
             <CardTitle className="text-sm font-black flex items-center gap-2 uppercase">
-              <AlertTriangle className="h-4 w-4 text-destructive" /> नवीन नोंद (New Entry)
+              {editingId ? <Edit className="h-4 w-4 text-primary" /> : <AlertTriangle className="h-4 w-4 text-destructive" />}
+              {editingId ? 'माहिती बदला (Edit Entry)' : 'नवीन नोंद (New Entry)'}
             </CardTitle>
+            {editingId && (
+              <Button variant="ghost" size="sm" onClick={resetForm} className="h-7 text-[8px] font-black uppercase gap-1">
+                <RotateCcw className="h-3 w-3" /> रद्द करा
+              </Button>
+            )}
           </CardHeader>
           <CardContent className="p-4 space-y-6">
             <div className="grid grid-cols-2 gap-3">
@@ -194,9 +236,17 @@ export default function BreakdownPage() {
               </div>
             </div>
 
-            <Button onClick={handleSaveRecord} className="w-full font-black h-11 rounded-xl shadow-lg shadow-destructive/20 bg-destructive hover:bg-destructive/90">
-              <Save className="h-4 w-4 mr-2" /> रेकॉर्ड जतन करा (Save Record)
-            </Button>
+            <div className="flex gap-3">
+              {editingId && (
+                <Button variant="outline" onClick={resetForm} className="flex-1 font-black h-11 rounded-xl">
+                  रद्द करा
+                </Button>
+              )}
+              <Button onClick={handleSaveRecord} className={`flex-[2] font-black h-11 rounded-xl shadow-lg ${editingId ? 'bg-primary hover:bg-primary/90 shadow-primary/20' : 'bg-destructive hover:bg-destructive/90 shadow-destructive/20'}`}>
+                {editingId ? <Save className="h-4 w-4 mr-2" /> : <Save className="h-4 w-4 mr-2" />}
+                {editingId ? 'अपडेट करा (Update Record)' : 'रेकॉर्ड जतन करा (Save Record)'}
+              </Button>
+            </div>
           </CardContent>
         </Card>
 
@@ -212,23 +262,29 @@ export default function BreakdownPage() {
               <div className="p-3 space-y-3">
                 {records.length > 0 ? (
                   records.map((record) => (
-                    <Card key={record.id} className="border-none shadow-sm bg-muted/20 hover:bg-muted/30 transition-all rounded-xl overflow-hidden group">
+                    <Card key={record.id} className={`border-none shadow-sm transition-all rounded-xl overflow-hidden group ${editingId === record.id ? 'bg-primary/10 ring-1 ring-primary' : 'bg-muted/20 hover:bg-muted/30'}`}>
                       <div className="p-3 space-y-2">
                         <div className="flex items-start justify-between">
                           <div>
                             <h4 className="font-black text-xs text-foreground">{record.routeName}</h4>
-                            <p className="text-[9px] font-black text-muted-foreground uppercase">{record.vehicleNumber} | {record.date}</p>
+                            <p className="text-[9px] font-black text-muted-foreground uppercase">{record.vehicleNumber} | {record.vehicleType} | {record.date}</p>
                           </div>
-                          <Button variant="ghost" size="icon" onClick={() => handleDeleteRecord(record.id)} className="h-7 w-7 text-destructive opacity-0 group-hover:opacity-100 transition-opacity">
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </Button>
+                          <div className="flex gap-1">
+                            <Button variant="ghost" size="icon" onClick={() => handleEditRecord(record)} className="h-7 w-7 text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+                              <Edit className="h-3.5 w-3.5" />
+                            </Button>
+                            <Button variant="ghost" size="icon" onClick={() => handleDeleteRecord(record.id)} className="h-7 w-7 text-destructive opacity-0 group-hover:opacity-100 transition-opacity">
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
+                          </div>
                         </div>
                         <div className="grid grid-cols-2 gap-2 text-[9px] font-bold">
                           <div className="flex items-center gap-1.5"><MapPin className="h-3 w-3 text-destructive" /> {record.location}</div>
                           <div className="flex items-center gap-1.5"><User className="h-3 w-3 text-primary" /> {record.driverName}</div>
                         </div>
-                        <div className="p-2 bg-white rounded-lg border border-dashed text-[9px] italic line-clamp-2">
-                          कारण: {record.reason}
+                        <div className="p-2 bg-white rounded-lg border border-dashed text-[9px] font-medium text-gray-700">
+                          <span className="font-black uppercase text-destructive text-[7px] block mb-0.5">कारण (Reason):</span>
+                          {record.reason}
                         </div>
                         <div className="flex items-center justify-between pt-1 border-t border-dashed">
                           <span className="text-[8px] font-black uppercase text-muted-foreground">{record.losses.length} गवळ्यांचे नुकसान</span>
