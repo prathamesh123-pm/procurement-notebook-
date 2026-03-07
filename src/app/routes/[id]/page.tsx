@@ -105,7 +105,6 @@ export default function RouteDetailsPage() {
     const newItem: EquipmentItem = {
       id: crypto.randomUUID(),
       name: "",
-      brand: "",
       quantity: 1,
       ownership: 'Self'
     }
@@ -228,7 +227,7 @@ export default function RouteDetailsPage() {
                         <TableHeader><TableRow><TableHead className="h-8 text-[9px] uppercase font-bold">आयटम</TableHead><TableHead className="h-8 text-[9px] uppercase font-bold text-center">Qty</TableHead><TableHead className="h-8 text-[9px] uppercase font-bold text-right">मालकी</TableHead></TableRow></TableHeader>
                         <TableBody>
                           {selectedSupplier.equipment?.map((item) => (
-                            <TableRow key={item.id}><TableCell className="py-2 text-[11px] font-bold">{item.name}<p className="text-[8px] text-muted-foreground font-normal">{item.brand}</p></TableCell><TableCell className="text-center font-bold">{item.quantity}</TableCell><TableCell className="text-right"><Badge variant={item.ownership === 'Self' ? 'outline' : 'secondary'} className="text-[8px]">{item.ownership === 'Self' ? 'स्वतःचे' : 'डेअरी'}</Badge></TableCell></TableRow>
+                            <TableRow key={item.id}><TableCell className="py-2 text-[11px] font-bold">{item.name}</TableCell><TableCell className="text-center font-bold">{item.quantity}</TableCell><TableCell className="text-right"><Badge variant={item.ownership === 'Self' ? 'outline' : 'secondary'} className="text-[8px]">{item.ownership === 'Self' ? 'स्वतःचे' : 'डेअरी'}</Badge></TableCell></TableRow>
                           ))}
                           {(!selectedSupplier.equipment || selectedSupplier.equipment.length === 0) && (<TableRow><TableCell colSpan={3} className="text-center py-4 text-[10px] italic">नोंद नाही.</TableCell></TableRow>)}
                         </TableBody>
@@ -314,10 +313,9 @@ export default function RouteDetailsPage() {
                 <div className="space-y-3">
                   {formData.equipment.map((item) => (
                     <div key={item.id} className="grid grid-cols-12 gap-2 items-end p-3 rounded-lg bg-muted/10 border">
-                      <div className="col-span-4 space-y-1"><Label className="text-[8px] uppercase font-bold">साहित्य</Label><Input value={item.name} onChange={e => updateEquipmentItem(item.id, {name: e.target.value})} className="h-8 text-[10px] bg-white" placeholder="उदा. कॅन" /></div>
-                      <div className="col-span-3 space-y-1"><Label className="text-[8px] uppercase font-bold">ब्रँड</Label><Input value={item.brand} onChange={e => updateEquipmentItem(item.id, {brand: e.target.value})} className="h-8 text-[10px] bg-white" placeholder="उदा. टाटा" /></div>
+                      <div className="col-span-6 space-y-1"><Label className="text-[8px] uppercase font-bold">साहित्य</Label><Input value={item.name} onChange={e => updateEquipmentItem(item.id, {name: e.target.value})} className="h-8 text-[10px] bg-white" placeholder="उदा. कॅन" /></div>
                       <div className="col-span-2 space-y-1"><Label className="text-[8px] uppercase font-bold">Qty</Label><Input type="number" value={item.quantity} onChange={e => updateEquipmentItem(item.id, {quantity: Number(e.target.value)})} className="h-8 text-[10px] bg-white text-center" /></div>
-                      <div className="col-span-2 space-y-1"><Label className="text-[8px] uppercase font-bold">मालकी</Label>
+                      <div className="col-span-3 space-y-1"><Label className="text-[8px] uppercase font-bold">मालकी</Label>
                         <Select value={item.ownership} onValueChange={(v: any) => updateEquipmentItem(item.id, {ownership: v})}>
                           <SelectTrigger className="h-8 text-[9px] bg-white px-1"><SelectValue /></SelectTrigger>
                           <SelectContent><SelectItem value="Self">स्वतःचे</SelectItem><SelectItem value="Company">डेअरी</SelectItem></SelectContent>

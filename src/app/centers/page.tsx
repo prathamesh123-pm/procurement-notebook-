@@ -100,7 +100,6 @@ export default function CentersPage() {
     const newItem: EquipmentItem = {
       id: crypto.randomUUID(),
       name: "",
-      brand: "",
       quantity: 1,
       ownership: 'Self'
     }
@@ -276,7 +275,6 @@ export default function CentersPage() {
                             <TableRow key={item.id}>
                               <TableCell className="py-2">
                                 <p className="font-bold text-xs">{item.name}</p>
-                                <p className="text-[9px] text-muted-foreground">{item.brand}</p>
                               </TableCell>
                               <TableCell className="py-2 text-center font-bold">{item.quantity}</TableCell>
                               <TableCell className="py-2 text-right">
@@ -381,19 +379,15 @@ export default function CentersPage() {
                 <div className="space-y-3">
                   {formData.equipment.map((item, index) => (
                     <div key={item.id} className="grid grid-cols-12 gap-2 items-end p-3 rounded-lg bg-muted/10 border relative group">
-                      <div className="col-span-4 space-y-1">
+                      <div className="col-span-6 space-y-1">
                         <Label className="text-[8px] font-bold uppercase text-muted-foreground">साहित्याचे नाव</Label>
                         <Input value={item.name} onChange={e => updateEquipmentItem(item.id, {name: e.target.value})} className="h-8 text-[10px] bg-white" placeholder="उदा. वजन काटा" />
-                      </div>
-                      <div className="col-span-3 space-y-1">
-                        <Label className="text-[8px] font-bold uppercase text-muted-foreground">ब्रँड</Label>
-                        <Input value={item.brand} onChange={e => updateEquipmentItem(item.id, {brand: e.target.value})} className="h-8 text-[10px] bg-white" placeholder="उदा. Essae" />
                       </div>
                       <div className="col-span-2 space-y-1">
                         <Label className="text-[8px] font-bold uppercase text-muted-foreground">Qty</Label>
                         <Input type="number" value={item.quantity} onChange={e => updateEquipmentItem(item.id, {quantity: Number(e.target.value)})} className="h-8 text-[10px] bg-white text-center" />
                       </div>
-                      <div className="col-span-2 space-y-1">
+                      <div className="col-span-3 space-y-1">
                         <Label className="text-[8px] font-bold uppercase text-muted-foreground">मालकी</Label>
                         <Select value={item.ownership} onValueChange={(v: any) => updateEquipmentItem(item.id, {ownership: v})}>
                           <SelectTrigger className="h-8 text-[9px] bg-white px-1"><SelectValue /></SelectTrigger>
