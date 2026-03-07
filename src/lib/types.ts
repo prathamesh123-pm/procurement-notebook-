@@ -19,6 +19,14 @@ export interface MilkMetrics {
   snf?: number;
 }
 
+export interface EquipmentItem {
+  id: string;
+  name: string;
+  brand?: string;
+  quantity: number;
+  ownership: 'Self' | 'Company';
+}
+
 export interface Supplier {
   id: string;
   name: string;
@@ -42,6 +50,7 @@ export interface Supplier {
   computerAvailable?: boolean;
   upsInverterAvailable?: boolean;
   solarAvailable?: boolean;
+  equipment?: EquipmentItem[];
 }
 
 export interface CenterMaterial {
@@ -53,6 +62,7 @@ export interface CenterMaterial {
   solarAvailable?: boolean;
   chemicalsStock?: string;
   batteryCondition?: string;
+  equipment?: EquipmentItem[];
 }
 
 export interface CollectionCenter {
