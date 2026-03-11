@@ -66,7 +66,6 @@ export default function WorkLogPage() {
     const task = firestoreTasks?.find(t => t.id === taskId)
     if (!task) return
     
-    // 1. Add to reports first
     const reportData = { 
       type: 'Daily Task', 
       date: new Date().toISOString().split('T')[0], 
@@ -80,7 +79,6 @@ export default function WorkLogPage() {
     const reportsRef = collection(db, 'users', user.uid, 'dailyWorkReports');
     addDocumentNonBlocking(reportsRef, reportData);
     
-    // 2. Update task status
     const taskRef = doc(db, 'users', user.uid, 'tasks', taskId);
     updateDocumentNonBlocking(taskRef, { 
       status: 'completed', 
@@ -92,9 +90,7 @@ export default function WorkLogPage() {
     toast({ title: "पूर्ण झाले", description: "टास्क पूर्ण झाला आणि अहवालात जोडला गेला." })
   }
 
-  const deleteTask = (e: React.MouseEvent, taskId: string) => {
-    e.preventDefault()
-    e.stopPropagation()
+  const deleteTask = (taskId: string) => {
     if (!db || !user || !taskId) return
     const confirmDelete = window.confirm("हा टास्क कायमचा हटवायचा आहे का?")
     if (!confirmDelete) return
@@ -118,7 +114,7 @@ export default function WorkLogPage() {
   if (!mounted) return null
 
   return (
-    <div className="space-y-3 max-w-5xl mx-auto w-full pb-10">
+    <div className="space-y-3 max-w-5xl mx-auto w-full pb-10 px-1">
       <div className="flex flex-col gap-0.5 border-b pb-1 px-1">
         <h2 className="text-lg font-black text-foreground flex items-center gap-2">
           <ListTodo className="h-5 w-5 text-primary" /> कामकाज नोंद (Work Log)
@@ -137,7 +133,7 @@ export default function WorkLogPage() {
         </CardContent>
       </Card>
 
-      <div className="space-y-2 px-1">
+      <div className="space-y-2">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <input placeholder="शोधा (Search)..." className="pl-9 h-9 w-full text-[11px] bg-white rounded-lg shadow-sm border-none outline-none focus:ring-1 focus:ring-primary" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
@@ -147,9 +143,9 @@ export default function WorkLogPage() {
           {isLoading ? (
             <div className="text-center py-10 italic text-muted-foreground">लोड होत आहे...</div>
           ) : pendingTasks.length > 0 ? pendingTasks.map(task => (
-            <Card key={task.id} className="border-none shadow-sm bg-white hover:bg-muted/5 cursor-pointer border-l-4 border-l-primary rounded-lg overflow-hidden relative" onClick={() => { setSelectedTask(task); setTempRemark(task.remark || ""); setIsDetailOpen(true); }}>
+            <Card key={task.id} className="border-none shadow-sm bg-white hover:bg-muted/5 cursor-pointer border-l-4 border-l-primary rounded-lg overflow-hidden relative">
               <div className="p-3 flex items-center justify-between gap-2">
-                <div className="flex flex-col gap-1 min-w-0">
+                <div className="flex flex-col gap-1 min-w-0 flex-1" onClick={() => { setSelectedTask(task); setTempRemark(task.remark || ""); setIsDetailOpen(true); }}>
                   <h4 className="font-black text-[13px] text-slate-900 truncate">{task.title}</h4>
                   <div className="flex items-center gap-3 text-[10px] font-bold text-muted-foreground uppercase">
                     {task.supplierName && <span className="flex items-center gap-1"><User className="h-3 w-3 text-primary" /> {task.supplierName}</span>}
@@ -157,7 +153,7 @@ export default function WorkLogPage() {
                   </div>
                 </div>
                 <div className="flex items-center gap-1 shrink-0 relative z-10">
-                  <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-destructive rounded-full hover:bg-red-50" onClick={(e) => deleteTask(e, task.id)}>
+                  <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-destructive rounded-full hover:bg-red-50" onClick={(e) => { e.stopPropagation(); deleteTask(task.id); }}>
                     <Trash2 className="h-4.5 w-4.5" />
                   </Button>
                 </div>

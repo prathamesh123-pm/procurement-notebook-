@@ -7,21 +7,36 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Route, Supplier, CollectionCenter } from "@/lib/types"
-import { Plus, MapPin, Truck, Users, IndianRupee, Trash2, ArrowRight, Edit, IceCream, Milk, ChevronRight, AlertTriangle } from "lucide-react"
+import { Plus, MapPin, Truck, Users, IndianRupee, Trash2, ArrowRight, Edit, Milk, ChevronRight, AlertTriangle } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
 import Link from "next/link"
 import { useToast } from "@/hooks/use-toast"
 import { Badge } from "@/components/ui/badge"
+import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking, deleteDocumentNonBlocking, updateDocumentNonBlocking } from "@/firebase"
+import { collection, doc } from "firebase/firestore"
 
 export default function RoutesPage() {
-  const [routes, setRoutes] = useState<Route[]>([])
-  const [suppliers, setSuppliers] = useState<Supplier[]>([])
-  const [centers, setCenters] = useState<CollectionCenter[]>([])
+  const { user } = useUser()
+  const db = useFirestore()
+  const { toast } = useToast()
+
+  const routesQuery = useMemoFirebase(() => {
+    if (!db || !user) return null
+    return collection(db, 'routes')
+  }, [db, user])
+
+  const suppliersQuery = useMemoFirebase(() => {
+    if (!db) return null
+    return collection(db, 'suppliers')
+  }, [db])
+
+  const { data: routes, isLoading } = useCollection(routesQuery)
+  const { data: suppliers } = useCollection(suppliersQuery)
+
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [currentRouteId, setCurrentRouteId] = useState<string | null>(null)
   const [mounted, setMounted] = useState(false)
-  const { toast } = useToast()
   
   const [formData, setFormData] = useState({ 
     name: "", 
@@ -31,21 +46,7 @@ export default function RoutesPage() {
     iceBlocks: "0"
   })
 
-  useEffect(() => {
-    setMounted(true)
-    const storedRoutes = JSON.parse(localStorage.getItem('procurepal_routes') || '[]')
-    const storedSupps = JSON.parse(localStorage.getItem('procurepal_suppliers') || '[]')
-    const storedCenters = JSON.parse(localStorage.getItem('procurepal_centers') || '[]')
-    
-    setSuppliers(storedSupps)
-    setCenters(storedCenters)
-    setRoutes(storedRoutes)
-  }, [])
-
-  const saveRoutes = (updated: Route[]) => {
-    setRoutes(updated)
-    localStorage.setItem('procurepal_routes', JSON.stringify(updated))
-  }
+  useEffect(() => setMounted(true), [])
 
   const handleOpenAdd = () => {
     setIsEditing(false)
@@ -68,37 +69,27 @@ export default function RoutesPage() {
   }
 
   const handleSaveRoute = () => {
-    if (!formData.name || !formData.distanceKm || !formData.vehicle) {
+    if (!formData.name || !formData.distanceKm || !formData.vehicle || !db) {
       toast({ title: "त्रुटी", description: "कृपया आवश्यक माहिती भरा.", variant: "destructive" })
       return
     }
 
+    const routeData = {
+      name: formData.name, 
+      distanceKm: Number(formData.distanceKm), 
+      vehicle: formData.vehicle, 
+      costPerKm: Number(formData.costPerKm) || 0,
+      iceBlocks: Number(formData.iceBlocks) || 0,
+      supplierIds: []
+    }
+
     if (isEditing && currentRouteId) {
-      const updatedRoutes = routes.map(r => 
-        r.id === currentRouteId 
-          ? { 
-              ...r, 
-              name: formData.name, 
-              distanceKm: Number(formData.distanceKm), 
-              vehicle: formData.vehicle, 
-              costPerKm: Number(formData.costPerKm) || 0,
-              iceBlocks: Number(formData.iceBlocks) || 0
-            } 
-          : r
-      )
-      saveRoutes(updatedRoutes)
+      const docRef = doc(db, 'routes', currentRouteId)
+      updateDocumentNonBlocking(docRef, routeData)
       toast({ title: "यशस्वी", description: "रूटची माहिती अद्ययावत केली." })
     } else {
-      const newRoute: Route = {
-        id: Math.random().toString(36).substring(2, 9),
-        name: formData.name,
-        distanceKm: Number(formData.distanceKm),
-        vehicle: formData.vehicle,
-        costPerKm: Number(formData.costPerKm) || 0,
-        iceBlocks: Number(formData.iceBlocks) || 0,
-        supplierIds: []
-      }
-      saveRoutes([...routes, newRoute])
+      const colRef = collection(db, 'routes')
+      addDocumentNonBlocking(colRef, routeData)
       toast({ title: "यशस्वी", description: "नवीन रूट जोडला गेला." })
     }
 
@@ -106,35 +97,26 @@ export default function RoutesPage() {
   }
 
   const deleteRoute = (id: string) => {
+    if (!db) return
     if (confirm("तुम्हाला खात्री आहे की हा रूट हटवायचा आहे?")) {
-      const updated = routes.filter(r => r.id !== id)
-      saveRoutes(updated)
+      const docRef = doc(db, 'routes', id)
+      deleteDocumentNonBlocking(docRef)
       toast({ title: "हटवले", description: "रूट काढून टाकला आहे." })
     }
   }
 
   const getRouteMilkTotals = (routeId: string) => {
-    const routeSupps = suppliers.filter(s => s.routeId === routeId)
-    const routeCenters = centers.filter(c => c.routeId === routeId)
-    
-    const totalCow = routeSupps.reduce((acc, s) => acc + (s.cowMilk?.quantity || 0), 0) + 
-                     routeCenters.reduce((acc, c) => acc + (c.cowMilk?.quantity || 0), 0)
-                     
-    const totalBuf = routeSupps.reduce((acc, s) => acc + (s.buffaloMilk?.quantity || 0), 0) + 
-                     routeCenters.reduce((acc, c) => acc + (c.buffaloMilk?.quantity || 0), 0)
-                     
-    return { 
-      totalCow, 
-      totalBuf, 
-      pointsCount: routeSupps.length + routeCenters.length 
-    }
+    const routeSupps = suppliers?.filter(s => s.routeId === routeId) || []
+    const totalCow = routeSupps.reduce((acc, s) => acc + (s.cowMilk?.quantity || 0), 0)
+    const totalBuf = routeSupps.reduce((acc, s) => acc + (s.buffaloMilk?.quantity || 0), 0)
+    return { totalCow, totalBuf, pointsCount: routeSupps.length }
   }
 
-  if (!mounted) return null
+  if (!mounted || isLoading) return <div className="p-10 text-center italic">लोड होत आहे...</div>
 
   return (
     <div className="space-y-4 max-w-6xl mx-auto w-full pb-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 px-2 sm:px-0">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 px-2">
         <div className="space-y-0.5">
           <h2 className="text-xl sm:text-2xl font-black text-foreground flex items-center gap-2">
             <Truck className="h-6 w-6 text-primary" /> रूट (Collection Routes)
@@ -143,9 +125,7 @@ export default function RoutesPage() {
         </div>
         <div className="flex gap-2 w-full sm:w-auto">
           <Button asChild variant="outline" className="flex-1 sm:flex-none gap-1.5 font-black h-10 text-[11px] px-4 rounded-xl border-destructive text-destructive">
-            <Link href="/routes/breakdown">
-              <AlertTriangle className="h-4 w-4" /> ब्रेकडाऊन
-            </Link>
+            <Link href="/routes/breakdown"><AlertTriangle className="h-4 w-4" /> ब्रेकडाऊन</Link>
           </Button>
           <Button onClick={handleOpenAdd} className="flex-1 sm:flex-none gap-1.5 shadow-md font-black h-10 text-[11px] px-5 rounded-xl">
             <Plus className="h-4 w-4" /> नवीन रूट
@@ -153,8 +133,8 @@ export default function RoutesPage() {
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 px-2 sm:px-0">
-        {routes.length > 0 ? (
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 px-2">
+        {routes && routes.length > 0 ? (
           routes.map((route) => {
             const totals = getRouteMilkTotals(route.id)
             return (
@@ -165,45 +145,27 @@ export default function RoutesPage() {
                       <MapPin className="h-3 w-3 mr-1" /> {route.distanceKm} KM
                     </Badge>
                     <div className="flex gap-1.5">
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground" onClick={() => handleOpenEdit(route)}>
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => deleteRoute(route.id)}>
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground" onClick={() => handleOpenEdit(route)}><Edit className="h-4 w-4" /></Button>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => deleteRoute(route.id)}><Trash2 className="h-4 w-4" /></Button>
                     </div>
                   </div>
                   <CardTitle className="mt-1 font-black text-xl">{route.name}</CardTitle>
-                  <CardDescription className="flex items-center gap-1.5 font-black text-muted-foreground uppercase text-[10px] tracking-tight">
-                    <Truck className="h-3 w-3 text-primary" /> {route.vehicle}
-                  </CardDescription>
+                  <CardDescription className="flex items-center gap-1.5 font-black text-muted-foreground uppercase text-[10px] tracking-tight"><Truck className="h-3 w-3 text-primary" /> {route.vehicle}</CardDescription>
                 </CardHeader>
-                
                 <CardContent className="p-4 space-y-4 pt-0 flex-1">
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="p-3 rounded-xl bg-blue-50/50 border border-blue-100 text-center">
-                      <div className="text-blue-600 font-black text-[9px] uppercase tracking-tighter">गाय (Cow)</div>
-                      <p className="text-base font-black text-blue-900">{totals.totalCow.toFixed(1)}L</p>
-                    </div>
-                    <div className="p-3 rounded-xl bg-amber-50/50 border border-amber-100 text-center">
-                      <div className="text-amber-600 font-black text-[9px] uppercase tracking-tighter">म्हेस (Buf)</div>
-                      <p className="text-base font-black text-amber-900">{totals.totalBuf.toFixed(1)}L</p>
-                    </div>
+                    <div className="p-3 rounded-xl bg-blue-50/50 border border-blue-100 text-center"><div className="text-blue-600 font-black text-[9px] uppercase tracking-tighter">गाय (Cow)</div><p className="text-base font-black text-blue-900">{totals.totalCow.toFixed(1)}L</p></div>
+                    <div className="p-3 rounded-xl bg-amber-50/50 border border-amber-100 text-center"><div className="text-amber-600 font-black text-[9px] uppercase tracking-tighter">म्हेस (Buf)</div><p className="text-base font-black text-amber-900">{totals.totalBuf.toFixed(1)}L</p></div>
                   </div>
-
                   <div className="grid grid-cols-3 gap-1.5 bg-muted/20 p-2.5 rounded-xl border border-muted-foreground/5 text-[9px] font-black uppercase text-center">
                     <div className="space-y-0.5"><div className="text-muted-foreground">पॉइंट</div><div className="text-foreground">{totals.pointsCount}</div></div>
                     <div className="space-y-0.5"><div className="text-muted-foreground">दर</div><div className="text-foreground">₹{route.costPerKm}</div></div>
                     <div className="space-y-0.5"><div className="text-muted-foreground">बर्फ</div><div className="text-foreground">{route.iceBlocks || 0}</div></div>
                   </div>
                 </CardContent>
-
                 <CardFooter className="p-0 border-t mt-auto">
                    <Button variant="ghost" className="w-full justify-between text-primary font-black uppercase text-[10px] tracking-widest h-11 px-5 hover:bg-primary/5" asChild>
-                      <Link href={`/routes/${route.id}`}>
-                        <span>सप्लायर व्यवस्थापन</span>
-                        <ChevronRight className="h-4 w-4" />
-                      </Link>
+                      <Link href={`/routes/${route.id}`}><span>सप्लायर व्यवस्थापन</span><ChevronRight className="h-4 w-4" /></Link>
                    </Button>
                 </CardFooter>
               </Card>
@@ -211,47 +173,26 @@ export default function RoutesPage() {
           })
         ) : (
           <div className="col-span-full py-16 text-center bg-white rounded-2xl border-2 border-dashed border-muted-foreground/10 flex flex-col items-center gap-2">
-             <MapPin className="h-10 w-10 text-muted-foreground/20" />
-             <h3 className="text-sm font-black text-muted-foreground uppercase">एकही रूट तयार नाही</h3>
+             <MapPin className="h-10 w-10 text-muted-foreground/20" /><h3 className="text-sm font-black text-muted-foreground uppercase">एकही रूट तयार नाही</h3>
           </div>
         )}
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-lg rounded-2xl p-0 overflow-hidden bg-white">
-          <DialogHeader className="p-4 bg-primary text-white">
-            <DialogTitle className="text-lg font-black uppercase tracking-tight">{isEditing ? 'माहिती बदला' : 'नवीन रूट'}</DialogTitle>
-          </DialogHeader>
+          <DialogHeader className="p-4 bg-primary text-white"><DialogTitle className="text-lg font-black uppercase tracking-tight">{isEditing ? 'माहिती बदला' : 'नवीन रूट'}</DialogTitle></DialogHeader>
           <div className="grid gap-4 p-5">
-            <div className="space-y-1.5">
-              <Label className="text-[11px] font-black uppercase text-muted-foreground">रूटचे नाव</Label>
-              <Input placeholder="उदा. रस्तापूर रूट" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className="h-10 text-sm rounded-xl bg-muted/20 border-none" />
+            <div className="space-y-1.5"><Label className="text-[11px] font-black uppercase text-muted-foreground">रूटचे नाव</Label><Input placeholder="उदा. रस्तापूर रूट" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className="h-10 text-sm rounded-xl bg-muted/20 border-none" /></div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1.5"><Label className="text-[11px] font-black uppercase text-muted-foreground">अंतर (KM)</Label><Input type="number" value={formData.distanceKm} onChange={(e) => setFormData({...formData, distanceKm: e.target.value})} className="h-10 text-sm rounded-xl bg-muted/20 border-none" /></div>
+              <div className="space-y-1.5"><Label className="text-[11px] font-black uppercase text-muted-foreground">दर प्रति KM (₹)</Label><Input type="number" step="0.01" value={formData.costPerKm} onChange={(e) => setFormData({...formData, costPerKm: e.target.value})} className="h-10 text-sm rounded-xl bg-muted/20 border-none" /></div>
             </div>
             <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <Label className="text-[11px] font-black uppercase text-muted-foreground">अंतर (KM)</Label>
-                <Input type="number" placeholder="40" value={formData.distanceKm} onChange={(e) => setFormData({...formData, distanceKm: e.target.value})} className="h-10 text-sm rounded-xl bg-muted/20 border-none" />
-              </div>
-              <div className="space-y-1.5">
-                <Label className="text-[11px] font-black uppercase text-muted-foreground">दर प्रति KM (₹)</Label>
-                <Input type="number" step="0.01" placeholder="0.85" value={formData.costPerKm} onChange={(e) => setFormData({...formData, costPerKm: e.target.value})} className="h-10 text-sm rounded-xl bg-muted/20 border-none" />
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <Label className="text-[11px] font-black uppercase text-muted-foreground">वाहन नाव</Label>
-                <Input placeholder="उदा. पिकअप" value={formData.vehicle} onChange={(e) => setFormData({...formData, vehicle: e.target.value})} className="h-10 text-sm rounded-xl bg-muted/20 border-none" />
-              </div>
-              <div className="space-y-1.5">
-                <Label className="text-[11px] font-black uppercase text-muted-foreground">बर्फाचे प्रमाण</Label>
-                <Input type="number" placeholder="0" value={formData.iceBlocks} onChange={(e) => setFormData({...formData, iceBlocks: e.target.value})} className="h-10 text-sm rounded-xl bg-muted/20 border-none" />
-              </div>
+              <div className="space-y-1.5"><Label className="text-[11px] font-black uppercase text-muted-foreground">वाहन नाव</Label><Input value={formData.vehicle} onChange={(e) => setFormData({...formData, vehicle: e.target.value})} className="h-10 text-sm rounded-xl bg-muted/20 border-none" /></div>
+              <div className="space-y-1.5"><Label className="text-[11px] font-black uppercase text-muted-foreground">बर्फाचे प्रमाण</Label><Input type="number" value={formData.iceBlocks} onChange={(e) => setFormData({...formData, iceBlocks: e.target.value})} className="h-10 text-sm rounded-xl bg-muted/20 border-none" /></div>
             </div>
           </div>
-          <DialogFooter className="p-4 border-t bg-muted/5 gap-2">
-            <Button variant="outline" onClick={() => setIsDialogOpen(false)} className="font-black h-10 text-[11px] rounded-xl px-6">रद्द</Button>
-            <Button onClick={handleSaveRoute} className="font-black h-10 text-[11px] rounded-xl px-10">जतन (Save)</Button>
-          </DialogFooter>
+          <DialogFooter className="p-4 border-t bg-muted/5 gap-2"><Button variant="outline" onClick={() => setIsDialogOpen(false)} className="font-black h-10 text-[11px] rounded-xl px-6">रद्द</Button><Button onClick={handleSaveRoute} className="font-black h-10 text-[11px] rounded-xl px-10">जतन (Save)</Button></DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
