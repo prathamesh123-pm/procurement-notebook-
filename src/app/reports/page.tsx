@@ -83,19 +83,27 @@ export default function ReportsPage() {
       e.stopPropagation();
     }
     
-    if (!id || !db || !user) return
+    if (!id || !db || !user) {
+      toast({ title: "त्रुटी", description: "माहिती उपलब्ध नाही.", variant: "destructive" })
+      return
+    }
+
     const confirmDelete = window.confirm("तुम्हाला हा अहवाल कायमचा हटवायचा आहे का?")
     if (!confirmDelete) return
     
-    const docRef = doc(db, 'users', user.uid, 'dailyWorkReports', id)
-    deleteDocumentNonBlocking(docRef)
-    
-    if (selectedReport && selectedReport.id === id) {
-      setIsViewOpen(false)
-      setSelectedReport(null)
+    try {
+      const docRef = doc(db, 'users', user.uid, 'dailyWorkReports', id)
+      deleteDocumentNonBlocking(docRef)
+      
+      if (selectedReport && selectedReport.id === id) {
+        setIsViewOpen(false)
+        setSelectedReport(null)
+      }
+      
+      toast({ title: "यशस्वी", description: "अहवाल यशस्वीरित्या हटवण्यात आला आहे." })
+    } catch (err) {
+      toast({ title: "त्रुटी", description: "अहवाल हटवताना अडचण आली.", variant: "destructive" })
     }
-    
-    toast({ title: "यशस्वी", description: "अहवाल हटवण्यात आला आहे." })
   }
 
   const handleEditClick = (report: any) => {

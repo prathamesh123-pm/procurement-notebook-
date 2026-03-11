@@ -140,13 +140,17 @@ export default function CentersPage() {
     }
     
     if (!db || !user || !id) return
-    if (!confirm("तुम्हाला खात्री आहे की हे केंद्र कायमचे हटवायचा आहे?")) return
+    const confirmDelete = window.confirm("तुम्हाला खात्री आहे की हे केंद्र कायमचे हटवायचा आहे?")
+    if (!confirmDelete) return
     
-    const docRef = doc(db, 'users', user.uid, 'centers', id)
-    deleteDocumentNonBlocking(docRef)
-    
-    if (selectedCenter?.id === id) setSelectedCenter(null)
-    toast({ title: "यशस्वी", description: "केंद्र यशस्वीरित्या हटवण्यात आले." })
+    try {
+      const docRef = doc(db, 'users', user.uid, 'centers', id)
+      deleteDocumentNonBlocking(docRef)
+      if (selectedCenter?.id === id) setSelectedCenter(null)
+      toast({ title: "यशस्वी", description: "केंद्र यशस्वीरित्या हटवण्यात आले." })
+    } catch (err) {
+      toast({ title: "त्रुटी", description: "केंद्र हटवताना अडचण आली.", variant: "destructive" })
+    }
   }
 
   const filteredCenters = centers?.filter(c => 

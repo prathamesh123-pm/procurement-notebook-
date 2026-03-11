@@ -93,13 +93,19 @@ export default function WorkLogPage() {
   const deleteTask = (e: React.MouseEvent, taskId: string) => {
     e.stopPropagation();
     e.preventDefault();
+    
     if (!db || !user || !taskId) return
+    
     const confirmDelete = window.confirm("हा टास्क कायमचा हटवायचा आहे का?")
     if (!confirmDelete) return
     
-    const docRef = doc(db, 'users', user.uid, 'tasks', taskId)
-    deleteDocumentNonBlocking(docRef)
-    toast({ title: "यशस्वी", description: "टास्क हटवण्यात आला आहे." })
+    try {
+      const docRef = doc(db, 'users', user.uid, 'tasks', taskId)
+      deleteDocumentNonBlocking(docRef)
+      toast({ title: "यशस्वी", description: "टास्क यशस्वीरित्या हटवण्यात आला आहे." })
+    } catch (err) {
+      toast({ title: "त्रुटी", description: "टास्क हटवताना अडचण आली.", variant: "destructive" })
+    }
   }
 
   const pendingTasks = useMemo(() => {

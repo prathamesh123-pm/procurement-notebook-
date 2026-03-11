@@ -101,11 +101,16 @@ export default function RoutesPage() {
     e.preventDefault();
     
     if (!db || !id) return
-    if (!confirm("तुम्हाला खात्री आहे की हा रूट कायमचा हटवायचा आहे?")) return
+    const confirmDelete = window.confirm("तुम्हाला खात्री आहे की हा रूट कायमचा हटवायचा आहे?")
+    if (!confirmDelete) return
     
-    const docRef = doc(db, 'routes', id)
-    deleteDocumentNonBlocking(docRef)
-    toast({ title: "यशस्वी", description: "रूट यशस्वीरित्या हटवण्यात आला." })
+    try {
+      const docRef = doc(db, 'routes', id)
+      deleteDocumentNonBlocking(docRef)
+      toast({ title: "यशस्वी", description: "रूट यशस्वीरित्या हटवण्यात आला." })
+    } catch (err) {
+      toast({ title: "त्रुटी", description: "रूट हटवताना अडचण आली.", variant: "destructive" })
+    }
   }
 
   const getRouteMilkTotals = (routeId: string) => {
