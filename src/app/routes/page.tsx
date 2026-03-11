@@ -21,9 +21,9 @@ export default function RoutesPage() {
   const { toast } = useToast()
 
   const routesQuery = useMemoFirebase(() => {
-    if (!db || !user) return null
+    if (!db) return null
     return collection(db, 'routes')
-  }, [db, user])
+  }, [db])
 
   const suppliersQuery = useMemoFirebase(() => {
     if (!db) return null
@@ -80,7 +80,7 @@ export default function RoutesPage() {
       vehicle: formData.vehicle, 
       costPerKm: Number(formData.costPerKm) || 0,
       iceBlocks: Number(formData.iceBlocks) || 0,
-      supplierIds: []
+      updatedAt: new Date().toISOString()
     }
 
     if (isEditing && currentRouteId) {
@@ -96,12 +96,19 @@ export default function RoutesPage() {
     setIsDialogOpen(false)
   }
 
-  const deleteRoute = (id: string) => {
-    if (!db) return
-    if (confirm("तुम्हाला खात्री आहे की हा रूट हटवायचा आहे?")) {
-      const docRef = doc(db, 'routes', id)
-      deleteDocumentNonBlocking(docRef)
-      toast({ title: "हटवले", description: "रूट काढून टाकला आहे." })
+  const deleteRoute = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    e.preventDefault();
+    
+    if (!db || !id) return
+    if (confirm("तुम्हाला खात्री आहे की हा रूट कायमचा हटवायचा आहे?")) {
+      try {
+        const docRef = doc(db, 'routes', id)
+        deleteDocumentNonBlocking(docRef)
+        toast({ title: "यशस्वी", description: "रूट यशस्वीरित्या हटवण्यात आला." })
+      } catch (err) {
+        toast({ title: "त्रुटी", description: "रूट हटवताना अडचण आली.", variant: "destructive" })
+      }
     }
   }
 
@@ -112,7 +119,7 @@ export default function RoutesPage() {
     return { totalCow, totalBuf, pointsCount: routeSupps.length }
   }
 
-  if (!mounted || isLoading) return <div className="p-10 text-center italic">लोड होत आहे...</div>
+  if (!mounted || isLoading) return <div className="p-10 text-center italic text-muted-foreground">लोड होत आहे...</div>
 
   return (
     <div className="space-y-4 max-w-6xl mx-auto w-full pb-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -146,7 +153,7 @@ export default function RoutesPage() {
                     </Badge>
                     <div className="flex gap-1.5">
                       <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground" onClick={() => handleOpenEdit(route)}><Edit className="h-4 w-4" /></Button>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => deleteRoute(route.id)}><Trash2 className="h-4 w-4" /></Button>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={(e) => deleteRoute(e, route.id)}><Trash2 className="h-4 w-4" /></Button>
                     </div>
                   </div>
                   <CardTitle className="mt-1 font-black text-xl">{route.name}</CardTitle>
@@ -172,7 +179,7 @@ export default function RoutesPage() {
             )
           })
         ) : (
-          <div className="col-span-full py-16 text-center bg-white rounded-2xl border-2 border-dashed border-muted-foreground/10 flex flex-col items-center gap-2">
+          <div className="col-span-full py-16 text-center bg-white rounded-2xl border-2 border-dashed border-muted-foreground/10 flex flex-col items-center gap-2 opacity-50">
              <MapPin className="h-10 w-10 text-muted-foreground/20" /><h3 className="text-sm font-black text-muted-foreground uppercase">एकही रूट तयार नाही</h3>
           </div>
         )}

@@ -21,15 +21,33 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Checkbox } from "@/components/ui/checkbox"
+import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking, deleteDocumentNonBlocking, updateDocumentNonBlocking } from "@/firebase"
+import { collection, doc } from "firebase/firestore"
 
 export default function RouteDetailsPage() {
   const params = useParams()
   const router = useRouter()
   const routeId = params.id as string
   const { toast } = useToast()
+  const { user } = useUser()
+  const db = useFirestore()
 
-  const [route, setRoute] = useState<Route | null>(null)
-  const [suppliers, setSuppliers] = useState<Supplier[]>([])
+  const routesQuery = useMemoFirebase(() => {
+    if (!db) return null
+    return collection(db, 'routes')
+  }, [db])
+
+  const suppliersQuery = useMemoFirebase(() => {
+    if (!db) return null
+    return collection(db, 'suppliers')
+  }, [db])
+
+  const { data: allRoutes } = useCollection(routesQuery)
+  const { data: allSuppliers, isLoading } = useCollection(suppliersQuery)
+
+  const route = useMemo(() => allRoutes?.find(r => r.id === routeId), [allRoutes, routeId])
+  const suppliers = useMemo(() => allSuppliers?.filter(s => s.routeId === routeId) || [], [allSuppliers, routeId])
+
   const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(null)
   const [searchQuery, setSearchQuery] = useState("")
   const [mounted, setMounted] = useState(false)
@@ -63,12 +81,7 @@ export default function RouteDetailsPage() {
 
   useEffect(() => {
     setMounted(true)
-    const storedRoutes = JSON.parse(localStorage.getItem('procurepal_routes') || '[]')
-    const storedSupps = JSON.parse(localStorage.getItem('procurepal_suppliers') || '[]')
-    const currentRoute = storedRoutes.find((r: Route) => r.id === routeId)
-    setRoute(currentRoute || null)
-    setSuppliers(storedSupps.filter((s: Supplier) => s.routeId === routeId))
-  }, [routeId])
+  }, [])
 
   const openAddDialog = () => {
     setDialogMode('add')
@@ -139,12 +152,12 @@ export default function RouteDetailsPage() {
   }
 
   const handleSaveSupplier = () => {
-    if (!formData.name || !formData.id) {
+    if (!formData.name || !formData.id || !db) {
       toast({ title: "त्रुटी", description: "नाव आणि आयडी भरणे आवश्यक आहे.", variant: "destructive" })
       return
     }
 
-    const supplierData: Supplier = {
+    const supplierData: any = {
       id: formData.id,
       name: formData.name,
       address: formData.address,
@@ -165,44 +178,49 @@ export default function RouteDetailsPage() {
       computerAvailable: formData.computerAvailable,
       upsInverterAvailable: formData.upsInverterAvailable,
       solarAvailable: formData.solarAvailable,
-      equipment: formData.equipment
+      equipment: formData.equipment,
+      updatedAt: new Date().toISOString()
     }
 
-    const allStored = JSON.parse(localStorage.getItem('procurepal_suppliers') || '[]')
-    let updatedAllSupps: Supplier[]
-
     if (dialogMode === 'add') {
-      updatedAllSupps = [...allStored, supplierData]
+      const colRef = collection(db, 'suppliers')
+      addDocumentNonBlocking(colRef, supplierData)
       toast({ title: "यशस्वी", description: "नवीन पुरवठादार जोडला गेला." })
-    } else {
-      updatedAllSupps = allStored.map((s: Supplier) => s.id === editingId ? supplierData : s)
+    } else if (editingId) {
+      const docRef = doc(db, 'suppliers', editingId)
+      updateDocumentNonBlocking(docRef, supplierData)
       toast({ title: "यशस्वी", description: "माहिती अद्ययावत केली गेली." })
     }
 
-    localStorage.setItem('procurepal_suppliers', JSON.stringify(updatedAllSupps))
-    setSuppliers(updatedAllSupps.filter((s: Supplier) => s.routeId === routeId))
-    if (editingId === selectedSupplier?.id || formData.id === selectedSupplier?.id) setSelectedSupplier(supplierData)
     setIsDialogOpen(false)
   }
 
-  const handleDeleteSupplier = (e: React.MouseEvent, id: string) => {
-    e.stopPropagation()
-    if (!confirm("तुम्हाला खात्री आहे की हा पुरवठादार हटवायचा आहे?")) return
+  const handleDeleteSupplier = (e: React.MouseEvent | null, id: string) => {
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
     
-    const allStored = JSON.parse(localStorage.getItem('procurepal_suppliers') || '[]')
-    const updated = allStored.filter((s: Supplier) => s.id !== id)
-    localStorage.setItem('procurepal_suppliers', JSON.stringify(updated))
+    if (!db || !id) return
+    const confirmDelete = window.confirm("तुम्हाला खात्री आहे की हा पुरवठादार कायमचा हटवायचा आहे?")
+    if (!confirmDelete) return
     
-    setSuppliers(updated.filter((s: Supplier) => s.routeId === routeId))
-    if (selectedSupplier?.id === id) setSelectedSupplier(null)
-    toast({ title: "हटवले", description: "पुरवठादार काढून टाकला आहे." })
+    try {
+      const docRef = doc(db, 'suppliers', id)
+      deleteDocumentNonBlocking(docRef)
+      
+      if (selectedSupplier?.id === id) setSelectedSupplier(null)
+      toast({ title: "यशस्वी", description: "पुरवठादार यशस्वीरित्या हटवण्यात आला." })
+    } catch (err) {
+      toast({ title: "त्रुटी", description: "पुरवठादार हटवताना अडचण आली.", variant: "destructive" })
+    }
   }
 
   const filteredSuppliers = useMemo(() => {
     return suppliers.filter(s => (s.name?.toLowerCase() || "").includes(searchQuery.toLowerCase()))
   }, [suppliers, searchQuery])
 
-  if (!mounted) return null
+  if (!mounted || isLoading) return <div className="p-10 text-center italic text-muted-foreground">लोड होत आहे...</div>
 
   return (
     <div className="space-y-2 max-w-7xl mx-auto w-full pb-10 px-1 sm:px-0 animate-in fade-in duration-500">
@@ -245,7 +263,7 @@ export default function RouteDetailsPage() {
                   <div className="min-w-0">
                     <h4 className="font-black text-[11px] text-foreground truncate">{s.name}</h4>
                     <div className="flex items-center gap-1.5 mt-0.5">
-                      <span className="text-[9px] font-black text-primary uppercase">ID: {s.id}</span>
+                      <span className="text-[9px] font-black text-primary uppercase">ID: {s.id?.slice(-6)}</span>
                       <span className="text-[9px] text-muted-foreground font-bold truncate">| {s.address}</span>
                     </div>
                   </div>
@@ -278,7 +296,7 @@ export default function RouteDetailsPage() {
                   <Button variant="outline" size="icon" className="h-7 w-7 rounded-md border-primary/20 text-primary" onClick={() => openEditDialog(selectedSupplier)}>
                     <Edit className="h-3 w-3" />
                   </Button>
-                  <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive rounded-md" onClick={(e) => handleDeleteSupplier(e, selectedSupplier.id)}>
+                  <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive rounded-md" onClick={() => handleDeleteSupplier(null, selectedSupplier.id)}>
                     <Trash2 className="h-3 w-3" />
                   </Button>
                 </div>
@@ -425,7 +443,7 @@ export default function RouteDetailsPage() {
                 </div>
 
                 <div className="col-span-2 space-y-1 mt-2"><Label className="text-[9px] uppercase font-black">गाव स्पर्धा</Label><Input value={formData.competition} onChange={e => setFormData({...formData, competition: e.target.value})} className="h-9 text-xs rounded-md bg-muted/20 border-none" /></div>
-                <div className="col-span-2 space-y-1"><Label className="text-[9px] uppercase font-black">अतिरिक्त टिप</Label><Input value={formData.additionalInfo} onChange={e => setFormData({...formData, additionalInfo: e.target.value})} className="h-9 text-xs rounded-md bg-muted/20 border-none" /></div>
+                <div className="col-span-2 space-y-1 mt-2"><Label className="text-[9px] uppercase font-black">अतिरिक्त टिप</Label><Input value={formData.additionalInfo} onChange={e => setFormData({...formData, additionalInfo: e.target.value})} className="h-9 text-xs rounded-md bg-muted/20 border-none" /></div>
 
                 <div className="space-y-2 mt-4">
                   <div className="flex items-center justify-between"><Label className="text-[9px] font-black uppercase">साहित्य यादी</Label><Button variant="outline" size="sm" onClick={handleAddEquipmentRow} className="h-6 text-[8px] font-black rounded px-2">जोडा</Button></div>

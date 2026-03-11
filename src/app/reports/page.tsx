@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
@@ -76,20 +77,29 @@ export default function ReportsPage() {
     }
   }
 
-  const handleDelete = (id: string) => {
-    if (!id || !db || !user) return
-    const confirmDelete = window.confirm("तुम्हाला हा रिपोर्ट कायमचा हटवायचा आहे का?")
-    if (!confirmDelete) return
-    
-    const docRef = doc(db, 'users', user.uid, 'dailyWorkReports', id)
-    deleteDocumentNonBlocking(docRef)
-    
-    if (selectedReport && selectedReport.id === id) {
-      setIsViewOpen(false)
-      setSelectedReport(null)
+  const handleDelete = (e: React.MouseEvent | null, id: string) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
     }
     
-    toast({ title: "अहवाल हटवला", description: "माहिती यशस्वीरित्या काढून टाकली आहे." })
+    if (!id || !db || !user) return
+    const confirmDelete = window.confirm("तुम्हाला हा अहवाल कायमचा हटवायचा आहे का?")
+    if (!confirmDelete) return
+    
+    try {
+      const docRef = doc(db, 'users', user.uid, 'dailyWorkReports', id)
+      deleteDocumentNonBlocking(docRef)
+      
+      if (selectedReport && selectedReport.id === id) {
+        setIsViewOpen(false)
+        setSelectedReport(null)
+      }
+      
+      toast({ title: "यशस्वी", description: "अहवाल हटवण्यात आला आहे." })
+    } catch (err) {
+      toast({ title: "त्रुटी", description: "अहवाल हटवताना अडचण आली.", variant: "destructive" })
+    }
   }
 
   const handleEditClick = (report: any) => {
@@ -207,11 +217,7 @@ export default function ReportsPage() {
                         variant="ghost" 
                         size="icon" 
                         className="h-8 w-8 text-destructive rounded-full hover:bg-red-50" 
-                        onClick={(e) => { 
-                          e.preventDefault(); 
-                          e.stopPropagation(); 
-                          handleDelete(report.id); 
-                        }}
+                        onClick={(e) => handleDelete(e, report.id)}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
@@ -249,7 +255,7 @@ export default function ReportsPage() {
             </Card>
           ))
         ) : (
-          <div className="text-center py-16 bg-white rounded-2xl border border-dashed border-slate-200 flex flex-col items-center gap-3">
+          <div className="text-center py-16 bg-white rounded-2xl border border-dashed border-slate-200 flex flex-col items-center gap-3 opacity-50">
              <Archive className="h-8 w-8 text-slate-200" />
              <div className="space-y-0.5">
                <h3 className="text-[11px] font-black text-slate-400 uppercase tracking-widest">No reports found</h3>
@@ -286,7 +292,7 @@ export default function ReportsPage() {
               <FileText className="h-3.5 w-3.5 text-primary" /> अहवाल पाहणी
             </DialogTitle>
             <div className="flex gap-1.5 pr-8">
-              <Button size="sm" variant="ghost" className="h-8 text-[10px] font-black text-destructive" onClick={() => selectedReport && handleDelete(selectedReport.id)}><Trash2 className="h-3.5 w-3.5 mr-1" /> हटवा</Button>
+              <Button size="sm" variant="ghost" className="h-8 text-[10px] font-black text-destructive" onClick={() => selectedReport && handleDelete(null, selectedReport.id)}><Trash2 className="h-3.5 w-3.5 mr-1" /> हटवा</Button>
               <Button size="sm" className="gap-1.5 font-black rounded-lg bg-primary h-8 text-[10px] px-3 shadow-md" onClick={handleDownloadPDF}><Printer className="h-3.5 w-3.5" /> प्रिंट</Button>
               <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={() => setIsViewOpen(false)}><X className="h-4 w-4" /></Button>
             </div>
@@ -345,42 +351,6 @@ export default function ReportsPage() {
                               <td className="p-3 text-center font-black">
                                 <span className="text-slate-400">E:</span>{log.emptyCans} <span className="mx-1 text-slate-200">|</span> <span className="text-emerald-600 font-bold">F:</span>{log.fullCans}
                               </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                )}
-
-                {selectedReport.type === 'Breakdown' && (
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-2 gap-3 p-4 border-2 border-red-200 rounded-xl bg-red-50 shadow-md">
-                      <div><Label className="text-[8px] font-black uppercase text-red-400">रूट</Label><p className="text-[12px] font-black text-red-700">{selectedReport.fullData?.routeName}</p></div>
-                      <div><Label className="text-[8px] font-black uppercase text-red-400">वाहन</Label><p className="text-[12px] font-black">{selectedReport.fullData?.vehicleNumber}</p></div>
-                      <div><Label className="text-[8px] font-black uppercase text-red-400">ठिकाण</Label><p className="text-[12px] font-black">{selectedReport.fullData?.location}</p></div>
-                      <div className="text-right"><Label className="text-[8px] font-black uppercase text-red-400">एकूण नुकसान</Label><p className="text-[14px] font-black text-red-600">₹{selectedReport.fullData?.totalLossAmount}</p></div>
-                    </div>
-                    <div className="border rounded-xl overflow-hidden border-red-100 shadow-lg bg-white">
-                      <table className="w-full text-[11px] border-collapse">
-                        <thead className="bg-red-600 text-white">
-                          <tr className="uppercase font-black text-[9px] tracking-widest">
-                            <th className="p-3 text-left">गवळी (Supplier)</th>
-                            <th className="p-3 text-center">म्हेस</th>
-                            <th className="p-3 text-center">गाय</th>
-                            <th className="p-3 text-right">रक्कम</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {selectedReport.fullData?.losses?.map((loss: any, idx: number) => (
-                            <tr key={idx} className="border-b border-red-50 last:border-0 odd:bg-white even:bg-red-50/30">
-                              <td className="p-3">
-                                <p className="font-black text-slate-900">{loss.supplierCode}</p>
-                                <p className="text-[9px] text-red-500 font-black uppercase">{loss.supplierName}</p>
-                              </td>
-                              <td className="p-3 text-center font-black text-amber-700 bg-amber-50/30">{loss.bufMilkLossLiters}L</td>
-                              <td className="p-3 text-center font-black text-blue-700 bg-blue-50/30">{loss.cowMilkLossLiters}L</td>
-                              <td className="p-3 text-right font-black text-red-600">₹{loss.lossAmount}</td>
                             </tr>
                           ))}
                         </tbody>

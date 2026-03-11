@@ -107,7 +107,7 @@ export default function CentersPage() {
 
   const handleSaveCenter = () => {
     if (!formData.name || !formData.code || !db || !user) {
-      toast({ title: "त्रुटी", description: "माहिती आवश्यक आहे.", variant: "destructive" })
+      toast({ title: "त्रुटी", description: "नाव आणि कोड आवश्यक आहे.", variant: "destructive" })
       return
     }
 
@@ -125,30 +125,41 @@ export default function CentersPage() {
         milkCansCount: Number(formData.milkCansCount), computerAvailable: formData.computerAvailable,
         upsInverterAvailable: formData.upsInverterAvailable, solarAvailable: formData.solarAvailable,
         equipment: formData.equipment
-      }
+      },
+      updatedAt: new Date().toISOString()
     }
 
     if (dialogMode === 'add') {
       const colRef = collection(db, 'users', user.uid, 'centers')
       addDocumentNonBlocking(colRef, centerData)
+      toast({ title: "यशस्वी", description: "नवीन केंद्र जोडण्यात आले." })
     } else if (editingId) {
       const docRef = doc(db, 'users', user.uid, 'centers', editingId)
       updateDocumentNonBlocking(docRef, centerData)
+      toast({ title: "यशस्वी", description: "केंद्राची माहिती अपडेट झाली." })
     }
     
     setIsDialogOpen(false)
-    toast({ title: "जतन केले", description: "केंद्राची माहिती यशस्वीरित्या सेव्ह झाली." })
   }
 
-  const handleDeleteCenter = (id: string) => {
-    if (!db || !user) return
-    if (!confirm("तुम्हाला खात्री आहे की हे केंद्र हटवायचे आहे?")) return
+  const handleDeleteCenter = (e: React.MouseEvent | null, id: string) => {
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
     
-    const docRef = doc(db, 'users', user.uid, 'centers', id)
-    deleteDocumentNonBlocking(docRef)
+    if (!db || !user || !id) return
+    if (!confirm("तुम्हाला खात्री आहे की हे केंद्र कायमचे हटवायचा आहे?")) return
     
-    if (selectedCenter?.id === id) setSelectedCenter(null)
-    toast({ title: "हटवले", description: "केंद्र काढून टाकले आहे." })
+    try {
+      const docRef = doc(db, 'users', user.uid, 'centers', id)
+      deleteDocumentNonBlocking(docRef)
+      
+      if (selectedCenter?.id === id) setSelectedCenter(null)
+      toast({ title: "यशस्वी", description: "केंद्र यशस्वीरित्या हटवण्यात आले." })
+    } catch (err) {
+      toast({ title: "त्रुटी", description: "केंद्र हटवताना अडचण आली.", variant: "destructive" })
+    }
   }
 
   const filteredCenters = centers?.filter(c => 
@@ -156,7 +167,7 @@ export default function CentersPage() {
     c.code.toLowerCase().includes(searchQuery.toLowerCase())
   ) || []
 
-  if (!mounted || isLoading) return <div className="p-10 text-center italic">लोड होत आहे...</div>
+  if (!mounted || isLoading) return <div className="p-10 text-center italic text-muted-foreground">लोड होत आहे...</div>
 
   return (
     <div className="space-y-3 max-w-7xl mx-auto w-full pb-10 px-1">
@@ -176,7 +187,7 @@ export default function CentersPage() {
                 <div key={center.id} className={`p-2.5 cursor-pointer hover:bg-muted/50 flex justify-between items-center ${selectedCenter?.id === center.id ? 'bg-primary/5 border-l-2 border-primary' : ''}`} onClick={() => setSelectedCenter(center)}>
                   <div className="min-w-0"><h4 className="font-black text-[11px] text-foreground truncate">{center.name}</h4><div className="flex items-center gap-1.5 mt-0.5"><Badge variant="secondary" className="text-[8px] font-black h-3.5">{center.code}</Badge><span className="text-[9px] text-muted-foreground truncate"><MapPin className="h-2.5 w-2.5" /> {center.village}</span></div></div>
                   <div className="flex items-center gap-1">
-                    <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={(e) => { e.stopPropagation(); handleDeleteCenter(center.id); }}><Trash2 className="h-3 w-3" /></Button>
+                    <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={(e) => handleDeleteCenter(e, center.id)}><Trash2 className="h-3 w-3" /></Button>
                     <ChevronRight className="h-4 w-4 text-muted-foreground opacity-50" />
                   </div>
                 </div>
@@ -191,7 +202,7 @@ export default function CentersPage() {
               <div className="p-2.5 border-b flex items-center justify-between bg-primary/5 sticky top-0 z-10">
                 <Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setSelectedCenter(null)}><X className="h-4 w-4" /></Button>
                 <div className="flex-1 px-2 min-w-0"><h3 className="text-sm font-black truncate">{selectedCenter.name}</h3><p className="text-[9px] font-black text-muted-foreground uppercase">Code: {selectedCenter.code} | {selectedCenter.village}</p></div>
-                <div className="flex gap-1.5"><Button variant="outline" size="icon" className="h-7 w-7 text-primary" onClick={() => handleOpenEdit(selectedCenter)}><Edit className="h-3 w-3" /></Button><Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => handleDeleteCenter(selectedCenter.id)}><Trash2 className="h-3 w-3" /></Button></div>
+                <div className="flex gap-1.5"><Button variant="outline" size="icon" className="h-7 w-7 text-primary" onClick={() => handleOpenEdit(selectedCenter)}><Edit className="h-3 w-3" /></Button><Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => handleDeleteCenter(null, selectedCenter.id)}><Trash2 className="h-3 w-3" /></Button></div>
               </div>
               <ScrollArea className="flex-1 h-[600px]">
                 <div className="p-3 space-y-4">
@@ -211,10 +222,45 @@ export default function CentersPage() {
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-3xl p-0 overflow-hidden bg-white"><DialogHeader className="p-3 bg-primary text-white"><DialogTitle className="text-sm font-black uppercase">{dialogMode === 'add' ? 'नवीन केंद्र' : 'माहिती बदला'}</DialogTitle></DialogHeader>
-          <ScrollArea className="max-h-[85vh] p-4"><div className="grid grid-cols-1 md:grid-cols-2 gap-4"><div className="space-y-4">
-            <h4 className="text-[10px] font-black uppercase text-primary border-b pb-1">१) प्राथमिक माहिती</h4>
-            <div className="grid grid-cols-2 gap-2.5"><div className="col-span-2 space-y-1"><Label className="text-[9px] font-black uppercase">केंद्राचे नाव</Label><Input value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="h-9 text-xs" /></div><div className="space-y-1"><Label className="text-[9px] font-black uppercase">कोड</Label><Input value={formData.code} onChange={e => setFormData({...formData, code: e.target.value})} className="h-9 text-xs" /></div><div className="space-y-1"><Label className="text-[9px] font-black uppercase">मोबाईल</Label><Input value={formData.mobile} onChange={e => setFormData({...formData, mobile: e.target.value})} className="h-9 text-xs" /></div></div>
-          </div></div></ScrollArea>
+          <ScrollArea className="max-h-[85vh] p-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pb-6">
+              <div className="space-y-4">
+                <h4 className="text-[10px] font-black uppercase text-primary border-b pb-1">१) प्राथमिक माहिती</h4>
+                <div className="grid grid-cols-2 gap-2.5">
+                  <div className="col-span-2 space-y-1"><Label className="text-[9px] uppercase font-black">नाव</Label><Input value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="h-9 text-xs rounded-md bg-muted/20 border-none" /></div>
+                  <div className="space-y-1"><Label className="text-[9px] uppercase font-black">कोड</Label><Input value={formData.code} onChange={e => setFormData({...formData, code: e.target.value})} className="h-9 text-xs rounded-md bg-muted/20 border-none" /></div>
+                  <div className="space-y-1"><Label className="text-[9px] uppercase font-black">मोबाईल</Label><Input value={formData.mobile} onChange={e => setFormData({...formData, mobile: e.target.value})} className="h-9 text-xs rounded-md bg-muted/20 border-none" /></div>
+                  <div className="col-span-2 space-y-1"><Label className="text-[9px] uppercase font-black">ऑपरेटर नाव</Label><Input value={formData.operatorName} onChange={e => setFormData({...formData, operatorName: e.target.value})} className="h-9 text-xs rounded-md bg-muted/20 border-none" /></div>
+                  <div className="col-span-2 space-y-1"><Label className="text-[9px] uppercase font-black">गाव</Label><Input value={formData.village} onChange={e => setFormData({...formData, village: e.target.value})} className="h-9 text-xs rounded-md bg-muted/20 border-none" /></div>
+                  <div className="space-y-1"><Label className="text-[9px] uppercase font-black">FSSAI क्र.</Label><Input value={formData.fssaiNumber} onChange={e => setFormData({...formData, fssaiNumber: e.target.value})} className="h-9 text-xs rounded-md bg-muted/20 border-none" /></div>
+                  <div className="space-y-1"><Label className="text-[9px] uppercase font-black">मुदत</Label><Input value={formData.fssaiExpiry} onChange={e => setFormData({...formData, fssaiExpiry: e.target.value})} className="h-9 text-xs rounded-md bg-muted/20 border-none" placeholder="DD/MM/YYYY" /></div>
+                </div>
+              </div>
+              <div className="space-y-4">
+                <h4 className="text-[10px] font-black uppercase text-primary border-b pb-1">२) तांत्रिक व इतर</h4>
+                <div className="grid grid-cols-2 gap-2.5">
+                  <div className="space-y-1"><Label className="text-[9px] uppercase font-black">काटा ब्रँड</Label><Input value={formData.weighingScaleBrand} onChange={e => setFormData({...formData, weighingScaleBrand: e.target.value})} className="h-9 text-xs rounded-md bg-muted/20 border-none" /></div>
+                  <div className="space-y-1"><Label className="text-[9px] uppercase font-black">मशीन ब्रँड</Label><Input value={formData.fatMachineBrand} onChange={e => setFormData({...formData, fatMachineBrand: e.target.value})} className="h-9 text-xs rounded-md bg-muted/20 border-none" /></div>
+                  <div className="space-y-1"><Label className="text-[9px] uppercase font-black">बर्फ लाद्या</Label><Input type="number" value={formData.iceBlocks} onChange={e => setFormData({...formData, iceBlocks: e.target.value})} className="h-9 text-xs rounded-md bg-muted/20 border-none" /></div>
+                  <div className="space-y-1"><Label className="text-[9px] uppercase font-black">कॅन संख्या</Label><Input type="number" value={formData.milkCansCount} onChange={e => setFormData({...formData, milkCansCount: e.target.value})} className="h-9 text-xs rounded-md bg-muted/20 border-none" /></div>
+                </div>
+                <div className="grid grid-cols-1 gap-2 pt-2">
+                  <div className="flex items-center space-x-2 bg-muted/10 p-2 rounded-lg">
+                    <Checkbox id="comp-c" checked={formData.computerAvailable} onCheckedChange={(v) => setFormData({...formData, computerAvailable: !!v})} />
+                    <Label htmlFor="comp-c" className="text-[10px] font-black uppercase cursor-pointer">कॉम्प्युटर आहे का?</Label>
+                  </div>
+                  <div className="flex items-center space-x-2 bg-muted/10 p-2 rounded-lg">
+                    <Checkbox id="ups-c" checked={formData.upsInverterAvailable} onCheckedChange={(v) => setFormData({...formData, upsInverterAvailable: !!v})} />
+                    <Label htmlFor="ups-c" className="text-[10px] font-black uppercase cursor-pointer">UPS / इनव्हर्टर आहे का?</Label>
+                  </div>
+                  <div className="flex items-center space-x-2 bg-muted/10 p-2 rounded-lg">
+                    <Checkbox id="solar-c" checked={formData.solarAvailable} onCheckedChange={(v) => setFormData({...formData, solarAvailable: !!v})} />
+                    <Label htmlFor="solar-c" className="text-[10px] font-black uppercase cursor-pointer">सोलर उपलब्ध आहे का?</Label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ScrollArea>
           <DialogFooter className="p-3 border-t bg-muted/5 gap-2 flex justify-end"><Button variant="outline" onClick={() => setIsDialogOpen(false)}>रद्द</Button><Button onClick={handleSaveCenter}>जतन करा</Button></DialogFooter>
         </DialogContent>
       </Dialog>
