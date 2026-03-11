@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect } from "react"
@@ -21,14 +20,14 @@ export default function RoutesPage() {
   const { toast } = useToast()
 
   const routesQuery = useMemoFirebase(() => {
-    if (!db) return null
+    if (!db || !user) return null
     return collection(db, 'routes')
-  }, [db])
+  }, [db, user])
 
   const suppliersQuery = useMemoFirebase(() => {
-    if (!db) return null
+    if (!db || !user) return null
     return collection(db, 'suppliers')
-  }, [db])
+  }, [db, user])
 
   const { data: routes, isLoading } = useCollection(routesQuery)
   const { data: suppliers } = useCollection(suppliersQuery)
@@ -103,7 +102,7 @@ export default function RoutesPage() {
     if (!db || !id) return
     if (confirm("तुम्हाला खात्री आहे की हा रूट कायमचा हटवायचा आहे?")) {
       try {
-        const docRef = doc(db, 'routes', id)
+        const docRef = doc(db, 'routes', String(id))
         deleteDocumentNonBlocking(docRef)
         toast({ title: "यशस्वी", description: "रूट यशस्वीरित्या हटवण्यात आला." })
       } catch (err) {
@@ -151,7 +150,7 @@ export default function RoutesPage() {
                     <Badge className="bg-primary/10 text-primary border-none font-black py-0.5 px-2.5 rounded-full text-[10px] uppercase">
                       <MapPin className="h-3 w-3 mr-1" /> {route.distanceKm} KM
                     </Badge>
-                    <div className="flex gap-1.5">
+                    <div className="flex gap-1.5 relative z-30">
                       <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground" onClick={() => handleOpenEdit(route)}><Edit className="h-4 w-4" /></Button>
                       <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={(e) => deleteRoute(e, route.id)}><Trash2 className="h-4 w-4" /></Button>
                     </div>

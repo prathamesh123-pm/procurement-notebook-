@@ -87,7 +87,7 @@ export default function ReportsPage() {
     if (!confirmDelete) return
     
     try {
-      const docRef = doc(db, 'users', user.uid, 'dailyWorkReports', id)
+      const docRef = doc(db, 'users', user.uid, 'dailyWorkReports', String(id))
       deleteDocumentNonBlocking(docRef)
       
       if (selectedReport && selectedReport.id === id) {
@@ -358,7 +358,7 @@ export default function ReportsPage() {
                   </div>
                 )}
 
-                {(selectedReport.type === 'Field Visit' || selectedReport.type === 'Daily Office Work' || selectedReport.type === 'Daily Task') && (
+                {(selectedReport.type === 'Field Visit' || selectedReport.type === 'Daily Office Work' || selectedReport.type === 'Daily Task' || selectedReport.type === 'Breakdown') && (
                   <div className="p-5 border-2 border-primary/10 rounded-2xl bg-gradient-to-br from-white to-primary/5 space-y-3 shadow-md">
                     <Label className="text-[10px] font-black uppercase text-primary tracking-[0.2em] block border-b-2 border-primary/10 pb-2 flex items-center gap-2">
                       <FileText className="h-4 w-4" /> निरीक्षण आणि टिप्पणी (OBSERVATIONS)

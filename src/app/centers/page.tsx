@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect } from "react"
@@ -32,9 +31,9 @@ export default function CentersPage() {
   }, [db, user])
 
   const routesQuery = useMemoFirebase(() => {
-    if (!db) return null
+    if (!db || !user) return null
     return collection(db, 'routes')
-  }, [db])
+  }, [db, user])
 
   const { data: centers, isLoading } = useCollection(centersQuery)
   const { data: routes } = useCollection(routesQuery)
@@ -152,7 +151,7 @@ export default function CentersPage() {
     if (!confirm("तुम्हाला खात्री आहे की हे केंद्र कायमचे हटवायचा आहे?")) return
     
     try {
-      const docRef = doc(db, 'users', user.uid, 'centers', id)
+      const docRef = doc(db, 'users', user.uid, 'centers', String(id))
       deleteDocumentNonBlocking(docRef)
       
       if (selectedCenter?.id === id) setSelectedCenter(null)

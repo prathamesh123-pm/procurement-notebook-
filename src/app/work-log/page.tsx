@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
@@ -92,12 +91,13 @@ export default function WorkLogPage() {
 
   const deleteTask = (e: React.MouseEvent, taskId: string) => {
     e.stopPropagation();
+    e.preventDefault();
     if (!db || !user || !taskId) return
     const confirmDelete = window.confirm("हा टास्क कायमचा हटवायचा आहे का?")
     if (!confirmDelete) return
     
     try {
-      const docRef = doc(db, 'users', user.uid, 'tasks', taskId)
+      const docRef = doc(db, 'users', user.uid, 'tasks', String(taskId))
       deleteDocumentNonBlocking(docRef)
       toast({ title: "यशस्वी", description: "टास्क हटवण्यात आला आहे." })
     } catch (err) {
@@ -156,7 +156,7 @@ export default function WorkLogPage() {
                     {task.supplierId && <span className="flex items-center gap-1"><Hash className="h-3 w-3 text-primary" /> {task.supplierId}</span>}
                   </div>
                 </div>
-                <div className="flex items-center gap-1 shrink-0 relative z-10">
+                <div className="flex items-center gap-1 shrink-0 relative z-30">
                   <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-destructive rounded-full hover:bg-red-50" onClick={(e) => deleteTask(e, task.id)}>
                     <Trash2 className="h-4.5 w-4.5" />
                   </Button>

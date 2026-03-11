@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
@@ -33,14 +32,14 @@ export default function RouteDetailsPage() {
   const db = useFirestore()
 
   const routesQuery = useMemoFirebase(() => {
-    if (!db) return null
+    if (!db || !user) return null
     return collection(db, 'routes')
-  }, [db])
+  }, [db, user])
 
   const suppliersQuery = useMemoFirebase(() => {
-    if (!db) return null
+    if (!db || !user) return null
     return collection(db, 'suppliers')
-  }, [db])
+  }, [db, user])
 
   const { data: allRoutes } = useCollection(routesQuery)
   const { data: allSuppliers, isLoading } = useCollection(suppliersQuery)
@@ -206,7 +205,7 @@ export default function RouteDetailsPage() {
     if (!confirmDelete) return
     
     try {
-      const docRef = doc(db, 'suppliers', id)
+      const docRef = doc(db, 'suppliers', String(id))
       deleteDocumentNonBlocking(docRef)
       
       if (selectedSupplier?.id === id) setSelectedSupplier(null)
@@ -267,7 +266,7 @@ export default function RouteDetailsPage() {
                       <span className="text-[9px] text-muted-foreground font-bold truncate">| {s.address}</span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-1 relative z-30">
                     <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive rounded-md" onClick={(e) => handleDeleteSupplier(e, s.id)}>
                       <Trash2 className="h-3 w-3" />
                     </Button>

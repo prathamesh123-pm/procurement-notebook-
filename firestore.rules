@@ -28,15 +28,15 @@ service cloud.firestore {
         allow read, write: if isOwner(userId);
       }
 
-      match /visitReports/{visitReportId} {
-        allow read, write: if isOwner(userId);
-      }
-
       match /dailyWorkReports/{dailyWorkReportId} {
         allow read, write: if isOwner(userId);
       }
       
       match /centers/{centerId} {
+        allow read, write: if isOwner(userId);
+      }
+      
+      match /breakdowns/{breakdownId} {
         allow read, write: if isOwner(userId);
       }
     }
