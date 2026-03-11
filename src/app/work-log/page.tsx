@@ -1,7 +1,7 @@
 
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -11,9 +11,21 @@ import { Task } from "@/lib/types"
 import { Plus, Search, ListTodo, User, Hash, Trash2, CheckCircle2, X, Edit } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
+import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking, deleteDocumentNonBlocking, updateDocumentNonBlocking } from "@/firebase"
+import { collection, doc } from "firebase/firestore"
 
 export default function WorkLogPage() {
-  const [tasks, setTasks] = useState<Task[]>([])
+  const { user } = useUser()
+  const db = useFirestore()
+  const { toast } = useToast()
+  
+  const tasksQuery = useMemoFirebase(() => {
+    if (!db || !user) return null
+    return collection(db, 'users', user.uid, 'tasks')
+  }, [db, user])
+
+  const { data: firestoreTasks, isLoading } = useCollection(tasksQuery)
+  
   const [newTaskTitle, setNewTaskTitle] = useState("")
   const [newTaskDesc, setNewTaskDesc] = useState("")
   const [newTaskSupplierName, setNewTaskSupplierName] = useState("")
@@ -23,78 +35,59 @@ export default function WorkLogPage() {
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
   const [tempRemark, setTempRemark] = useState("")
   const [isDetailOpen, setIsDetailOpen] = useState(false)
-  const { toast } = useToast()
 
   useEffect(() => {
     setMounted(true)
-    const stored = JSON.parse(localStorage.getItem('procurepal_tasks') || '[]')
-    setTasks(stored.filter((t: Task) => t.status === 'pending'))
   }, [])
 
-  const saveTasksToStorage = (updatedTasks: Task[]) => {
-    // Separate current view state (pending) and master storage
-    const allStored = JSON.parse(localStorage.getItem('procurepal_tasks') || '[]')
-    
-    // Create map of new changes to merge into master list
-    const updatedMaster = allStored.map((t: any) => {
-      const match = updatedTasks.find(ut => ut.id === t.id)
-      return match ? match : t
-    }).filter((t: any) => {
-      // Also handle deletions if items were removed from updatedTasks list
-      // Only keep it if it exists in updatedTasks OR it's a completed task not in this view context
-      if (t.status === 'completed') return true
-      return updatedTasks.some(ut => ut.id === t.id)
-    })
-
-    // Add brand new tasks
-    const newTasks = updatedTasks.filter(ut => !allStored.some((st: any) => st.id === ut.id))
-    const finalMaster = [...updatedMaster, ...newTasks]
-
-    localStorage.setItem('procurepal_tasks', JSON.stringify(finalMaster))
-    setTasks(finalMaster.filter((t: any) => t.status === 'pending'))
-  }
-
   const addTask = () => {
-    if (!newTaskTitle) return
-    const newTask: Task = { 
-      id: crypto.randomUUID(), 
+    if (!newTaskTitle || !db || !user) return
+    const newTask = { 
       title: newTaskTitle, 
       description: newTaskDesc, 
       remark: "", 
       supplierName: newTaskSupplierName, 
       supplierId: newTaskSupplierId, 
       assignedTo: "Manager", 
+      assignedToUserId: user.uid,
       status: 'pending', 
       createdAt: new Date().toISOString() 
     }
-    const updated = [newTask, ...tasks]
-    saveTasksToStorage(updated)
+    
+    const colRef = collection(db, 'users', user.uid, 'tasks');
+    addDocumentNonBlocking(colRef, newTask);
+    
     setNewTaskTitle(""); setNewTaskDesc(""); setNewTaskSupplierName(""); setNewTaskSupplierId("")
     toast({ title: "टास्क जतन झाला", description: "माहिती यशस्वीरित्या सेव्ह झाली." })
   }
 
   const completeTask = (taskId: string) => {
-    const allStored = JSON.parse(localStorage.getItem('procurepal_tasks') || '[]')
-    const task = allStored.find((t: any) => t.id === taskId)
+    if (!db || !user || !taskId) return
+    const task = firestoreTasks?.find(t => t.id === taskId)
     if (!task) return
     
-    // Add to reports
-    const storedReports = JSON.parse(localStorage.getItem('procurepal_reports') || '[]')
-    const newReport = { 
-      id: crypto.randomUUID(), 
+    // 1. Add to reports first
+    const reportData = { 
       type: 'Daily Task', 
       date: new Date().toISOString().split('T')[0], 
+      reportDate: new Date().toISOString().split('T')[0],
+      generatedByUserId: user.uid,
       summary: `गवळी: ${task.supplierName || 'N/A'}. टास्क: ${task.title}. शेरा: ${tempRemark}`, 
-      fullData: { ...task, remark: tempRemark, status: 'completed' } 
+      overallSummary: `गवळी: ${task.supplierName || 'N/A'}. टास्क: ${task.title}. शेरा: ${tempRemark}`,
+      fullData: { ...task, remark: tempRemark, status: 'completed' },
+      createdAt: new Date().toISOString()
     }
-    localStorage.setItem('procurepal_reports', JSON.stringify([newReport, ...storedReports]))
+    const reportsRef = collection(db, 'users', user.uid, 'dailyWorkReports');
+    addDocumentNonBlocking(reportsRef, reportData);
     
-    // Update master list
-    const updatedMaster = allStored.map((t: any) => t.id === taskId ? { ...t, status: 'completed', remark: tempRemark, completedAt: new Date().toISOString() } : t)
-    localStorage.setItem('procurepal_tasks', JSON.stringify(updatedMaster))
+    // 2. Update task status
+    const taskRef = doc(db, 'users', user.uid, 'tasks', taskId);
+    updateDocumentNonBlocking(taskRef, { 
+      status: 'completed', 
+      remark: tempRemark, 
+      completedAt: new Date().toISOString() 
+    });
     
-    // Update local view
-    setTasks(updatedMaster.filter((t: any) => t.status === 'pending'))
     setIsDetailOpen(false)
     toast({ title: "पूर्ण झाले", description: "टास्क पूर्ण झाला आणि अहवालात जोडला गेला." })
   }
@@ -102,24 +95,25 @@ export default function WorkLogPage() {
   const deleteTask = (e: React.MouseEvent, taskId: string) => {
     e.preventDefault()
     e.stopPropagation()
+    if (!db || !user || !taskId) return
     const confirmDelete = window.confirm("हा टास्क कायमचा हटवायचा आहे का?")
     if (!confirmDelete) return
     
-    // Filter out from master localStorage
-    const allStored = JSON.parse(localStorage.getItem('procurepal_tasks') || '[]')
-    const updatedMaster = allStored.filter((t: any) => String(t.id) !== String(taskId))
-    localStorage.setItem('procurepal_tasks', JSON.stringify(updatedMaster))
-    
-    // Update local state
-    setTasks(updatedMaster.filter((t: any) => t.status === 'pending'))
+    const docRef = doc(db, 'users', user.uid, 'tasks', taskId)
+    deleteDocumentNonBlocking(docRef)
     
     toast({ title: "हटवले", description: "टास्क यशस्वीरित्या काढून टाकला आहे." })
   }
 
-  const filteredTasks = tasks.filter(t => {
-    const q = searchQuery.toLowerCase()
-    return t.title.toLowerCase().includes(q) || (t.supplierName?.toLowerCase().includes(q) ?? false)
-  })
+  const pendingTasks = useMemo(() => {
+    return (firestoreTasks || [])
+      .filter(t => t.status === 'pending')
+      .filter(t => {
+        const q = searchQuery.toLowerCase()
+        return t.title.toLowerCase().includes(q) || (t.supplierName?.toLowerCase().includes(q) ?? false)
+      })
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+  }, [firestoreTasks, searchQuery])
 
   if (!mounted) return null
 
@@ -150,7 +144,9 @@ export default function WorkLogPage() {
         </div>
 
         <div className="grid grid-cols-1 gap-2">
-          {filteredTasks.length > 0 ? filteredTasks.map(task => (
+          {isLoading ? (
+            <div className="text-center py-10 italic text-muted-foreground">लोड होत आहे...</div>
+          ) : pendingTasks.length > 0 ? pendingTasks.map(task => (
             <Card key={task.id} className="border-none shadow-sm bg-white hover:bg-muted/5 cursor-pointer border-l-4 border-l-primary rounded-lg overflow-hidden relative" onClick={() => { setSelectedTask(task); setTempRemark(task.remark || ""); setIsDetailOpen(true); }}>
               <div className="p-3 flex items-center justify-between gap-2">
                 <div className="flex flex-col gap-1 min-w-0">

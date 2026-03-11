@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect } from "react"
@@ -13,6 +14,8 @@ import { useRouter } from "next/navigation"
 import { 
   ClipboardCheck, Truck, Plus, Trash2, MapPin, Briefcase, Save
 } from "lucide-react"
+import { useUser, useFirestore, addDocumentNonBlocking } from "@/firebase"
+import { collection } from "firebase/firestore"
 
 interface RouteVisitEntry {
   id: string;
@@ -26,6 +29,8 @@ interface RouteVisitEntry {
 }
 
 export default function DailyReportPage() {
+  const { user } = useUser()
+  const db = useFirestore()
   const { toast } = useToast()
   const router = useRouter()
   const [mounted, setMounted] = useState(false)
@@ -65,18 +70,40 @@ export default function DailyReportPage() {
   const updateRouteEntry = (id: string, updates: Partial<RouteVisitEntry>) => setFormData(prev => ({ ...prev, routeVisitLogs: prev.routeVisitLogs.map(e => e.id === id ? { ...e, ...updates } : e) }))
 
   const handleSave = () => {
-    let reportSummary = ""
-    if (reportType === "route-visit") reportSummary = `रूट व्हिजिट: ${formData.routeVisitLogs.length} केंद्र. वाहन: ${formData.vehicleNumber}. KM: ${formData.totalKm}.`
-    else if (reportType === "field-visit") reportSummary = `क्षेत्र भेट: ${formData.fieldObservations.substring(0, 50)}...`
-    else reportSummary = `ऑफिस काम: ${formData.officeTasks.substring(0, 50)}...`
-    
-    const newReport = {
-      id: crypto.randomUUID(), type: reportType === "route-visit" ? "Route Visit" : reportType === "field-visit" ? "Field Visit" : "Daily Office Work",
-      date: formData.reportDate, workItemsCount: formData.routeVisitLogs.length, summary: reportSummary, fullData: { ...formData, reportType }
+    if (!db || !user) {
+      toast({ title: "त्रुटी", description: "Firebase कनेक्टेड नाही.", variant: "destructive" });
+      return;
     }
 
-    const stored = JSON.parse(localStorage.getItem('procurepal_reports') || '[]')
-    localStorage.setItem('procurepal_reports', JSON.stringify([newReport, ...stored]))
+    let reportSummary = ""
+    let reportCategory = ""
+    if (reportType === "route-visit") {
+      reportSummary = `रूट व्हिजिट: ${formData.routeVisitLogs.length} केंद्र. वाहन: ${formData.vehicleNumber}. KM: ${formData.totalKm}.`
+      reportCategory = "Route Visit"
+    } else if (reportType === "field-visit") {
+      reportSummary = `क्षेत्र भेट: ${formData.fieldObservations.substring(0, 50)}...`
+      reportCategory = "Field Visit"
+    } else {
+      reportSummary = `ऑफिस काम: ${formData.officeTasks.substring(0, 50)}...`
+      reportCategory = "Daily Office Work"
+    }
+    
+    const newReport = {
+      type: reportCategory,
+      date: formData.reportDate,
+      reportDate: formData.reportDate,
+      generatedByUserId: user.uid,
+      overallSummary: reportSummary,
+      summary: reportSummary,
+      workItemsCount: formData.routeVisitLogs.length,
+      fullData: { ...formData, reportType },
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    }
+
+    const colRef = collection(db, 'users', user.uid, 'dailyWorkReports');
+    addDocumentNonBlocking(colRef, newReport);
+    
     toast({ title: "अहवाल जतन केला", description: "यशस्वीरित्या सेव्ह झाला." })
     router.push('/reports')
   }

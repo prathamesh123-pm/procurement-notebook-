@@ -10,21 +10,30 @@ import {
   Eye, Printer, X, Milk, FileDown, Edit, AlertCircle
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
-import { ReportType } from "@/lib/types"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { useUser, useFirestore, useCollection, useMemoFirebase, deleteDocumentNonBlocking, updateDocumentNonBlocking } from "@/firebase"
+import { collection, doc } from "firebase/firestore"
 
 export default function ReportsPage() {
-  const [reports, setReports] = useState<any[]>([])
-  const [mounted, setMounted] = useState(false)
-  const [activeFilter, setActiveFilter] = useState<ReportType | 'All' | 'Breakdown'>('All')
+  const { user } = useUser()
+  const db = useFirestore()
+  const { toast } = useToast()
+  
+  const reportsQuery = useMemoFirebase(() => {
+    if (!db || !user) return null
+    return collection(db, 'users', user.uid, 'dailyWorkReports')
+  }, [db, user])
+
+  const { data: firestoreReports, isLoading } = useCollection(reportsQuery)
+  
+  const [activeFilter, setActiveFilter] = useState<string | 'All'>('All')
   const [filterDate, setFilterDate] = useState<string>("")
   const [profileName, setProfileName] = useState("")
-  const { toast } = useToast()
 
   const [selectedReport, setSelectedReport] = useState<any | null>(null)
   const [isViewOpen, setIsViewOpen] = useState(false)
@@ -33,20 +42,18 @@ export default function ReportsPage() {
   const [editData, setEditData] = useState({ id: "", summary: "" })
 
   useEffect(() => {
-    setMounted(true)
-    const stored = JSON.parse(localStorage.getItem('procurepal_reports') || '[]')
-    setReports(stored)
     const savedName = localStorage.getItem('procurenote_user_name') || ""
     setProfileName(savedName)
   }, [])
 
   const filteredReports = useMemo(() => {
-    return reports.filter(r => {
+    const list = firestoreReports || []
+    return list.filter(r => {
       const matchesType = activeFilter === 'All' || r.type === activeFilter
       const matchesDate = filterDate === "" || r.date === filterDate
       return matchesType && matchesDate
-    })
-  }, [reports, activeFilter, filterDate])
+    }).sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime())
+  }, [firestoreReports, activeFilter, filterDate])
 
   const getIcon = (type: string) => {
     switch (type) {
@@ -70,23 +77,15 @@ export default function ReportsPage() {
     }
   }
 
-  const handleDelete = (id: any) => {
-    if (!id) return
+  const handleDelete = (id: string) => {
+    if (!id || !db || !user) return
     const confirmDelete = window.confirm("तुम्हाला हा रिपोर्ट कायमचा हटवायचा आहे का?")
     if (!confirmDelete) return
     
-    // Use fresh storage data to ensure accurate filtering
-    const storedReports = JSON.parse(localStorage.getItem('procurepal_reports') || '[]')
-    const updatedReports = storedReports.filter((r: any) => String(r.id || r._id) !== String(id))
+    const docRef = doc(db, 'users', user.uid, 'dailyWorkReports', id)
+    deleteDocumentNonBlocking(docRef)
     
-    // Save to localStorage
-    localStorage.setItem('procurepal_reports', JSON.stringify(updatedReports))
-    
-    // Update local state
-    setReports(updatedReports)
-    
-    // Close View Dialog if it was the same report
-    if (selectedReport && String(selectedReport.id || selectedReport._id) === String(id)) {
+    if (selectedReport && selectedReport.id === id) {
       setIsViewOpen(false)
       setSelectedReport(null)
     }
@@ -95,14 +94,14 @@ export default function ReportsPage() {
   }
 
   const handleEditClick = (report: any) => {
-    setEditData({ id: report.id, summary: report.summary })
+    setEditData({ id: report.id, summary: report.summary || report.overallSummary })
     setIsEditOpen(true)
   }
 
   const handleSaveEdit = () => {
-    const updated = reports.map(r => r.id === editData.id ? { ...r, summary: editData.summary } : r)
-    setReports(updated)
-    localStorage.setItem('procurepal_reports', JSON.stringify(updated))
+    if (!db || !user || !editData.id) return
+    const docRef = doc(db, 'users', user.uid, 'dailyWorkReports', editData.id)
+    updateDocumentNonBlocking(docRef, { summary: editData.summary, overallSummary: editData.summary })
     setIsEditOpen(false)
     toast({ title: "अद्ययावत केले", description: "अहवालाचा सारांश बदलला आहे." })
   }
@@ -116,7 +115,7 @@ export default function ReportsPage() {
     setIsViewOpen(true)
   }
 
-  if (!mounted) return null
+  if (isLoading) return <div className="p-10 text-center italic text-muted-foreground">लोड होत आहे...</div>
 
   return (
     <div className="max-w-full mx-auto w-full pb-10 animate-in fade-in duration-500 print:p-0 overflow-x-hidden">
@@ -138,8 +137,8 @@ export default function ReportsPage() {
       `}</style>
 
       <div className="px-3 space-y-1 no-print">
-        <h2 className="text-xl font-black text-slate-900 tracking-tight">View Reports</h2>
-        <p className="text-[11px] font-bold text-slate-500 uppercase tracking-widest leading-none">अहवाल व्यवस्थापन</p>
+        <h2 className="text-xl font-black text-slate-900 tracking-tight">अहवाल व्यवस्थापन (Reports)</h2>
+        <p className="text-[11px] font-bold text-slate-500 uppercase tracking-widest leading-none">View and Manage Reports</p>
       </div>
 
       <div className="mt-4 px-3 no-print">
@@ -147,7 +146,7 @@ export default function ReportsPage() {
           <div className="p-2 bg-blue-600 rounded-lg">
             <Archive className="h-4 w-4 text-white" />
           </div>
-          <span className="text-[11px] font-black text-blue-700 uppercase tracking-tight">{reports.length} Reports Archived</span>
+          <span className="text-[11px] font-black text-blue-700 uppercase tracking-tight">{filteredReports.length} अहवाल सापडले</span>
         </div>
       </div>
 
@@ -196,13 +195,13 @@ export default function ReportsPage() {
                       <div className="min-w-0">
                         <h4 className="font-black text-[13px] text-slate-900 truncate">{report.type}</h4>
                         <p className="text-[9px] text-slate-400 font-bold flex items-center gap-1 mt-0.5 uppercase tracking-tighter">
-                          <Calendar className="h-3 w-3" /> {report.date}
+                          <Calendar className="h-3 w-3" /> {report.date || report.reportDate}
                         </p>
                       </div>
                     </div>
                     <div className="flex items-center gap-1 shrink-0 relative z-30">
                       <Badge variant="outline" className="text-[8px] font-mono text-slate-400 border-slate-200 h-5 px-1.5 rounded-md bg-slate-50">
-                        ID: {String(report.id)?.slice(0, 6)}
+                        ID: {String(report.id)?.slice(-6)}
                       </Badge>
                       <Button 
                         type="button"
@@ -221,7 +220,7 @@ export default function ReportsPage() {
                   </div>
                   
                   <div className="text-[11px] text-slate-500 bg-slate-50/50 p-3 rounded-xl italic leading-relaxed border border-slate-100 whitespace-normal break-words shadow-inner">
-                    {report.summary}
+                    {report.summary || report.overallSummary}
                   </div>
 
                   <div className="grid grid-cols-3 gap-2 pt-1">
@@ -309,7 +308,7 @@ export default function ReportsPage() {
                   </div>
                   <div className="grid grid-cols-3 w-full mt-4 text-[10px] font-black uppercase px-4">
                     <div className="flex flex-col text-left border-l-2 border-primary/20 pl-2"><span className="text-slate-400 text-[8px] tracking-widest">प्रतिनिधी:</span> <span className="text-primary truncate">{profileName || selectedReport.fullData?.name || 'N/A'}</span></div>
-                    <div className="flex flex-col text-center border-l-2 border-primary/20"><span className="text-slate-400 text-[8px] tracking-widest">तारीख:</span> <span className="text-slate-900">{selectedReport.date}</span></div>
+                    <div className="flex flex-col text-center border-l-2 border-primary/20"><span className="text-slate-400 text-[8px] tracking-widest">तारीख:</span> <span className="text-slate-900">{selectedReport.date || selectedReport.reportDate}</span></div>
                     <div className="flex flex-col text-right border-l-2 border-primary/20"><span className="text-slate-400 text-[8px] tracking-widest">शिफ्ट:</span> <span className="text-orange-600">{selectedReport.fullData?.shift || 'N/A'}</span></div>
                   </div>
                 </div>
@@ -398,7 +397,7 @@ export default function ReportsPage() {
                     </Label>
                     <div className="bg-white p-4 rounded-xl border border-primary/5 min-h-[150px] shadow-inner">
                       <p className="text-[12px] leading-relaxed whitespace-pre-wrap font-bold text-slate-800 italic">
-                        {selectedReport.summary || "माहिती उपलब्ध नाही."}
+                        {selectedReport.summary || selectedReport.overallSummary || "माहिती उपलब्ध नाही."}
                       </p>
                     </div>
                   </div>
