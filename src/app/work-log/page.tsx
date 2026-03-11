@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
@@ -96,13 +97,9 @@ export default function WorkLogPage() {
     const confirmDelete = window.confirm("हा टास्क कायमचा हटवायचा आहे का?")
     if (!confirmDelete) return
     
-    try {
-      const docRef = doc(db, 'users', user.uid, 'tasks', taskId)
-      deleteDocumentNonBlocking(docRef)
-      toast({ title: "यशस्वी", description: "टास्क हटवण्यात आला आहे." })
-    } catch (err) {
-      toast({ title: "त्रुटी", description: "टास्क हटवताना अडचण आली.", variant: "destructive" })
-    }
+    const docRef = doc(db, 'users', user.uid, 'tasks', taskId)
+    deleteDocumentNonBlocking(docRef)
+    toast({ title: "यशस्वी", description: "टास्क हटवण्यात आला आहे." })
   }
 
   const pendingTasks = useMemo(() => {

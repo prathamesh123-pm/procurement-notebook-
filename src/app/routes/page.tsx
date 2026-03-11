@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect } from "react"
@@ -5,9 +6,9 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
-import { Route, Supplier, CollectionCenter } from "@/lib/types"
-import { Plus, MapPin, Truck, Users, IndianRupee, Trash2, ArrowRight, Edit, Milk, ChevronRight, AlertTriangle } from "lucide-react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
+import { Route, Supplier } from "@/lib/types"
+import { Plus, MapPin, Truck, Users, Trash2, Edit, ChevronRight, AlertTriangle } from "lucide-react"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import Link from "next/link"
 import { useToast } from "@/hooks/use-toast"
 import { Badge } from "@/components/ui/badge"
@@ -100,15 +101,11 @@ export default function RoutesPage() {
     e.preventDefault();
     
     if (!db || !id) return
-    if (confirm("तुम्हाला खात्री आहे की हा रूट कायमचा हटवायचा आहे?")) {
-      try {
-        const docRef = doc(db, 'routes', id)
-        deleteDocumentNonBlocking(docRef)
-        toast({ title: "यशस्वी", description: "रूट यशस्वीरित्या हटवण्यात आला." })
-      } catch (err) {
-        toast({ title: "त्रुटी", description: "रूट हटवताना अडचण आली.", variant: "destructive" })
-      }
-    }
+    if (!confirm("तुम्हाला खात्री आहे की हा रूट कायमचा हटवायचा आहे?")) return
+    
+    const docRef = doc(db, 'routes', id)
+    deleteDocumentNonBlocking(docRef)
+    toast({ title: "यशस्वी", description: "रूट यशस्वीरित्या हटवण्यात आला." })
   }
 
   const getRouteMilkTotals = (routeId: string) => {

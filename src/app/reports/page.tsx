@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
@@ -41,7 +42,7 @@ export default function ReportsPage() {
   const [editData, setEditData] = useState({ id: "", summary: "" })
 
   useEffect(() => {
-    const savedName = localStorage.getItem('procurenote_user_name') || ""
+    const savedName = typeof window !== 'undefined' ? localStorage.getItem('procurenote_user_name') || "" : ""
     setProfileName(savedName)
   }, [])
 
@@ -86,19 +87,15 @@ export default function ReportsPage() {
     const confirmDelete = window.confirm("तुम्हाला हा अहवाल कायमचा हटवायचा आहे का?")
     if (!confirmDelete) return
     
-    try {
-      const docRef = doc(db, 'users', user.uid, 'dailyWorkReports', id)
-      deleteDocumentNonBlocking(docRef)
-      
-      if (selectedReport && selectedReport.id === id) {
-        setIsViewOpen(false)
-        setSelectedReport(null)
-      }
-      
-      toast({ title: "यशस्वी", description: "अहवाल हटवण्यात आला आहे." })
-    } catch (err) {
-      toast({ title: "त्रुटी", description: "अहवाल हटवताना अडचण आली.", variant: "destructive" })
+    const docRef = doc(db, 'users', user.uid, 'dailyWorkReports', id)
+    deleteDocumentNonBlocking(docRef)
+    
+    if (selectedReport && selectedReport.id === id) {
+      setIsViewOpen(false)
+      setSelectedReport(null)
     }
+    
+    toast({ title: "यशस्वी", description: "अहवाल हटवण्यात आला आहे." })
   }
 
   const handleEditClick = (report: any) => {

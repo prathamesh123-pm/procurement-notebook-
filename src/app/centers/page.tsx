@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect } from "react"
@@ -6,16 +7,13 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { 
-  Warehouse, Plus, Search, MapPin, User, Trash2, Edit, Package, ChevronRight,
-  Milk, Truck, FlaskConical, Battery, Laptop, Zap, Sun, X
+  Warehouse, Plus, Search, MapPin, Trash2, Edit, Truck, FlaskConical, X, ChevronRight
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
-import { CollectionCenter, EquipmentItem, Route } from "@/lib/types"
+import { CollectionCenter, EquipmentItem } from "@/lib/types"
 import { useToast } from "@/hooks/use-toast"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
 import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking, deleteDocumentNonBlocking, updateDocumentNonBlocking } from "@/firebase"
 import { collection, doc } from "firebase/firestore"
@@ -30,13 +28,7 @@ export default function CentersPage() {
     return collection(db, 'users', user.uid, 'centers')
   }, [db, user])
 
-  const routesQuery = useMemoFirebase(() => {
-    if (!db || !user) return null
-    return collection(db, 'routes')
-  }, [db, user])
-
   const { data: centers, isLoading } = useCollection(centersQuery)
-  const { data: routes } = useCollection(routesQuery)
 
   const [searchQuery, setSearchQuery] = useState("")
   const [mounted, setMounted] = useState(false)
@@ -150,15 +142,11 @@ export default function CentersPage() {
     if (!db || !user || !id) return
     if (!confirm("तुम्हाला खात्री आहे की हे केंद्र कायमचे हटवायचा आहे?")) return
     
-    try {
-      const docRef = doc(db, 'users', user.uid, 'centers', id)
-      deleteDocumentNonBlocking(docRef)
-      
-      if (selectedCenter?.id === id) setSelectedCenter(null)
-      toast({ title: "यशस्वी", description: "केंद्र यशस्वीरित्या हटवण्यात आले." })
-    } catch (err) {
-      toast({ title: "त्रुटी", description: "केंद्र हटवताना अडचण आली.", variant: "destructive" })
-    }
+    const docRef = doc(db, 'users', user.uid, 'centers', id)
+    deleteDocumentNonBlocking(docRef)
+    
+    if (selectedCenter?.id === id) setSelectedCenter(null)
+    toast({ title: "यशस्वी", description: "केंद्र यशस्वीरित्या हटवण्यात आले." })
   }
 
   const filteredCenters = centers?.filter(c => 
@@ -201,7 +189,7 @@ export default function CentersPage() {
               <div className="p-2.5 border-b flex items-center justify-between bg-primary/5 sticky top-0 z-10">
                 <Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setSelectedCenter(null)}><X className="h-4 w-4" /></Button>
                 <div className="flex-1 px-2 min-w-0"><h3 className="text-sm font-black truncate">{selectedCenter.name}</h3><p className="text-[9px] font-black text-muted-foreground uppercase">Code: {selectedCenter.code} | {selectedCenter.village}</p></div>
-                <div className="flex gap-1.5"><Button variant="outline" size="icon" className="h-7 w-7 text-primary" onClick={() => handleOpenEdit(selectedCenter)}><Edit className="h-3 w-3" /></Button><Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => handleDeleteCenter(null, selectedCenter.id)}><Trash2 className="h-3 w-3" /></Button></div>
+                <div className="flex gap-1.5"><Button variant="outline" size="icon" className="h-7 w-7 text-primary" onClick={() => handleOpenEdit(selectedCenter)}><Edit className="h-3 w-3" /></Button><Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={(e) => handleDeleteCenter(e, selectedCenter.id)}><Trash2 className="h-3 w-3" /></Button></div>
               </div>
               <ScrollArea className="flex-1 h-[600px]">
                 <div className="p-3 space-y-4">
