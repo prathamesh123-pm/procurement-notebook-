@@ -4,12 +4,8 @@ service cloud.firestore {
 
     /**
      * संकलन नोंदवही - Security Rules
-     * 
-     * हा नियमसंच प्रोटोटाइपसाठी सोपा करण्यात आला आहे.
-     * सर्व लॉग-इन युजर्सना संकलन माहिती पाहण्याची आणि बदलण्याची परवानगी दिली आहे.
+     * सर्व लॉग-इन युजर्सना डेटा वाचण्याची आणि बदलण्याची परवानगी दिली आहे.
      */
-
-    // --- मदतनीस फंक्शन्स ---
 
     function isSignedIn() {
       return request.auth != null;
@@ -19,50 +15,33 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == userId;
     }
 
-    function isExistingOwner(userId) {
-      return resource != null && isOwner(userId);
+    // सर्व डॉक्युमेंट्ससाठी सोपे नियम
+    match /{document=**} {
+      allow read, write: if isSignedIn();
     }
-
-    // --- कलेक्शन नियम ---
 
     /** युजर प्रोफाइल आणि खाजगी डेटा */
     match /users/{userId} {
-      allow get: if isOwner(userId);
-      allow list: if false;
-      allow create: if isOwner(userId);
-      allow update: if isExistingOwner(userId);
-      allow delete: if isExistingOwner(userId);
+      allow get, create, update, delete: if isOwner(userId);
 
-      /** युजरचे स्वतःचे टास्क */
       match /tasks/{taskId} {
         allow read, write: if isOwner(userId);
       }
 
-      /** युजरचे व्हिजिट रिपोर्ट */
       match /visitReports/{visitReportId} {
         allow read, write: if isOwner(userId);
       }
 
-      /** युजरचे दैनिक रिपोर्ट */
       match /dailyWorkReports/{dailyWorkReportId} {
         allow read, write: if isOwner(userId);
       }
       
-      /** युजरचे संकलन केंद्र (Centers) */
       match /centers/{centerId} {
         allow read, write: if isOwner(userId);
       }
     }
 
-    /** टीम मेंबर पात्रता - प्रोटोटाइपसाठी स्व-नोंदणीला परवानगी */
-    match /roles_teamMembers/{uid} {
-      allow get: if isOwner(uid);
-      allow create: if isOwner(uid);
-      allow list: if false;
-    }
-
-    /** सामायिक माहिती (Shared Resources) - सर्व लॉग-इन युजर्ससाठी उपलब्ध */
-    
+    /** सामायिक माहिती (Shared Resources) */
     match /vehicles/{vehicleId} {
       allow read, write: if isSignedIn();
     }
@@ -75,10 +54,8 @@ service cloud.firestore {
       allow read, write: if isSignedIn();
     }
     
-    /** टॉप-लेव्हल सेंटर्स (जर वापरले जात असतील तर) */
-    match /centers/{centerId} {
-      allow read, write: if isSignedIn();
+    match /roles_teamMembers/{uid} {
+      allow get, create: if isOwner(uid);
     }
-
   }
 }

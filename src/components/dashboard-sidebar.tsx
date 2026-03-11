@@ -1,4 +1,3 @@
-
 "use client"
 
 import * as React from "react"
@@ -78,7 +77,7 @@ export function DashboardSidebar() {
                 <span className="font-headline text-sm font-black tracking-tight text-foreground truncate">
                   संकलन नोंदवही
                 </span>
-                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest truncate">Daily Notebook</span>
+                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest truncate">Daily Register</span>
               </>
             ) : (
               <span className="h-4 w-24 bg-muted animate-pulse rounded" />
