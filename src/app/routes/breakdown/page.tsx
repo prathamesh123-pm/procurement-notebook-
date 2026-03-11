@@ -136,6 +136,7 @@ export default function BreakdownPage() {
 
   const handleDeleteRecord = (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
+    e.preventDefault();
     if (!db || !user || !id) return
     if (!confirm("हा रेकॉर्ड कायमचा हटवायचा आहे का?")) return
     
@@ -197,7 +198,7 @@ export default function BreakdownPage() {
                         <td className="p-0"><Input value={loss.supplierCode} onChange={e => updateLossRow(loss.id, { supplierCode: e.target.value })} className="h-7 text-[10px] border-none text-center px-1" /></td>
                         <td className="p-0"><Input value={loss.supplierName} onChange={e => updateLossRow(loss.id, { supplierName: e.target.value })} className="h-7 text-[10px] border-none px-1.5" /></td>
                         <td className="p-0"><Input value={loss.lossAmount} onChange={e => updateLossRow(loss.id, { lossAmount: e.target.value })} className="h-7 text-[10px] border-none text-right px-1.5 font-black text-destructive" /></td>
-                        <td className="p-1 flex justify-center"><Button variant="ghost" size="icon" onClick={() => handleRemoveLossRow(loss.id)} className="h-6 w-6 text-destructive"><X className="h-3 w-3" /></Button></td>
+                        <td className="p-1 flex justify-center"><Button type="button" variant="ghost" size="icon" onClick={() => handleRemoveLossRow(loss.id)} className="h-6 w-6 text-destructive"><X className="h-3 w-3" /></Button></td>
                       </tr>
                     ))}
                   </tbody>
@@ -223,7 +224,7 @@ export default function BreakdownPage() {
                         </div>
                         <div className="flex gap-1">
                           <Button variant="ghost" size="icon" className="h-7 w-7 text-primary" onClick={() => handleEditRecord(record)}><Edit className="h-3.5 w-3.5" /></Button>
-                          <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={(e) => handleDeleteRecord(e, record.id)}><Trash2 className="h-3.5 w-3.5" /></Button>
+                          <Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={(e) => handleDeleteRecord(e, record.id)}><Trash2 className="h-3.5 w-3.5" /></Button>
                         </div>
                       </div>
                       <div className="flex items-center justify-between pt-1 border-t border-dashed">

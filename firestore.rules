@@ -3,59 +3,16 @@ service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * संकलन नोंदवही - Security Rules
-     * सर्व लॉग-इन युजर्सना डेटा वाचण्याची आणि बदलण्याची परवानगी दिली आहे.
+     * संकलन नोंदवही - Simplified Security Rules
+     * सर्व लॉग-इन युजर्सना डेटा वाचण्याची आणि बदलण्याची पूर्ण परवानगी दिली आहे.
      */
 
     function isSignedIn() {
       return request.auth != null;
     }
 
-    function isOwner(userId) {
-      return isSignedIn() && request.auth.uid == userId;
-    }
-
-    // सर्व डॉक्युमेंट्ससाठी सोपे नियम
     match /{document=**} {
       allow read, write: if isSignedIn();
-    }
-
-    /** युजर प्रोफाइल आणि खाजगी डेटा */
-    match /users/{userId} {
-      allow get, create, update, delete: if isOwner(userId);
-
-      match /tasks/{taskId} {
-        allow read, write: if isOwner(userId);
-      }
-
-      match /dailyWorkReports/{dailyWorkReportId} {
-        allow read, write: if isOwner(userId);
-      }
-      
-      match /centers/{centerId} {
-        allow read, write: if isOwner(userId);
-      }
-      
-      match /breakdowns/{breakdownId} {
-        allow read, write: if isOwner(userId);
-      }
-    }
-
-    /** सामायिक माहिती (Shared Resources) */
-    match /vehicles/{vehicleId} {
-      allow read, write: if isSignedIn();
-    }
-
-    match /suppliers/{supplierId} {
-      allow read, write: if isSignedIn();
-    }
-
-    match /routes/{routeId} {
-      allow read, write: if isSignedIn();
-    }
-    
-    match /roles_teamMembers/{uid} {
-      allow get, create: if isOwner(uid);
     }
   }
 }

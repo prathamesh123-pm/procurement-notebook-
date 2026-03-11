@@ -102,7 +102,7 @@ export default function RoutesPage() {
     if (!db || !id) return
     if (confirm("तुम्हाला खात्री आहे की हा रूट कायमचा हटवायचा आहे?")) {
       try {
-        const docRef = doc(db, 'routes', String(id))
+        const docRef = doc(db, 'routes', id)
         deleteDocumentNonBlocking(docRef)
         toast({ title: "यशस्वी", description: "रूट यशस्वीरित्या हटवण्यात आला." })
       } catch (err) {
@@ -152,7 +152,7 @@ export default function RoutesPage() {
                     </Badge>
                     <div className="flex gap-1.5 relative z-30">
                       <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground" onClick={() => handleOpenEdit(route)}><Edit className="h-4 w-4" /></Button>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={(e) => deleteRoute(e, route.id)}><Trash2 className="h-4 w-4" /></Button>
+                      <Button type="button" variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={(e) => deleteRoute(e, route.id)}><Trash2 className="h-4 w-4" /></Button>
                     </div>
                   </div>
                   <CardTitle className="mt-1 font-black text-xl">{route.name}</CardTitle>

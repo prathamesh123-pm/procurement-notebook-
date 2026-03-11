@@ -205,7 +205,7 @@ export default function RouteDetailsPage() {
     if (!confirmDelete) return
     
     try {
-      const docRef = doc(db, 'suppliers', String(id))
+      const docRef = doc(db, 'suppliers', id)
       deleteDocumentNonBlocking(docRef)
       
       if (selectedSupplier?.id === id) setSelectedSupplier(null)
@@ -267,7 +267,7 @@ export default function RouteDetailsPage() {
                     </div>
                   </div>
                   <div className="flex items-center gap-1 relative z-30">
-                    <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive rounded-md" onClick={(e) => handleDeleteSupplier(e, s.id)}>
+                    <Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-destructive rounded-md" onClick={(e) => handleDeleteSupplier(e, s.id)}>
                       <Trash2 className="h-3 w-3" />
                     </Button>
                     <ChevronRight className="h-3.5 w-3.5 text-muted-foreground opacity-50 shrink-0" />
@@ -295,7 +295,7 @@ export default function RouteDetailsPage() {
                   <Button variant="outline" size="icon" className="h-7 w-7 rounded-md border-primary/20 text-primary" onClick={() => openEditDialog(selectedSupplier)}>
                     <Edit className="h-3 w-3" />
                   </Button>
-                  <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive rounded-md" onClick={() => handleDeleteSupplier(null, selectedSupplier.id)}>
+                  <Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-destructive rounded-md" onClick={() => handleDeleteSupplier(null, selectedSupplier.id)}>
                     <Trash2 className="h-3 w-3" />
                   </Button>
                 </div>

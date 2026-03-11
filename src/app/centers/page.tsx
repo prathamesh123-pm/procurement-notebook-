@@ -151,7 +151,7 @@ export default function CentersPage() {
     if (!confirm("तुम्हाला खात्री आहे की हे केंद्र कायमचे हटवायचा आहे?")) return
     
     try {
-      const docRef = doc(db, 'users', user.uid, 'centers', String(id))
+      const docRef = doc(db, 'users', user.uid, 'centers', id)
       deleteDocumentNonBlocking(docRef)
       
       if (selectedCenter?.id === id) setSelectedCenter(null)
@@ -186,7 +186,7 @@ export default function CentersPage() {
                 <div key={center.id} className={`p-2.5 cursor-pointer hover:bg-muted/50 flex justify-between items-center ${selectedCenter?.id === center.id ? 'bg-primary/5 border-l-2 border-primary' : ''}`} onClick={() => setSelectedCenter(center)}>
                   <div className="min-w-0"><h4 className="font-black text-[11px] text-foreground truncate">{center.name}</h4><div className="flex items-center gap-1.5 mt-0.5"><Badge variant="secondary" className="text-[8px] font-black h-3.5">{center.code}</Badge><span className="text-[9px] text-muted-foreground truncate"><MapPin className="h-2.5 w-2.5" /> {center.village}</span></div></div>
                   <div className="flex items-center gap-1">
-                    <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={(e) => handleDeleteCenter(e, center.id)}><Trash2 className="h-3 w-3" /></Button>
+                    <Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={(e) => handleDeleteCenter(e, center.id)}><Trash2 className="h-3 w-3" /></Button>
                     <ChevronRight className="h-4 w-4 text-muted-foreground opacity-50" />
                   </div>
                 </div>
@@ -201,7 +201,7 @@ export default function CentersPage() {
               <div className="p-2.5 border-b flex items-center justify-between bg-primary/5 sticky top-0 z-10">
                 <Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setSelectedCenter(null)}><X className="h-4 w-4" /></Button>
                 <div className="flex-1 px-2 min-w-0"><h3 className="text-sm font-black truncate">{selectedCenter.name}</h3><p className="text-[9px] font-black text-muted-foreground uppercase">Code: {selectedCenter.code} | {selectedCenter.village}</p></div>
-                <div className="flex gap-1.5"><Button variant="outline" size="icon" className="h-7 w-7 text-primary" onClick={() => handleOpenEdit(selectedCenter)}><Edit className="h-3 w-3" /></Button><Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => handleDeleteCenter(null, selectedCenter.id)}><Trash2 className="h-3 w-3" /></Button></div>
+                <div className="flex gap-1.5"><Button variant="outline" size="icon" className="h-7 w-7 text-primary" onClick={() => handleOpenEdit(selectedCenter)}><Edit className="h-3 w-3" /></Button><Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => handleDeleteCenter(null, selectedCenter.id)}><Trash2 className="h-3 w-3" /></Button></div>
               </div>
               <ScrollArea className="flex-1 h-[600px]">
                 <div className="p-3 space-y-4">

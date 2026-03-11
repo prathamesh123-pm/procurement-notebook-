@@ -97,7 +97,7 @@ export default function WorkLogPage() {
     if (!confirmDelete) return
     
     try {
-      const docRef = doc(db, 'users', user.uid, 'tasks', String(taskId))
+      const docRef = doc(db, 'users', user.uid, 'tasks', taskId)
       deleteDocumentNonBlocking(docRef)
       toast({ title: "यशस्वी", description: "टास्क हटवण्यात आला आहे." })
     } catch (err) {

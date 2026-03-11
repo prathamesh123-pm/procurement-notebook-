@@ -87,7 +87,7 @@ export default function ReportsPage() {
     if (!confirmDelete) return
     
     try {
-      const docRef = doc(db, 'users', user.uid, 'dailyWorkReports', String(id))
+      const docRef = doc(db, 'users', user.uid, 'dailyWorkReports', id)
       deleteDocumentNonBlocking(docRef)
       
       if (selectedReport && selectedReport.id === id) {
