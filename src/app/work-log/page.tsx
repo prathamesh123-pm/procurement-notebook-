@@ -5,7 +5,7 @@ import { useState, useEffect, useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Task } from "@/lib/types"
 import { Plus, Search, ListTodo, User, Hash, Trash2, CheckCircle2, X, Edit } from "lucide-react"
@@ -41,7 +41,11 @@ export default function WorkLogPage() {
   }, [])
 
   const addTask = () => {
-    if (!newTaskTitle || !db || !user) return
+    if (!newTaskTitle || !db || !user) {
+      if (!newTaskTitle) toast({ title: "त्रुटी", description: "टास्कचे नाव आवश्यक आहे.", variant: "destructive" })
+      return
+    }
+    
     const newTask = { 
       title: newTaskTitle, 
       description: newTaskDesc, 
@@ -96,7 +100,7 @@ export default function WorkLogPage() {
     
     if (!db || !user || !taskId) return
     
-    const confirmDelete = window.confirm("हा टास्क कायमचा हटवायचा आहे का?")
+    const confirmDelete = window.confirm("तुम्हाला खात्री आहे की हा टास्क कायमचा हटवायचा आहे? (Are you sure you want to delete this task?)")
     if (!confirmDelete) return
     
     try {
@@ -128,48 +132,48 @@ export default function WorkLogPage() {
         </h2>
       </div>
 
-      <Card className="border shadow-none bg-white rounded-xl overflow-hidden">
+      <Card className="border shadow-none bg-white rounded-xl overflow-hidden shadow-sm">
         <CardContent className="p-3 space-y-3">
           <div className="grid grid-cols-2 gap-2">
-            <div className="space-y-0.5"><Label className="text-[10px] font-black uppercase">गवळी नाव</Label><Input value={newTaskSupplierName} onChange={e => setNewTaskSupplierName(e.target.value)} className="h-8 text-[11px] bg-muted/20 border-none rounded-md" placeholder="उदा. सागर" /></div>
-            <div className="space-y-0.5"><Label className="text-[10px] font-black uppercase">कोड (Code)</Label><Input value={newTaskSupplierId} onChange={e => setNewTaskSupplierId(e.target.value)} className="h-8 text-[11px] bg-muted/20 border-none rounded-md" placeholder="123" /></div>
+            <div className="space-y-0.5"><Label className="text-[10px] font-black uppercase text-primary/60">गवळी नाव</Label><Input value={newTaskSupplierName} onChange={e => setNewTaskSupplierName(e.target.value)} className="h-8 text-[11px] bg-muted/20 border-none rounded-md p-2 font-bold" placeholder="उदा. सागर" /></div>
+            <div className="space-y-0.5"><Label className="text-[10px] font-black uppercase text-primary/60">कोड (Code)</Label><Input value={newTaskSupplierId} onChange={e => setNewTaskSupplierId(e.target.value)} className="h-8 text-[11px] bg-muted/20 border-none rounded-md p-2 font-bold" placeholder="123" /></div>
           </div>
-          <div className="space-y-0.5"><Label className="text-[10px] font-black uppercase">टास्क / कामाचे नाव</Label><Input value={newTaskTitle} onChange={e => setNewTaskTitle(e.target.value)} className="h-8 text-[11px] bg-muted/20 border-none rounded-md font-bold" placeholder="उदा. थकीत बाकी वसुली" /></div>
-          <div className="space-y-0.5"><Label className="text-[10px] font-black uppercase">माहिती (Details)</Label><Textarea value={newTaskDesc} onChange={e => setNewTaskDesc(e.target.value)} className="min-h-[60px] text-[11px] bg-muted/20 border-none rounded-md p-2" placeholder="..." /></div>
-          <Button onClick={addTask} className="w-full font-black h-9 rounded-lg text-xs shadow-md"><Plus className="h-4 w-4 mr-1.5" /> जतन करा (Save)</Button>
+          <div className="space-y-0.5"><Label className="text-[10px] font-black uppercase text-primary/60">टास्क / कामाचे नाव</Label><Input value={newTaskTitle} onChange={e => setNewTaskTitle(e.target.value)} className="h-8 text-[11px] bg-muted/20 border-none rounded-md font-bold p-2" placeholder="उदा. थकीत बाकी वसुली" /></div>
+          <div className="space-y-0.5"><Label className="text-[10px] font-black uppercase text-primary/60">माहिती (Details)</Label><Textarea value={newTaskDesc} onChange={e => setNewTaskDesc(e.target.value)} className="min-h-[60px] text-[11px] bg-muted/20 border-none rounded-md p-2 font-medium" placeholder="..." /></div>
+          <Button type="button" onClick={addTask} className="w-full font-black h-9 rounded-xl text-xs shadow-md shadow-primary/20"><Plus className="h-4 w-4 mr-1.5" /> जतन करा (Save Task)</Button>
         </CardContent>
       </Card>
 
       <div className="space-y-2">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <input placeholder="शोधा (Search)..." className="pl-9 h-9 w-full text-[11px] bg-white rounded-lg shadow-sm border-none outline-none focus:ring-1 focus:ring-primary" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
+          <input placeholder="प्रलंबित टास्क शोधा (Search)..." className="pl-9 h-10 w-full text-[11px] bg-white rounded-xl shadow-sm border-none outline-none focus:ring-1 focus:ring-primary font-bold" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
         </div>
 
         <div className="grid grid-cols-1 gap-2">
           {isLoading ? (
-            <div className="text-center py-10 italic text-muted-foreground">लोड होत आहे...</div>
+            <div className="text-center py-10 italic text-muted-foreground opacity-50">लोड होत आहे...</div>
           ) : pendingTasks.length > 0 ? pendingTasks.map(task => (
-            <Card key={task.id} className="border-none shadow-sm bg-white hover:bg-muted/5 cursor-pointer border-l-4 border-l-primary rounded-lg overflow-hidden relative">
+            <Card key={task.id} className="border-none shadow-sm bg-white hover:bg-primary/5 cursor-pointer border-l-4 border-l-primary rounded-xl overflow-hidden relative group transition-all" onClick={() => { setSelectedTask(task); setTempRemark(task.remark || ""); setIsDetailOpen(true); }}>
               <div className="p-3 flex items-center justify-between gap-2">
-                <div className="flex flex-col gap-1 min-w-0 flex-1" onClick={() => { setSelectedTask(task); setTempRemark(task.remark || ""); setIsDetailOpen(true); }}>
-                  <h4 className="font-black text-[13px] text-slate-900 truncate">{task.title}</h4>
-                  <div className="flex items-center gap-3 text-[10px] font-bold text-muted-foreground uppercase">
-                    {task.supplierName && <span className="flex items-center gap-1"><User className="h-3 w-3 text-primary" /> {task.supplierName}</span>}
-                    {task.supplierId && <span className="flex items-center gap-1"><Hash className="h-3 w-3 text-primary" /> {task.supplierId}</span>}
+                <div className="flex flex-col gap-1 min-w-0 flex-1">
+                  <h4 className="font-black text-[13px] text-slate-900 truncate uppercase tracking-tight">{task.title}</h4>
+                  <div className="flex items-center gap-3 text-[10px] font-black text-muted-foreground uppercase">
+                    {task.supplierName && <span className="flex items-center gap-1 bg-primary/5 px-1.5 py-0.5 rounded text-primary"><User className="h-3 w-3" /> {task.supplierName}</span>}
+                    {task.supplierId && <span className="flex items-center gap-1 bg-muted px-1.5 py-0.5 rounded"><Hash className="h-3 w-3" /> {task.supplierId}</span>}
                   </div>
                 </div>
                 <div className="flex items-center gap-1 shrink-0 relative z-30">
-                  <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-destructive rounded-full hover:bg-red-50" onClick={(e) => deleteTask(e, task.id)}>
-                    <Trash2 className="h-4.5 w-4.5" />
+                  <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-destructive rounded-full hover:bg-destructive/10" onClick={(e) => deleteTask(e, task.id)}>
+                    <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
             </Card>
           )) : (
-            <div className="text-center py-16 bg-white rounded-xl border border-dashed border-slate-200 flex flex-col items-center gap-3 opacity-50">
-              <ListTodo className="h-10 w-10 text-slate-300" />
-              <p className="text-[11px] font-black uppercase text-slate-400">प्रलंबित टास्क नाहीत</p>
+            <div className="text-center py-16 bg-white rounded-2xl border border-dashed border-slate-200 flex flex-col items-center gap-3 opacity-30">
+              <ListTodo className="h-10 w-10" />
+              <p className="text-[11px] font-black uppercase">एकही प्रलंबित टास्क नाही</p>
             </div>
           )}
         </div>
@@ -178,23 +182,25 @@ export default function WorkLogPage() {
       <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
         <DialogContent className="max-w-lg p-0 overflow-hidden rounded-2xl border-none shadow-2xl">
           <DialogHeader className="p-4 bg-primary text-white flex flex-row items-center justify-between">
-            <DialogTitle className="text-sm font-black flex items-center gap-2"><ListTodo className="h-4 w-4" /> टास्क तपशील</DialogTitle>
-            <Button variant="ghost" size="icon" onClick={() => setIsDetailOpen(false)} className="text-white hover:bg-white/10 rounded-full h-8 w-8"><X className="h-5 w-5" /></Button>
+            <DialogTitle className="text-sm font-black flex items-center gap-2 uppercase tracking-tight"><ListTodo className="h-4 w-4" /> टास्क तपशील (Task Detail)</DialogTitle>
+            <Button type="button" variant="ghost" size="icon" onClick={() => setIsDetailOpen(false)} className="text-white hover:bg-white/10 rounded-full h-8 w-8"><X className="h-5 w-5" /></Button>
           </DialogHeader>
           <div className="p-5 space-y-5 bg-white">
-            <div className="p-4 rounded-xl bg-primary/5 border-2 border-primary/10">
-              <h3 className="text-sm font-black text-slate-900 mb-1">{selectedTask?.title}</h3>
-              <p className="text-[11px] font-medium text-slate-600 leading-relaxed italic">"{selectedTask?.description || "तपशील नाही."}"</p>
+            <div className="p-4 rounded-2xl bg-primary/5 border border-primary/10 shadow-inner">
+              <h3 className="text-sm font-black text-slate-900 mb-1 uppercase tracking-tight">{selectedTask?.title}</h3>
+              <p className="text-[11px] font-bold text-slate-600 leading-relaxed italic border-l-2 border-primary/20 pl-3">
+                {selectedTask?.description || "तपशील उपलब्ध नाही."}
+              </p>
             </div>
             
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <Label className="text-[10px] font-black uppercase text-primary tracking-widest flex items-center gap-1.5"><Edit className="h-3.5 w-3.5" /> कार्यवाही / शेरा (Remark)</Label>
-              <Textarea placeholder="पूर्ण केल्यावर माहिती लिहा..." value={tempRemark} onChange={e => setTempRemark(e.target.value)} className="min-h-[100px] text-[12px] font-bold rounded-xl bg-slate-50 border-slate-200 focus-visible:ring-primary shadow-inner" />
+              <Textarea placeholder="पूर्ण केल्यावर माहिती लिहा..." value={tempRemark} onChange={e => setTempRemark(e.target.value)} className="min-h-[100px] text-[12px] font-bold rounded-2xl bg-slate-50 border-none focus-visible:ring-primary shadow-inner p-3" />
             </div>
           </div>
-          <DialogFooter className="p-4 border-t bg-slate-50 flex gap-3">
-            <Button variant="outline" className="flex-1 h-10 text-xs font-black rounded-xl border-slate-300" onClick={() => setIsDetailOpen(false)}>रद्द</Button>
-            <Button className="flex-1 h-10 text-xs font-black rounded-xl bg-primary shadow-lg shadow-primary/20" onClick={() => selectedTask && completeTask(selectedTask.id)}>
+          <DialogFooter className="p-4 border-t bg-slate-50 flex gap-2 justify-end">
+            <Button type="button" variant="outline" className="h-10 text-xs font-black rounded-xl border-primary/20 px-6" onClick={() => setIsDetailOpen(false)}>रद्द</Button>
+            <Button type="button" className="h-10 text-xs font-black rounded-xl bg-primary shadow-lg shadow-primary/20 px-8" onClick={() => selectedTask && completeTask(selectedTask.id)}>
               <CheckCircle2 className="h-4 w-4 mr-1.5" /> पूर्ण करा (Complete)
             </Button>
           </DialogFooter>

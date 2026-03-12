@@ -1,45 +1,64 @@
 
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { ListTodo, MapPin, ClipboardCheck, Milk, TrendingUp, Warehouse, ArrowRight, Calendar } from "lucide-react"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useMemo } from "react"
 import Link from "next/link"
-import { Supplier, CollectionCenter, Route, Task } from "@/lib/types"
 import { Badge } from "@/components/ui/badge"
+import { useUser, useFirestore, useCollection, useMemoFirebase } from "@/firebase"
+import { collection } from "firebase/firestore"
 
 export default function DashboardOverview() {
+  const { user } = useUser()
+  const db = useFirestore()
   const [mounted, setMounted] = useState(false)
-  const [stats, setStats] = useState({
-    totalMilk: 0,
-    cowMilk: 0,
-    bufMilk: 0,
-    activeRoutes: 0,
-    totalPoints: 0,
-    pendingTasks: 0
-  })
+
+  // Firestore Queries for real-time stats
+  const centersQuery = useMemoFirebase(() => {
+    if (!db || !user) return null
+    return collection(db, 'users', user.uid, 'centers')
+  }, [db, user])
+
+  const tasksQuery = useMemoFirebase(() => {
+    if (!db || !user) return null
+    return collection(db, 'users', user.uid, 'tasks')
+  }, [db, user])
+
+  const routesQuery = useMemoFirebase(() => {
+    if (!db || !user) return null
+    return collection(db, 'routes')
+  }, [db, user])
+
+  const suppliersQuery = useMemoFirebase(() => {
+    if (!db || !user) return null
+    return collection(db, 'suppliers')
+  }, [db, user])
+
+  const { data: centers } = useCollection(centersQuery)
+  const { data: tasks } = useCollection(tasksQuery)
+  const { data: routes } = useCollection(routesQuery)
+  const { data: suppliers } = useCollection(suppliersQuery)
 
   useEffect(() => {
     setMounted(true)
-    const suppliers: Supplier[] = JSON.parse(localStorage.getItem('procurepal_suppliers') || '[]')
-    const centers: CollectionCenter[] = JSON.parse(localStorage.getItem('procurepal_centers') || '[]')
-    const routes: Route[] = JSON.parse(localStorage.getItem('procurepal_routes') || '[]')
-    const tasks: Task[] = JSON.parse(localStorage.getItem('procurepal_tasks') || '[]')
+  }, [])
 
-    const suppCow = suppliers.reduce((acc, s) => acc + (s.cowMilk?.quantity || 0), 0)
-    const suppBuf = suppliers.reduce((acc, s) => acc + (s.buffaloMilk?.quantity || 0), 0)
-    const centerCow = centers.reduce((acc, c) => acc + (c.cowMilk?.quantity || 0), 0)
-    const centerBuf = centers.reduce((acc, c) => acc + (c.buffaloMilk?.quantity || 0), 0)
+  const stats = useMemo(() => {
+    const suppCow = suppliers?.reduce((acc, s) => acc + (s.cowMilk?.quantity || 0), 0) || 0
+    const suppBuf = suppliers?.reduce((acc, s) => acc + (s.buffaloMilk?.quantity || 0), 0) || 0
+    const centerCow = centers?.reduce((acc, c) => acc + (c.cowMilk?.quantity || 0), 0) || 0
+    const centerBuf = centers?.reduce((acc, c) => acc + (c.buffaloMilk?.quantity || 0), 0) || 0
     
-    setStats({
+    return {
       cowMilk: suppCow + centerCow,
       bufMilk: suppBuf + centerBuf,
       totalMilk: suppCow + suppBuf + centerCow + centerBuf,
-      activeRoutes: routes.length,
-      totalPoints: suppliers.length + centers.length,
-      pendingTasks: tasks.filter(t => t.status === 'pending').length
-    })
-  }, [])
+      activeRoutes: routes?.length || 0,
+      totalPoints: (suppliers?.length || 0) + (centers?.length || 0),
+      pendingTasks: tasks?.filter(t => t.status === 'pending').length || 0
+    }
+  }, [centers, tasks, routes, suppliers])
 
   if (!mounted) {
     return <div className="flex items-center justify-center h-[80vh] text-muted-foreground italic text-sm">माहिती लोड होत आहे... (Loading...)</div>
