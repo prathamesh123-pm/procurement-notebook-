@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect, useRef } from "react"
@@ -160,7 +161,7 @@ export default function PermissionsPage() {
               unoptimized
             />
           </div>
-          <p className="mt-4 text-white/60 font-bold text-xs uppercase tracking-widest">परवानगी पत्र - Procurement Notebook</p>
+          <p className="mt-4 text-white/60 font-bold text-xs uppercase tracking-widest">परवानगी पत्र - संकलन नोंदवही</p>
         </div>
       )}
     </div>
