@@ -10,7 +10,7 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
@@ -247,6 +247,10 @@ export default function ReportsPage() {
       {/* View Dialog */}
       <Dialog open={isViewOpen} onOpenChange={setIsViewOpen}>
         <DialogContent className="max-w-2xl p-0 bg-white border-none shadow-2xl rounded-2xl overflow-hidden">
+          <DialogHeader className="sr-only">
+            <DialogTitle>अहवाल तपशील (Report View)</DialogTitle>
+            <DialogDescription>निवडलेल्या अहवालाची सविस्तर माहिती आणि प्रिंट पर्याय.</DialogDescription>
+          </DialogHeader>
           <div className="p-2 border-b bg-gray-50 flex justify-between items-center no-print">
             <span className="text-[10px] font-black uppercase px-2 text-gray-500">Report View</span>
             <div className="flex gap-2">
@@ -268,6 +272,7 @@ export default function ReportsPage() {
         <DialogContent className="max-w-md p-0 overflow-hidden bg-white rounded-2xl">
           <DialogHeader className="p-4 bg-primary text-white">
             <DialogTitle className="text-sm font-black uppercase tracking-tight">अहवाल दुरुस्त करा (Edit Report)</DialogTitle>
+            <DialogDescription className="sr-only">अहवालाचा सारांश संपादित करा.</DialogDescription>
           </DialogHeader>
           <div className="p-5 space-y-4">
             <div className="space-y-1.5">
