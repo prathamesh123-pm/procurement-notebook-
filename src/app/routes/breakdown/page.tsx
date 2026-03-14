@@ -61,15 +61,14 @@ export default function BreakdownPage() {
       updatedAt: new Date().toISOString() 
     }
 
-    // Save to breakdowns collection
     if (editingId) {
       const docRef = doc(db, 'users', user.uid, 'breakdowns', editingId)
       updateDocumentNonBlocking(docRef, recordData)
+      toast({ title: "यशस्वी", description: "नोंद अद्ययावत केली." })
     } else {
       const colRef = collection(db, 'users', user.uid, 'breakdowns')
       addDocumentNonBlocking(colRef, { ...recordData, createdAt: new Date().toISOString() })
       
-      // Also generate a Report for the reports page
       const reportsRef = collection(db, 'users', user.uid, 'dailyWorkReports')
       addDocumentNonBlocking(reportsRef, {
         type: 'Breakdown',
@@ -78,12 +77,16 @@ export default function BreakdownPage() {
         generatedByUserId: user.uid,
         summary: `रूट: ${formData.routeName}. वाहन: ${formData.vehicleNumber}. नुकसान: ₹${totalLoss}. ठिकाण: ${formData.location || 'N/A'}`,
         overallSummary: `रूट: ${formData.routeName}. वाहन: ${formData.vehicleNumber}. नुकसान: ₹${totalLoss}. ठिकाण: ${formData.location || 'N/A'}`,
-        fullData: recordData,
+        fullData: {
+          ...recordData,
+          name: user.displayName || "Procurement Officer",
+          status: "EMERGENCY"
+        },
         createdAt: new Date().toISOString()
       })
+      toast({ title: "यशस्वी", description: "नोंद जतन केली आणि अहवालात जोडली." })
     }
     
-    toast({ title: "यशस्वी", description: "नोंद जतन केली आणि अहवालात जोडली." })
     resetForm()
   }
 
@@ -99,33 +102,86 @@ export default function BreakdownPage() {
 
   const resetForm = () => { setEditingId(null); setFormData({ routeName: "", vehicleType: "", vehicleNumber: "", driverName: "", location: "", reason: "", losses: [] }) }
 
-  if (!mounted || isLoading) return <div className="p-10 text-center italic text-muted-foreground">लोड होत आहे...</div>
+  if (!mounted || isLoading) return <div className="p-10 text-center italic font-black uppercase text-[10px] opacity-50">लोड होत आहे...</div>
 
   return (
-    <div className="space-y-3 max-w-7xl mx-auto w-full pb-10 px-1">
-      <div className="flex flex-col gap-0.5 border-b pb-1 px-1"><h2 className="text-base font-black flex items-center gap-2 text-destructive"><Truck className="h-4 w-4" /> वाहन ब्रेकडाऊन</h2></div>
+    <div className="space-y-3 max-w-7xl mx-auto w-full pb-10 px-1 animate-in fade-in duration-500">
+      <div className="flex flex-col gap-0.5 border-b pb-3 px-1">
+        <h2 className="text-base font-black flex items-center gap-2 text-destructive uppercase tracking-tight">
+          <Truck className="h-5 w-5" /> वाहन ब्रेकडाऊन (BREAKDOWN)
+        </h2>
+      </div>
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-2 items-start">
-        <Card className="lg:col-span-8 border shadow-none bg-white rounded-xl overflow-hidden">
-          <CardHeader className="py-2 px-3 border-b flex flex-row items-center justify-between bg-destructive/5"><span className="text-[10px] font-black uppercase flex items-center gap-2 text-destructive"><AlertTriangle className="h-3.5 w-3.5" /> {editingId ? 'माहिती बदला' : 'नवीन नोंद'}</span>{editingId && <Button variant="ghost" size="sm" onClick={resetForm} className="h-6 text-[9px] font-black gap-1"><RotateCcw className="h-3 w-3" /> रद्द</Button>}</CardHeader>
+        <Card className="lg:col-span-8 border shadow-none bg-white rounded-xl overflow-hidden border-destructive/10">
+          <CardHeader className="py-2 px-3 border-b flex flex-row items-center justify-between bg-destructive/5">
+            <span className="text-[10px] font-black uppercase flex items-center gap-2 text-destructive tracking-widest">
+              <AlertTriangle className="h-3.5 w-3.5" /> {editingId ? 'माहिती बदला' : 'नवीन नोंद (NEW ENTRY)'}
+            </span>
+            {editingId && <Button variant="ghost" size="sm" onClick={resetForm} className="h-6 text-[9px] font-black gap-1 uppercase"><RotateCcw className="h-3 w-3" /> रद्द</Button>}
+          </CardHeader>
           <CardContent className="p-3 space-y-4">
             <div className="grid grid-cols-2 gap-2">
-              <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase text-muted-foreground">रूट</Label><Input value={formData.routeName} onChange={e => setFormData({...formData, routeName: e.target.value})} className="h-8 text-[11px] bg-muted/20 border-none font-bold" placeholder="उदा. कराड रूट" /></div>
-              <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase text-muted-foreground">गाडी नंबर</Label><Input value={formData.vehicleNumber} onChange={e => setFormData({...formData, vehicleNumber: e.target.value})} className="h-8 text-[11px] bg-muted/20 border-none font-bold" placeholder="MH 50..." /></div>
+              <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase text-muted-foreground tracking-widest">रूट (ROUTE)</Label><Input value={formData.routeName} onChange={e => setFormData({...formData, routeName: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" placeholder="..." /></div>
+              <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase text-muted-foreground tracking-widest">गाडी नंबर (V. NO)</Label><Input value={formData.vehicleNumber} onChange={e => setFormData({...formData, vehicleNumber: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" placeholder="MH 50..." /></div>
             </div>
-            <div className="space-y-2"><div className="flex items-center justify-between"><span className="text-[10px] font-black uppercase text-destructive">नुकसान तपशील (Loss Details)</span><Button size="sm" onClick={handleAddLossRow} className="h-7 text-[9px] bg-destructive"><PlusCircle className="h-3.5 w-3.5" /> जोडा</Button></div>
-              <div className="border rounded-lg overflow-hidden"><table className="w-full text-[10px]"><thead><tr className="bg-muted/50 text-[8px] font-black border-b"><th className="p-1.5 text-left">कोड/गवळी नाव</th><th className="p-1.5 text-right">रक्कम (₹)</th><th className="p-1.5 w-8"></th></tr></thead><tbody>
-                {formData.losses.map((loss) => (<tr key={loss.id} className="border-b last:border-0">
-                  <td className="p-0 flex"><Input placeholder="कोड" value={loss.supplierCode} onChange={e => updateLossRow(loss.id, { supplierCode: e.target.value })} className="h-7 w-12 text-[10px] border-none font-bold border-r rounded-none" /><Input placeholder="नाव" value={loss.supplierName} onChange={e => updateLossRow(loss.id, { supplierName: e.target.value })} className="h-7 text-[10px] border-none font-bold rounded-none flex-1" /></td>
-                  <td className="p-0"><Input value={loss.lossAmount} onChange={e => updateLossRow(loss.id, { lossAmount: e.target.value })} className="h-7 text-[10px] border-none text-right font-black" /></td>
-                  <td className="p-1"><Button type="button" variant="ghost" size="icon" onClick={() => handleRemoveLossRow(loss.id)} className="h-6 w-6 text-destructive"><X className="h-3 w-3" /></Button></td>
-                </tr>))}
-              </tbody></table></div>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[9px] font-black uppercase text-destructive tracking-[0.2em]">नुकसान तपशील (LOSS LOG)</span>
+                <Button size="sm" onClick={handleAddLossRow} className="h-7 text-[9px] bg-destructive font-black uppercase"><PlusCircle className="h-3.5 w-3.5 mr-1" /> जोडा</Button>
+              </div>
+              <div className="border rounded-xl overflow-hidden border-muted-foreground/10">
+                <table className="w-full text-[10px]">
+                  <thead>
+                    <tr className="bg-muted/50 text-[8px] font-black border-b uppercase tracking-widest">
+                      <th className="p-2 text-left">कोड/गवळी नाव</th>
+                      <th className="p-2 text-right">रक्कम (₹)</th>
+                      <th className="p-2 w-8"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {formData.losses.map((loss) => (
+                      <tr key={loss.id} className="border-b last:border-0">
+                        <td className="p-0 flex">
+                          <Input placeholder="ID" value={loss.supplierCode} onChange={e => updateLossRow(loss.id, { supplierCode: e.target.value })} className="h-8 w-14 text-[10px] border-none font-black border-r rounded-none bg-transparent" />
+                          <Input placeholder="NAME" value={loss.supplierName} onChange={e => updateLossRow(loss.id, { supplierName: e.target.value })} className="h-8 text-[10px] border-none font-black rounded-none flex-1 bg-transparent" />
+                        </td>
+                        <td className="p-0">
+                          <Input type="number" value={loss.lossAmount} onChange={e => updateLossRow(loss.id, { lossAmount: e.target.value })} className="h-8 text-[10px] border-none text-right font-black bg-transparent" />
+                        </td>
+                        <td className="p-1">
+                          <Button type="button" variant="ghost" size="icon" onClick={() => handleRemoveLossRow(loss.id)} className="h-7 w-7 text-destructive hover:bg-destructive/5"><X className="h-3 w-3" /></Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
-            <Button onClick={handleSaveRecord} className="w-full font-black h-9 bg-destructive text-white hover:bg-destructive/90 shadow-lg shadow-destructive/20"><Save className="h-4 w-4 mr-1.5" /> जतन करा (Save & Generate Report)</Button>
+            <Button onClick={handleSaveRecord} className="w-full font-black h-10 bg-destructive text-white hover:bg-destructive/90 shadow-lg shadow-destructive/20 rounded-xl uppercase text-[10px]">
+              <Save className="h-4 w-4 mr-1.5" /> जतन करा (SAVE & REPORT)
+            </Button>
           </CardContent>
         </Card>
-        <Card className="lg:col-span-4 border shadow-none bg-white rounded-xl overflow-hidden"><div className="bg-muted/10 py-2 px-3 border-b font-black text-[10px] uppercase flex items-center gap-2"><History className="h-3.5 w-3.5" /> जुने रेकॉर्ड</div>
-          <ScrollArea className="h-[400px]"><div className="p-2 space-y-2">{records?.map((record) => (<Card key={record.id} className="p-2.5 flex items-start justify-between border-none shadow-sm bg-muted/5"><div onClick={() => { setEditingId(record.id); setFormData(record); }} className="cursor-pointer min-w-0"><h4 className="font-black text-[11px] truncate">{record.routeName}</h4><p className="text-[9px] font-bold text-destructive">{record.vehicleNumber} | ₹{record.totalLossAmount}</p></div><Button type="button" variant="ghost" size="icon" onClick={(e) => handleDeleteRecord(e, record.id)} className="text-destructive h-7 w-7"><Trash2 className="h-3.5 w-3.5" /></Button></Card>))}</div></ScrollArea>
+        <Card className="lg:col-span-4 border shadow-none bg-white rounded-xl overflow-hidden border-muted-foreground/10">
+          <div className="bg-muted/10 py-2.5 px-3 border-b font-black text-[9px] uppercase flex items-center gap-2 tracking-[0.2em]">
+            <History className="h-3.5 w-3.5 opacity-50" /> जुने रेकॉर्ड (LOGS)
+          </div>
+          <ScrollArea className="h-[400px]">
+            <div className="p-2 space-y-2">
+              {records?.map((record) => (
+                <Card key={record.id} className="p-3 flex items-start justify-between border shadow-none bg-muted/5 rounded-xl border-muted-foreground/5 hover:bg-destructive/5 transition-all cursor-pointer group" onClick={() => { setEditingId(record.id); setFormData(record); }}>
+                  <div className="min-w-0">
+                    <h4 className="font-black text-[11px] truncate uppercase tracking-tight">{record.routeName}</h4>
+                    <p className="text-[9px] font-black text-destructive/70 uppercase mt-0.5">{record.vehicleNumber} | ₹{record.totalLossAmount}</p>
+                  </div>
+                  <Button type="button" variant="ghost" size="icon" onClick={(e) => handleDeleteRecord(e, record.id)} className="text-destructive h-8 w-8 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="h-3.5 w-3.5" /></Button>
+                </Card>
+              ))}
+              {records?.length === 0 && (
+                <div className="text-center py-10 opacity-20 font-black uppercase text-[8px] tracking-widest">रेकॉर्ड शून्य</div>
+              )}
+            </div>
+          </ScrollArea>
         </Card>
       </div>
     </div>

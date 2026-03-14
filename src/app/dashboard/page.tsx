@@ -2,7 +2,7 @@
 "use client"
 
 import { Card, CardContent } from "@/components/ui/card"
-import { ListTodo, MapPin, ClipboardCheck, Milk, TrendingUp, Warehouse, ArrowRight, Calendar } from "lucide-react"
+import { ListTodo, MapPin, TrendingUp, Warehouse, ArrowRight, Calendar, Milk } from "lucide-react"
 import { useEffect, useState, useMemo } from "react"
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
@@ -14,7 +14,7 @@ export default function DashboardOverview() {
   const db = useFirestore()
   const [mounted, setMounted] = useState(false)
 
-  // Firestore Queries for real-time stats
+  // Real-time Firestore Queries
   const centersQuery = useMemoFirebase(() => {
     if (!db || !user) return null
     return collection(db, 'users', user.uid, 'centers')
@@ -26,14 +26,14 @@ export default function DashboardOverview() {
   }, [db, user])
 
   const routesQuery = useMemoFirebase(() => {
-    if (!db || !user) return null
+    if (!db) return null
     return collection(db, 'routes')
-  }, [db, user])
+  }, [db])
 
   const suppliersQuery = useMemoFirebase(() => {
-    if (!db || !user) return null
+    if (!db) return null
     return collection(db, 'suppliers')
-  }, [db, user])
+  }, [db])
 
   const { data: centers } = useCollection(centersQuery)
   const { data: tasks } = useCollection(tasksQuery)
@@ -45,15 +45,15 @@ export default function DashboardOverview() {
   }, [])
 
   const stats = useMemo(() => {
-    const suppCow = suppliers?.reduce((acc, s) => acc + (s.cowMilk?.quantity || 0), 0) || 0
-    const suppBuf = suppliers?.reduce((acc, s) => acc + (s.buffaloMilk?.quantity || 0), 0) || 0
-    const centerCow = centers?.reduce((acc, c) => acc + (c.cowMilk?.quantity || 0), 0) || 0
-    const centerBuf = centers?.reduce((acc, c) => acc + (c.buffaloMilk?.quantity || 0), 0) || 0
+    const routeTotalCow = suppliers?.reduce((acc, s) => acc + (s.cowMilk?.quantity || 0), 0) || 0
+    const routeTotalBuf = suppliers?.reduce((acc, s) => acc + (s.buffaloMilk?.quantity || 0), 0) || 0
+    const centerTotalCow = centers?.reduce((acc, c) => acc + (c.cowMilk?.quantity || 0), 0) || 0
+    const centerTotalBuf = centers?.reduce((acc, c) => acc + (c.buffaloMilk?.quantity || 0), 0) || 0
     
     return {
-      cowMilk: suppCow + centerCow,
-      bufMilk: suppBuf + centerBuf,
-      totalMilk: suppCow + suppBuf + centerCow + centerBuf,
+      cowMilk: routeTotalCow + centerTotalCow,
+      bufMilk: routeTotalBuf + centerTotalBuf,
+      totalMilk: routeTotalCow + routeTotalBuf + centerTotalCow + centerTotalBuf,
       activeRoutes: routes?.length || 0,
       totalPoints: (suppliers?.length || 0) + (centers?.length || 0),
       pendingTasks: tasks?.filter(t => t.status === 'pending').length || 0
@@ -61,7 +61,7 @@ export default function DashboardOverview() {
   }, [centers, tasks, routes, suppliers])
 
   if (!mounted) {
-    return <div className="flex items-center justify-center h-[80vh] text-muted-foreground italic text-sm">माहिती लोड होत आहे... (Loading...)</div>
+    return <div className="flex items-center justify-center h-[80vh] text-muted-foreground italic text-xs uppercase font-black">लोड होत आहे...</div>
   }
 
   const statCards = [
@@ -104,64 +104,57 @@ export default function DashboardOverview() {
   ]
 
   const actions = [
-    { title: "दैनिक रिपोर्ट", sub: "Daily Report", icon: ClipboardCheck, href: "/daily-report", color: "bg-blue-500" },
-    { title: "कामकाज नोंद", sub: "Work Log", icon: ListTodo, href: "/work-log", color: "bg-orange-500" },
-    { title: "संकलन केंद्र", sub: "Centers", icon: Warehouse, href: "/centers", color: "bg-purple-500" },
-    { title: "रूट माहिती", sub: "Routes", icon: MapPin, href: "/routes", color: "bg-emerald-500" },
+    { title: "दैनिक अहवाल", sub: "Daily Report", href: "/daily-report", color: "bg-blue-500" },
+    { title: "कामकाज नोंद", sub: "Work Log", href: "/work-log", color: "bg-orange-500" },
+    { title: "संकलन केंद्र", sub: "Centers", href: "/centers", color: "bg-purple-500" },
+    { title: "रूट माहिती", sub: "Routes", href: "/routes", color: "bg-emerald-500" },
   ]
 
   return (
     <div className="space-y-6 max-w-6xl mx-auto w-full pb-10 px-2 sm:px-0 animate-in fade-in duration-500">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center justify-between">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center justify-between border-b pb-4">
         <div className="space-y-0.5">
-          <h2 className="text-2xl sm:text-3xl font-headline font-black text-foreground flex items-center gap-2">
-            <TrendingUp className="h-6 w-6 sm:h-8 sm:w-8 text-primary" /> 
-            डॅशबोर्ड (Dashboard)
+          <h2 className="text-xl sm:text-2xl font-black text-foreground flex items-center gap-2">
+            <TrendingUp className="h-6 w-6 text-primary" /> 
+            डॅशबोर्ड (DASHBOARD)
           </h2>
-          <p className="text-muted-foreground font-bold text-[11px] sm:text-sm uppercase tracking-widest ml-1">Today's Overview</p>
+          <p className="text-muted-foreground font-black text-[10px] uppercase tracking-[0.2em] ml-1">Daily Overview</p>
         </div>
-        <Badge variant="outline" className="w-fit px-3 py-1 rounded-full border-primary/20 bg-primary/5 text-primary font-black text-[11px] uppercase">
+        <Badge variant="outline" className="w-fit px-3 py-1 rounded-full border-primary/20 bg-primary/5 text-primary font-black text-[10px] uppercase">
           <Calendar className="h-3.5 w-3.5 mr-1.5" /> {new Date().toLocaleDateString('mr-IN')}
         </Badge>
       </div>
 
-      <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
         {statCards.map((stat) => (
-          <Card key={stat.title} className={`border ${stat.border} shadow-sm hover:shadow-md transition-all bg-white overflow-hidden group`}>
-            <div className="p-3 sm:p-5 flex flex-col gap-2">
+          <Card key={stat.title} className={`border ${stat.border} shadow-sm hover:shadow-md transition-all bg-white overflow-hidden group rounded-2xl`}>
+            <div className="p-4 flex flex-col gap-2">
               <div className="flex items-center justify-between">
-                <stat.icon className={`h-4 w-4 sm:h-5 sm:w-5 ${stat.color}`} />
-                <div className={`${stat.bg} p-1.5 rounded-lg`}>
-                  <ArrowRight className={`h-3 w-3 ${stat.color} opacity-0 group-hover:opacity-100 transition-opacity`} />
-                </div>
+                <stat.icon className={`h-4 w-4 ${stat.color}`} />
+                <ArrowRight className={`h-3 w-3 ${stat.color} opacity-0 group-hover:opacity-100 transition-opacity`} />
               </div>
               <div>
-                <p className="text-[10px] font-black uppercase text-muted-foreground truncate">{stat.title}</p>
-                <div className="text-lg sm:text-2xl font-black tracking-tight text-foreground mt-0.5">{stat.value}</div>
-                <p className="text-[9px] text-muted-foreground mt-1 font-bold uppercase truncate">{stat.subValue}</p>
+                <p className="text-[9px] font-black uppercase text-muted-foreground truncate tracking-tighter">{stat.title}</p>
+                <div className="text-lg sm:text-2xl font-black tracking-tighter text-foreground mt-0.5">{stat.value}</div>
+                <p className="text-[8px] text-muted-foreground mt-1 font-black uppercase truncate">{stat.subValue}</p>
               </div>
             </div>
           </Card>
         ))}
       </div>
 
-      <div className="space-y-4">
-        <h3 className="text-lg font-black font-headline flex items-center gap-2 uppercase tracking-tight">
-          झटपट पर्याय (Quick Actions)
+      <div className="space-y-4 pt-4">
+        <h3 className="text-sm font-black flex items-center gap-2 uppercase tracking-widest text-primary">
+          झटपट पर्याय (QUICK ACTIONS)
         </h3>
         <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
           {actions.map((action) => (
             <Link key={action.title} href={action.href} className="group">
-              <Card className="border-none shadow-sm hover:shadow-lg transition-all cursor-pointer bg-white overflow-hidden relative h-full">
+              <Card className="border shadow-none hover:shadow-lg transition-all cursor-pointer bg-white overflow-hidden relative h-full rounded-2xl border-muted-foreground/10">
                 <div className={`absolute top-0 left-0 w-1 h-full ${action.color}`} />
-                <CardContent className="p-4 flex flex-col items-center text-center gap-3">
-                  <div className={`p-3 rounded-xl ${action.color} text-white shadow-md group-hover:scale-110 transition-transform`}>
-                    <action.icon className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <h4 className="font-black text-xs text-foreground leading-tight">{action.title}</h4>
-                    <p className="text-[10px] text-muted-foreground mt-0.5 font-bold uppercase">{action.sub}</p>
-                  </div>
+                <CardContent className="p-4 flex flex-col items-center text-center gap-2">
+                  <h4 className="font-black text-xs text-foreground uppercase tracking-tight">{action.title}</h4>
+                  <p className="text-[9px] text-muted-foreground font-black uppercase opacity-60">{action.sub}</p>
                 </CardContent>
               </Card>
             </Link>

@@ -26,12 +26,12 @@ const items = [
     icon: LayoutDashboard,
   },
   {
-    title: "दैनिक रिपोर्ट (Daily Report)",
+    title: "दैनिक अहवाल (Report)",
     url: "/daily-report",
     icon: ClipboardCheck,
   },
   {
-    title: "कामकाज नोंद (Work Log)",
+    title: "कामकाज नोंद (Tasks)",
     url: "/work-log",
     icon: ListTodo,
   },
@@ -41,12 +41,12 @@ const items = [
     icon: Warehouse,
   },
   {
-    title: "रूट (Routes)",
+    title: "रूट माहिती (Routes)",
     url: "/routes",
     icon: MapPin,
   },
   {
-    title: "अहवाल पहा (View Reports)",
+    title: "अहवाल पहा (Archive)",
     url: "/reports",
     icon: Archive,
   },
@@ -67,18 +67,18 @@ export function DashboardSidebar() {
 
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader className="border-b px-4 py-4">
+      <SidebarHeader className="border-b px-4 py-4 bg-white">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-lg shadow-primary/20 shrink-0">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/20 shrink-0">
             <Milk className="h-6 w-6" />
           </div>
           <div className="flex flex-col group-data-[collapsible=icon]:hidden min-w-0">
             {mounted ? (
               <>
-                <span className="font-headline text-sm font-black tracking-tight text-foreground truncate">
+                <span className="font-headline text-sm font-black tracking-tight text-foreground truncate uppercase">
                   संकलन नोंदवही
                 </span>
-                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest truncate">Daily Register</span>
+                <span className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em] truncate opacity-60">Daily Register</span>
               </>
             ) : (
               <span className="h-4 w-24 bg-muted animate-pulse rounded" />
@@ -86,13 +86,13 @@ export function DashboardSidebar() {
           </div>
         </div>
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="bg-white">
         <SidebarGroup>
-          <SidebarGroupLabel className="px-4 py-4 uppercase tracking-[0.2em] text-[10px] font-black text-muted-foreground/60 group-data-[collapsible=icon]:hidden">
-            मुख्य मेनू (Main Menu)
+          <SidebarGroupLabel className="px-4 py-4 uppercase tracking-[0.3em] text-[9px] font-black text-muted-foreground/40 group-data-[collapsible=icon]:hidden">
+            मुख्य मेनू (MAIN MENU)
           </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu className="px-2 gap-1">
+            <SidebarMenu className="px-2 gap-1.5">
               {items.map((item) => {
                 const isActive = pathname === item.url || (item.url !== '/dashboard' && pathname?.startsWith(item.url));
                 return (
@@ -101,11 +101,11 @@ export function DashboardSidebar() {
                       asChild
                       isActive={isActive}
                       tooltip={item.title}
-                      className="flex h-10 items-center gap-3 rounded-lg px-3 transition-all hover:bg-primary/5 hover:text-primary data-[active=true]:bg-primary data-[active=true]:text-primary-foreground data-[active=true]:shadow-md"
+                      className="flex h-10 items-center gap-3 rounded-xl px-3 transition-all hover:bg-primary/5 hover:text-primary data-[active=true]:bg-primary data-[active=true]:text-primary-foreground data-[active=true]:shadow-lg data-[active=true]:shadow-primary/20"
                     >
                       <Link href={item.url}>
                         <item.icon className="h-5 w-5" />
-                        <span className="font-bold tracking-wide text-xs">{item.title}</span>
+                        <span className="font-black tracking-tight text-[11px] uppercase">{item.title}</span>
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -115,13 +115,13 @@ export function DashboardSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <div className="mt-auto p-3 border-t group-data-[collapsible=icon]:hidden">
+      <div className="mt-auto p-3 border-t group-data-[collapsible=icon]:hidden bg-white">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild className="text-destructive hover:text-destructive hover:bg-destructive/10 h-10 rounded-lg px-3 font-bold">
+            <SidebarMenuButton asChild className="text-destructive hover:text-destructive hover:bg-destructive/10 h-10 rounded-xl px-3 font-black uppercase text-[10px] tracking-widest">
               <Link href="/">
                 <LogOut className="h-5 w-5" />
-                <span className="text-xs">बाहेर पडा (Sign Out)</span>
+                <span>बाहेर पडा</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
