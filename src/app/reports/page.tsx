@@ -87,7 +87,7 @@ export default function ReportsPage() {
       <div className="text-[11px] font-mono text-black bg-white p-8 border-2 border-black shadow-none w-full max-w-4xl mx-auto" id="printable-area">
         <div className="border-b-4 border-black mb-6 text-center py-4">
           <h1 className="text-xl font-black uppercase tracking-[0.2em]">{formTitle} REPORT</h1>
-          <p className="text-[10px] font-bold mt-1 opacity-60 uppercase">संकलन नोंदवही (DIARY REGISTER)</p>
+          <p className="text-[10px] font-bold mt-1 opacity-60 uppercase">संकलन नोंदवही (OFFICIAL REGISTER)</p>
         </div>
 
         <table className="w-full border-collapse border-2 border-black mb-6">
@@ -100,7 +100,7 @@ export default function ReportsPage() {
             </tr>
             <tr>
               <td className="border border-black p-3 bg-slate-50 font-black uppercase">PREPARED BY</td>
-              <td className="border border-black p-3 font-bold">{data.name || 'SYSTEM USER'}</td>
+              <td className="border border-black p-3 font-bold">{data.name || user?.displayName || 'SYSTEM USER'}</td>
               <td className="border border-black p-3 bg-slate-50 font-black uppercase">CATEGORY</td>
               <td className="border border-black p-3 uppercase font-bold">{reportType}</td>
             </tr>
@@ -112,10 +112,10 @@ export default function ReportsPage() {
             <thead>
               <tr className="bg-slate-100 font-black uppercase text-[10px] text-center">
                 <th className="border border-black p-3 w-10">#</th>
-                <th className="border border-black p-3 text-left">CENTER CODE</th>
-                <th className="border border-black p-3 text-left">SUPPLIER NAME</th>
+                <th className="border border-black p-3 text-left">CODE</th>
+                <th className="border border-black p-3 text-left">CENTER NAME</th>
                 <th className="border border-black p-3">ICE</th>
-                <th className="border border-black p-3">ARR/DEP</th>
+                <th className="border border-black p-3">IN/OUT</th>
                 <th className="border border-black p-3">CANS(E/F)</th>
               </tr>
             </thead>
@@ -131,10 +131,10 @@ export default function ReportsPage() {
                 </tr>
               ))}
               <tr className="bg-slate-50 font-black text-center">
-                <td colSpan={2} className="border border-black p-3 text-right">SUMMARY TOTALS:</td>
+                <td colSpan={2} className="border border-black p-3 text-right">SUMMARY:</td>
                 <td className="border border-black p-3">DIST: {data.totalKm || 0} KM</td>
                 <td className="border border-black p-3">VEHICLE: {data.vehicleNumber || '-'}</td>
-                <td colSpan={2} className="border border-black p-3 text-center">SHORTAGE: {data.shortageLiters || 0} L</td>
+                <td colSpan={2} className="border border-black p-3 text-center">SHORT: {data.shortageLiters || 0} L</td>
               </tr>
             </tbody>
           </table>
@@ -145,22 +145,18 @@ export default function ReportsPage() {
             <thead>
               <tr className="bg-slate-100 font-black uppercase text-[10px]">
                 <th className="border border-black p-3 text-left">SUPPLIER CODE/NAME</th>
-                <th className="border border-black p-3 text-center">COW LOSS</th>
-                <th className="border border-black p-3 text-center">BUF LOSS</th>
-                <th className="border border-black p-3 text-right">LOSS AMOUNT</th>
+                <th className="border border-black p-3 text-center">LOSS AMOUNT (₹)</th>
               </tr>
             </thead>
             <tbody>
               {data.losses.map((loss: any, i: number) => (
                 <tr key={i}>
                   <td className="border border-black p-3 font-bold">{loss.supplierCode} - {loss.supplierName}</td>
-                  <td className="border border-black p-3 text-center">{loss.cowMilkLossLiters || 0}L</td>
-                  <td className="border border-black p-3 text-center">{loss.bufMilkLossLiters || 0}L</td>
                   <td className="border border-black p-3 text-right font-black">₹{loss.lossAmount || 0}</td>
                 </tr>
               ))}
               <tr className="bg-slate-50 font-black">
-                <td colSpan={3} className="border border-black p-4 text-right uppercase">TOTAL FINANCIAL LOSS CALCULATED:</td>
+                <td className="border border-black p-4 text-right uppercase">TOTAL FINANCIAL LOSS:</td>
                 <td className="border border-black p-4 text-right text-base">₹{data.totalLossAmount || 0}</td>
               </tr>
             </tbody>
@@ -171,15 +167,15 @@ export default function ReportsPage() {
           <table className="w-full border-collapse border-2 border-black mb-6">
             <thead>
               <tr className="bg-slate-100 font-black uppercase text-[10px]">
-                <th className="border border-black p-3 text-left w-[40%]">DATA FIELD DESCRIPTION</th>
-                <th className="border border-black p-3 text-left">RECORDED VALUE</th>
+                <th className="border border-black p-3 text-left w-[40%]">FIELD DESCRIPTION</th>
+                <th className="border border-black p-3 text-left">VALUE</th>
               </tr>
             </thead>
             <tbody>
               {data.dynamicFields.map((field: any, i: number) => (
                 <tr key={i}>
                   <td className="border border-black p-3 bg-slate-50 font-black uppercase text-[9px]">{field.label}</td>
-                  <td className="border border-black p-3 whitespace-pre-wrap font-bold">{field.value || '-'}</td>
+                  <td className="border border-black p-3 font-bold">{field.value || '-'}</td>
                 </tr>
               ))}
             </tbody>
@@ -189,29 +185,25 @@ export default function ReportsPage() {
         <table className="w-full border-collapse border-2 border-black mb-6">
           <thead>
             <tr className="bg-slate-100 font-black text-[10px]">
-              <th className="border border-black p-3 text-left uppercase">OFFICER OBSERVATIONS / REMARKS (SUMMARY)</th>
+              <th className="border border-black p-3 text-left uppercase">OFFICER OBSERVATIONS</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td className="border border-black p-4 min-h-[120px] align-top whitespace-pre-wrap leading-relaxed font-bold italic text-slate-700">
-                {report.summary || report.overallSummary || "NO FURTHER REMARKS RECORDED FOR THIS ENTRY."}
+              <td className="border border-black p-4 min-h-[100px] align-top whitespace-pre-wrap leading-relaxed font-bold italic text-slate-700">
+                {report.summary || report.overallSummary || "NO REMARKS."}
               </td>
             </tr>
           </tbody>
         </table>
 
-        <div className="mt-16 grid grid-cols-2 gap-20 px-12">
+        <div className="mt-12 grid grid-cols-2 gap-20 px-12">
           <div className="text-center">
-            <div className="border-t-2 border-black pt-3 font-black uppercase text-[9px]">ISSUED BY / OPERATOR SIGNATURE</div>
+            <div className="border-t-2 border-black pt-2 font-black uppercase text-[9px]">OFFICER SIGNATURE</div>
           </div>
           <div className="text-center">
-            <div className="border-t-2 border-black pt-3 font-black uppercase text-[9px]">VERIFIED BY / SUPERVISOR SIGNATURE</div>
+            <div className="border-t-2 border-black pt-2 font-black uppercase text-[9px]">SUPERVISOR SIGNATURE</div>
           </div>
-        </div>
-        
-        <div className="mt-12 text-center text-[8px] font-black uppercase text-slate-400 tracking-widest border-t pt-4">
-          END OF OFFICIAL REPORT | संकलन नोंदवही - Generated on {new Date().toLocaleString()}
         </div>
       </div>
     );
@@ -229,7 +221,7 @@ export default function ReportsPage() {
             </div>
             अहवाल व्यवस्थापन
           </h2>
-          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest ml-1 opacity-70">तुमच्या सर्व जतन केलेल्या नोंदी</p>
+          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest ml-1 opacity-70">Archive History</p>
         </div>
         <Badge variant="outline" className="font-black bg-primary/5 text-primary border-primary/20 text-xs px-4 py-2 rounded-2xl shadow-sm uppercase">
           {filteredReports.length} एकूण अहवाल

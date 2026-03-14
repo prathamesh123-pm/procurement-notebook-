@@ -55,7 +55,13 @@ export default function DailyReportPage() {
     setMounted(true)
     const savedName = localStorage.getItem('procurenote_user_name') || ""
     const savedId = localStorage.getItem('procurenote_user_id') || ""
-    setFormData(prev => ({ ...prev, name: savedName, idNumber: savedId, reportDate: new Date().toISOString().split('T')[0], routeVisitLogs: [createEmptyRouteEntry()] }))
+    setFormData(prev => ({ 
+      ...prev, 
+      name: savedName, 
+      idNumber: savedId, 
+      reportDate: new Date().toISOString().split('T')[0], 
+      routeVisitLogs: [createEmptyRouteEntry()] 
+    }))
   }, [])
 
   useEffect(() => {
@@ -120,7 +126,7 @@ export default function DailyReportPage() {
             <h2 className="text-xl sm:text-2xl font-black text-slate-900 flex items-center gap-2">
               <ClipboardCheck className="h-6 w-6 text-primary" /> दैनिक अहवाल
             </h2>
-            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest ml-1">Daily Work Submission</p>
+            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest ml-1">Daily Submission</p>
           </div>
         </div>
       </div>
@@ -200,9 +206,11 @@ export default function DailyReportPage() {
                       <td className="p-2"><Input className="h-9 text-xs border-none bg-slate-50 rounded-lg text-center font-bold" value={entry.centerCode} onChange={e => updateRouteEntry(entry.id, { centerCode: e.target.value })} placeholder="Code" /></td>
                       <td className="p-2"><Input className="h-9 text-xs border-none bg-slate-50 rounded-lg font-bold" value={entry.supplierName} onChange={e => updateRouteEntry(entry.id, { supplierName: e.target.value })} placeholder="Center Name" /></td>
                       <td className="p-2"><Input className="h-9 text-xs border-none bg-slate-50 rounded-lg text-center" value={entry.iceAllocated} onChange={e => updateRouteEntry(entry.id, { iceAllocated: e.target.value })} placeholder="Ice" /></td>
-                      <td className="p-2 flex gap-1">
-                        <Input className="h-9 text-[10px] border-none bg-slate-50 rounded-lg text-center p-1" type="time" value={entry.arrivalTime} onChange={e => updateRouteEntry(entry.id, { arrivalTime: e.target.value })} />
-                        <Input className="h-9 text-[10px] border-none bg-slate-50 rounded-lg text-center p-1" type="time" value={entry.departureTime} onChange={e => updateRouteEntry(entry.id, { departureTime: e.target.value })} />
+                      <td className="p-2">
+                        <div className="flex gap-1">
+                          <Input className="h-9 text-[10px] border-none bg-slate-50 rounded-lg text-center p-1" type="time" value={entry.arrivalTime} onChange={e => updateRouteEntry(entry.id, { arrivalTime: e.target.value })} />
+                          <Input className="h-9 text-[10px] border-none bg-slate-50 rounded-lg text-center p-1" type="time" value={entry.departureTime} onChange={e => updateRouteEntry(entry.id, { departureTime: e.target.value })} />
+                        </div>
                       </td>
                       <td className="p-2">
                         <div className="flex gap-1">
@@ -220,7 +228,8 @@ export default function DailyReportPage() {
                 </tbody>
               </table>
             </div>
-          </TabsContent>
+          </Card>
+        </TabsContent>
 
         <TabsContent value="field-visit">
           <Card className="border-none shadow-sm rounded-3xl overflow-hidden bg-white">
