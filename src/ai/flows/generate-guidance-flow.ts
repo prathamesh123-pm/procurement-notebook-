@@ -19,8 +19,33 @@ const GuidanceOutputSchema = z.object({
 });
 export type GuidanceOutput = z.infer<typeof GuidanceOutputSchema>;
 
+/**
+ * Generates guidance questions. 
+ * Includes a try-catch block to handle missing or invalid API keys gracefully.
+ */
 export async function generateGuidance(input: GuidanceInput): Promise<GuidanceOutput> {
-  return generateGuidanceFlow(input);
+  try {
+    // If we're in a dev environment without a key, we might want to return defaults
+    if (!process.env.GOOGLE_GENAI_API_KEY) {
+      console.warn("AI Guidance: GOOGLE_GENAI_API_KEY is missing. Using fallback questions.");
+      return getFallbackQuestions(input.formType);
+    }
+    const result = await generateGuidanceFlow(input);
+    return result;
+  } catch (error) {
+    console.error("AI Guidance Flow failed:", error);
+    return { questions: [] }; // Return empty list instead of crashing
+  }
+}
+
+function getFallbackQuestions(formType: string): GuidanceOutput {
+  const fallbacks: Record<string, string[]> = {
+    'daily-report': ["आजच्या दुधाची प्रत (Quality) कशी होती?", "शेतकऱ्यांच्या काही विशेष तक्रारी आहेत का?", "गाडी वेळेवर पोहचली होती का?"],
+    'task': ["हे काम पूर्ण करण्यासाठी कोणती साधने लागतील?", "कामात काही अडथळे येत आहेत का?", "हे काम कधीपर्यंत संपेल?"],
+    'breakdown': ["दुरुस्तीसाठी किती वेळ लागेल?", "पर्यायी गाडीची सोय झाली आहे का?", "नुकसान टाळण्यासाठी काय उपाय केले?"],
+    'center': ["केंद्रावरील स्वच्छता समाधानकारक आहे का?", "काटा आणि मशीन बरोबर काम करत आहेत का?", "बर्फाचा साठा पुरेसा आहे का?"]
+  };
+  return { questions: fallbacks[formType] || [] };
 }
 
 const guidancePrompt = ai.definePrompt({
