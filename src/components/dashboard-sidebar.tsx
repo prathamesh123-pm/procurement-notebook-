@@ -1,7 +1,12 @@
+
 "use client"
 
 import * as React from "react"
-import { LayoutDashboard, ListTodo, MapPin, LogOut, Milk, ClipboardCheck, Archive, UserCircle, Warehouse, Settings2, FileEdit } from "lucide-react"
+import { 
+  LayoutDashboard, ListTodo, MapPin, LogOut, Milk, 
+  ClipboardCheck, Archive, UserCircle, Warehouse, 
+  Settings2, FileEdit, X 
+} from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
@@ -16,7 +21,9 @@ import {
   SidebarGroup,
   SidebarGroupLabel,
   SidebarGroupContent,
+  useSidebar,
 } from "@/components/ui/sidebar"
+import { Button } from "@/components/ui/button"
 
 const items = [
   {
@@ -69,14 +76,21 @@ const items = [
 export function DashboardSidebar() {
   const pathname = usePathname()
   const [mounted, setMounted] = React.useState(false)
+  const { setOpenMobile, isMobile } = useSidebar()
 
   React.useEffect(() => {
     setMounted(true)
   }, [])
 
+  const handleLinkClick = () => {
+    if (isMobile) {
+      setOpenMobile(false)
+    }
+  }
+
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader className="border-b px-4 py-4 bg-white">
+      <SidebarHeader className="border-b px-4 py-4 bg-white relative">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/20 shrink-0">
             <Milk className="h-6 w-6" />
@@ -94,6 +108,17 @@ export function DashboardSidebar() {
             )}
           </div>
         </div>
+        {/* Close button for mobile inside header */}
+        {isMobile && (
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="absolute right-2 top-4 h-8 w-8 rounded-full lg:hidden"
+            onClick={() => setOpenMobile(false)}
+          >
+            <X className="h-5 w-5 text-muted-foreground" />
+          </Button>
+        )}
       </SidebarHeader>
       <SidebarContent className="bg-white">
         <SidebarGroup>
@@ -110,6 +135,7 @@ export function DashboardSidebar() {
                       asChild
                       isActive={isActive}
                       tooltip={item.title}
+                      onClick={handleLinkClick}
                       className="flex h-10 items-center gap-3 rounded-xl px-3 transition-all hover:bg-primary/5 hover:text-primary data-[active=true]:bg-primary data-[active=true]:text-primary-foreground data-[active=true]:shadow-lg data-[active=true]:shadow-primary/20"
                     >
                       <Link href={item.url}>
@@ -127,7 +153,11 @@ export function DashboardSidebar() {
       <div className="mt-auto p-3 border-t group-data-[collapsible=icon]:hidden bg-white">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild className="text-destructive hover:text-destructive hover:bg-destructive/10 h-10 rounded-xl px-3 font-black uppercase text-[10px] tracking-widest">
+            <SidebarMenuButton 
+              asChild 
+              onClick={handleLinkClick}
+              className="text-destructive hover:text-destructive hover:bg-destructive/10 h-10 rounded-xl px-3 font-black uppercase text-[10px] tracking-widest"
+            >
               <Link href="/">
                 <LogOut className="h-5 w-5" />
                 <span>बाहेर पडा</span>
