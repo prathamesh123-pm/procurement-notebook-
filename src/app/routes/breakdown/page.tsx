@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect } from "react"
@@ -14,6 +13,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { BreakdownLoss } from "@/lib/types"
 import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking, deleteDocumentNonBlocking, updateDocumentNonBlocking } from "@/firebase"
 import { collection, doc } from "firebase/firestore"
+import { AIGuidanceCard } from "@/components/ai-guidance-card"
 
 export default function BreakdownPage() {
   const { user } = useUser()
@@ -75,8 +75,8 @@ export default function BreakdownPage() {
         date: recordData.date,
         reportDate: recordData.date,
         generatedByUserId: user.uid,
-        summary: `रूट: ${formData.routeName}. वाहन: ${formData.vehicleNumber}. नुकसान: ₹${totalLoss}. ठिकाण: ${formData.location || 'N/A'}`,
-        overallSummary: `रूट: ${formData.routeName}. वाहन: ${formData.vehicleNumber}. नुकसान: ₹${totalLoss}. ठिकाण: ${formData.location || 'N/A'}`,
+        summary: `रूट: ${formData.routeName}. नुकसान: ₹${totalLoss}. कारण: ${formData.reason || 'N/A'}`,
+        overallSummary: `रूट: ${formData.routeName}. नुकसान: ₹${totalLoss}. कारण: ${formData.reason || 'N/A'}`,
         fullData: {
           ...recordData,
           name: user.displayName || "Procurement Officer",
@@ -124,7 +124,12 @@ export default function BreakdownPage() {
               <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase text-muted-foreground tracking-widest">रूट (ROUTE)</Label><Input value={formData.routeName} onChange={e => setFormData({...formData, routeName: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" placeholder="..." /></div>
               <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase text-muted-foreground tracking-widest">गाडी नंबर (V. NO)</Label><Input value={formData.vehicleNumber} onChange={e => setFormData({...formData, vehicleNumber: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" placeholder="MH 50..." /></div>
             </div>
-            <div className="space-y-2">
+            
+            <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase text-muted-foreground tracking-widest">कारण (REASON)</Label><Input value={formData.reason} onChange={e => setFormData({...formData, reason: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" placeholder="उदा. इंजिन बिघाड" /></div>
+            
+            <AIGuidanceCard context={formData.reason} formType="breakdown" />
+
+            <div className="space-y-2 pt-2">
               <div className="flex items-center justify-between">
                 <span className="text-[9px] font-black uppercase text-destructive tracking-[0.2em]">नुकसान तपशील (LOSS LOG)</span>
                 <Button size="sm" onClick={handleAddLossRow} className="h-7 text-[9px] bg-destructive font-black uppercase"><PlusCircle className="h-3.5 w-3.5 mr-1" /> जोडा</Button>

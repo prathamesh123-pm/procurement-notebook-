@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
@@ -13,6 +12,7 @@ import { useToast } from "@/hooks/use-toast"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
 import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking, deleteDocumentNonBlocking, updateDocumentNonBlocking } from "@/firebase"
 import { collection, doc } from "firebase/firestore"
+import { AIGuidanceCard } from "@/components/ai-guidance-card"
 
 export default function WorkLogPage() {
   const { user } = useUser()
@@ -145,7 +145,10 @@ export default function WorkLogPage() {
           </div>
           <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase text-primary/60 tracking-widest">टास्क / कामाचे नाव</Label><Input value={newTaskTitle} onChange={e => setNewTaskTitle(e.target.value)} className="h-9 text-[11px] bg-muted/20 border-none rounded-lg font-black p-3" placeholder="उदा. थकीत बाकी वसुली" /></div>
           <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase text-primary/60 tracking-widest">माहिती (DETAILS)</Label><Textarea value={newTaskDesc} onChange={e => setNewTaskDesc(e.target.value)} className="min-h-[60px] text-[11px] bg-muted/20 border-none rounded-lg p-3 font-medium" placeholder="..." /></div>
-          <Button type="button" onClick={addTask} className="w-full font-black h-10 rounded-xl text-xs shadow-lg shadow-primary/20"><Plus className="h-4 w-4 mr-1.5" /> जतन करा (SAVE TASK)</Button>
+          
+          <AIGuidanceCard context={newTaskDesc} formType="task" />
+          
+          <Button type="button" onClick={addTask} className="w-full font-black h-10 rounded-xl text-xs shadow-lg shadow-primary/20 mt-2"><Plus className="h-4 w-4 mr-1.5" /> जतन करा (SAVE TASK)</Button>
         </CardContent>
       </Card>
 

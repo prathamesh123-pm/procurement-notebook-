@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect } from "react"
@@ -16,6 +15,7 @@ import {
 } from "lucide-react"
 import { useUser, useFirestore, addDocumentNonBlocking } from "@/firebase"
 import { collection } from "firebase/firestore"
+import { AIGuidanceCard } from "@/components/ai-guidance-card"
 
 interface RouteVisitEntry {
   id: string;
@@ -199,8 +199,31 @@ export default function DailyReportPage() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="field-visit"><Card className="border shadow-none rounded-lg overflow-hidden"><CardContent className="p-2"><Textarea value={formData.fieldObservations} onChange={e => setFormData({...formData, fieldObservations: e.target.value})} placeholder="क्षेत्र भेटीची निरीक्षणे..." className="min-h-[100px] text-[11px] rounded-md bg-muted/10 border-none font-bold" /></CardContent></Card></TabsContent>
-        <TabsContent value="office-work"><Card className="border shadow-none rounded-lg overflow-hidden"><CardContent className="p-2"><Textarea value={formData.officeTasks} onChange={e => setFormData({...formData, officeTasks: e.target.value})} placeholder="ऑफिस कामाचा तपशील..." className="min-h-[100px] text-[11px] rounded-md bg-muted/10 border-none font-bold" /></CardContent></Card></TabsContent>
+        <TabsContent value="field-visit">
+          <Card className="border shadow-none rounded-lg overflow-hidden">
+            <CardContent className="p-2 space-y-2">
+              <Textarea 
+                value={formData.fieldObservations} 
+                onChange={e => setFormData({...formData, fieldObservations: e.target.value})} 
+                placeholder="क्षेत्र भेटीची निरीक्षणे..." 
+                className="min-h-[100px] text-[11px] rounded-md bg-muted/10 border-none font-bold" 
+              />
+              <AIGuidanceCard context={formData.fieldObservations} formType="daily-report" />
+            </CardContent>
+          </Card>
+        </TabsContent>
+        <TabsContent value="office-work">
+          <Card className="border shadow-none rounded-lg overflow-hidden">
+            <CardContent className="p-2">
+              <Textarea 
+                value={formData.officeTasks} 
+                onChange={e => setFormData({...formData, officeTasks: e.target.value})} 
+                placeholder="ऑफिस कामाचा तपशील..." 
+                className="min-h-[100px] text-[11px] rounded-md bg-muted/10 border-none font-bold" 
+              />
+            </CardContent>
+          </Card>
+        </TabsContent>
       </Tabs>
 
       <Card className="border shadow-none bg-white rounded-lg overflow-hidden mt-1">
