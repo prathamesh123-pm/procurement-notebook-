@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
 import { 
-  ClipboardCheck, Truck, Plus, Trash2, MapPin, Briefcase, Save
+  ClipboardCheck, Truck, Plus, Trash2, MapPin, Briefcase, Save, ArrowLeft, Info
 } from "lucide-react"
 import { useUser, useFirestore, addDocumentNonBlocking } from "@/firebase"
 import { collection } from "firebase/firestore"
@@ -71,7 +71,7 @@ export default function DailyReportPage() {
 
   const handleSave = () => {
     if (!db || !user) {
-      toast({ title: "त्रुटी", description: "Firebase कनेक्टेड नाही.", variant: "destructive" });
+      toast({ title: "त्रुटी", description: "डेटाबेसशी कनेक्शन नाही.", variant: "destructive" });
       return;
     }
 
@@ -93,9 +93,8 @@ export default function DailyReportPage() {
       date: formData.reportDate,
       reportDate: formData.reportDate,
       generatedByUserId: user.uid,
-      overallSummary: reportSummary,
       summary: reportSummary,
-      workItemsCount: formData.routeVisitLogs.length,
+      overallSummary: reportSummary,
       fullData: { ...formData, reportType },
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
@@ -104,138 +103,187 @@ export default function DailyReportPage() {
     const colRef = collection(db, 'users', user.uid, 'dailyWorkReports');
     addDocumentNonBlocking(colRef, newReport);
     
-    toast({ title: "अहवाल जतन केला", description: "यशस्वीरित्या सेव्ह झाला." })
+    toast({ title: "अहवाल जतन केला", description: "माहिती यशस्वीरित्या सेव्ह झाली." })
     router.push('/reports')
   }
 
   if (!mounted) return null
 
   return (
-    <div className="space-y-2 max-w-7xl mx-auto w-full pb-10 px-1 sm:px-0 animate-in fade-in duration-500">
-      <div className="flex flex-col gap-0.5 border-b pb-1 px-1">
-        <h2 className="text-base font-headline font-black text-foreground flex items-center gap-2">
-          <ClipboardCheck className="h-4 w-4 text-primary" /> दैनिक अहवाल (Daily)
-        </h2>
+    <div className="space-y-6 max-w-5xl mx-auto w-full pb-20 px-2 animate-in fade-in slide-in-from-bottom-2 duration-500">
+      <div className="flex items-center justify-between border-b pb-4">
+        <div className="flex items-center gap-3">
+          <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full hover:bg-slate-100 h-10 w-10">
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <div>
+            <h2 className="text-xl sm:text-2xl font-black text-slate-900 flex items-center gap-2">
+              <ClipboardCheck className="h-6 w-6 text-primary" /> दैनिक अहवाल
+            </h2>
+            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest ml-1">Daily Work Submission</p>
+          </div>
+        </div>
       </div>
 
-      <Card className="border shadow-none bg-white rounded-lg overflow-hidden">
-        <CardContent className="p-2 grid grid-cols-2 md:grid-cols-4 gap-2">
-          <div className="space-y-0.5">
-            <Label className="text-[9px] font-black uppercase text-muted-foreground">नाव</Label>
-            <Input className="h-7 text-[11px] bg-muted/20 border-none rounded-md font-bold" value={formData.name} readOnly />
+      <Card className="border-none shadow-sm bg-white rounded-3xl overflow-hidden">
+        <CardContent className="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="space-y-2">
+            <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">तुमचे नाव</Label>
+            <Input className="h-11 text-sm bg-slate-50 border-none rounded-2xl font-bold shadow-inner" value={formData.name} readOnly />
           </div>
-          <div className="space-y-0.5">
-            <Label className="text-[9px] font-black uppercase text-muted-foreground">तारीख</Label>
-            <Input className="h-7 text-[11px] bg-muted/20 border-none rounded-md font-bold" type="date" value={formData.reportDate} onChange={e => setFormData({...formData, reportDate: e.target.value})} />
+          <div className="space-y-2">
+            <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">आजची तारीख</Label>
+            <Input className="h-11 text-sm bg-slate-50 border-none rounded-2xl font-bold shadow-inner" type="date" value={formData.reportDate} onChange={e => setFormData({...formData, reportDate: e.target.value})} />
           </div>
-          <div className="space-y-0.5 col-span-2">
-            <Label className="text-[9px] font-black uppercase text-muted-foreground">शिफ्ट (Shift)</Label>
-            <RadioGroup value={formData.shift} onValueChange={v => setFormData({...formData, shift: v})} className="flex gap-3 mt-0.5">
-              <div className="flex items-center space-x-1"><RadioGroupItem value="Sakal" id="sakal" className="h-3 w-3" /><Label htmlFor="sakal" className="text-[11px] font-bold">सकाळ</Label></div>
-              <div className="flex items-center space-x-1"><RadioGroupItem value="Sandhya" id="sandhya" className="h-3 w-3" /><Label htmlFor="sandhya" className="text-[11px] font-bold">संध्याकाळ</Label></div>
+          <div className="space-y-2 col-span-1 sm:col-span-2">
+            <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">शिफ्ट (Shift)</Label>
+            <RadioGroup value={formData.shift} onValueChange={v => setFormData({...formData, shift: v})} className="flex gap-6 mt-2">
+              <div className="flex items-center space-x-2 bg-slate-50 px-4 py-2 rounded-2xl border border-slate-100 transition-all hover:bg-white hover:shadow-md cursor-pointer">
+                <RadioGroupItem value="Sakal" id="sakal" />
+                <Label htmlFor="sakal" className="text-sm font-bold cursor-pointer">सकाळ</Label>
+              </div>
+              <div className="flex items-center space-x-2 bg-slate-50 px-4 py-2 rounded-2xl border border-slate-100 transition-all hover:bg-white hover:shadow-md cursor-pointer">
+                <RadioGroupItem value="Sandhya" id="sandhya" />
+                <Label htmlFor="sandhya" className="text-sm font-bold cursor-pointer">संध्याकाळ</Label>
+              </div>
             </RadioGroup>
           </div>
         </CardContent>
       </Card>
 
       <Tabs value={reportType} onValueChange={setReportType} className="w-full">
-        <TabsList className="grid grid-cols-3 w-full max-w-sm mb-2 bg-muted/30 p-0.5 h-8 rounded-lg">
-          <TabsTrigger value="route-visit" className="text-[9px] font-black gap-1 py-0.5 rounded-md"><Truck className="h-3 w-3" /> रूट</TabsTrigger>
-          <TabsTrigger value="field-visit" className="text-[9px] font-black gap-1 py-0.5 rounded-md"><MapPin className="h-3 w-3" /> क्षेत्र</TabsTrigger>
-          <TabsTrigger value="office-work" className="text-[9px] font-black gap-1 py-0.5 rounded-md"><Briefcase className="h-3 w-3" /> ऑफिस</TabsTrigger>
+        <TabsList className="grid grid-cols-3 w-full max-w-md mb-6 bg-slate-100 p-1.5 h-12 rounded-2xl shadow-inner">
+          <TabsTrigger value="route-visit" className="text-[11px] font-black gap-2 data-[state=active]:bg-white data-[state=active]:shadow-md rounded-xl transition-all"><Truck className="h-4 w-4" /> रूट व्हिजिट</TabsTrigger>
+          <TabsTrigger value="field-visit" className="text-[11px] font-black gap-2 data-[state=active]:bg-white data-[state=active]:shadow-md rounded-xl transition-all"><MapPin className="h-4 w-4" /> क्षेत्र भेट</TabsTrigger>
+          <TabsTrigger value="office-work" className="text-[11px] font-black gap-2 data-[state=active]:bg-white data-[state=active]:shadow-md rounded-xl transition-all"><Briefcase className="h-4 w-4" /> ऑफिस काम</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="route-visit" className="space-y-2">
-          <Card className="border shadow-none bg-white rounded-lg overflow-hidden">
-            <CardContent className="p-2 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-1.5">
-              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase">वाहन क्र.</Label><Input className="h-7 text-[10px] bg-muted/10 rounded-md font-bold" value={formData.vehicleNumber} onChange={e => setFormData({...formData, vehicleNumber: e.target.value})} placeholder="MH 10..." /></div>
-              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase">ड्रायव्हर</Label><Input className="h-7 text-[10px] bg-muted/10 rounded-md font-bold" value={formData.driverName} onChange={e => setFormData({...formData, driverName: e.target.value})} placeholder="नाव" /></div>
-              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase text-blue-600">Out</Label><Input className="h-7 text-[10px] bg-blue-50 border-none rounded-md font-bold" type="time" value={formData.routeOutTime} onChange={e => setFormData({...formData, routeOutTime: e.target.value})} /></div>
-              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase text-blue-600">In</Label><Input className="h-7 text-[10px] bg-blue-50 border-none rounded-md font-bold" type="time" value={formData.routeInTime} onChange={e => setFormData({...formData, routeInTime: e.target.value})} /></div>
-              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase">Start RD</Label><Input className="h-7 text-[10px] bg-muted/10 rounded-md font-bold" type="number" value={formData.startReading} onChange={e => setFormData({...formData, startReading: e.target.value})} /></div>
-              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase">End RD</Label><Input className="h-7 text-[10px] bg-muted/10 rounded-md font-bold" type="number" value={formData.endReading} onChange={e => setFormData({...formData, endReading: e.target.value})} /></div>
-              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase text-indigo-800">KM</Label><Input className="h-7 text-[10px] bg-indigo-50 border-none font-black rounded-md" value={formData.totalKm} readOnly /></div>
-              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase text-red-600">तूट (L)</Label><Input className="h-7 text-[10px] bg-red-50 border-none rounded-md font-bold" type="number" value={formData.shortageLiters} onChange={e => setFormData({...formData, shortageLiters: e.target.value})} /></div>
+        <TabsContent value="route-visit" className="space-y-6">
+          <Card className="border-none shadow-sm bg-white rounded-3xl overflow-hidden">
+            <CardContent className="p-6 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-4">
+              <div className="space-y-1.5"><Label className="text-[9px] font-black uppercase text-slate-400">वाहन क्र.</Label><Input className="h-10 text-xs bg-slate-50 border-none rounded-xl font-bold" value={formData.vehicleNumber} onChange={e => setFormData({...formData, vehicleNumber: e.target.value})} placeholder="MH 10..." /></div>
+              <div className="space-y-1.5"><Label className="text-[9px] font-black uppercase text-slate-400">ड्रायव्हर</Label><Input className="h-10 text-xs bg-slate-50 border-none rounded-xl font-bold" value={formData.driverName} onChange={e => setFormData({...formData, driverName: e.target.value})} placeholder="नाव" /></div>
+              <div className="space-y-1.5"><Label className="text-[9px] font-black uppercase text-blue-600">OUT</Label><Input className="h-10 text-xs bg-blue-50/50 border-none rounded-xl font-black text-blue-700" type="time" value={formData.routeOutTime} onChange={e => setFormData({...formData, routeOutTime: e.target.value})} /></div>
+              <div className="space-y-1.5"><Label className="text-[9px] font-black uppercase text-blue-600">IN</Label><Input className="h-10 text-xs bg-blue-50/50 border-none rounded-xl font-black text-blue-700" type="time" value={formData.routeInTime} onChange={e => setFormData({...formData, routeInTime: e.target.value})} /></div>
+              <div className="space-y-1.5"><Label className="text-[9px] font-black uppercase text-slate-400">START RD</Label><Input className="h-10 text-xs bg-slate-50 border-none rounded-xl font-bold" type="number" value={formData.startReading} onChange={e => setFormData({...formData, startReading: e.target.value})} /></div>
+              <div className="space-y-1.5"><Label className="text-[9px] font-black uppercase text-slate-400">END RD</Label><Input className="h-10 text-xs bg-slate-50 border-none rounded-xl font-bold" type="number" value={formData.endReading} onChange={e => setFormData({...formData, endReading: e.target.value})} /></div>
+              <div className="space-y-1.5"><Label className="text-[9px] font-black uppercase text-indigo-600">KM</Label><Input className="h-10 text-xs bg-indigo-50 border-none font-black text-indigo-700 rounded-xl" value={formData.totalKm} readOnly /></div>
+              <div className="space-y-1.5"><Label className="text-[9px] font-black uppercase text-rose-600">तूट (L)</Label><Input className="h-10 text-xs bg-rose-50 border-none rounded-xl font-black text-rose-700" type="number" value={formData.shortageLiters} onChange={e => setFormData({...formData, shortageLiters: e.target.value})} /></div>
             </CardContent>
           </Card>
 
-          <Card className="border shadow-none bg-white rounded-lg overflow-hidden">
-            <div className="bg-primary/5 p-1.5 flex items-center justify-between border-b">
-              <span className="text-[9px] font-black uppercase tracking-widest text-primary">व्हिजिट लॉग (Log)</span>
-              <Button size="sm" onClick={addRouteEntry} className="h-6 text-[9px] font-black gap-1 px-2 rounded-md"><Plus className="h-3 w-3" /> जोडा</Button>
+          <Card className="border-none shadow-sm bg-white rounded-3xl overflow-hidden">
+            <div className="bg-slate-50/80 p-4 flex items-center justify-between border-b border-slate-100">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-6 bg-primary rounded-full" />
+                <span className="text-[11px] font-black uppercase tracking-widest text-slate-600">व्हिजिट लॉग (Log Details)</span>
+              </div>
+              <Button type="button" size="sm" onClick={addRouteEntry} className="h-9 px-4 rounded-xl shadow-lg shadow-primary/20"><Plus className="h-4 w-4 mr-2" /> केंद्र जोडा</Button>
             </div>
             <div className="responsive-table-container">
-              <table className="w-full text-[10px]">
+              <table className="w-full text-sm">
                 <thead>
-                  <tr className="bg-muted/50 text-[8px] font-black uppercase text-muted-foreground border-b">
-                    <th className="p-1.5 border-r w-6">#</th>
-                    <th className="p-1.5 border-r min-w-[50px]">कोड</th>
-                    <th className="p-1.5 border-r min-w-[80px]">नाव</th>
-                    <th className="p-1.5 border-r">बर्फ</th>
-                    <th className="p-1.5 border-r">In</th>
-                    <th className="p-1.5 border-r">Out</th>
-                    <th className="p-1.5 border-r w-8">E</th>
-                    <th className="p-1.5 border-r w-8">F</th>
-                    <th className="p-1"></th>
+                  <tr className="bg-slate-50 text-[10px] font-black uppercase text-slate-400 border-b border-slate-100">
+                    <th className="p-4 text-center w-12">#</th>
+                    <th className="p-4 text-left">कोड</th>
+                    <th className="p-4 text-left">केंद्राचे नाव</th>
+                    <th className="p-4 text-center">बर्फ</th>
+                    <th className="p-4 text-center">IN/OUT</th>
+                    <th className="p-4 text-center">कॅन (E/F)</th>
+                    <th className="p-4 w-12"></th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="divide-y divide-slate-50">
                   {formData.routeVisitLogs.map((entry, index) => (
-                    <tr key={entry.id} className="border-b last:border-0">
-                      <td className="p-1.5 border-r text-center font-black text-muted-foreground">{index + 1}</td>
-                      <td className="p-0 border-r"><Input className="h-7 text-[10px] border-none text-center font-bold px-1" value={entry.centerCode} onChange={e => updateRouteEntry(entry.id, { centerCode: e.target.value })} /></td>
-                      <td className="p-0 border-r"><Input className="h-7 text-[10px] border-none font-bold px-1.5" value={entry.supplierName} onChange={e => updateRouteEntry(entry.id, { supplierName: e.target.value })} /></td>
-                      <td className="p-0 border-r"><Input className="h-7 text-[10px] border-none text-center px-1" value={entry.iceAllocated} onChange={e => updateRouteEntry(entry.id, { iceAllocated: e.target.value })} /></td>
-                      <td className="p-0 border-r"><Input className="h-7 text-[10px] border-none text-center px-1" type="time" value={entry.arrivalTime} onChange={e => updateRouteEntry(entry.id, { arrivalTime: e.target.value })} /></td>
-                      <td className="p-0 border-r"><Input className="h-7 text-[10px] border-none text-center px-1" type="time" value={entry.departureTime} onChange={e => updateRouteEntry(entry.id, { departureTime: e.target.value })} /></td>
-                      <td className="p-0 border-r"><Input className="h-7 text-[10px] border-none text-center px-1" value={entry.emptyCans} onChange={e => updateRouteEntry(entry.id, { emptyCans: e.target.value })} /></td>
-                      <td className="p-0 border-r"><Input className="h-7 text-[10px] border-none text-center font-black text-primary px-1" value={entry.fullCans} onChange={e => updateRouteEntry(entry.id, { fullCans: e.target.value })} /></td>
-                      <td className="p-1 flex justify-center"><Button variant="ghost" size="icon" onClick={() => removeRouteEntry(entry.id)} className="h-6 w-6 text-destructive rounded-full"><Trash2 className="h-3 w-3" /></Button></td>
+                    <tr key={entry.id} className="hover:bg-slate-50/50 transition-colors group">
+                      <td className="p-4 text-center font-black text-slate-300">{index + 1}</td>
+                      <td className="p-2"><Input className="h-9 text-xs border-none bg-slate-50 rounded-lg text-center font-bold" value={entry.centerCode} onChange={e => updateRouteEntry(entry.id, { centerCode: e.target.value })} placeholder="Code" /></td>
+                      <td className="p-2"><Input className="h-9 text-xs border-none bg-slate-50 rounded-lg font-bold" value={entry.supplierName} onChange={e => updateRouteEntry(entry.id, { supplierName: e.target.value })} placeholder="Center Name" /></td>
+                      <td className="p-2"><Input className="h-9 text-xs border-none bg-slate-50 rounded-lg text-center" value={entry.iceAllocated} onChange={e => updateRouteEntry(entry.id, { iceAllocated: e.target.value })} placeholder="Ice" /></td>
+                      <td className="p-2 flex gap-1">
+                        <Input className="h-9 text-[10px] border-none bg-slate-50 rounded-lg text-center p-1" type="time" value={entry.arrivalTime} onChange={e => updateRouteEntry(entry.id, { arrivalTime: e.target.value })} />
+                        <Input className="h-9 text-[10px] border-none bg-slate-50 rounded-lg text-center p-1" type="time" value={entry.departureTime} onChange={e => updateRouteEntry(entry.id, { departureTime: e.target.value })} />
+                      </td>
+                      <td className="p-2">
+                        <div className="flex gap-1">
+                          <Input className="h-9 text-xs border-none bg-slate-50 rounded-lg text-center font-bold text-slate-400" value={entry.emptyCans} onChange={e => updateRouteEntry(entry.id, { emptyCans: e.target.value })} placeholder="E" />
+                          <Input className="h-9 text-xs border-none bg-primary/10 rounded-lg text-center font-black text-primary" value={entry.fullCans} onChange={e => updateRouteEntry(entry.id, { fullCans: e.target.value })} placeholder="F" />
+                        </div>
+                      </td>
+                      <td className="p-4">
+                        <Button type="button" variant="ghost" size="icon" onClick={() => removeRouteEntry(entry.id)} className="h-8 w-8 text-rose-400 hover:text-rose-600 hover:bg-rose-50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
-          </Card>
-        </TabsContent>
+          </TabsContent>
 
         <TabsContent value="field-visit">
-          <Card className="border shadow-none rounded-lg overflow-hidden">
-            <CardContent className="p-2 space-y-2">
-              <Textarea 
-                value={formData.fieldObservations} 
-                onChange={e => setFormData({...formData, fieldObservations: e.target.value})} 
-                placeholder="क्षेत्र भेटीची निरीक्षणे..." 
-                className="min-h-[100px] text-[11px] rounded-md bg-muted/10 border-none font-bold" 
-              />
+          <Card className="border-none shadow-sm rounded-3xl overflow-hidden bg-white">
+            <CardContent className="p-6 space-y-4">
+              <div className="space-y-2">
+                <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest flex items-center gap-2">
+                  <Info className="h-3 w-3" /> क्षेत्र भेटीची सविस्तर निरीक्षणे लिहा
+                </Label>
+                <Textarea 
+                  value={formData.fieldObservations} 
+                  onChange={e => setFormData({...formData, fieldObservations: e.target.value})} 
+                  placeholder="उदा. केंद्रावर अस्वच्छता आढळली, गवळी समाधानी आहेत..." 
+                  className="min-h-[150px] text-sm rounded-2xl bg-slate-50 border-none font-medium shadow-inner p-4 focus-visible:ring-primary" 
+                />
+              </div>
               <AIGuidanceCard context={formData.fieldObservations} formType="daily-report" />
             </CardContent>
           </Card>
         </TabsContent>
+
         <TabsContent value="office-work">
-          <Card className="border shadow-none rounded-lg overflow-hidden">
-            <CardContent className="p-2">
-              <Textarea 
-                value={formData.officeTasks} 
-                onChange={e => setFormData({...formData, officeTasks: e.target.value})} 
-                placeholder="ऑफिस कामाचा तपशील..." 
-                className="min-h-[100px] text-[11px] rounded-md bg-muted/10 border-none font-bold" 
-              />
+          <Card className="border-none shadow-sm rounded-3xl overflow-hidden bg-white">
+            <CardContent className="p-6 space-y-2">
+              <div className="space-y-2">
+                <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest flex items-center gap-2">
+                  <Info className="h-3 w-3" /> ऑफिसमधील कामाचा तपशील
+                </Label>
+                <Textarea 
+                  value={formData.officeTasks} 
+                  onChange={e => setFormData({...formData, officeTasks: e.target.value})} 
+                  placeholder="उदा. थकीत बाकी बिल तपासणी, नवीन गवळी नोंदणी प्रक्रिया..." 
+                  className="min-h-[150px] text-sm rounded-2xl bg-slate-50 border-none font-medium shadow-inner p-4 focus-visible:ring-primary" 
+                />
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
       </Tabs>
 
-      <Card className="border shadow-none bg-white rounded-lg overflow-hidden mt-1">
-        <CardContent className="p-2 space-y-2">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-1.5">
-            <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase text-green-600">कामगिरी</Label><Textarea value={formData.achievements} onChange={e => setFormData({...formData, achievements: e.target.value})} className="min-h-[40px] text-[10px] rounded-md bg-green-50/30 border-none font-bold p-1.5" /></div>
-            <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase text-red-600">समस्या</Label><Textarea value={formData.problems} onChange={e => setFormData({...formData, problems: e.target.value})} className="min-h-[40px] text-[10px] rounded-md bg-red-50/30 border-none font-bold p-1.5" /></div>
-            <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase text-blue-600">कार्यवाही</Label><Textarea value={formData.actionsTaken} onChange={e => setFormData({...formData, actionsTaken: e.target.value})} className="min-h-[40px] text-[10px] rounded-md bg-blue-50/30 border-none font-bold p-1.5" /></div>
+      <Card className="border-none shadow-xl bg-slate-900 text-white rounded-3xl overflow-hidden mt-8">
+        <CardContent className="p-6 space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="space-y-2">
+              <Label className="text-[10px] font-black uppercase text-emerald-400 tracking-widest">आजची मोठी कामगिरी (Achievements)</Label>
+              <Textarea value={formData.achievements} onChange={e => setFormData({...formData, achievements: e.target.value})} className="min-h-[60px] text-xs rounded-xl bg-white/10 border-none font-bold p-3 text-white placeholder:text-white/20" />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-[10px] font-black uppercase text-rose-400 tracking-widest">महत्त्वाच्या समस्या (Problems)</Label>
+              <Textarea value={formData.problems} onChange={e => setFormData({...formData, problems: e.target.value})} className="min-h-[60px] text-xs rounded-xl bg-white/10 border-none font-bold p-3 text-white placeholder:text-white/20" />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-[10px] font-black uppercase text-blue-400 tracking-widest">केलेली कार्यवाही (Actions Taken)</Label>
+              <Textarea value={formData.actionsTaken} onChange={e => setFormData({...formData, actionsTaken: e.target.value})} className="min-h-[60px] text-xs rounded-xl bg-white/10 border-none font-bold p-3 text-white placeholder:text-white/20" />
+            </div>
           </div>
-          <div className="flex flex-col sm:flex-row gap-2 pt-2 border-t items-end">
-            <div className="flex-1 w-full"><Label className="text-[9px] font-black uppercase text-muted-foreground">सुपरवायझर नाव</Label><Input className="h-8 text-[11px] bg-muted/20 border-none rounded-md font-bold" value={formData.supervisorName} onChange={e => setFormData({...formData, supervisorName: e.target.value})} /></div>
-            <Button onClick={handleSave} className="w-full sm:w-auto font-black h-9 px-6 rounded-lg shadow-md text-[11px]"><Save className="h-3.5 w-3.5 mr-1.5" /> जतन करा</Button>
+          <div className="flex flex-col sm:flex-row gap-6 pt-6 border-t border-white/10 items-end">
+            <div className="flex-1 w-full space-y-2">
+              <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">सुपरवायझरचे नाव (Supervisor)</Label>
+              <Input className="h-11 text-sm bg-white/10 border-none rounded-2xl font-bold text-white" value={formData.supervisorName} onChange={e => setFormData({...formData, supervisorName: e.target.value})} />
+            </div>
+            <Button type="button" onClick={handleSave} className="w-full sm:w-auto font-black h-14 px-10 rounded-2xl shadow-2xl bg-primary hover:bg-primary/90 text-white text-sm uppercase tracking-widest">
+              <Save className="h-5 w-5 mr-3" /> अहवाल जतन करा
+            </Button>
           </div>
         </CardContent>
       </Card>

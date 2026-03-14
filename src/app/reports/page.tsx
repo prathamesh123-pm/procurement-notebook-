@@ -4,7 +4,7 @@ import { useState, useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { 
-  Archive, Calendar, Trash2, Eye, Edit, Search, X, Printer
+  Archive, Calendar, Trash2, Eye, Edit, Search, X, Printer, FileText, Download, Filter
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { useUser, useFirestore, useCollection, useMemoFirebase, deleteDocumentNonBlocking, updateDocumentNonBlocking } from "@/firebase"
 import { collection, doc } from "firebase/firestore"
+import { cn } from "@/lib/utils"
 
 export default function ReportsPage() {
   const { user } = useUser()
@@ -62,7 +63,7 @@ export default function ReportsPage() {
         setIsViewOpen(false);
         setSelectedReport(null);
       }
-      toast({ title: "यशस्वी", description: "अहवाल हटवण्यात आला." })
+      toast({ title: "यशस्वी", description: "अहवाल यशस्वीरित्या हटवण्यात आला." })
     } catch (err) {
       toast({ title: "त्रुटी", description: "अहवाल हटवता आला नाही.", variant: "destructive" })
     }
@@ -73,7 +74,7 @@ export default function ReportsPage() {
     const docRef = doc(db, 'users', user.uid, 'dailyWorkReports', editData.id)
     updateDocumentNonBlocking(docRef, { summary: editData.summary, overallSummary: editData.summary })
     setIsEditOpen(false)
-    toast({ title: "यशस्वी", description: "अहवालात बदल केला आहे." })
+    toast({ title: "यशस्वी", description: "अहवालात बदल यशस्वीरित्या जतन केला." })
   }
 
   const renderStandardizedReport = (report: any) => {
@@ -83,221 +84,249 @@ export default function ReportsPage() {
     const formTitle = data.formTitle || reportType;
     
     return (
-      <div className="text-[10px] font-mono text-black bg-white p-4 border-2 border-black shadow-none w-full max-w-full" id="printable-area">
-        <div className="border-b-2 border-black mb-4 text-center py-2 bg-gray-100">
-          <h1 className="text-sm font-bold uppercase tracking-widest">{formTitle} REPORT</h1>
+      <div className="text-[11px] font-mono text-black bg-white p-8 border-2 border-black shadow-none w-full max-w-4xl mx-auto" id="printable-area">
+        <div className="border-b-4 border-black mb-6 text-center py-4">
+          <h1 className="text-xl font-black uppercase tracking-[0.2em]">{formTitle} REPORT</h1>
+          <p className="text-[10px] font-bold mt-1 opacity-60 uppercase">संकलन नोंदवही (DIARY REGISTER)</p>
         </div>
 
-        <table className="w-full border-collapse border-2 border-black mb-4">
+        <table className="w-full border-collapse border-2 border-black mb-6">
           <tbody>
             <tr>
-              <td className="border border-black p-2 bg-gray-50 font-bold w-[20%]">अहवाल तारीख</td>
-              <td className="border border-black p-2 w-[30%]">{report.date || report.reportDate}</td>
-              <td className="border border-black p-2 bg-gray-50 font-bold w-[20%]">अहवाल आयडी</td>
-              <td className="border border-black p-2 w-[30%]">{String(report.id).slice(-8).toUpperCase()}</td>
+              <td className="border border-black p-3 bg-slate-50 font-black uppercase w-[20%]">REPORT DATE</td>
+              <td className="border border-black p-3 w-[30%] font-bold">{report.date || report.reportDate}</td>
+              <td className="border border-black p-3 bg-slate-50 font-black uppercase w-[20%]">REPORT ID</td>
+              <td className="border border-black p-3 w-[30%] font-bold">{String(report.id).slice(-8).toUpperCase()}</td>
             </tr>
             <tr>
-              <td className="border border-black p-2 bg-gray-50 font-bold">सादरकर्ता</td>
-              <td className="border border-black p-2">{data.name || 'N/A'}</td>
-              <td className="border border-black p-2 bg-gray-50 font-bold">प्रकार</td>
-              <td className="border border-black p-2 uppercase">{reportType}</td>
+              <td className="border border-black p-3 bg-slate-50 font-black uppercase">PREPARED BY</td>
+              <td className="border border-black p-3 font-bold">{data.name || 'SYSTEM USER'}</td>
+              <td className="border border-black p-3 bg-slate-50 font-black uppercase">CATEGORY</td>
+              <td className="border border-black p-3 uppercase font-bold">{reportType}</td>
             </tr>
           </tbody>
         </table>
 
         {reportType === 'Route Visit' && data.routeVisitLogs && (
-          <table className="w-full border-collapse border-2 border-black mb-4">
+          <table className="w-full border-collapse border-2 border-black mb-6">
             <thead>
-              <tr className="bg-gray-100 font-bold uppercase text-center">
-                <th className="border border-black p-2 w-8">#</th>
-                <th className="border border-black p-2 text-left">CENTER CODE</th>
-                <th className="border border-black p-2">SUPPLIER</th>
-                <th className="border border-black p-2">ICE</th>
-                <th className="border border-black p-2">ARR/DEP</th>
-                <th className="border border-black p-2">CANS(E/F)</th>
+              <tr className="bg-slate-100 font-black uppercase text-[10px] text-center">
+                <th className="border border-black p-3 w-10">#</th>
+                <th className="border border-black p-3 text-left">CENTER CODE</th>
+                <th className="border border-black p-3 text-left">SUPPLIER NAME</th>
+                <th className="border border-black p-3">ICE</th>
+                <th className="border border-black p-3">ARR/DEP</th>
+                <th className="border border-black p-3">CANS(E/F)</th>
               </tr>
             </thead>
             <tbody>
               {data.routeVisitLogs.map((log: any, i: number) => (
                 <tr key={i} className="text-center">
-                  <td className="border border-black p-2">{i + 1}</td>
-                  <td className="border border-black p-2 text-left">{log.centerCode || '-'}</td>
-                  <td className="border border-black p-2 text-left">{log.supplierName || '-'}</td>
+                  <td className="border border-black p-2 font-bold">{i + 1}</td>
+                  <td className="border border-black p-2 text-left font-bold">{log.centerCode || '-'}</td>
+                  <td className="border border-black p-2 text-left font-bold">{log.supplierName || '-'}</td>
                   <td className="border border-black p-2">{log.iceAllocated || 0}</td>
-                  <td className="border border-black p-2">{log.arrivalTime || '-'}/{log.departureTime || '-'}</td>
-                  <td className="border border-black p-2 font-bold">{log.emptyCans}/{log.fullCans}</td>
+                  <td className="border border-black p-2 font-bold">{log.arrivalTime || '-'}/{log.departureTime || '-'}</td>
+                  <td className="border border-black p-2 font-black">{log.emptyCans}/{log.fullCans}</td>
                 </tr>
               ))}
-              <tr className="bg-gray-50 font-bold">
-                <td colSpan={2} className="border border-black p-2 text-right">TOTALS:</td>
-                <td className="border border-black p-2">DIST: {data.totalKm || 0} KM</td>
-                <td className="border border-black p-2">VEHICLE: {data.vehicleNumber || '-'}</td>
-                <td colSpan={2} className="border border-black p-2 text-center">SHORTAGE: {data.shortageLiters || 0} L</td>
+              <tr className="bg-slate-50 font-black text-center">
+                <td colSpan={2} className="border border-black p-3 text-right">SUMMARY TOTALS:</td>
+                <td className="border border-black p-3">DIST: {data.totalKm || 0} KM</td>
+                <td className="border border-black p-3">VEHICLE: {data.vehicleNumber || '-'}</td>
+                <td colSpan={2} className="border border-black p-3 text-center">SHORTAGE: {data.shortageLiters || 0} L</td>
               </tr>
             </tbody>
           </table>
         )}
 
         {reportType === 'Breakdown' && data.losses && (
-          <table className="w-full border-collapse border-2 border-black mb-4">
+          <table className="w-full border-collapse border-2 border-black mb-6">
             <thead>
-              <tr className="bg-gray-100 font-bold uppercase text-[9px]">
-                <th className="border border-black p-2 text-left">SUPPLIER CODE/NAME</th>
-                <th className="border border-black p-2 text-center">COW LOSS</th>
-                <th className="border border-black p-2 text-center">BUF LOSS</th>
-                <th className="border border-black p-2 text-right">LOSS AMOUNT</th>
+              <tr className="bg-slate-100 font-black uppercase text-[10px]">
+                <th className="border border-black p-3 text-left">SUPPLIER CODE/NAME</th>
+                <th className="border border-black p-3 text-center">COW LOSS</th>
+                <th className="border border-black p-3 text-center">BUF LOSS</th>
+                <th className="border border-black p-3 text-right">LOSS AMOUNT</th>
               </tr>
             </thead>
             <tbody>
               {data.losses.map((loss: any, i: number) => (
                 <tr key={i}>
-                  <td className="border border-black p-2">{loss.supplierCode} - {loss.supplierName}</td>
-                  <td className="border border-black p-2 text-center">{loss.cowMilkLossLiters || 0}L</td>
-                  <td className="border border-black p-2 text-center">{loss.bufMilkLossLiters || 0}L</td>
-                  <td className="border border-black p-2 text-right">₹{loss.lossAmount || 0}</td>
+                  <td className="border border-black p-3 font-bold">{loss.supplierCode} - {loss.supplierName}</td>
+                  <td className="border border-black p-3 text-center">{loss.cowMilkLossLiters || 0}L</td>
+                  <td className="border border-black p-3 text-center">{loss.bufMilkLossLiters || 0}L</td>
+                  <td className="border border-black p-3 text-right font-black">₹{loss.lossAmount || 0}</td>
                 </tr>
               ))}
-              <tr className="bg-gray-50 font-bold">
-                <td colSpan={3} className="border border-black p-2 text-right uppercase">TOTAL FINANCIAL LOSS:</td>
-                <td className="border border-black p-2 text-right">₹{data.totalLossAmount || 0}</td>
+              <tr className="bg-slate-50 font-black">
+                <td colSpan={3} className="border border-black p-4 text-right uppercase">TOTAL FINANCIAL LOSS CALCULATED:</td>
+                <td className="border border-black p-4 text-right text-base">₹{data.totalLossAmount || 0}</td>
               </tr>
             </tbody>
           </table>
         )}
 
         {reportType === 'Custom Form' && data.dynamicFields && (
-          <table className="w-full border-collapse border-2 border-black mb-4">
+          <table className="w-full border-collapse border-2 border-black mb-6">
             <thead>
-              <tr className="bg-gray-100 font-bold uppercase">
-                <th className="border border-black p-2 text-left w-[40%]">माहितीचा प्रकार (FIELD)</th>
-                <th className="border border-black p-2 text-left">नोंदवलेला तपशील (VALUE)</th>
+              <tr className="bg-slate-100 font-black uppercase text-[10px]">
+                <th className="border border-black p-3 text-left w-[40%]">DATA FIELD DESCRIPTION</th>
+                <th className="border border-black p-3 text-left">RECORDED VALUE</th>
               </tr>
             </thead>
             <tbody>
               {data.dynamicFields.map((field: any, i: number) => (
                 <tr key={i}>
-                  <td className="border border-black p-2 bg-gray-50 font-bold uppercase text-[9px]">{field.label}</td>
-                  <td className="border border-black p-2 whitespace-pre-wrap">{field.value || '-'}</td>
+                  <td className="border border-black p-3 bg-slate-50 font-black uppercase text-[9px]">{field.label}</td>
+                  <td className="border border-black p-3 whitespace-pre-wrap font-bold">{field.value || '-'}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         )}
 
-        <table className="w-full border-collapse border-2 border-black mb-4">
+        <table className="w-full border-collapse border-2 border-black mb-6">
           <thead>
-            <tr className="bg-gray-100 font-bold">
-              <th className="border border-black p-2 text-left uppercase">अतिरिक्त निरीक्षणे / शेरा (REMARKS)</th>
+            <tr className="bg-slate-100 font-black text-[10px]">
+              <th className="border border-black p-3 text-left uppercase">OFFICER OBSERVATIONS / REMARKS (SUMMARY)</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td className="border border-black p-3 min-h-[80px] align-top whitespace-pre-wrap leading-tight text-[9px]">
-                {report.summary || report.overallSummary || "NO FURTHER REMARKS."}
+              <td className="border border-black p-4 min-h-[120px] align-top whitespace-pre-wrap leading-relaxed font-bold italic text-slate-700">
+                {report.summary || report.overallSummary || "NO FURTHER REMARKS RECORDED FOR THIS ENTRY."}
               </td>
             </tr>
           </tbody>
         </table>
 
-        <div className="mt-12 grid grid-cols-2 gap-16 px-8">
+        <div className="mt-16 grid grid-cols-2 gap-20 px-12">
           <div className="text-center">
-            <div className="border-t-2 border-black pt-2 font-bold uppercase text-[8px]">सादरकर्त्याची स्वाक्षरी (OPERATOR)</div>
+            <div className="border-t-2 border-black pt-3 font-black uppercase text-[9px]">ISSUED BY / OPERATOR SIGNATURE</div>
           </div>
           <div className="text-center">
-            <div className="border-t-2 border-black pt-2 font-bold uppercase text-[8px]">पर्यवेक्षक पडताळणी (SUPERVISOR)</div>
+            <div className="border-t-2 border-black pt-3 font-black uppercase text-[9px]">VERIFIED BY / SUPERVISOR SIGNATURE</div>
           </div>
+        </div>
+        
+        <div className="mt-12 text-center text-[8px] font-black uppercase text-slate-400 tracking-widest border-t pt-4">
+          END OF OFFICIAL REPORT | संकलन नोंदवही - Generated on {new Date().toLocaleString()}
         </div>
       </div>
     );
   };
 
-  if (isLoading) return <div className="p-10 text-center italic font-black uppercase text-xs opacity-50">लोड होत आहे...</div>
+  if (isLoading) return <div className="p-20 text-center animate-pulse italic font-black uppercase text-xs opacity-50">लोड होत आहे...</div>
 
   return (
-    <div className="max-w-full mx-auto w-full pb-10 space-y-4 px-2 animate-in fade-in duration-500">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b pb-3">
-        <h2 className="text-xl font-black tracking-tight uppercase flex items-center gap-2 text-primary">
-          <Archive className="h-5 w-5" /> अहवाल व्यवस्थापन (REPORTS)
-        </h2>
-        <Badge variant="outline" className="font-black bg-primary/5 text-primary border-primary/20 text-[10px] uppercase">
-          {filteredReports.length} अहवाल जतन आहेत
+    <div className="max-w-6xl mx-auto w-full pb-20 space-y-8 px-2 animate-in fade-in duration-700">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div className="space-y-1">
+          <h2 className="text-2xl sm:text-3xl font-black tracking-tight uppercase flex items-center gap-3 text-slate-900">
+            <div className="p-2 bg-primary rounded-xl text-white shadow-lg shadow-primary/20">
+              <Archive className="h-6 w-6" />
+            </div>
+            अहवाल व्यवस्थापन
+          </h2>
+          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest ml-1 opacity-70">तुमच्या सर्व जतन केलेल्या नोंदी</p>
+        </div>
+        <Badge variant="outline" className="font-black bg-primary/5 text-primary border-primary/20 text-xs px-4 py-2 rounded-2xl shadow-sm uppercase">
+          {filteredReports.length} एकूण अहवाल
         </Badge>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-        <div className="flex gap-1 overflow-x-auto pb-1 no-scrollbar">
-          {['All', 'Field Visit', 'Route Visit', 'Daily Task', 'Breakdown', 'Custom Form'].map((type) => (
-            <Button 
-              key={type} 
-              type="button"
-              variant={activeFilter === type ? 'default' : 'outline'} 
-              size="sm" 
-              onClick={() => setActiveFilter(type as any)}
-              className="text-[9px] h-8 px-3 font-black uppercase rounded-lg shrink-0"
-            >
-              {type === 'All' ? 'सर्व' : (type === 'Custom Form' ? 'इतर फॉर्म' : type)}
-            </Button>
-          ))}
+      <Card className="border-none shadow-sm bg-white rounded-3xl overflow-hidden p-2">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+          <div className="md:col-span-8 flex gap-2 overflow-x-auto pb-2 no-scrollbar p-2">
+            {['All', 'Field Visit', 'Route Visit', 'Daily Task', 'Breakdown', 'Custom Form'].map((type) => (
+              <Button 
+                key={type} 
+                type="button"
+                variant={activeFilter === type ? 'default' : 'ghost'} 
+                size="sm" 
+                onClick={() => setActiveFilter(type as any)}
+                className={cn(
+                  "text-[10px] h-9 px-5 font-black uppercase rounded-xl transition-all",
+                  activeFilter === type ? "shadow-lg shadow-primary/20" : "text-slate-400 hover:text-primary hover:bg-primary/5"
+                )}
+              >
+                {type === 'All' ? 'सर्व' : (type === 'Custom Form' ? 'इतर फॉर्म' : type)}
+              </Button>
+            ))}
+          </div>
+          <div className="md:col-span-4 relative p-2">
+            <div className="relative">
+              <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <Input 
+                type="date" 
+                className="h-10 pl-10 text-xs font-black bg-slate-50 border-none rounded-xl shadow-inner w-full" 
+                value={filterDate}
+                onChange={(e) => setFilterDate(e.target.value)}
+              />
+            </div>
+          </div>
         </div>
-        <div className="relative">
-          <Calendar className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-          <Input 
-            type="date" 
-            className="h-8 pl-8 text-[10px] font-black bg-white rounded-lg border-muted-foreground/10 shadow-sm" 
-            value={filterDate}
-            onChange={(e) => setFilterDate(e.target.value)}
-          />
-        </div>
-      </div>
+      </Card>
 
-      <div className="grid grid-cols-1 gap-2">
+      <div className="grid grid-cols-1 gap-4">
         {filteredReports.map((report) => (
-          <Card key={report.id} className="border shadow-none rounded-xl overflow-hidden bg-white hover:shadow-md transition-all group border-muted-foreground/10">
-            <CardContent className="p-3 flex flex-col gap-2">
-              <div className="flex justify-between items-start">
-                <div className="min-w-0 cursor-pointer" onClick={() => { setSelectedReport(report); setIsViewOpen(true); }}>
-                  <h4 className="font-black text-[11px] uppercase text-primary group-hover:underline">
-                    {report.fullData?.formTitle || report.type}
-                  </h4>
-                  <p className="text-[9px] text-muted-foreground font-black uppercase flex items-center gap-1 mt-0.5">
-                    <Calendar className="h-3 w-3" /> {report.date || report.reportDate}
+          <Card key={report.id} className="border-none shadow-sm rounded-3xl overflow-hidden bg-white hover:shadow-xl transition-all duration-300 group border-l-8 border-l-primary/10 hover:border-l-primary translate-all">
+            <CardContent className="p-6 flex flex-col sm:flex-row items-center justify-between gap-6">
+              <div className="flex items-center gap-6 flex-1 min-w-0">
+                <div className="hidden sm:flex h-14 w-14 rounded-2xl bg-slate-50 items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors duration-300">
+                  <FileText className="h-6 w-6" />
+                </div>
+                <div className="min-w-0 flex-1 cursor-pointer" onClick={() => { setSelectedReport(report); setIsViewOpen(true); }}>
+                  <div className="flex items-center gap-3 mb-1">
+                    <h4 className="font-black text-sm sm:text-base uppercase text-slate-900 group-hover:text-primary transition-colors truncate">
+                      {report.fullData?.formTitle || report.type}
+                    </h4>
+                    <Badge variant="secondary" className="bg-slate-100 text-slate-500 font-black text-[8px] rounded-lg border-none uppercase">{report.type}</Badge>
+                  </div>
+                  <div className="flex items-center gap-4 text-[10px] text-muted-foreground font-black uppercase tracking-widest opacity-60">
+                    <span className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" /> {report.date || report.reportDate}</span>
+                    <span className="flex items-center gap-1.5"><Archive className="h-3.5 w-3.5" /> ID: {String(report.id).slice(-6).toUpperCase()}</span>
+                  </div>
+                  <p className="text-[11px] leading-snug line-clamp-1 italic text-slate-400 font-medium mt-3 border-l-2 border-slate-100 pl-3">
+                    {report.summary || report.overallSummary}
                   </p>
                 </div>
-                <div className="flex gap-1">
-                  <Button type="button" size="icon" variant="ghost" className="h-8 w-8 text-primary hover:bg-primary/5" onClick={() => { setSelectedReport(report); setIsViewOpen(true); }}><Eye className="h-4 w-4" /></Button>
-                  <Button type="button" size="icon" variant="ghost" className="h-8 w-8 text-primary hover:bg-primary/5" onClick={() => { setEditData({id: report.id, summary: report.summary}); setIsEditOpen(true); }}><Edit className="h-4 w-4" /></Button>
-                  <Button type="button" size="icon" variant="ghost" className="h-8 w-8 text-destructive hover:bg-destructive/5" onClick={(e) => handleDelete(e, report.id)}><Trash2 className="h-4 w-4" /></Button>
-                </div>
               </div>
-              <div className="text-[10px] leading-snug line-clamp-2 italic border-l-2 border-primary/20 pl-2 text-muted-foreground font-medium">
-                {report.summary || report.overallSummary}
+              
+              <div className="flex gap-2 bg-slate-50 p-2 rounded-2xl group-hover:bg-white transition-colors">
+                <Button type="button" size="icon" variant="ghost" className="h-10 w-10 text-primary hover:bg-primary/10 rounded-xl" onClick={() => { setSelectedReport(report); setIsViewOpen(true); }}><Eye className="h-5 w-5" /></Button>
+                <Button type="button" size="icon" variant="ghost" className="h-10 w-10 text-primary hover:bg-primary/10 rounded-xl" onClick={() => { setEditData({id: report.id, summary: report.summary}); setIsEditOpen(true); }}><Edit className="h-5 w-5" /></Button>
+                <Button type="button" size="icon" variant="ghost" className="h-10 w-10 text-rose-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl" onClick={(e) => handleDelete(e, report.id)}><Trash2 className="h-5 w-5" /></Button>
               </div>
             </CardContent>
           </Card>
         ))}
         {filteredReports.length === 0 && !isLoading && (
-          <div className="text-center py-20 opacity-20 flex flex-col items-center gap-2">
-            <Archive className="h-12 w-12" />
-            <p className="font-black uppercase text-[10px] tracking-widest">एकही अहवाल उपलब्ध नाही</p>
+          <div className="text-center py-32 bg-white rounded-[3rem] border-2 border-dashed border-slate-100 flex flex-col items-center gap-4 opacity-30">
+            <Archive className="h-16 w-16 text-slate-200" />
+            <div className="space-y-1">
+              <p className="font-black uppercase text-xs tracking-[0.3em] text-slate-400">एकही अहवाल उपलब्ध नाही</p>
+              <p className="text-[10px] font-bold">नवीन नोंदी केल्यावर इथे दिसतील.</p>
+            </div>
           </div>
         )}
       </div>
 
       <Dialog open={isViewOpen} onOpenChange={setIsViewOpen}>
-        <DialogContent className="max-w-3xl p-0 bg-white border-none shadow-2xl rounded-2xl overflow-hidden">
-          <DialogHeader className="p-3 bg-gray-50 border-b flex flex-row items-center justify-between no-print">
-            <div className="flex flex-col">
-              <DialogTitle className="text-[10px] font-black uppercase text-gray-500 tracking-widest">पहा अहवाल (VIEW REPORT)</DialogTitle>
-              <DialogDescription className="text-[8px] font-bold uppercase opacity-50">अहवालाची सविस्तर माहिती.</DialogDescription>
+        <DialogContent className="max-w-5xl p-0 bg-slate-50 border-none shadow-2xl rounded-[2rem] overflow-hidden">
+          <DialogHeader className="p-6 bg-white border-b flex flex-row items-center justify-between no-print sticky top-0 z-20">
+            <div>
+              <DialogTitle className="text-xs font-black uppercase text-slate-400 tracking-[0.3em]">पहा अहवाल (VIEW REPORT)</DialogTitle>
+              <DialogDescription className="text-[10px] font-bold uppercase opacity-50">अधिकृत प्रिंट फॉरमॅट</DialogDescription>
             </div>
             <div className="flex gap-2">
-              <Button type="button" size="sm" onClick={() => window.print()} className="h-7 text-[9px] font-black uppercase bg-slate-900"><Printer className="h-3 w-3 mr-1" /> PRINT</Button>
-              <Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={(e) => handleDelete(e, selectedReport?.id)}><Trash2 className="h-4 w-4" /></Button>
-              <Button type="button" size="icon" variant="ghost" onClick={() => setIsViewOpen(false)} className="h-7 w-7"><X className="h-4 w-4" /></Button>
+              <Button type="button" size="sm" onClick={() => window.print()} className="h-11 px-6 text-xs font-black uppercase bg-slate-900 hover:bg-black text-white rounded-xl shadow-xl transition-all active:scale-95"><Printer className="h-4 w-4 mr-2" /> PRINT</Button>
+              <Button type="button" size="icon" variant="ghost" onClick={() => setIsViewOpen(false)} className="h-11 w-11 rounded-full hover:bg-slate-100"><X className="h-6 w-6 text-slate-400" /></Button>
             </div>
           </DialogHeader>
-          <ScrollArea className="max-h-[85vh]">
-            <div className="p-4 sm:p-8 flex justify-center bg-slate-50/30">
+          <ScrollArea className="max-h-[80vh] bg-slate-50">
+            <div className="p-4 sm:p-12 flex justify-center">
               {renderStandardizedReport(selectedReport)}
             </div>
           </ScrollArea>
@@ -305,24 +334,24 @@ export default function ReportsPage() {
       </Dialog>
 
       <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
-        <DialogContent className="max-w-md p-0 overflow-hidden bg-white rounded-2xl border-none">
-          <DialogHeader className="p-4 bg-primary text-white">
-            <DialogTitle className="text-xs font-black uppercase tracking-widest">अहवाल दुरुस्त करा</DialogTitle>
-            <DialogDescription className="text-[9px] text-white/70 uppercase">सारांश संपादित करा.</DialogDescription>
+        <DialogContent className="max-w-lg p-0 overflow-hidden bg-white rounded-3xl border-none shadow-2xl">
+          <DialogHeader className="p-6 bg-primary text-white">
+            <DialogTitle className="text-sm font-black uppercase tracking-widest">अहवाल दुरुस्त करा</DialogTitle>
+            <DialogDescription className="text-[10px] text-white/70 uppercase font-bold mt-1">सारांश संपादित करा.</DialogDescription>
           </DialogHeader>
-          <div className="p-5 space-y-4">
-            <div className="space-y-1.5">
-              <Label className="text-[10px] font-black uppercase text-primary tracking-widest">सारांश (SUMMARY)</Label>
+          <div className="p-8 space-y-6">
+            <div className="space-y-2">
+              <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">अहवाल सारांश (REMARKS)</Label>
               <Textarea 
                 value={editData.summary} 
                 onChange={e => setEditData({...editData, summary: e.target.value})} 
-                className="min-h-[150px] text-[11px] font-black bg-muted/20 border-none rounded-xl p-3"
+                className="min-h-[200px] text-sm font-bold bg-slate-50 border-none rounded-2xl p-4 shadow-inner focus-visible:ring-primary"
               />
             </div>
           </div>
-          <DialogFooter className="p-4 border-t bg-muted/10 flex gap-2">
-            <Button type="button" variant="outline" onClick={() => setIsEditOpen(false)} className="flex-1 font-black uppercase text-[10px] h-10 rounded-xl">रद्द</Button>
-            <Button type="button" onClick={handleSaveEdit} className="flex-1 font-black uppercase text-[10px] h-10 rounded-xl shadow-lg shadow-primary/20">जतन करा</Button>
+          <DialogFooter className="p-6 border-t bg-slate-50 flex gap-3">
+            <Button type="button" variant="outline" onClick={() => setIsEditOpen(false)} className="flex-1 font-black uppercase text-xs h-12 rounded-xl border-slate-200">रद्द करा</Button>
+            <Button type="button" onClick={handleSaveEdit} className="flex-1 font-black uppercase text-xs h-12 rounded-xl bg-primary shadow-xl shadow-primary/20">बदल जतन करा</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
