@@ -23,6 +23,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 
 const items = [
@@ -85,7 +86,7 @@ const items = [
 export function DashboardSidebar() {
   const pathname = usePathname()
   const [mounted, setMounted] = React.useState(false)
-  const { setOpenMobile, isMobile, state } = useSidebar()
+  const { setOpenMobile, isMobile } = useSidebar()
 
   React.useEffect(() => {
     setMounted(true)
