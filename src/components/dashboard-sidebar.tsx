@@ -1,8 +1,7 @@
-
 "use client"
 
 import * as React from "react"
-import { LayoutDashboard, ListTodo, MapPin, LogOut, Milk, ClipboardCheck, Archive, UserCircle, Warehouse } from "lucide-react"
+import { LayoutDashboard, ListTodo, MapPin, LogOut, Milk, ClipboardCheck, Archive, UserCircle, Warehouse, Settings2, FileEdit } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
@@ -36,6 +35,11 @@ const items = [
     icon: ListTodo,
   },
   {
+    title: "फॉर्म भरा (Forms)",
+    url: "/forms",
+    icon: FileEdit,
+  },
+  {
     title: "संकलन केंद्र (Centers)",
     url: "/centers",
     icon: Warehouse,
@@ -49,6 +53,11 @@ const items = [
     title: "अहवाल पहा (Archive)",
     url: "/reports",
     icon: Archive,
+  },
+  {
+    title: "फॉर्म बिल्डर (Settings)",
+    url: "/form-builder",
+    icon: Settings2,
   },
   {
     title: "प्रोफाईल (Profile)",

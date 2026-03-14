@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo } from "react"
@@ -81,103 +80,124 @@ export default function ReportsPage() {
     if (!report) return null;
     const data = report.fullData || {};
     const reportType = report.type || 'GENERAL';
+    const formTitle = data.formTitle || reportType;
     
     return (
-      <div className="text-[10px] font-mono text-black bg-white p-2 border border-black shadow-none w-full max-w-full" id="printable-area">
+      <div className="text-[10px] font-mono text-black bg-white p-4 border-2 border-black shadow-none w-full max-w-full" id="printable-area">
         {/* Report Header */}
-        <div className="border-b border-black mb-2 text-center py-1 bg-gray-50">
-          <h1 className="text-xs font-bold uppercase tracking-widest">{reportType} REPORT</h1>
+        <div className="border-b-2 border-black mb-4 text-center py-2 bg-gray-100">
+          <h1 className="text-sm font-bold uppercase tracking-widest">{formTitle} REPORT</h1>
         </div>
 
         {/* Metadata Excel Table */}
-        <table className="w-full border-collapse border border-black mb-3">
+        <table className="w-full border-collapse border-2 border-black mb-4">
           <tbody>
             <tr>
-              <td className="border border-black p-1 bg-gray-100 font-bold w-[20%]">DATE</td>
-              <td className="border border-black p-1 w-[30%]">{report.date || report.reportDate}</td>
-              <td className="border border-black p-1 bg-gray-100 font-bold w-[20%]">ID</td>
-              <td className="border border-black p-1 w-[30%]">{String(report.id).slice(-8).toUpperCase()}</td>
+              <td className="border border-black p-2 bg-gray-50 font-bold w-[20%]">अहवाल तारीख</td>
+              <td className="border border-black p-2 w-[30%]">{report.date || report.reportDate}</td>
+              <td className="border border-black p-2 bg-gray-50 font-bold w-[20%]">अहवाल आयडी</td>
+              <td className="border border-black p-2 w-[30%]">{String(report.id).slice(-8).toUpperCase()}</td>
             </tr>
             <tr>
-              <td className="border border-black p-1 bg-gray-100 font-bold">NAME</td>
-              <td className="border border-black p-1">{data.name || 'N/A'}</td>
-              <td className="border border-black p-1 bg-gray-100 font-bold">SHIFT/STATUS</td>
-              <td className="border border-black p-1">{data.shift || data.status || 'N/A'}</td>
+              <td className="border border-black p-2 bg-gray-50 font-bold">सादरकर्ता</td>
+              <td className="border border-black p-2">{data.name || 'N/A'}</td>
+              <td className="border border-black p-2 bg-gray-50 font-bold">प्रकार</td>
+              <td className="border border-black p-2 uppercase">{reportType}</td>
             </tr>
           </tbody>
         </table>
 
         {/* Type-Specific Data Tables */}
         {reportType === 'Route Visit' && data.routeVisitLogs && (
-          <table className="w-full border-collapse border border-black mb-3">
+          <table className="w-full border-collapse border-2 border-black mb-4">
             <thead>
               <tr className="bg-gray-100 font-bold uppercase text-center">
-                <th className="border border-black p-1 w-8">#</th>
-                <th className="border border-black p-1 text-left">CENTER CODE</th>
-                <th className="border border-black p-1">SUPPLIER</th>
-                <th className="border border-black p-1">ICE</th>
-                <th className="border border-black p-1">ARR/DEP</th>
-                <th className="border border-black p-1">CANS(E/F)</th>
+                <th className="border border-black p-2 w-8">#</th>
+                <th className="border border-black p-2 text-left">CENTER CODE</th>
+                <th className="border border-black p-2">SUPPLIER</th>
+                <th className="border border-black p-2">ICE</th>
+                <th className="border border-black p-2">ARR/DEP</th>
+                <th className="border border-black p-2">CANS(E/F)</th>
               </tr>
             </thead>
             <tbody>
               {data.routeVisitLogs.map((log: any, i: number) => (
                 <tr key={i} className="text-center">
-                  <td className="border border-black p-1">{i + 1}</td>
-                  <td className="border border-black p-1 text-left">{log.centerCode || '-'}</td>
-                  <td className="border border-black p-1 text-left">{log.supplierName || '-'}</td>
-                  <td className="border border-black p-1">{log.iceAllocated || 0}</td>
-                  <td className="border border-black p-1">{log.arrivalTime || '-'}/{log.departureTime || '-'}</td>
-                  <td className="border border-black p-1 font-bold">{log.emptyCans}/{log.fullCans}</td>
+                  <td className="border border-black p-2">{i + 1}</td>
+                  <td className="border border-black p-2 text-left">{log.centerCode || '-'}</td>
+                  <td className="border border-black p-2 text-left">{log.supplierName || '-'}</td>
+                  <td className="border border-black p-2">{log.iceAllocated || 0}</td>
+                  <td className="border border-black p-2">{log.arrivalTime || '-'}/{log.departureTime || '-'}</td>
+                  <td className="border border-black p-2 font-bold">{log.emptyCans}/{log.fullCans}</td>
                 </tr>
               ))}
               <tr className="bg-gray-50 font-bold">
-                <td colSpan={2} className="border border-black p-1 text-right">TOTALS:</td>
-                <td className="border border-black p-1">DIST: {data.totalKm || 0} KM</td>
-                <td className="border border-black p-1">VEHICLE: {data.vehicleNumber || '-'}</td>
-                <td colSpan={2} className="border border-black p-1 text-center">SHORTAGE: {data.shortageLiters || 0} L</td>
+                <td colSpan={2} className="border border-black p-2 text-right">TOTALS:</td>
+                <td className="border border-black p-2">DIST: {data.totalKm || 0} KM</td>
+                <td className="border border-black p-2">VEHICLE: {data.vehicleNumber || '-'}</td>
+                <td colSpan={2} className="border border-black p-2 text-center">SHORTAGE: {data.shortageLiters || 0} L</td>
               </tr>
             </tbody>
           </table>
         )}
 
         {reportType === 'Breakdown' && data.losses && (
-          <table className="w-full border-collapse border border-black mb-3">
+          <table className="w-full border-collapse border-2 border-black mb-4">
             <thead>
               <tr className="bg-gray-100 font-bold uppercase text-[9px]">
-                <th className="border border-black p-1 text-left">SUPPLIER CODE/NAME</th>
-                <th className="border border-black p-1 text-center">COW LOSS</th>
-                <th className="border border-black p-1 text-center">BUF LOSS</th>
-                <th className="border border-black p-1 text-right">LOSS AMOUNT</th>
+                <th className="border border-black p-2 text-left">SUPPLIER CODE/NAME</th>
+                <th className="border border-black p-2 text-center">COW LOSS</th>
+                <th className="border border-black p-2 text-center">BUF LOSS</th>
+                <th className="border border-black p-2 text-right">LOSS AMOUNT</th>
               </tr>
             </thead>
             <tbody>
               {data.losses.map((loss: any, i: number) => (
                 <tr key={i}>
-                  <td className="border border-black p-1">{loss.supplierCode} - {loss.supplierName}</td>
-                  <td className="border border-black p-1 text-center">{loss.cowMilkLossLiters || 0}L</td>
-                  <td className="border border-black p-1 text-center">{loss.bufMilkLossLiters || 0}L</td>
-                  <td className="border border-black p-1 text-right">₹{loss.lossAmount || 0}</td>
+                  <td className="border border-black p-2">{loss.supplierCode} - {loss.supplierName}</td>
+                  <td className="border border-black p-2 text-center">{loss.cowMilkLossLiters || 0}L</td>
+                  <td className="border border-black p-2 text-center">{loss.bufMilkLossLiters || 0}L</td>
+                  <td className="border border-black p-2 text-right">₹{loss.lossAmount || 0}</td>
                 </tr>
               ))}
               <tr className="bg-gray-50 font-bold">
-                <td colSpan={3} className="border border-black p-1 text-right uppercase">TOTAL FINANCIAL LOSS:</td>
-                <td className="border border-black p-1 text-right">₹{data.totalLossAmount || 0}</td>
+                <td colSpan={3} className="border border-black p-2 text-right uppercase">TOTAL FINANCIAL LOSS:</td>
+                <td className="border border-black p-2 text-right">₹{data.totalLossAmount || 0}</td>
               </tr>
             </tbody>
           </table>
         )}
 
+        {/* Dynamic Form Data Table */}
+        {reportType === 'Custom Form' && data.dynamicFields && (
+          <table className="w-full border-collapse border-2 border-black mb-4">
+            <thead>
+              <tr className="bg-gray-100 font-bold uppercase">
+                <th className="border border-black p-2 text-left w-[40%]">माहितीचा प्रकार (FIELD)</th>
+                <th className="border border-black p-2 text-left">नोंदवलेला तपशील (VALUE)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.dynamicFields.map((field: any, i: number) => (
+                <tr key={i}>
+                  <td className="border border-black p-2 bg-gray-50 font-bold uppercase text-[9px]">{field.label}</td>
+                  <td className="border border-black p-2 whitespace-pre-wrap">{field.value || '-'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+
         {/* Observations Table */}
-        <table className="w-full border-collapse border border-black mb-3">
+        <table className="w-full border-collapse border-2 border-black mb-4">
           <thead>
             <tr className="bg-gray-100 font-bold">
-              <th className="border border-black p-1 text-left uppercase">REMARKS / OBSERVATIONS</th>
+              <th className="border border-black p-2 text-left uppercase">अतिरिक्त निरीक्षणे / शेरा (REMARKS)</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td className="border border-black p-2 min-h-[60px] align-top whitespace-pre-wrap leading-tight text-[9px]">
+              <td className="border border-black p-3 min-h-[80px] align-top whitespace-pre-wrap leading-tight text-[9px]">
                 {report.summary || report.overallSummary || "NO FURTHER REMARKS."}
               </td>
             </tr>
@@ -185,12 +205,12 @@ export default function ReportsPage() {
         </table>
 
         {/* Footer / Signatures */}
-        <div className="mt-8 grid grid-cols-2 gap-12 px-4">
+        <div className="mt-12 grid grid-cols-2 gap-16 px-8">
           <div className="text-center">
-            <div className="border-t border-black pt-1 font-bold uppercase text-[7px]">OPERATOR SIGNATURE</div>
+            <div className="border-t-2 border-black pt-2 font-bold uppercase text-[8px]">सादरकर्त्याची स्वाक्षरी (OPERATOR)</div>
           </div>
           <div className="text-center">
-            <div className="border-t border-black pt-1 font-bold uppercase text-[7px]">SUPERVISOR VERIFICATION</div>
+            <div className="border-t-2 border-black pt-2 font-bold uppercase text-[8px]">पर्यवेक्षक पडताळणी (SUPERVISOR)</div>
           </div>
         </div>
       </div>
@@ -212,7 +232,7 @@ export default function ReportsPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
         <div className="flex gap-1 overflow-x-auto pb-1 no-scrollbar">
-          {['All', 'Field Visit', 'Route Visit', 'Daily Task', 'Breakdown'].map((type) => (
+          {['All', 'Field Visit', 'Route Visit', 'Daily Task', 'Breakdown', 'Custom Form'].map((type) => (
             <Button 
               key={type} 
               type="button"
@@ -221,7 +241,7 @@ export default function ReportsPage() {
               onClick={() => setActiveFilter(type as any)}
               className="text-[9px] h-8 px-3 font-black uppercase rounded-lg shrink-0"
             >
-              {type === 'All' ? 'सर्व' : type}
+              {type === 'All' ? 'सर्व' : (type === 'Custom Form' ? 'इतर फॉर्म' : type)}
             </Button>
           ))}
         </div>
@@ -242,7 +262,9 @@ export default function ReportsPage() {
             <CardContent className="p-3 flex flex-col gap-2">
               <div className="flex justify-between items-start">
                 <div className="min-w-0 cursor-pointer" onClick={() => { setSelectedReport(report); setIsViewOpen(true); }}>
-                  <h4 className="font-black text-[11px] uppercase text-primary group-hover:underline">{report.type}</h4>
+                  <h4 className="font-black text-[11px] uppercase text-primary group-hover:underline">
+                    {report.fullData?.formTitle || report.type}
+                  </h4>
                   <p className="text-[9px] text-muted-foreground font-black uppercase flex items-center gap-1 mt-0.5">
                     <Calendar className="h-3 w-3" /> {report.date || report.reportDate}
                   </p>

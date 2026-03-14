@@ -117,7 +117,7 @@ export interface BreakdownRecord {
   totalLossAmount: number;
 }
 
-export type ReportType = 'Daily Office Work' | 'Field Visit' | 'Route Visit' | 'Daily Task' | 'Breakdown';
+export type ReportType = 'Daily Office Work' | 'Field Visit' | 'Route Visit' | 'Daily Task' | 'Breakdown' | 'Custom Form';
 
 export interface Report {
   id: string;
@@ -127,4 +127,23 @@ export interface Report {
   interactionsCount: number;
   summary: string;
   fullData?: any;
+}
+
+// Form Builder Types
+export type FieldType = 'text' | 'number' | 'date' | 'textarea';
+
+export interface FormField {
+  id: string;
+  label: string;
+  type: FieldType;
+  required: boolean;
+}
+
+export interface FormDefinition {
+  id: string;
+  title: string;
+  description?: string;
+  fields: FormField[];
+  createdAt: string;
+  updatedAt: string;
 }
