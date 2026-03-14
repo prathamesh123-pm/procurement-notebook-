@@ -84,12 +84,10 @@ export default function ReportsPage() {
     
     return (
       <div className="text-[10px] font-mono text-black bg-white p-4 border-2 border-black shadow-none w-full max-w-full" id="printable-area">
-        {/* Report Header */}
         <div className="border-b-2 border-black mb-4 text-center py-2 bg-gray-100">
           <h1 className="text-sm font-bold uppercase tracking-widest">{formTitle} REPORT</h1>
         </div>
 
-        {/* Metadata Excel Table */}
         <table className="w-full border-collapse border-2 border-black mb-4">
           <tbody>
             <tr>
@@ -107,7 +105,6 @@ export default function ReportsPage() {
           </tbody>
         </table>
 
-        {/* Type-Specific Data Tables */}
         {reportType === 'Route Visit' && data.routeVisitLogs && (
           <table className="w-full border-collapse border-2 border-black mb-4">
             <thead>
@@ -168,7 +165,6 @@ export default function ReportsPage() {
           </table>
         )}
 
-        {/* Dynamic Form Data Table */}
         {reportType === 'Custom Form' && data.dynamicFields && (
           <table className="w-full border-collapse border-2 border-black mb-4">
             <thead>
@@ -188,7 +184,6 @@ export default function ReportsPage() {
           </table>
         )}
 
-        {/* Observations Table */}
         <table className="w-full border-collapse border-2 border-black mb-4">
           <thead>
             <tr className="bg-gray-100 font-bold">
@@ -204,7 +199,6 @@ export default function ReportsPage() {
           </tbody>
         </table>
 
-        {/* Footer / Signatures */}
         <div className="mt-12 grid grid-cols-2 gap-16 px-8">
           <div className="text-center">
             <div className="border-t-2 border-black pt-2 font-bold uppercase text-[8px]">सादरकर्त्याची स्वाक्षरी (OPERATOR)</div>
@@ -217,7 +211,7 @@ export default function ReportsPage() {
     );
   };
 
-  if (isLoading) return <div className="p-10 text-center italic font-black uppercase text-xs opacity-50">Loading reports...</div>
+  if (isLoading) return <div className="p-10 text-center italic font-black uppercase text-xs opacity-50">लोड होत आहे...</div>
 
   return (
     <div className="max-w-full mx-auto w-full pb-10 space-y-4 px-2 animate-in fade-in duration-500">
@@ -289,7 +283,6 @@ export default function ReportsPage() {
         )}
       </div>
 
-      {/* View Dialog */}
       <Dialog open={isViewOpen} onOpenChange={setIsViewOpen}>
         <DialogContent className="max-w-3xl p-0 bg-white border-none shadow-2xl rounded-2xl overflow-hidden">
           <DialogHeader className="p-3 bg-gray-50 border-b flex flex-row items-center justify-between no-print">
@@ -311,7 +304,6 @@ export default function ReportsPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Edit Dialog */}
       <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
         <DialogContent className="max-w-md p-0 overflow-hidden bg-white rounded-2xl border-none">
           <DialogHeader className="p-4 bg-primary text-white">

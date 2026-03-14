@@ -1,4 +1,3 @@
-
 "use client"
 
 import * as React from "react"
@@ -88,6 +87,8 @@ export function DashboardSidebar() {
     }
   }
 
+  if (!mounted) return null;
+
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader className="border-b px-4 py-4 bg-white relative">
@@ -96,21 +97,15 @@ export function DashboardSidebar() {
             <Milk className="h-6 w-6" />
           </div>
           <div className="flex flex-col group-data-[collapsible=icon]:hidden min-w-0">
-            {mounted ? (
-              <>
-                <span className="font-headline text-sm font-black tracking-tight text-foreground truncate uppercase">
-                  संकलन नोंदवही
-                </span>
-                <span className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em] truncate opacity-60">Daily Register</span>
-              </>
-            ) : (
-              <span className="h-4 w-24 bg-muted animate-pulse rounded" />
-            )}
+            <span className="font-headline text-sm font-black tracking-tight text-foreground truncate uppercase">
+              संकलन नोंदवही
+            </span>
+            <span className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em] truncate opacity-60">Daily Register</span>
           </div>
         </div>
-        {/* Close button for mobile inside header */}
         {isMobile && (
           <Button 
+            type="button"
             variant="ghost" 
             size="icon" 
             className="absolute right-2 top-4 h-8 w-8 rounded-full lg:hidden"
