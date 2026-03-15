@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect } from "react"
@@ -91,9 +92,10 @@ export default function BreakdownPage() {
   }
 
   const handleDeleteRecord = (e: React.MouseEvent, id: string) => {
-    e.stopPropagation(); e.preventDefault();
+    e.stopPropagation(); 
+    e.preventDefault();
     if (!db || !user || !id) return
-    if (!confirm("तुम्हाला खात्री आहे की हा रेकॉर्ड कायमचा हटवायचा आहे?")) return
+    if (!confirm("तुम्हाला खात्री आहे की हा रेकॉर्ड कायमचा हटवायचा आहे? (Are you sure you want to delete this record?)")) return
     const docRef = doc(db, 'users', user.uid, 'breakdowns', id)
     deleteDocumentNonBlocking(docRef)
     if (editingId === id) resetForm()
@@ -117,7 +119,7 @@ export default function BreakdownPage() {
             <span className="text-[10px] font-black uppercase flex items-center gap-2 text-destructive tracking-widest">
               <AlertTriangle className="h-3.5 w-3.5" /> {editingId ? 'माहिती बदला' : 'नवीन नोंद (NEW ENTRY)'}
             </span>
-            {editingId && <Button variant="ghost" size="sm" onClick={resetForm} className="h-6 text-[9px] font-black gap-1 uppercase"><RotateCcw className="h-3 w-3" /> रद्द</Button>}
+            {editingId && <Button type="button" variant="ghost" size="sm" onClick={resetForm} className="h-6 text-[9px] font-black gap-1 uppercase"><RotateCcw className="h-3 w-3" /> रद्द</Button>}
           </CardHeader>
           <CardContent className="p-3 space-y-4">
             <div className="grid grid-cols-2 gap-2">
@@ -132,7 +134,7 @@ export default function BreakdownPage() {
             <div className="space-y-2 pt-2">
               <div className="flex items-center justify-between">
                 <span className="text-[9px] font-black uppercase text-destructive tracking-[0.2em]">नुकसान तपशील (LOSS LOG)</span>
-                <Button size="sm" onClick={handleAddLossRow} className="h-7 text-[9px] bg-destructive font-black uppercase"><PlusCircle className="h-3.5 w-3.5 mr-1" /> जोडा</Button>
+                <Button type="button" size="sm" onClick={handleAddLossRow} className="h-7 text-[9px] bg-destructive font-black uppercase"><PlusCircle className="h-3.5 w-3.5 mr-1" /> जोडा</Button>
               </div>
               <div className="border rounded-xl overflow-hidden border-muted-foreground/10">
                 <table className="w-full text-[10px]">
@@ -162,7 +164,7 @@ export default function BreakdownPage() {
                 </table>
               </div>
             </div>
-            <Button onClick={handleSaveRecord} className="w-full font-black h-10 bg-destructive text-white hover:bg-destructive/90 shadow-lg shadow-destructive/20 rounded-xl uppercase text-[10px]">
+            <Button type="button" onClick={handleSaveRecord} className="w-full font-black h-10 bg-destructive text-white hover:bg-destructive/90 shadow-lg shadow-destructive/20 rounded-xl uppercase text-[10px]">
               <Save className="h-4 w-4 mr-1.5" /> जतन करा (SAVE & REPORT)
             </Button>
           </CardContent>

@@ -46,15 +46,13 @@ export default function ReportsPage() {
     }).sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime())
   }, [firestoreReports, activeFilter, filterDate])
 
-  const handleDelete = (e: React.MouseEvent | null, id: string) => {
-    if (e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
+  const handleDelete = (e: React.MouseEvent, id: string) => {
+    e.preventDefault();
+    e.stopPropagation();
     
     if (!id || !db || !user) return
     
-    const confirmDelete = window.confirm("तुम्हाला खात्री आहे की हा अहवाल कायमचा हटवायचा आहे?")
+    const confirmDelete = window.confirm("तुम्हाला खात्री आहे की हा अहवाल कायमचा हटवायचा आहे? (Are you sure you want to delete this report?)")
     if (!confirmDelete) return
     
     try {

@@ -106,7 +106,7 @@ export default function WorkLogPage() {
     
     if (!db || !user || !taskId) return
     
-    const confirmDelete = window.confirm("तुम्हाला खात्री आहे की हा टास्क कायमचा हटवायचा आहे?")
+    const confirmDelete = window.confirm("तुम्हाला खात्री आहे की हा टास्क कायमचा हटवायचा आहे? (Are you sure you want to delete this task?)")
     if (!confirmDelete) return
     
     try {

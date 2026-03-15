@@ -133,14 +133,12 @@ export default function CentersPage() {
     setIsDialogOpen(false)
   }
 
-  const handleDeleteCenter = (e: React.MouseEvent | null, id: string) => {
-    if (e) {
-      e.stopPropagation();
-      e.preventDefault();
-    }
+  const handleDeleteCenter = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    e.preventDefault();
     
     if (!db || !user || !id) return
-    const confirmDelete = window.confirm("तुम्हाला खात्री आहे की हे केंद्र कायमचे हटवायचा आहे?")
+    const confirmDelete = window.confirm("तुम्हाला खात्री आहे की हे केंद्र कायमचे हटवायचा आहे? (Are you sure you want to delete this center?)")
     if (!confirmDelete) return
     
     try {

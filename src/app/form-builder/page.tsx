@@ -81,7 +81,9 @@ export default function FormBuilderPage() {
     e.stopPropagation()
     e.preventDefault()
     
-    if (!db || !user || !window.confirm("तुम्हाला हा फॉर्म कायमचा हटवायचा आहे?")) return
+    if (!db || !user || !id) return
+    const confirmDelete = window.confirm("तुम्हाला हा फॉर्म कायमचा हटवायचा आहे? (Are you sure you want to delete this form?)")
+    if (!confirmDelete) return
     
     try {
       const docRef = doc(db, 'users', user.uid, 'formDefinitions', id)

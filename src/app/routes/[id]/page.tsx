@@ -29,14 +29,14 @@ export default function RouteDetailsPage() {
   const db = useFirestore()
 
   const routesQuery = useMemoFirebase(() => {
-    if (!db || !user) return null
+    if (!db) return null
     return collection(db, 'routes')
-  }, [db, user])
+  }, [db])
 
   const suppliersQuery = useMemoFirebase(() => {
-    if (!db || !user) return null
+    if (!db) return null
     return collection(db, 'suppliers')
-  }, [db, user])
+  }, [db])
 
   const { data: allRoutes } = useCollection(routesQuery)
   const { data: allSuppliers, isLoading } = useCollection(suppliersQuery)
@@ -126,11 +126,9 @@ export default function RouteDetailsPage() {
     setIsDialogOpen(false)
   }
 
-  const handleDeleteSupplier = (e: React.MouseEvent | null, id: string) => {
-    if (e) {
-      e.stopPropagation();
-      e.preventDefault();
-    }
+  const handleDeleteSupplier = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    e.preventDefault();
     
     if (!db || !id) return
     const confirmDelete = window.confirm("तुम्हाला खात्री आहे की हा पुरवठादार कायमचा हटवायचा आहे? (Are you sure you want to delete this supplier?)")
@@ -168,7 +166,7 @@ export default function RouteDetailsPage() {
           <ScrollArea className="h-[650px]"><div className="divide-y">{filteredSuppliers.map(s => (<div key={s.id} onClick={() => setSelectedSupplier(s)} className={`p-2.5 cursor-pointer hover:bg-muted/50 flex justify-between items-center ${selectedSupplier?.id === s.id ? 'bg-primary/5 border-l-2 border-primary' : ''}`}><div className="min-w-0"><h4 className="font-black text-[11px] truncate">{s.name}</h4><p className="text-[9px] text-muted-foreground truncate">ID: {s.id?.slice(-6)} | {s.address}</p></div><div className="flex items-center gap-1"><Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:bg-destructive/5" onClick={(e) => handleDeleteSupplier(e, s.id)}><Trash2 className="h-3 w-3" /></Button><ChevronRight className="h-3.5 w-3.5 text-muted-foreground opacity-50" /></div></div>))}</div></ScrollArea>
         </Card>
 
-        <Card className={`lg:col-span-8 border-none shadow-sm bg-white rounded-xl min-h-[450px] ${!selectedSupplier ? 'hidden lg:flex' : 'block'}`}>
+        <Card className={`lg:col-span-8 border-none shadow-sm bg-white rounded-xl min-h-[450px] ${!selectedCenter ? 'hidden lg:flex' : 'block'}`}>
           {selectedSupplier ? (
             <div className="flex flex-col h-full">
               <div className="p-3 border-b flex items-center justify-between bg-primary/5 sticky top-0 z-10"><Button type="button" variant="ghost" size="icon" className="lg:hidden" onClick={() => setSelectedSupplier(null)}><ArrowLeft className="h-4 w-4" /></Button><div className="flex-1 px-2 min-w-0"><h3 className="text-xs sm:text-sm font-black truncate">{selectedSupplier.name}</h3><p className="text-[9px] text-muted-foreground uppercase">ID: {selectedSupplier.id} | {selectedSupplier.collectionType}</p></div><div className="flex gap-1.5"><Button type="button" variant="outline" size="icon" className="h-7 w-7 text-primary hover:bg-primary/5" onClick={() => openEditDialog(selectedSupplier)}><Edit className="h-3 w-3" /></Button><Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:bg-destructive/5" onClick={(e) => handleDeleteSupplier(e, selectedSupplier.id)}><Trash2 className="h-3 w-3" /></Button></div></div>

@@ -101,7 +101,7 @@ export default function RoutesPage() {
     e.preventDefault();
     
     if (!db || !id) return
-    const confirmDelete = window.confirm("तुम्हाला खात्री आहे की हा रूट कायमचा हटवायचा आहे?")
+    const confirmDelete = window.confirm("तुम्हाला खात्री आहे की हा रूट कायमचा हटवायचा आहे? (Are you sure you want to delete this route?)")
     if (!confirmDelete) return
     
     try {
