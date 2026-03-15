@@ -7,15 +7,15 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { 
-  Warehouse, Plus, Search, MapPin, Edit, Truck, FlaskConical, X, ChevronRight
+  Warehouse, Plus, Search, MapPin, Edit, Truck, FlaskConical, X, ChevronRight, Trash2
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
 import { CollectionCenter, EquipmentItem } from "@/lib/types"
 import { useToast } from "@/hooks/use-toast"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Checkbox } from "@/components/ui/checkbox"
-import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking } from "@/firebase"
+import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking } from "@/firebase"
 import { collection, doc } from "firebase/firestore"
 
 export default function CentersPage() {
@@ -133,6 +133,18 @@ export default function CentersPage() {
     setIsDialogOpen(false)
   }
 
+  const handleDeleteCenter = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation()
+    e.preventDefault()
+    if (!db || !user) return
+    if (confirm("तुम्हाला खात्री आहे की हे केंद्र हटवायचे आहे?")) {
+      const docRef = doc(db, 'users', user.uid, 'centers', id)
+      deleteDocumentNonBlocking(docRef)
+      if (selectedCenter?.id === id) setSelectedCenter(null)
+      toast({ title: "यशस्वी", description: "केंद्र हटवण्यात आले." })
+    }
+  }
+
   const filteredCenters = centers?.filter(center => 
     center.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
     center.code.toLowerCase().includes(searchQuery.toLowerCase())
@@ -157,7 +169,10 @@ export default function CentersPage() {
               {filteredCenters.map(center => (
                 <div key={center.id} className={`p-2.5 cursor-pointer hover:bg-muted/50 flex justify-between items-center ${selectedCenter?.id === center.id ? 'bg-primary/5 border-l-2 border-primary' : ''}`} onClick={() => setSelectedCenter(center)}>
                   <div className="min-w-0"><h4 className="font-black text-[11px] text-foreground truncate">{center.name}</h4><div className="flex items-center gap-1.5 mt-0.5"><Badge variant="secondary" className="text-[8px] font-black h-3.5">{center.code}</Badge><span className="text-[9px] text-muted-foreground truncate"><MapPin className="h-2.5 w-2.5" /> {center.village}</span></div></div>
-                  <ChevronRight className="h-4 w-4 text-muted-foreground opacity-50" />
+                  <div className="flex items-center gap-1">
+                    <Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={(e) => handleDeleteCenter(center.id, e)}><Trash2 className="h-3.5 w-3.5" /></Button>
+                    <ChevronRight className="h-4 w-4 text-muted-foreground opacity-50" />
+                  </div>
                 </div>
               ))}
             </div>
@@ -170,7 +185,10 @@ export default function CentersPage() {
               <div className="p-2.5 border-b flex items-center justify-between bg-primary/5 sticky top-0 z-10">
                 <Button type="button" variant="ghost" size="icon" className="lg:hidden" onClick={() => setSelectedCenter(null)}><X className="h-4 w-4" /></Button>
                 <div className="flex-1 px-2 min-w-0"><h3 className="text-sm font-black truncate">{selectedCenter.name}</h3><p className="text-[9px] font-black text-muted-foreground uppercase">Code: {selectedCenter.code} | {selectedCenter.village}</p></div>
-                <div className="flex gap-1.5"><Button type="button" variant="outline" size="icon" className="h-7 w-7 text-primary" onClick={() => handleOpenEdit(selectedCenter)}><Edit className="h-3 w-3" /></Button></div>
+                <div className="flex gap-1.5">
+                  <Button type="button" variant="outline" size="icon" className="h-7 w-7 text-primary" onClick={() => handleOpenEdit(selectedCenter)}><Edit className="h-3 w-3" /></Button>
+                  <Button type="button" variant="outline" size="icon" className="h-7 w-7 text-destructive" onClick={(e) => handleDeleteCenter(selectedCenter.id, e)}><Trash2 className="h-3 w-3" /></Button>
+                </div>
               </div>
               <ScrollArea className="flex-1 h-[600px]">
                 <div className="p-3 space-y-4">
@@ -189,7 +207,11 @@ export default function CentersPage() {
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-3xl p-0 overflow-hidden bg-white rounded-3xl border-none shadow-2xl"><DialogHeader className="p-3 bg-primary text-white"><DialogTitle className="text-sm font-black uppercase">{dialogMode === 'add' ? 'नवीन केंद्र' : 'माहिती बदला'}</DialogTitle></DialogHeader>
+        <DialogContent className="max-w-3xl p-0 overflow-hidden bg-white rounded-3xl border-none shadow-2xl">
+          <DialogHeader className="p-3 bg-primary text-white">
+            <DialogTitle className="text-sm font-black uppercase">{dialogMode === 'add' ? 'नवीन केंद्र' : 'माहिती बदला'}</DialogTitle>
+            <DialogDescription className="text-[8px] text-white/70 uppercase">केंद्राचे तपशील भरा.</DialogDescription>
+          </DialogHeader>
           <ScrollArea className="max-h-[85vh] p-4 bg-white">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pb-6">
               <div className="space-y-4">

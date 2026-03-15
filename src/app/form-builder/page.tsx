@@ -10,7 +10,7 @@ import {
   Settings2, Plus, Trash2, Save, FileText, ChevronRight, GripVertical, Type, Hash, Calendar, AlignLeft
 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
-import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking } from "@/firebase"
+import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking } from "@/firebase"
 import { collection, doc } from "firebase/firestore"
 import { FormDefinition, FormField, FieldType } from "@/lib/types"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -75,6 +75,18 @@ export default function FormBuilderPage() {
       toast({ title: "यशस्वी", description: "नवीन फॉर्म तयार झाला." })
     }
     resetBuilder()
+  }
+
+  const handleDeleteForm = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation()
+    e.preventDefault()
+    if (!db || !user) return
+    if (confirm("तुम्हाला खात्री आहे की हा फॉर्म हटवायचा आहे?")) {
+      const docRef = doc(db, 'users', user.uid, 'formDefinitions', id)
+      deleteDocumentNonBlocking(docRef)
+      if (editingId === id) resetBuilder()
+      toast({ title: "यशस्वी", description: "फॉर्म हटवण्यात आला." })
+    }
   }
 
   const resetBuilder = () => {
@@ -184,7 +196,10 @@ export default function FormBuilderPage() {
                     <h4 className="font-black text-[11px] uppercase truncate tracking-tight">{form.title}</h4>
                     <p className="text-[8px] font-bold text-muted-foreground uppercase mt-0.5">{form.fields.length} रकाने | {new Date(form.updatedAt).toLocaleDateString()}</p>
                   </div>
-                  <ChevronRight className="h-4 w-4 text-primary opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="flex items-center gap-1">
+                    <Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={(e) => handleDeleteForm(form.id, e)}><Trash2 className="h-3.5 w-3.5" /></Button>
+                    <ChevronRight className="h-4 w-4 text-primary opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </div>
                 </div>
               ))}
               {forms?.length === 0 && (

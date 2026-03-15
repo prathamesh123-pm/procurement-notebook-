@@ -1,11 +1,11 @@
 
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { 
-  Archive, Calendar, Eye, Edit, Search, X, Printer, FileText, Filter
+  Archive, Calendar, Eye, Edit, Search, X, Printer, FileText, Filter, Trash2
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
@@ -14,7 +14,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogD
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { useUser, useFirestore, useCollection, useMemoFirebase, updateDocumentNonBlocking } from "@/firebase"
+import { useUser, useFirestore, useCollection, useMemoFirebase, updateDocumentNonBlocking, deleteDocumentNonBlocking } from "@/firebase"
 import { collection, doc } from "firebase/firestore"
 import { cn } from "@/lib/utils"
 
@@ -36,6 +36,9 @@ export default function ReportsPage() {
   const [isViewOpen, setIsViewOpen] = useState(false)
   const [isEditOpen, setIsEditOpen] = useState(false)
   const [editData, setEditData] = useState({ id: "", summary: "" })
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => setMounted(true), [])
 
   const filteredReports = useMemo(() => {
     const list = firestoreReports || []
@@ -52,6 +55,17 @@ export default function ReportsPage() {
     updateDocumentNonBlocking(docRef, { summary: editData.summary, overallSummary: editData.summary })
     setIsEditOpen(false)
     toast({ title: "यशस्वी", description: "अहवालात बदल यशस्वीरित्या जतन केला." })
+  }
+
+  const handleDeleteReport = (id: string, e?: React.MouseEvent) => {
+    if (e) { e.stopPropagation(); e.preventDefault(); }
+    if (!db || !user) return
+    if (confirm("तुम्हाला खात्री आहे की हा अहवाल हटवायचा आहे? ही कृती परत घेता येणार नाही.")) {
+      const docRef = doc(db, 'users', user.uid, 'dailyWorkReports', id)
+      deleteDocumentNonBlocking(docRef)
+      setIsViewOpen(false)
+      toast({ title: "यशस्वी", description: "अहवाल हटवण्यात आला." })
+    }
   }
 
   const renderStandardizedReport = (report: any) => {
@@ -163,7 +177,7 @@ export default function ReportsPage() {
     );
   };
 
-  if (isLoading) return <div className="p-20 text-center animate-pulse italic font-black uppercase text-xs opacity-50">लोड होत आहे...</div>
+  if (!mounted || isLoading) return <div className="p-20 text-center animate-pulse italic font-black uppercase text-xs opacity-50">लोड होत आहे...</div>
 
   return (
     <div className="max-w-6xl mx-auto w-full pb-20 space-y-8 px-2 animate-in fade-in duration-700">
@@ -243,6 +257,7 @@ export default function ReportsPage() {
               <div className="flex gap-2 bg-slate-50 p-2 rounded-2xl group-hover:bg-white transition-colors">
                 <Button type="button" size="icon" variant="ghost" className="h-10 w-10 text-primary hover:bg-primary/10 rounded-xl" onClick={() => { setSelectedReport(report); setIsViewOpen(true); }}><Eye className="h-5 w-5" /></Button>
                 <Button type="button" size="icon" variant="ghost" className="h-10 w-10 text-primary hover:bg-primary/10 rounded-xl" onClick={() => { setEditData({id: report.id, summary: report.summary}); setIsEditOpen(true); }}><Edit className="h-5 w-5" /></Button>
+                <Button type="button" size="icon" variant="ghost" className="h-10 w-10 text-destructive hover:bg-destructive/10 rounded-xl" onClick={(e) => handleDeleteReport(report.id, e)}><Trash2 className="h-5 w-5" /></Button>
               </div>
             </CardContent>
           </Card>
@@ -262,11 +277,12 @@ export default function ReportsPage() {
         <DialogContent className="max-w-5xl p-0 bg-slate-50 border-none shadow-2xl rounded-[2rem] overflow-hidden">
           <DialogHeader className="p-6 bg-white border-b flex flex-row items-center justify-between no-print sticky top-0 z-20">
             <div className="space-y-1">
-              <DialogTitle className="text-xs font-black uppercase text-slate-400 tracking-[0.3em]">पहा अहवाल (VIEW REPORT)</DialogTitle>
+              <DialogTitle className="text-xs font-black uppercase text-slate-400 tracking-[0.3em]">अहवाल तपशील (REPORT)</DialogTitle>
               <DialogDescription className="text-[10px] font-bold uppercase opacity-50">अधिकृत प्रिंट फॉरमॅट</DialogDescription>
             </div>
             <div className="flex gap-2">
               <Button type="button" size="sm" onClick={() => window.print()} className="h-11 px-6 text-xs font-black uppercase bg-slate-900 hover:bg-black text-white rounded-xl shadow-xl transition-all active:scale-95"><Printer className="h-4 w-4 mr-2" /> PRINT</Button>
+              <Button type="button" size="icon" variant="destructive" onClick={() => handleDeleteReport(selectedReport?.id)} className="h-11 w-11 rounded-xl shadow-xl"><Trash2 className="h-5 w-5" /></Button>
               <Button type="button" size="icon" variant="ghost" onClick={() => setIsViewOpen(false)} className="h-11 w-11 rounded-full hover:bg-slate-100"><X className="h-6 w-6 text-slate-400" /></Button>
             </div>
           </DialogHeader>

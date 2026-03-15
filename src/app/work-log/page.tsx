@@ -8,10 +8,10 @@ import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Task } from "@/lib/types"
-import { Plus, Search, ListTodo, User, Hash, CheckCircle2, X, Edit } from "lucide-react"
+import { Plus, Search, ListTodo, User, Hash, CheckCircle2, X, Edit, Trash2 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
-import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking } from "@/firebase"
+import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking } from "@/firebase"
 import { collection, doc } from "firebase/firestore"
 import { AIGuidanceCard } from "@/components/ai-guidance-card"
 
@@ -100,6 +100,17 @@ export default function WorkLogPage() {
     toast({ title: "यशस्वी", description: "टास्क पूर्ण झाला आणि अहवालात जोडला गेला." })
   }
 
+  const handleDeleteTask = (taskId: string, e: React.MouseEvent) => {
+    e.stopPropagation()
+    e.preventDefault()
+    if (!db || !user) return
+    if (confirm("तुम्हाला खात्री आहे की हा टास्क हटवायचा आहे?")) {
+      const taskRef = doc(db, 'users', user.uid, 'tasks', taskId)
+      deleteDocumentNonBlocking(taskRef)
+      toast({ title: "यशस्वी", description: "टास्क हटवण्यात आला." })
+    }
+  }
+
   const pendingTasks = useMemo(() => {
     return (firestoreTasks || [])
       .filter(t => t.status === 'pending')
@@ -154,6 +165,9 @@ export default function WorkLogPage() {
                     {task.supplierId && <span className="flex items-center gap-1 bg-muted px-1.5 py-0.5 rounded border border-muted-foreground/5"><Hash className="h-3 w-3" /> {task.supplierId}</span>}
                   </div>
                 </div>
+                <Button type="button" size="icon" variant="ghost" onClick={(e) => handleDeleteTask(task.id, e)} className="h-8 w-8 text-destructive hover:bg-destructive/10 rounded-lg">
+                  <Trash2 className="h-4 w-4" />
+                </Button>
               </div>
             </Card>
           )) : (

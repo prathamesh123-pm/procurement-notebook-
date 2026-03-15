@@ -4,15 +4,15 @@
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { 
-  Truck, AlertTriangle, Save, History, PlusCircle, X, RotateCcw
+  Truck, AlertTriangle, Save, History, PlusCircle, X, RotateCcw, Trash2
 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { BreakdownLoss } from "@/lib/types"
-import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking } from "@/firebase"
+import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking } from "@/firebase"
 import { collection, doc } from "firebase/firestore"
 import { AIGuidanceCard } from "@/components/ai-guidance-card"
 
@@ -91,6 +91,18 @@ export default function BreakdownPage() {
     resetForm()
   }
 
+  const handleDeleteRecord = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation()
+    e.preventDefault()
+    if (!db || !user) return
+    if (confirm("तुम्हाला खात्री आहे की ही नोंद हटवायची आहे?")) {
+      const docRef = doc(db, 'users', user.uid, 'breakdowns', id)
+      deleteDocumentNonBlocking(docRef)
+      if (editingId === id) resetForm()
+      toast({ title: "यशस्वी", description: "नोंद हटवण्यात आली." })
+    }
+  }
+
   const resetForm = () => { setEditingId(null); setFormData({ routeName: "", vehicleType: "", vehicleNumber: "", driverName: "", location: "", reason: "", losses: [] }) }
 
   if (!mounted || isLoading) return <div className="p-10 text-center italic font-black uppercase text-[10px] opacity-50">लोड होत आहे...</div>
@@ -108,7 +120,9 @@ export default function BreakdownPage() {
             <span className="text-[10px] font-black uppercase flex items-center gap-2 text-destructive tracking-widest">
               <AlertTriangle className="h-3.5 w-3.5" /> {editingId ? 'माहिती बदला' : 'नवीन नोंद (NEW ENTRY)'}
             </span>
-            {editingId && <Button type="button" variant="ghost" size="sm" onClick={resetForm} className="h-6 text-[9px] font-black gap-1 uppercase"><RotateCcw className="h-3 w-3" /> रद्द</Button>}
+            <div className="flex gap-1">
+              {editingId && <Button type="button" variant="ghost" size="sm" onClick={resetForm} className="h-6 text-[9px] font-black gap-1 uppercase"><RotateCcw className="h-3 w-3" /> रद्द</Button>}
+            </div>
           </CardHeader>
           <CardContent className="p-3 space-y-4">
             <div className="grid grid-cols-2 gap-2">
@@ -170,6 +184,9 @@ export default function BreakdownPage() {
                     <h4 className="font-black text-[11px] truncate uppercase tracking-tight">{record.routeName}</h4>
                     <p className="text-[9px] font-black text-destructive/70 uppercase mt-0.5">{record.vehicleNumber} | ₹{record.totalLossAmount}</p>
                   </div>
+                  <Button type="button" size="icon" variant="ghost" className="h-7 w-7 text-destructive opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => handleDeleteRecord(record.id, e)}>
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </Button>
                 </Card>
               ))}
               {records?.length === 0 && (

@@ -10,14 +10,14 @@ import { Label } from "@/components/ui/label"
 import { Supplier, EquipmentItem } from "@/lib/types"
 import { 
   Plus, Search, MapPin, User, 
-  Truck, Edit, ChevronRight, ArrowLeft, X, Laptop, Zap, Sun
+  Truck, Edit, ChevronRight, ArrowLeft, X, Laptop, Zap, Sun, Trash2
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
 import { useToast } from "@/hooks/use-toast"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Checkbox } from "@/components/ui/checkbox"
-import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking } from "@/firebase"
+import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking } from "@/firebase"
 import { collection, doc } from "firebase/firestore"
 
 export default function RouteDetailsPage() {
@@ -126,6 +126,18 @@ export default function RouteDetailsPage() {
     setIsDialogOpen(false)
   }
 
+  const handleDeleteSupplier = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation()
+    e.preventDefault()
+    if (!db) return
+    if (confirm("तुम्हाला खात्री आहे की हा सप्लायर हटवायचा आहे?")) {
+      const docRef = doc(db, 'suppliers', id)
+      deleteDocumentNonBlocking(docRef)
+      if (selectedSupplier?.id === id) setSelectedSupplier(null)
+      toast({ title: "यशस्वी", description: "सप्लायर हटवण्यात आला." })
+    }
+  }
+
   const filteredSuppliers = useMemo(() => {
     return suppliers.filter(s => (s.name?.toLowerCase() || "").includes(searchQuery.toLowerCase()))
   }, [suppliers, searchQuery])
@@ -145,13 +157,13 @@ export default function RouteDetailsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-2">
         <Card className={`lg:col-span-4 border-none shadow-sm bg-white overflow-hidden flex flex-col ${selectedSupplier ? 'hidden lg:flex' : 'flex'}`}>
           <div className="p-2 border-b bg-muted/5"><div className="relative"><Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3 w-3 text-muted-foreground" /><input placeholder="शोधा..." className="w-full pl-7 h-8 text-[11px] bg-white border rounded-md" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} /></div></div>
-          <ScrollArea className="h-[650px]"><div className="divide-y">{filteredSuppliers.map(s => (<div key={s.id} onClick={() => setSelectedSupplier(s)} className={`p-2.5 cursor-pointer hover:bg-muted/50 flex justify-between items-center ${selectedSupplier?.id === s.id ? 'bg-primary/5 border-l-2 border-primary' : ''}`}><div className="min-w-0"><h4 className="font-black text-[11px] truncate">{s.name}</h4><p className="text-[9px] text-muted-foreground truncate">ID: {s.id?.slice(-6)} | {s.address}</p></div><ChevronRight className="h-3.5 w-3.5 text-muted-foreground opacity-50" /></div>))}</div></ScrollArea>
+          <ScrollArea className="h-[650px]"><div className="divide-y">{filteredSuppliers.map(s => (<div key={s.id} onClick={() => setSelectedSupplier(s)} className={`p-2.5 cursor-pointer hover:bg-muted/50 flex justify-between items-center ${selectedSupplier?.id === s.id ? 'bg-primary/5 border-l-2 border-primary' : ''}`}><div className="min-w-0"><h4 className="font-black text-[11px] truncate">{s.name}</h4><p className="text-[9px] text-muted-foreground truncate">ID: {s.id?.slice(-6)} | {s.address}</p></div><div className="flex items-center gap-1"><Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:bg-destructive/5" onClick={(e) => handleDeleteSupplier(s.id, e)}><Trash2 className="h-3.5 w-3.5" /></Button><ChevronRight className="h-3.5 w-3.5 text-muted-foreground opacity-50" /></div></div>))}</div></ScrollArea>
         </Card>
 
         <Card className={`lg:col-span-8 border-none shadow-sm bg-white rounded-xl min-h-[450px] ${!selectedSupplier ? 'hidden lg:flex' : 'block'}`}>
           {selectedSupplier ? (
             <div className="flex flex-col h-full">
-              <div className="p-3 border-b flex items-center justify-between bg-primary/5 sticky top-0 z-10"><Button type="button" variant="ghost" size="icon" className="lg:hidden" onClick={() => setSelectedSupplier(null)}><ArrowLeft className="h-4 w-4" /></Button><div className="flex-1 px-2 min-w-0"><h3 className="text-xs sm:text-sm font-black truncate">{selectedSupplier.name}</h3><p className="text-[9px] text-muted-foreground uppercase">ID: {selectedSupplier.id} | {selectedSupplier.collectionType}</p></div><div className="flex gap-1.5"><Button type="button" variant="outline" size="icon" className="h-7 w-7 text-primary hover:bg-primary/5" onClick={() => openEditDialog(selectedSupplier)}><Edit className="h-3 w-3" /></Button></div></div>
+              <div className="p-3 border-b flex items-center justify-between bg-primary/5 sticky top-0 z-10"><Button type="button" variant="ghost" size="icon" className="lg:hidden" onClick={() => setSelectedSupplier(null)}><ArrowLeft className="h-4 w-4" /></Button><div className="flex-1 px-2 min-w-0"><h3 className="text-xs sm:text-sm font-black truncate">{selectedSupplier.name}</h3><p className="text-[9px] text-muted-foreground uppercase">ID: {selectedSupplier.id} | {selectedSupplier.collectionType}</p></div><div className="flex gap-1.5"><Button type="button" variant="outline" size="icon" className="h-7 w-7 text-primary hover:bg-primary/5" onClick={() => openEditDialog(selectedSupplier)}><Edit className="h-3 w-3" /></Button><Button type="button" variant="outline" size="icon" className="h-7 w-7 text-destructive hover:bg-destructive/5" onClick={(e) => handleDeleteSupplier(selectedSupplier.id, e)}><Trash2 className="h-3 w-3" /></Button></div></div>
               <ScrollArea className="flex-1 h-[650px]">
                 <div className="p-3 space-y-3">
                   <div className="grid grid-cols-2 gap-2"><div className="bg-muted/20 p-2.5 rounded-lg border space-y-1.5"><h4 className="text-[9px] font-black uppercase text-primary">संपर्क</h4><p className="text-[10px] font-black">{selectedSupplier.mobile || "-"}</p><p className="text-[10px] truncate">{selectedSupplier.address || "-"}</p></div><div className="bg-muted/20 p-2.5 rounded-lg border space-y-1.5"><h4 className="text-[9px] font-black uppercase text-primary">परवाना</h4><p className="text-[10px] font-black">{selectedSupplier.fssaiNumber || "N/A"}</p><Badge className="text-[8px] h-4 px-1.5 font-black">{selectedSupplier.fssaiExpiry || "-"}</Badge></div></div>
