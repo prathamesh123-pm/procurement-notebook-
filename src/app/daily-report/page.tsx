@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect } from "react"
@@ -11,7 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
 import { 
-  ClipboardCheck, Truck, Plus, Trash2, MapPin, Briefcase, Save, ArrowLeft, Info
+  ClipboardCheck, Truck, Plus, Trash2, MapPin, Briefcase, Save, ArrowLeft, Info, ListPlus
 } from "lucide-react"
 import { useUser, useFirestore, addDocumentNonBlocking } from "@/firebase"
 import { collection } from "firebase/firestore"
@@ -28,6 +29,11 @@ interface RouteVisitEntry {
   fullCans: string;
 }
 
+interface ReportPoint {
+  id: string;
+  text: string;
+}
+
 export default function DailyReportPage() {
   const { user } = useUser()
   const db = useFirestore()
@@ -36,10 +42,17 @@ export default function DailyReportPage() {
   const [mounted, setMounted] = useState(false)
   const [reportType, setReportType] = useState<string>("route-visit")
 
+  const createId = () => typeof crypto !== 'undefined' ? crypto.randomUUID() : Math.random().toString(36).substring(2);
+
   const createEmptyRouteEntry = (): RouteVisitEntry => ({
-    id: typeof crypto !== 'undefined' ? crypto.randomUUID() : Math.random().toString(36).substring(2),
+    id: createId(),
     centerCode: "", supplierName: "", iceAllocated: "", arrivalTime: "",
     departureTime: "", emptyCans: "", fullCans: ""
+  });
+
+  const createEmptyPoint = (): ReportPoint => ({
+    id: createId(),
+    text: ""
   });
 
   const [formData, setFormData] = useState({
@@ -47,7 +60,9 @@ export default function DailyReportPage() {
     driverName: "", vehicleNumber: "", routeOutTime: "", routeInTime: "",
     startReading: "", endReading: "", totalKm: "0", shortageLiters: "0",
     excessLiters: "0", routeVisitLogs: [] as RouteVisitEntry[],
-    fieldObservations: "", officeTasks: "", achievements: "", problems: "",
+    fieldVisitPoints: [] as ReportPoint[],
+    officeWorkPoints: [] as ReportPoint[],
+    achievements: "", problems: "",
     actionsTaken: "", supervisorName: ""
   })
 
@@ -60,7 +75,9 @@ export default function DailyReportPage() {
       name: savedName, 
       idNumber: savedId, 
       reportDate: new Date().toISOString().split('T')[0], 
-      routeVisitLogs: [createEmptyRouteEntry()] 
+      routeVisitLogs: [createEmptyRouteEntry()],
+      fieldVisitPoints: [createEmptyPoint()],
+      officeWorkPoints: [createEmptyPoint()]
     }))
   }, [])
 
@@ -75,6 +92,14 @@ export default function DailyReportPage() {
   const removeRouteEntry = (id: string) => { if (formData.routeVisitLogs.length > 1) setFormData(prev => ({ ...prev, routeVisitLogs: prev.routeVisitLogs.filter(e => e.id !== id) })) }
   const updateRouteEntry = (id: string, updates: Partial<RouteVisitEntry>) => setFormData(prev => ({ ...prev, routeVisitLogs: prev.routeVisitLogs.map(e => e.id === id ? { ...e, ...updates } : e) }))
 
+  const addFieldPoint = () => setFormData(prev => ({ ...prev, fieldVisitPoints: [...prev.fieldVisitPoints, createEmptyPoint()] }))
+  const removeFieldPoint = (id: string) => { if (formData.fieldVisitPoints.length > 1) setFormData(prev => ({ ...prev, fieldVisitPoints: prev.fieldVisitPoints.filter(p => p.id !== id) })) }
+  const updateFieldPoint = (id: string, text: string) => setFormData(prev => ({ ...prev, fieldVisitPoints: prev.fieldVisitPoints.map(p => p.id === id ? { ...p, text } : p) }))
+
+  const addOfficePoint = () => setFormData(prev => ({ ...prev, officeWorkPoints: [...prev.officeWorkPoints, createEmptyPoint()] }))
+  const removeOfficePoint = (id: string) => { if (formData.officeWorkPoints.length > 1) setFormData(prev => ({ ...prev, officeWorkPoints: prev.officeWorkPoints.filter(p => p.id !== id) })) }
+  const updateOfficePoint = (id: string, text: string) => setFormData(prev => ({ ...prev, officeWorkPoints: prev.officeWorkPoints.map(p => p.id === id ? { ...p, text } : p) }))
+
   const handleSave = () => {
     if (!db || !user) {
       toast({ title: "त्रुटी", description: "डेटाबेसशी कनेक्शन नाही.", variant: "destructive" });
@@ -83,14 +108,17 @@ export default function DailyReportPage() {
 
     let reportSummary = ""
     let reportCategory = ""
+    
     if (reportType === "route-visit") {
       reportSummary = `रूट व्हिजिट: ${formData.routeVisitLogs.length} केंद्र. वाहन: ${formData.vehicleNumber}. KM: ${formData.totalKm}.`
       reportCategory = "Route Visit"
     } else if (reportType === "field-visit") {
-      reportSummary = `क्षेत्र भेट: ${formData.fieldObservations.substring(0, 50)}...`
+      const pointsText = formData.fieldVisitPoints.filter(p => p.text).map((p, i) => `${i+1}. ${p.text}`).join(' | ')
+      reportSummary = `क्षेत्र भेट: ${pointsText || "निरीक्षणे नोंदवली नाहीत."}`
       reportCategory = "Field Visit"
     } else {
-      reportSummary = `ऑफिस काम: ${formData.officeTasks.substring(0, 50)}...`
+      const pointsText = formData.officeWorkPoints.filter(p => p.text).map((p, i) => `${i+1}. ${p.text}`).join(' | ')
+      reportSummary = `ऑफिस काम: ${pointsText || "काम नोंदवले नाही."}`
       reportCategory = "Daily Office Work"
     }
     
@@ -231,39 +259,49 @@ export default function DailyReportPage() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="field-visit">
+        <TabsContent value="field-visit" className="space-y-4">
           <Card className="border-none shadow-sm rounded-3xl overflow-hidden bg-white">
-            <CardContent className="p-6 space-y-4">
-              <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest flex items-center gap-2">
-                  <Info className="h-3 w-3" /> क्षेत्र भेटीची सविस्तर निरीक्षणे लिहा
-                </Label>
-                <Textarea 
-                  value={formData.fieldObservations} 
-                  onChange={e => setFormData({...formData, fieldObservations: e.target.value})} 
-                  placeholder="उदा. केंद्रावर अस्वच्छता आढळली, गवळी समाधानी आहेत..." 
-                  className="min-h-[150px] text-sm rounded-2xl bg-slate-50 border-none font-medium shadow-inner p-4 focus-visible:ring-primary" 
-                />
-              </div>
-              <AIGuidanceCard context={formData.fieldObservations} formType="daily-report" />
+            <div className="p-4 bg-slate-50/80 border-b flex items-center justify-between">
+              <span className="text-[11px] font-black uppercase text-slate-600 tracking-widest flex items-center gap-2"><MapPin className="h-4 w-4 text-primary" /> क्षेत्र भेटीचे मुद्दे (Field Points)</span>
+              <Button type="button" size="sm" onClick={addFieldPoint} className="h-8 rounded-xl font-black text-[10px]"><ListPlus className="h-3.5 w-3.5 mr-1.5" /> मुद्दा जोडा</Button>
+            </div>
+            <CardContent className="p-4 space-y-3">
+              {formData.fieldVisitPoints.map((point, index) => (
+                <div key={point.id} className="flex gap-2 items-start group">
+                  <div className="h-10 w-10 rounded-xl bg-slate-50 flex items-center justify-center font-black text-xs text-slate-400 shrink-0 border border-slate-100">{index + 1}</div>
+                  <Textarea 
+                    value={point.text} 
+                    onChange={e => updateFieldPoint(point.id, e.target.value)} 
+                    placeholder="मुद्दा लिहा..." 
+                    className="min-h-[60px] text-sm rounded-xl bg-slate-50 border-none font-medium shadow-inner p-3 focus-visible:ring-primary" 
+                  />
+                  <Button type="button" variant="ghost" size="icon" onClick={() => removeFieldPoint(point.id)} className="h-10 w-10 text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="h-4 w-4" /></Button>
+                </div>
+              ))}
+              <AIGuidanceCard context={formData.fieldVisitPoints.map(p => p.text).join(' ')} formType="daily-report" />
             </CardContent>
           </Card>
         </TabsContent>
 
-        <TabsContent value="office-work">
+        <TabsContent value="office-work" className="space-y-4">
           <Card className="border-none shadow-sm rounded-3xl overflow-hidden bg-white">
-            <CardContent className="p-6 space-y-2">
-              <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest flex items-center gap-2">
-                  <Info className="h-3 w-3" /> ऑफिसमधील कामाचा तपशील
-                </Label>
-                <Textarea 
-                  value={formData.officeTasks} 
-                  onChange={e => setFormData({...formData, officeTasks: e.target.value})} 
-                  placeholder="उदा. थकीत बाकी बिल तपासणी, नवीन गवळी नोंदणी प्रक्रिया..." 
-                  className="min-h-[150px] text-sm rounded-2xl bg-slate-50 border-none font-medium shadow-inner p-4 focus-visible:ring-primary" 
-                />
-              </div>
+            <div className="p-4 bg-slate-50/80 border-b flex items-center justify-between">
+              <span className="text-[11px] font-black uppercase text-slate-600 tracking-widest flex items-center gap-2"><Briefcase className="h-4 w-4 text-primary" /> ऑफिस कामाचे मुद्दे (Work Points)</span>
+              <Button type="button" size="sm" onClick={addOfficePoint} className="h-8 rounded-xl font-black text-[10px]"><ListPlus className="h-3.5 w-3.5 mr-1.5" /> मुद्दा जोडा</Button>
+            </div>
+            <CardContent className="p-4 space-y-3">
+              {formData.officeWorkPoints.map((point, index) => (
+                <div key={point.id} className="flex gap-2 items-start group">
+                  <div className="h-10 w-10 rounded-xl bg-slate-50 flex items-center justify-center font-black text-xs text-slate-400 shrink-0 border border-slate-100">{index + 1}</div>
+                  <Textarea 
+                    value={point.text} 
+                    onChange={e => updateOfficePoint(point.id, e.target.value)} 
+                    placeholder="कामाचा तपशील..." 
+                    className="min-h-[60px] text-sm rounded-xl bg-slate-50 border-none font-medium shadow-inner p-3 focus-visible:ring-primary" 
+                  />
+                  <Button type="button" variant="ghost" size="icon" onClick={() => removeOfficePoint(point.id)} className="h-10 w-10 text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="h-4 w-4" /></Button>
+                </div>
+              ))}
             </CardContent>
           </Card>
         </TabsContent>

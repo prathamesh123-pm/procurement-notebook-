@@ -131,6 +131,29 @@ export default function ReportsPage() {
           </table>
         )}
 
+        {(reportType === 'Field Visit' || reportType === 'Daily Office Work') && (
+          <table className="w-full border-collapse border border-black mb-4">
+            <thead>
+              <tr className="bg-slate-100 font-black uppercase text-[9px]">
+                <th className="border border-black p-2 text-left w-12">#</th>
+                <th className="border border-black p-2 text-left">OBSERVATIONS / TASKS</th>
+              </tr>
+            </thead>
+            <tbody>
+              {(reportType === 'Field Visit' ? data.fieldVisitPoints : data.officeWorkPoints)?.map((point: any, i: number) => (
+                <tr key={i}>
+                  <td className="border border-black p-2 text-center font-bold">{i + 1}</td>
+                  <td className="border border-black p-2 font-bold italic">{point.text || '-'}</td>
+                </tr>
+              )) || (
+                <tr>
+                  <td colSpan={2} className="border border-black p-4 text-center text-slate-400">NO POINTS LOGGED.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        )}
+
         {reportType === 'Custom Form' && data.dynamicFields && (
           <table className="w-full border-collapse border border-black mb-4">
             <thead>
@@ -153,7 +176,7 @@ export default function ReportsPage() {
         <table className="w-full border-collapse border border-black mb-4">
           <thead>
             <tr className="bg-slate-100 font-black text-[9px]">
-              <th className="border border-black p-2 text-left uppercase">REMARKS / OBSERVATIONS</th>
+              <th className="border border-black p-2 text-left uppercase">REMARKS / OVERALL SUMMARY</th>
             </tr>
           </thead>
           <tbody>
