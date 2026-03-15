@@ -25,7 +25,7 @@ export default function WorkLogPage() {
     return collection(db, 'users', user.uid, 'tasks')
   }, [db, user])
 
-  const { data: firestoreTasks, isLoading } = useCollection(tasksQuery)
+  const { data: firestoreTasks, isLoading } = useCollection<Task>(tasksQuery)
   
   const [newTaskTitle, setNewTaskTitle] = useState("")
   const [newTaskDesc, setNewTaskDesc] = useState("")
