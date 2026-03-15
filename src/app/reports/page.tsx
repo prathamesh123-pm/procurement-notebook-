@@ -107,7 +107,8 @@ export default function ReportsPage() {
                 <th className="border border-black p-2 text-left">CENTER NAME</th>
                 <th className="border border-black p-2">ICE</th>
                 <th className="border border-black p-2">IN/OUT</th>
-                <th className="border border-black p-2">CANS</th>
+                <th className="border border-black p-2">EMPTY</th>
+                <th className="border border-black p-2">FULL</th>
               </tr>
             </thead>
             <tbody>
@@ -118,13 +119,14 @@ export default function ReportsPage() {
                   <td className="border border-black p-1.5 text-left font-bold">{log.supplierName || '-'}</td>
                   <td className="border border-black p-1.5">{log.iceAllocated || 0}</td>
                   <td className="border border-black p-1.5 font-bold">{log.arrivalTime || '-'}/{log.departureTime || '-'}</td>
-                  <td className="border border-black p-1.5 font-black">{log.emptyCans}/{log.fullCans}</td>
+                  <td className="border border-black p-1.5">{log.emptyCans || 0}</td>
+                  <td className="border border-black p-1.5 font-black">{log.fullCans || 0}</td>
                 </tr>
               ))}
               <tr className="bg-slate-50 font-black text-[9px]">
                 <td colSpan={2} className="border border-black p-2 text-right">TOTALS:</td>
                 <td className="border border-black p-2">DIST: {data.totalKm || 0} KM</td>
-                <td colSpan={2} className="border border-black p-2 text-center">VEHICLE: {data.vehicleNumber || '-'}</td>
+                <td colSpan={3} className="border border-black p-2 text-center">VEHICLE: {data.vehicleNumber || '-'}</td>
                 <td className="border border-black p-2 text-center">SHORT: {data.shortageLiters || 0} L</td>
               </tr>
             </tbody>

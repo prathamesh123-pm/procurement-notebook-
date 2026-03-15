@@ -12,7 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
 import { 
-  ClipboardCheck, Truck, Plus, Trash2, MapPin, Briefcase, Save, ArrowLeft, Info, ListPlus
+  ClipboardCheck, Truck, Plus, Trash2, MapPin, Briefcase, Save, ArrowLeft, ListPlus
 } from "lucide-react"
 import { useUser, useFirestore, addDocumentNonBlocking } from "@/firebase"
 import { collection } from "firebase/firestore"
@@ -89,7 +89,11 @@ export default function DailyReportPage() {
   }, [formData.startReading, formData.endReading]);
 
   const addRouteEntry = () => setFormData(prev => ({ ...prev, routeVisitLogs: [...prev.routeVisitLogs, createEmptyRouteEntry()] }))
-  const removeRouteEntry = (id: string) => { if (formData.routeVisitLogs.length > 1) setFormData(prev => ({ ...prev, routeVisitLogs: prev.routeVisitLogs.filter(e => e.id !== id) })) }
+  const removeRouteEntry = (id: string) => { 
+    if (formData.routeVisitLogs.length > 1) {
+      setFormData(prev => ({ ...prev, routeVisitLogs: prev.routeVisitLogs.filter(e => e.id !== id) })) 
+    }
+  }
   const updateRouteEntry = (id: string, updates: Partial<RouteVisitEntry>) => setFormData(prev => ({ ...prev, routeVisitLogs: prev.routeVisitLogs.map(e => e.id === id ? { ...e, ...updates } : e) }))
 
   const addFieldPoint = () => setFormData(prev => ({ ...prev, fieldVisitPoints: [...prev.fieldVisitPoints, createEmptyPoint()] }))
@@ -144,7 +148,7 @@ export default function DailyReportPage() {
   if (!mounted) return null
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto w-full pb-20 px-2 animate-in fade-in slide-in-from-bottom-2 duration-500">
+    <div className="space-y-6 max-w-6xl mx-auto w-full pb-20 px-2 animate-in fade-in slide-in-from-bottom-2 duration-500">
       <div className="flex items-center justify-between border-b pb-4">
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full hover:bg-slate-100 h-10 w-10">
@@ -210,7 +214,7 @@ export default function DailyReportPage() {
             <div className="bg-slate-50/80 p-4 flex items-center justify-between border-b border-slate-100">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-6 bg-primary rounded-full" />
-                <span className="text-[11px] font-black uppercase tracking-widest text-slate-600">व्हिजिट लॉग (Log Details)</span>
+                <span className="text-[11px] font-black uppercase tracking-widest text-slate-600">व्हिजिट लॉग (Visit Details)</span>
               </div>
               <Button type="button" size="sm" onClick={addRouteEntry} className="h-9 px-4 rounded-xl shadow-lg shadow-primary/20"><Plus className="h-4 w-4 mr-2" /> केंद्र जोडा</Button>
             </div>
@@ -222,8 +226,9 @@ export default function DailyReportPage() {
                     <th className="p-4 text-left">कोड</th>
                     <th className="p-4 text-left">केंद्राचे नाव</th>
                     <th className="p-4 text-center">बर्फ</th>
-                    <th className="p-4 text-center">IN/OUT</th>
-                    <th className="p-4 text-center">कॅन (E/F)</th>
+                    <th className="p-4 text-center">वेळ (IN/OUT)</th>
+                    <th className="p-4 text-center bg-slate-100/50">रिकामे कॅन</th>
+                    <th className="p-4 text-center bg-primary/5">भरलेले कॅन</th>
                     <th className="p-4 w-12"></th>
                   </tr>
                 </thead>
@@ -240,11 +245,11 @@ export default function DailyReportPage() {
                           <Input className="h-9 text-[10px] border-none bg-slate-50 rounded-lg text-center p-1" type="time" value={entry.departureTime} onChange={e => updateRouteEntry(entry.id, { departureTime: e.target.value })} />
                         </div>
                       </td>
-                      <td className="p-2">
-                        <div className="flex gap-1">
-                          <Input className="h-9 text-xs border-none bg-slate-50 rounded-lg text-center font-bold text-slate-400" value={entry.emptyCans} onChange={e => updateRouteEntry(entry.id, { emptyCans: e.target.value })} placeholder="E" />
-                          <Input className="h-9 text-xs border-none bg-primary/10 rounded-lg text-center font-black text-primary" value={entry.fullCans} onChange={e => updateRouteEntry(entry.id, { fullCans: e.target.value })} placeholder="F" />
-                        </div>
+                      <td className="p-2 bg-slate-50/30">
+                        <Input className="h-9 text-xs border-none bg-white shadow-sm rounded-lg text-center font-bold text-slate-600" value={entry.emptyCans} onChange={e => updateRouteEntry(entry.id, { emptyCans: e.target.value })} placeholder="रिकामे" />
+                      </td>
+                      <td className="p-2 bg-primary/5">
+                        <Input className="h-9 text-xs border-none bg-white shadow-sm rounded-lg text-center font-black text-primary" value={entry.fullCans} onChange={e => updateRouteEntry(entry.id, { fullCans: e.target.value })} placeholder="भरलेले" />
                       </td>
                       <td className="p-4">
                         <Button type="button" variant="ghost" size="icon" onClick={() => removeRouteEntry(entry.id)} className="h-8 w-8 text-rose-400 hover:text-rose-600 hover:bg-rose-50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
