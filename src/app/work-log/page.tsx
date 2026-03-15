@@ -100,10 +100,7 @@ export default function WorkLogPage() {
     toast({ title: "यशस्वी", description: "टास्क पूर्ण झाला आणि अहवालात जोडला गेला." })
   }
 
-  const handleDeleteTask = (e: React.MouseEvent, taskId: string) => {
-    e.stopPropagation();
-    e.preventDefault();
-    
+  const handleDeleteTask = (taskId: string) => {
     if (!db || !user || !taskId) return
     
     const confirmDelete = window.confirm("तुम्हाला खात्री आहे की हा टास्क कायमचा हटवायचा आहे?")
@@ -173,7 +170,13 @@ export default function WorkLogPage() {
                   </div>
                 </div>
                 <div className="flex items-center gap-1 shrink-0 relative z-30">
-                  <Button type="button" variant="ghost" size="icon" className="h-8 w-8 text-destructive rounded-full hover:bg-destructive/10" onClick={(e) => handleDeleteTask(e, task.id)}>
+                  <Button 
+                    type="button" 
+                    variant="ghost" 
+                    size="icon" 
+                    className="h-8 w-8 text-destructive rounded-full hover:bg-destructive/10" 
+                    onClick={(e) => { e.stopPropagation(); e.preventDefault(); handleDeleteTask(task.id); }}
+                  >
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>

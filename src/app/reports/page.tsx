@@ -1,10 +1,11 @@
+
 "use client"
 
 import { useState, useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { 
-  Archive, Calendar, Trash2, Eye, Edit, Search, X, Printer, FileText, Download, Filter
+  Archive, Calendar, Trash2, Eye, Edit, Search, X, Printer, FileText, Download, Filter, AlertTriangle
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
@@ -45,12 +46,7 @@ export default function ReportsPage() {
     }).sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime())
   }, [firestoreReports, activeFilter, filterDate])
 
-  const handleDelete = (e: React.MouseEvent | null, id: string) => {
-    if (e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-    
+  const handleDelete = (id: string) => {
     if (!id || !db || !user) return
     
     const confirmDelete = window.confirm("तुम्हाला खात्री आहे की हा अहवाल कायमचा हटवायचा आहे?")
@@ -84,125 +80,125 @@ export default function ReportsPage() {
     const formTitle = data.formTitle || reportType;
     
     return (
-      <div className="text-[11px] font-mono text-black bg-white p-8 border-2 border-black shadow-none w-full max-w-4xl mx-auto" id="printable-area">
-        <div className="border-b-4 border-black mb-6 text-center py-4">
-          <h1 className="text-xl font-black uppercase tracking-[0.2em]">{formTitle} REPORT</h1>
-          <p className="text-[10px] font-bold mt-1 opacity-60 uppercase">संकलन नोंदवही (OFFICIAL REGISTER)</p>
+      <div className="text-[10px] font-mono text-black bg-white p-6 border border-black shadow-none w-full max-w-4xl mx-auto" id="printable-area">
+        <div className="border-b-2 border-black mb-4 text-center py-2">
+          <h1 className="text-lg font-black uppercase tracking-[0.1em]">{formTitle} REPORT</h1>
+          <p className="text-[8px] font-bold uppercase opacity-60">संकलन नोंदवही (OFFICIAL REGISTER)</p>
         </div>
 
-        <table className="w-full border-collapse border-2 border-black mb-6">
+        <table className="w-full border-collapse border border-black mb-4">
           <tbody>
             <tr>
-              <td className="border border-black p-3 bg-slate-50 font-black uppercase w-[20%]">REPORT DATE</td>
-              <td className="border border-black p-3 w-[30%] font-bold">{report.date || report.reportDate}</td>
-              <td className="border border-black p-3 bg-slate-50 font-black uppercase w-[20%]">REPORT ID</td>
-              <td className="border border-black p-3 w-[30%] font-bold">{String(report.id).slice(-8).toUpperCase()}</td>
+              <td className="border border-black p-2 bg-slate-50 font-black uppercase w-[20%]">DATE</td>
+              <td className="border border-black p-2 w-[30%] font-bold">{report.date || report.reportDate}</td>
+              <td className="border border-black p-2 bg-slate-50 font-black uppercase w-[20%]">ID</td>
+              <td className="border border-black p-2 w-[30%] font-bold">{String(report.id).slice(-8).toUpperCase()}</td>
             </tr>
             <tr>
-              <td className="border border-black p-3 bg-slate-50 font-black uppercase">PREPARED BY</td>
-              <td className="border border-black p-3 font-bold">{data.name || user?.displayName || 'SYSTEM USER'}</td>
-              <td className="border border-black p-3 bg-slate-50 font-black uppercase">CATEGORY</td>
-              <td className="border border-black p-3 uppercase font-bold">{reportType}</td>
+              <td className="border border-black p-2 bg-slate-50 font-black uppercase">OFFICER</td>
+              <td className="border border-black p-2 font-bold">{data.name || user?.displayName || 'SYSTEM USER'}</td>
+              <td className="border border-black p-2 bg-slate-50 font-black uppercase">TYPE</td>
+              <td className="border border-black p-2 uppercase font-bold">{reportType}</td>
             </tr>
           </tbody>
         </table>
 
         {reportType === 'Route Visit' && data.routeVisitLogs && (
-          <table className="w-full border-collapse border-2 border-black mb-6">
+          <table className="w-full border-collapse border border-black mb-4">
             <thead>
-              <tr className="bg-slate-100 font-black uppercase text-[10px] text-center">
-                <th className="border border-black p-3 w-10">#</th>
-                <th className="border border-black p-3 text-left">CODE</th>
-                <th className="border border-black p-3 text-left">CENTER NAME</th>
-                <th className="border border-black p-3">ICE</th>
-                <th className="border border-black p-3">IN/OUT</th>
-                <th className="border border-black p-3">CANS(E/F)</th>
+              <tr className="bg-slate-100 font-black uppercase text-[9px] text-center">
+                <th className="border border-black p-2 w-8">#</th>
+                <th className="border border-black p-2 text-left">CODE</th>
+                <th className="border border-black p-2 text-left">CENTER NAME</th>
+                <th className="border border-black p-2">ICE</th>
+                <th className="border border-black p-2">IN/OUT</th>
+                <th className="border border-black p-2">CANS</th>
               </tr>
             </thead>
             <tbody>
               {data.routeVisitLogs.map((log: any, i: number) => (
                 <tr key={i} className="text-center">
-                  <td className="border border-black p-2 font-bold">{i + 1}</td>
-                  <td className="border border-black p-2 text-left font-bold">{log.centerCode || '-'}</td>
-                  <td className="border border-black p-2 text-left font-bold">{log.supplierName || '-'}</td>
-                  <td className="border border-black p-2">{log.iceAllocated || 0}</td>
-                  <td className="border border-black p-2 font-bold">{log.arrivalTime || '-'}/{log.departureTime || '-'}</td>
-                  <td className="border border-black p-2 font-black">{log.emptyCans}/{log.fullCans}</td>
+                  <td className="border border-black p-1.5 font-bold">{i + 1}</td>
+                  <td className="border border-black p-1.5 text-left font-bold">{log.centerCode || '-'}</td>
+                  <td className="border border-black p-1.5 text-left font-bold">{log.supplierName || '-'}</td>
+                  <td className="border border-black p-1.5">{log.iceAllocated || 0}</td>
+                  <td className="border border-black p-1.5 font-bold">{log.arrivalTime || '-'}/{log.departureTime || '-'}</td>
+                  <td className="border border-black p-1.5 font-black">{log.emptyCans}/{log.fullCans}</td>
                 </tr>
               ))}
-              <tr className="bg-slate-50 font-black text-center">
-                <td colSpan={2} className="border border-black p-3 text-right">SUMMARY:</td>
-                <td className="border border-black p-3">DIST: {data.totalKm || 0} KM</td>
-                <td className="border border-black p-3">VEHICLE: {data.vehicleNumber || '-'}</td>
-                <td colSpan={2} className="border border-black p-3 text-center">SHORT: {data.shortageLiters || 0} L</td>
+              <tr className="bg-slate-50 font-black text-[9px]">
+                <td colSpan={2} className="border border-black p-2 text-right">TOTALS:</td>
+                <td className="border border-black p-2">DIST: {data.totalKm || 0} KM</td>
+                <td colSpan={2} className="border border-black p-2 text-center">VEHICLE: {data.vehicleNumber || '-'}</td>
+                <td className="border border-black p-2 text-center">SHORT: {data.shortageLiters || 0} L</td>
               </tr>
             </tbody>
           </table>
         )}
 
         {reportType === 'Breakdown' && data.losses && (
-          <table className="w-full border-collapse border-2 border-black mb-6">
+          <table className="w-full border-collapse border border-black mb-4">
             <thead>
-              <tr className="bg-slate-100 font-black uppercase text-[10px]">
-                <th className="border border-black p-3 text-left">SUPPLIER CODE/NAME</th>
-                <th className="border border-black p-3 text-center">LOSS AMOUNT (₹)</th>
+              <tr className="bg-slate-100 font-black uppercase text-[9px]">
+                <th className="border border-black p-2 text-left">SUPPLIER CODE/NAME</th>
+                <th className="border border-black p-2 text-center">LOSS AMOUNT (₹)</th>
               </tr>
             </thead>
             <tbody>
               {data.losses.map((loss: any, i: number) => (
                 <tr key={i}>
-                  <td className="border border-black p-3 font-bold">{loss.supplierCode} - {loss.supplierName}</td>
-                  <td className="border border-black p-3 text-right font-black">₹{loss.lossAmount || 0}</td>
+                  <td className="border border-black p-2 font-bold">{loss.supplierCode} - {loss.supplierName}</td>
+                  <td className="border border-black p-2 text-right font-black">₹{loss.lossAmount || 0}</td>
                 </tr>
               ))}
               <tr className="bg-slate-50 font-black">
-                <td className="border border-black p-4 text-right uppercase">TOTAL FINANCIAL LOSS:</td>
-                <td className="border border-black p-4 text-right text-base">₹{data.totalLossAmount || 0}</td>
+                <td className="border border-black p-3 text-right uppercase">TOTAL FINANCIAL LOSS:</td>
+                <td className="border border-black p-3 text-right">₹{data.totalLossAmount || 0}</td>
               </tr>
             </tbody>
           </table>
         )}
 
         {reportType === 'Custom Form' && data.dynamicFields && (
-          <table className="w-full border-collapse border-2 border-black mb-6">
+          <table className="w-full border-collapse border border-black mb-4">
             <thead>
-              <tr className="bg-slate-100 font-black uppercase text-[10px]">
-                <th className="border border-black p-3 text-left w-[40%]">FIELD DESCRIPTION</th>
-                <th className="border border-black p-3 text-left">VALUE</th>
+              <tr className="bg-slate-100 font-black uppercase text-[9px]">
+                <th className="border border-black p-2 text-left w-[40%]">FIELD DESCRIPTION</th>
+                <th className="border border-black p-2 text-left">VALUE</th>
               </tr>
             </thead>
             <tbody>
               {data.dynamicFields.map((field: any, i: number) => (
                 <tr key={i}>
-                  <td className="border border-black p-3 bg-slate-50 font-black uppercase text-[9px]">{field.label}</td>
-                  <td className="border border-black p-3 font-bold">{field.value || '-'}</td>
+                  <td className="border border-black p-2 bg-slate-50 font-black uppercase text-[8px]">{field.label}</td>
+                  <td className="border border-black p-2 font-bold">{field.value || '-'}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         )}
 
-        <table className="w-full border-collapse border-2 border-black mb-6">
+        <table className="w-full border-collapse border border-black mb-4">
           <thead>
-            <tr className="bg-slate-100 font-black text-[10px]">
-              <th className="border border-black p-3 text-left uppercase">OFFICER OBSERVATIONS</th>
+            <tr className="bg-slate-100 font-black text-[9px]">
+              <th className="border border-black p-2 text-left uppercase">REMARKS / OBSERVATIONS</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td className="border border-black p-4 min-h-[100px] align-top whitespace-pre-wrap leading-relaxed font-bold italic text-slate-700">
+              <td className="border border-black p-3 min-h-[80px] align-top whitespace-pre-wrap leading-relaxed font-bold italic text-slate-700">
                 {report.summary || report.overallSummary || "NO REMARKS."}
               </td>
             </tr>
           </tbody>
         </table>
 
-        <div className="mt-12 grid grid-cols-2 gap-20 px-12">
+        <div className="mt-8 grid grid-cols-2 gap-16 px-8">
           <div className="text-center">
-            <div className="border-t-2 border-black pt-2 font-black uppercase text-[9px]">OFFICER SIGNATURE</div>
+            <div className="border-t border-black pt-1 font-black uppercase text-[8px]">OFFICER SIGNATURE</div>
           </div>
           <div className="text-center">
-            <div className="border-t-2 border-black pt-2 font-black uppercase text-[9px]">SUPERVISOR SIGNATURE</div>
+            <div className="border-t border-black pt-1 font-black uppercase text-[8px]">SUPERVISOR SIGNATURE</div>
           </div>
         </div>
       </div>
@@ -289,7 +285,7 @@ export default function ReportsPage() {
               <div className="flex gap-2 bg-slate-50 p-2 rounded-2xl group-hover:bg-white transition-colors">
                 <Button type="button" size="icon" variant="ghost" className="h-10 w-10 text-primary hover:bg-primary/10 rounded-xl" onClick={() => { setSelectedReport(report); setIsViewOpen(true); }}><Eye className="h-5 w-5" /></Button>
                 <Button type="button" size="icon" variant="ghost" className="h-10 w-10 text-primary hover:bg-primary/10 rounded-xl" onClick={() => { setEditData({id: report.id, summary: report.summary}); setIsEditOpen(true); }}><Edit className="h-5 w-5" /></Button>
-                <Button type="button" size="icon" variant="ghost" className="h-10 w-10 text-rose-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl" onClick={(e) => handleDelete(e, report.id)}><Trash2 className="h-5 w-5" /></Button>
+                <Button type="button" size="icon" variant="ghost" className="h-10 w-10 text-rose-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl" onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleDelete(report.id); }}><Trash2 className="h-5 w-5" /></Button>
               </div>
             </CardContent>
           </Card>
@@ -308,12 +304,13 @@ export default function ReportsPage() {
       <Dialog open={isViewOpen} onOpenChange={setIsViewOpen}>
         <DialogContent className="max-w-5xl p-0 bg-slate-50 border-none shadow-2xl rounded-[2rem] overflow-hidden">
           <DialogHeader className="p-6 bg-white border-b flex flex-row items-center justify-between no-print sticky top-0 z-20">
-            <div>
+            <div className="space-y-1">
               <DialogTitle className="text-xs font-black uppercase text-slate-400 tracking-[0.3em]">पहा अहवाल (VIEW REPORT)</DialogTitle>
               <DialogDescription className="text-[10px] font-bold uppercase opacity-50">अधिकृत प्रिंट फॉरमॅट</DialogDescription>
             </div>
             <div className="flex gap-2">
               <Button type="button" size="sm" onClick={() => window.print()} className="h-11 px-6 text-xs font-black uppercase bg-slate-900 hover:bg-black text-white rounded-xl shadow-xl transition-all active:scale-95"><Printer className="h-4 w-4 mr-2" /> PRINT</Button>
+              <Button type="button" size="icon" variant="ghost" className="h-11 w-11 rounded-xl text-rose-500 hover:bg-rose-50" onClick={() => selectedReport && handleDelete(selectedReport.id)}><Trash2 className="h-5 w-5" /></Button>
               <Button type="button" size="icon" variant="ghost" onClick={() => setIsViewOpen(false)} className="h-11 w-11 rounded-full hover:bg-slate-100"><X className="h-6 w-6 text-slate-400" /></Button>
             </div>
           </DialogHeader>
