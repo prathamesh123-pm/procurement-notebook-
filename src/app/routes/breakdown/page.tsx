@@ -7,12 +7,12 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { 
-  Truck, AlertTriangle, Trash2, Save, History, PlusCircle, X, RotateCcw
+  Truck, AlertTriangle, Save, History, PlusCircle, X, RotateCcw
 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { BreakdownLoss } from "@/lib/types"
-import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking, deleteDocumentNonBlocking, updateDocumentNonBlocking } from "@/firebase"
+import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking } from "@/firebase"
 import { collection, doc } from "firebase/firestore"
 import { AIGuidanceCard } from "@/components/ai-guidance-card"
 
@@ -89,17 +89,6 @@ export default function BreakdownPage() {
     }
     
     resetForm()
-  }
-
-  const handleDeleteRecord = (e: React.MouseEvent, id: string) => {
-    e.stopPropagation(); 
-    e.preventDefault();
-    if (!db || !user || !id) return
-    if (!confirm("तुम्हाला खात्री आहे की हा रेकॉर्ड कायमचा हटवायचा आहे? (Are you sure you want to delete this record?)")) return
-    const docRef = doc(db, 'users', user.uid, 'breakdowns', id)
-    deleteDocumentNonBlocking(docRef)
-    if (editingId === id) resetForm()
-    toast({ title: "यशस्वी", description: "नोंद हटवण्यात आली." })
   }
 
   const resetForm = () => { setEditingId(null); setFormData({ routeName: "", vehicleType: "", vehicleNumber: "", driverName: "", location: "", reason: "", losses: [] }) }
@@ -181,7 +170,6 @@ export default function BreakdownPage() {
                     <h4 className="font-black text-[11px] truncate uppercase tracking-tight">{record.routeName}</h4>
                     <p className="text-[9px] font-black text-destructive/70 uppercase mt-0.5">{record.vehicleNumber} | ₹{record.totalLossAmount}</p>
                   </div>
-                  <Button type="button" variant="ghost" size="icon" onClick={(e) => handleDeleteRecord(e, record.id)} className="text-destructive h-8 w-8 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="h-3.5 w-3.5" /></Button>
                 </Card>
               ))}
               {records?.length === 0 && (

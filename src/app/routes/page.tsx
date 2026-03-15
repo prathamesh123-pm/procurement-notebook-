@@ -7,12 +7,12 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Route } from "@/lib/types"
-import { Plus, MapPin, Truck, Trash2, Edit, ChevronRight, AlertTriangle } from "lucide-react"
+import { Plus, MapPin, Truck, Edit, ChevronRight, AlertTriangle } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
 import Link from "next/link"
 import { useToast } from "@/hooks/use-toast"
 import { Badge } from "@/components/ui/badge"
-import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking, deleteDocumentNonBlocking, updateDocumentNonBlocking } from "@/firebase"
+import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking } from "@/firebase"
 import { collection, doc } from "firebase/firestore"
 
 export default function RoutesPage() {
@@ -96,23 +96,6 @@ export default function RoutesPage() {
     setIsDialogOpen(false)
   }
 
-  const handleDeleteRoute = (e: React.MouseEvent, id: string) => {
-    e.stopPropagation();
-    e.preventDefault();
-    
-    if (!db || !id) return
-    const confirmDelete = window.confirm("तुम्हाला खात्री आहे की हा रूट कायमचा हटवायचा आहे? (Are you sure you want to delete this route?)")
-    if (!confirmDelete) return
-    
-    try {
-      const docRef = doc(db, 'routes', id)
-      deleteDocumentNonBlocking(docRef)
-      toast({ title: "यशस्वी", description: "रूट हटवण्यात आला." })
-    } catch (err) {
-      toast({ title: "त्रुटी", description: "रूट हटवताना अडचण आली.", variant: "destructive" })
-    }
-  }
-
   const getRouteMilkTotals = (routeId: string) => {
     const routeSupps = suppliers?.filter(s => s.routeId === routeId) || []
     const totalCow = routeSupps.reduce((acc, s) => acc + (s.cowMilk?.quantity || 0), 0)
@@ -152,10 +135,7 @@ export default function RoutesPage() {
                     <span className="bg-primary/10 text-primary font-black py-0.5 px-2.5 rounded-full text-[9px] uppercase border border-primary/10 flex items-center gap-1">
                       <MapPin className="h-3 w-3" /> {route.distanceKm} KM
                     </span>
-                    <div className="flex gap-1">
-                      <Button type="button" variant="ghost" size="icon" className="h-8 w-8 text-primary hover:bg-primary/5 rounded-full" onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleOpenEdit(route); }}><Edit className="h-4 w-4" /></Button>
-                      <Button type="button" variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:bg-destructive/5 rounded-full" onClick={(e) => handleDeleteRoute(e, route.id)}><Trash2 className="h-4 w-4" /></Button>
-                    </div>
+                    <Button type="button" variant="ghost" size="icon" className="h-8 w-8 text-primary hover:bg-primary/5 rounded-full" onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleOpenEdit(route); }}><Edit className="h-4 w-4" /></Button>
                   </div>
                   <CardTitle className="mt-1 font-black text-lg uppercase tracking-tight text-slate-900">{route.name}</CardTitle>
                   <CardDescription className="flex items-center gap-1.5 font-black text-muted-foreground uppercase text-[9px] tracking-tight opacity-60"><Truck className="h-3 w-3 text-primary" /> {route.vehicle}</CardDescription>

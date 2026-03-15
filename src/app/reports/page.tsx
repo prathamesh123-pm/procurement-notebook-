@@ -5,7 +5,7 @@ import { useState, useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { 
-  Archive, Calendar, Trash2, Eye, Edit, Search, X, Printer, FileText, Download, Filter, AlertTriangle
+  Archive, Calendar, Eye, Edit, Search, X, Printer, FileText, Filter
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
@@ -14,7 +14,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogD
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { useUser, useFirestore, useCollection, useMemoFirebase, deleteDocumentNonBlocking, updateDocumentNonBlocking } from "@/firebase"
+import { useUser, useFirestore, useCollection, useMemoFirebase, updateDocumentNonBlocking } from "@/firebase"
 import { collection, doc } from "firebase/firestore"
 import { cn } from "@/lib/utils"
 
@@ -45,28 +45,6 @@ export default function ReportsPage() {
       return matchesType && matchesDate
     }).sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime())
   }, [firestoreReports, activeFilter, filterDate])
-
-  const handleDelete = (e: React.MouseEvent, id: string) => {
-    e.preventDefault();
-    e.stopPropagation();
-    
-    if (!id || !db || !user) return
-    
-    const confirmDelete = window.confirm("तुम्हाला खात्री आहे की हा अहवाल कायमचा हटवायचा आहे? (Are you sure you want to delete this report?)")
-    if (!confirmDelete) return
-    
-    try {
-      const docRef = doc(db, 'users', user.uid, 'dailyWorkReports', id)
-      deleteDocumentNonBlocking(docRef)
-      if (selectedReport?.id === id) {
-        setIsViewOpen(false);
-        setSelectedReport(null);
-      }
-      toast({ title: "यशस्वी", description: "अहवाल यशस्वीरित्या हटवण्यात आला." })
-    } catch (err) {
-      toast({ title: "त्रुटी", description: "अहवाल हटवता आला नाही.", variant: "destructive" })
-    }
-  }
 
   const handleSaveEdit = () => {
     if (!db || !user || !editData.id) return
@@ -265,7 +243,6 @@ export default function ReportsPage() {
               <div className="flex gap-2 bg-slate-50 p-2 rounded-2xl group-hover:bg-white transition-colors">
                 <Button type="button" size="icon" variant="ghost" className="h-10 w-10 text-primary hover:bg-primary/10 rounded-xl" onClick={() => { setSelectedReport(report); setIsViewOpen(true); }}><Eye className="h-5 w-5" /></Button>
                 <Button type="button" size="icon" variant="ghost" className="h-10 w-10 text-primary hover:bg-primary/10 rounded-xl" onClick={() => { setEditData({id: report.id, summary: report.summary}); setIsEditOpen(true); }}><Edit className="h-5 w-5" /></Button>
-                <Button type="button" size="icon" variant="ghost" className="h-10 w-10 text-rose-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl" onClick={(e) => handleDelete(e, report.id)}><Trash2 className="h-5 w-5" /></Button>
               </div>
             </CardContent>
           </Card>
@@ -290,7 +267,6 @@ export default function ReportsPage() {
             </div>
             <div className="flex gap-2">
               <Button type="button" size="sm" onClick={() => window.print()} className="h-11 px-6 text-xs font-black uppercase bg-slate-900 hover:bg-black text-white rounded-xl shadow-xl transition-all active:scale-95"><Printer className="h-4 w-4 mr-2" /> PRINT</Button>
-              <Button type="button" size="icon" variant="ghost" className="h-11 w-11 rounded-xl text-rose-500 hover:bg-rose-50" onClick={(e) => selectedReport && handleDelete(e, selectedReport.id)}><Trash2 className="h-5 w-5" /></Button>
               <Button type="button" size="icon" variant="ghost" onClick={() => setIsViewOpen(false)} className="h-11 w-11 rounded-full hover:bg-slate-100"><X className="h-6 w-6 text-slate-400" /></Button>
             </div>
           </DialogHeader>

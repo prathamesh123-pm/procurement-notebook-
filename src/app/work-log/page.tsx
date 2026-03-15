@@ -8,10 +8,10 @@ import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Task } from "@/lib/types"
-import { Plus, Search, ListTodo, User, Hash, Trash2, CheckCircle2, X, Edit } from "lucide-react"
+import { Plus, Search, ListTodo, User, Hash, CheckCircle2, X, Edit } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
-import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking, deleteDocumentNonBlocking, updateDocumentNonBlocking } from "@/firebase"
+import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking } from "@/firebase"
 import { collection, doc } from "firebase/firestore"
 import { AIGuidanceCard } from "@/components/ai-guidance-card"
 
@@ -100,24 +100,6 @@ export default function WorkLogPage() {
     toast({ title: "यशस्वी", description: "टास्क पूर्ण झाला आणि अहवालात जोडला गेला." })
   }
 
-  const handleDeleteTask = (e: React.MouseEvent, taskId: string) => {
-    e.preventDefault();
-    e.stopPropagation();
-    
-    if (!db || !user || !taskId) return
-    
-    const confirmDelete = window.confirm("तुम्हाला खात्री आहे की हा टास्क कायमचा हटवायचा आहे? (Are you sure you want to delete this task?)")
-    if (!confirmDelete) return
-    
-    try {
-      const docRef = doc(db, 'users', user.uid, 'tasks', taskId)
-      deleteDocumentNonBlocking(docRef)
-      toast({ title: "यशस्वी", description: "टास्क हटवण्यात आला." })
-    } catch (err) {
-      toast({ title: "त्रुटी", description: "टास्क हटवताना अडचण आली.", variant: "destructive" })
-    }
-  }
-
   const pendingTasks = useMemo(() => {
     return (firestoreTasks || [])
       .filter(t => t.status === 'pending')
@@ -171,17 +153,6 @@ export default function WorkLogPage() {
                     {task.supplierName && <span className="flex items-center gap-1 bg-primary/5 px-1.5 py-0.5 rounded text-primary border border-primary/10"><User className="h-3 w-3" /> {task.supplierName}</span>}
                     {task.supplierId && <span className="flex items-center gap-1 bg-muted px-1.5 py-0.5 rounded border border-muted-foreground/5"><Hash className="h-3 w-3" /> {task.supplierId}</span>}
                   </div>
-                </div>
-                <div className="flex items-center gap-1 shrink-0 relative z-30">
-                  <Button 
-                    type="button" 
-                    variant="ghost" 
-                    size="icon" 
-                    className="h-8 w-8 text-destructive rounded-full hover:bg-destructive/10" 
-                    onClick={(e) => handleDeleteTask(e, task.id)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
                 </div>
               </div>
             </Card>

@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { 
-  Warehouse, Plus, Search, MapPin, Trash2, Edit, Truck, FlaskConical, X, ChevronRight
+  Warehouse, Plus, Search, MapPin, Edit, Truck, FlaskConical, X, ChevronRight
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
@@ -15,7 +15,7 @@ import { CollectionCenter, EquipmentItem } from "@/lib/types"
 import { useToast } from "@/hooks/use-toast"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Checkbox } from "@/components/ui/checkbox"
-import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking, deleteDocumentNonBlocking, updateDocumentNonBlocking } from "@/firebase"
+import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking } from "@/firebase"
 import { collection, doc } from "firebase/firestore"
 
 export default function CentersPage() {
@@ -133,27 +133,9 @@ export default function CentersPage() {
     setIsDialogOpen(false)
   }
 
-  const handleDeleteCenter = (e: React.MouseEvent, id: string) => {
-    e.stopPropagation();
-    e.preventDefault();
-    
-    if (!db || !user || !id) return
-    const confirmDelete = window.confirm("तुम्हाला खात्री आहे की हे केंद्र कायमचे हटवायचा आहे? (Are you sure you want to delete this center?)")
-    if (!confirmDelete) return
-    
-    try {
-      const docRef = doc(db, 'users', user.uid, 'centers', id)
-      deleteDocumentNonBlocking(docRef)
-      if (selectedCenter?.id === id) setSelectedCenter(null)
-      toast({ title: "यशस्वी", description: "केंद्र यशस्वीरित्या हटवण्यात आले." })
-    } catch (err) {
-      toast({ title: "त्रुटी", description: "केंद्र हटवताना अडचण आली.", variant: "destructive" })
-    }
-  }
-
-  const filteredCenters = centers?.filter(c => 
-    c.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-    c.code.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredCenters = centers?.filter(center => 
+    center.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    center.code.toLowerCase().includes(searchQuery.toLowerCase())
   ) || []
 
   if (!mounted || isLoading) return <div className="p-10 text-center italic font-black uppercase text-[10px] opacity-50">लोड होत आहे...</div>
@@ -175,10 +157,7 @@ export default function CentersPage() {
               {filteredCenters.map(center => (
                 <div key={center.id} className={`p-2.5 cursor-pointer hover:bg-muted/50 flex justify-between items-center ${selectedCenter?.id === center.id ? 'bg-primary/5 border-l-2 border-primary' : ''}`} onClick={() => setSelectedCenter(center)}>
                   <div className="min-w-0"><h4 className="font-black text-[11px] text-foreground truncate">{center.name}</h4><div className="flex items-center gap-1.5 mt-0.5"><Badge variant="secondary" className="text-[8px] font-black h-3.5">{center.code}</Badge><span className="text-[9px] text-muted-foreground truncate"><MapPin className="h-2.5 w-2.5" /> {center.village}</span></div></div>
-                  <div className="flex items-center gap-1">
-                    <Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:bg-destructive/5" onClick={(e) => handleDeleteCenter(e, center.id)}><Trash2 className="h-3 w-3" /></Button>
-                    <ChevronRight className="h-4 w-4 text-muted-foreground opacity-50" />
-                  </div>
+                  <ChevronRight className="h-4 w-4 text-muted-foreground opacity-50" />
                 </div>
               ))}
             </div>
@@ -191,7 +170,7 @@ export default function CentersPage() {
               <div className="p-2.5 border-b flex items-center justify-between bg-primary/5 sticky top-0 z-10">
                 <Button type="button" variant="ghost" size="icon" className="lg:hidden" onClick={() => setSelectedCenter(null)}><X className="h-4 w-4" /></Button>
                 <div className="flex-1 px-2 min-w-0"><h3 className="text-sm font-black truncate">{selectedCenter.name}</h3><p className="text-[9px] font-black text-muted-foreground uppercase">Code: {selectedCenter.code} | {selectedCenter.village}</p></div>
-                <div className="flex gap-1.5"><Button type="button" variant="outline" size="icon" className="h-7 w-7 text-primary" onClick={() => handleOpenEdit(selectedCenter)}><Edit className="h-3 w-3" /></Button><Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:bg-destructive/5" onClick={(e) => handleDeleteCenter(e, selectedCenter.id)}><Trash2 className="h-3 w-3" /></Button></div>
+                <div className="flex gap-1.5"><Button type="button" variant="outline" size="icon" className="h-7 w-7 text-primary" onClick={() => handleOpenEdit(selectedCenter)}><Edit className="h-3 w-3" /></Button></div>
               </div>
               <ScrollArea className="flex-1 h-[600px]">
                 <div className="p-3 space-y-4">
