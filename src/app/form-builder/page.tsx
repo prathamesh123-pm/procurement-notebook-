@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect } from "react"
@@ -78,11 +79,18 @@ export default function FormBuilderPage() {
 
   const handleDeleteForm = (e: React.MouseEvent, id: string) => {
     e.stopPropagation()
-    if (!db || !user || !confirm("तुम्हाला हा फॉर्म कायमचा हटवायचा आहे?")) return
-    const docRef = doc(db, 'users', user.uid, 'formDefinitions', id)
-    deleteDocumentNonBlocking(docRef)
-    if (editingId === id) resetBuilder()
-    toast({ title: "यशस्वी", description: "फॉर्म हटवण्यात आला." })
+    e.preventDefault()
+    
+    if (!db || !user || !window.confirm("तुम्हाला हा फॉर्म कायमचा हटवायचा आहे?")) return
+    
+    try {
+      const docRef = doc(db, 'users', user.uid, 'formDefinitions', id)
+      deleteDocumentNonBlocking(docRef)
+      if (editingId === id) resetBuilder()
+      toast({ title: "यशस्वी", description: "फॉर्म हटवण्यात आला." })
+    } catch (err) {
+      toast({ title: "त्रुटी", description: "फॉर्म हटवताना अडचण आली.", variant: "destructive" })
+    }
   }
 
   const resetBuilder = () => {
@@ -116,7 +124,7 @@ export default function FormBuilderPage() {
               <CardTitle className="text-xs font-black uppercase tracking-widest text-primary">फॉर्मची रचना (DESIGN)</CardTitle>
               <CardDescription className="text-[9px] uppercase font-bold">रकाने आणि इनपुट प्रकार निवडा.</CardDescription>
             </div>
-            {editingId && <Button variant="ghost" size="sm" onClick={resetBuilder} className="h-7 text-[9px] font-black uppercase">नवीन फॉर्म</Button>}
+            {editingId && <Button type="button" variant="ghost" size="sm" onClick={resetBuilder} className="h-7 text-[9px] font-black uppercase">नवीन फॉर्म</Button>}
           </CardHeader>
           <CardContent className="p-4 space-y-6">
             <div className="space-y-1.5">
@@ -132,7 +140,7 @@ export default function FormBuilderPage() {
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-[9px] font-black uppercase text-primary tracking-[0.2em]">रकाने (FIELDS)</span>
-                <Button size="sm" onClick={addField} className="h-8 text-[9px] font-black uppercase rounded-lg shadow-md"><Plus className="h-3.5 w-3.5 mr-1" /> रकाना जोडा</Button>
+                <Button type="button" size="sm" onClick={addField} className="h-8 text-[9px] font-black uppercase rounded-lg shadow-md"><Plus className="h-3.5 w-3.5 mr-1" /> रकाना जोडा</Button>
               </div>
 
               <div className="space-y-2">
@@ -161,7 +169,7 @@ export default function FormBuilderPage() {
                         </SelectContent>
                       </Select>
                     </div>
-                    <Button variant="ghost" size="icon" onClick={() => removeField(field.id)} className="h-8 w-8 text-destructive rounded-full hover:bg-destructive/10"><Trash2 className="h-4 w-4" /></Button>
+                    <Button type="button" variant="ghost" size="icon" onClick={() => removeField(field.id)} className="h-8 w-8 text-destructive rounded-full hover:bg-destructive/10"><Trash2 className="h-4 w-4" /></Button>
                   </div>
                 ))}
                 {fields.length === 0 && (
@@ -173,7 +181,7 @@ export default function FormBuilderPage() {
               </div>
             </div>
 
-            <Button onClick={handleSaveForm} className="w-full font-black h-12 shadow-xl shadow-primary/20 rounded-2xl uppercase text-[11px]">
+            <Button type="button" onClick={handleSaveForm} className="w-full font-black h-12 shadow-xl shadow-primary/20 rounded-2xl uppercase text-[11px]">
               <Save className="h-4 w-4 mr-2" /> फॉर्म जतन करा (SAVE FORM)
             </Button>
           </CardContent>
@@ -193,7 +201,7 @@ export default function FormBuilderPage() {
                     <p className="text-[8px] font-bold text-muted-foreground uppercase mt-0.5">{form.fields.length} रकाने | {new Date(form.updatedAt).toLocaleDateString()}</p>
                   </div>
                   <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Button variant="ghost" size="icon" onClick={(e) => handleDeleteForm(e, form.id)} className="h-8 w-8 text-destructive rounded-full hover:bg-destructive/10"><Trash2 className="h-3.5 w-3.5" /></Button>
+                    <Button type="button" variant="ghost" size="icon" onClick={(e) => handleDeleteForm(e, form.id)} className="h-8 w-8 text-destructive rounded-full hover:bg-destructive/10"><Trash2 className="h-3.5 w-3.5" /></Button>
                     <ChevronRight className="h-4 w-4 text-primary" />
                   </div>
                 </div>

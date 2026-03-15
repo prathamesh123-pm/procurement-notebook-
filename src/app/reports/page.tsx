@@ -46,7 +46,12 @@ export default function ReportsPage() {
     }).sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime())
   }, [firestoreReports, activeFilter, filterDate])
 
-  const handleDelete = (id: string) => {
+  const handleDelete = (e: React.MouseEvent | null, id: string) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    
     if (!id || !db || !user) return
     
     const confirmDelete = window.confirm("तुम्हाला खात्री आहे की हा अहवाल कायमचा हटवायचा आहे?")
@@ -131,29 +136,6 @@ export default function ReportsPage() {
                 <td className="border border-black p-2">DIST: {data.totalKm || 0} KM</td>
                 <td colSpan={2} className="border border-black p-2 text-center">VEHICLE: {data.vehicleNumber || '-'}</td>
                 <td className="border border-black p-2 text-center">SHORT: {data.shortageLiters || 0} L</td>
-              </tr>
-            </tbody>
-          </table>
-        )}
-
-        {reportType === 'Breakdown' && data.losses && (
-          <table className="w-full border-collapse border border-black mb-4">
-            <thead>
-              <tr className="bg-slate-100 font-black uppercase text-[9px]">
-                <th className="border border-black p-2 text-left">SUPPLIER CODE/NAME</th>
-                <th className="border border-black p-2 text-center">LOSS AMOUNT (₹)</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.losses.map((loss: any, i: number) => (
-                <tr key={i}>
-                  <td className="border border-black p-2 font-bold">{loss.supplierCode} - {loss.supplierName}</td>
-                  <td className="border border-black p-2 text-right font-black">₹{loss.lossAmount || 0}</td>
-                </tr>
-              ))}
-              <tr className="bg-slate-50 font-black">
-                <td className="border border-black p-3 text-right uppercase">TOTAL FINANCIAL LOSS:</td>
-                <td className="border border-black p-3 text-right">₹{data.totalLossAmount || 0}</td>
               </tr>
             </tbody>
           </table>
@@ -285,7 +267,7 @@ export default function ReportsPage() {
               <div className="flex gap-2 bg-slate-50 p-2 rounded-2xl group-hover:bg-white transition-colors">
                 <Button type="button" size="icon" variant="ghost" className="h-10 w-10 text-primary hover:bg-primary/10 rounded-xl" onClick={() => { setSelectedReport(report); setIsViewOpen(true); }}><Eye className="h-5 w-5" /></Button>
                 <Button type="button" size="icon" variant="ghost" className="h-10 w-10 text-primary hover:bg-primary/10 rounded-xl" onClick={() => { setEditData({id: report.id, summary: report.summary}); setIsEditOpen(true); }}><Edit className="h-5 w-5" /></Button>
-                <Button type="button" size="icon" variant="ghost" className="h-10 w-10 text-rose-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl" onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleDelete(report.id); }}><Trash2 className="h-5 w-5" /></Button>
+                <Button type="button" size="icon" variant="ghost" className="h-10 w-10 text-rose-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl" onClick={(e) => handleDelete(e, report.id)}><Trash2 className="h-5 w-5" /></Button>
               </div>
             </CardContent>
           </Card>
@@ -310,7 +292,7 @@ export default function ReportsPage() {
             </div>
             <div className="flex gap-2">
               <Button type="button" size="sm" onClick={() => window.print()} className="h-11 px-6 text-xs font-black uppercase bg-slate-900 hover:bg-black text-white rounded-xl shadow-xl transition-all active:scale-95"><Printer className="h-4 w-4 mr-2" /> PRINT</Button>
-              <Button type="button" size="icon" variant="ghost" className="h-11 w-11 rounded-xl text-rose-500 hover:bg-rose-50" onClick={() => selectedReport && handleDelete(selectedReport.id)}><Trash2 className="h-5 w-5" /></Button>
+              <Button type="button" size="icon" variant="ghost" className="h-11 w-11 rounded-xl text-rose-500 hover:bg-rose-50" onClick={(e) => selectedReport && handleDelete(e, selectedReport.id)}><Trash2 className="h-5 w-5" /></Button>
               <Button type="button" size="icon" variant="ghost" onClick={() => setIsViewOpen(false)} className="h-11 w-11 rounded-full hover:bg-slate-100"><X className="h-6 w-6 text-slate-400" /></Button>
             </div>
           </DialogHeader>
