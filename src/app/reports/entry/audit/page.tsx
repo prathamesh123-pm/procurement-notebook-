@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Checkbox } from "@/components/ui/checkbox"
 import { 
-  ArrowLeft, Save, ClipboardCheck, Microscope, FlaskConical, AlertCircle, Warehouse, Milk, Settings, Droplets, Laptop, Zap, Sun, Box
+  ArrowLeft, Save, ClipboardCheck, Microscope, FlaskConical, AlertCircle, Warehouse, Milk, Settings, Droplets, Laptop, Zap, Sun, Box, History, Thermometer
 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { useUser, useFirestore, addDocumentNonBlocking } from "@/firebase"
@@ -26,15 +26,15 @@ export default function AuditReportPage() {
 
   const [formData, setFormData] = useState({
     date: new Date().toISOString().split('T')[0],
-    centerName: "", centerCode: "", ownerName: "", mobile: "", fssaiNo: "", validDate: "",
-    producerCount: "", avgTemp: "", totalMilk: "",
+    centerName: "", centerCode: "", ownerName: "", mobile: "", address: "", fssaiNo: "", validDate: "",
+    producers: "", avgTemp: "", totalMilk: "",
     mornCow: "", mornBuf: "", eveCow: "", eveBuf: "",
     quality: { cowFat: "", bufFat: "", cowSnf: "", bufSnf: "", temp: "" },
-    chemicalTests: { sugar: "NEG", soda: "NEG", cob: "NEG", mbrt: "", acidity: "", density: "" },
+    tests: { sugar: "NEG", soda: "NEG", cob: "NEG", mbrt: "", acidity: "", density: "" },
     equipment: { tester: "", calibrationDate: "", calibrated: "YES", cooling: "YES", other: "" },
-    hygiene: { center: "OK", floor: "OK", drainage: "OK", staff: "OK", equipment: "OK", waste: "OK" },
-    computerAvailable: false, upsInverterAvailable: false, solarAvailable: false,
-    auditResult: "EXCELLENT", recommendations: "", nextAuditDate: ""
+    hygiene: { center: true, floor: true, drainage: true, staff: true, equipment: true, waste: true },
+    structure: { building: "GOOD", electric: "REGULAR" },
+    auditResult: "EXCELLENT", recommendations: "", nextAuditDate: "", repName: ""
   })
 
   useEffect(() => setMounted(true), [])
@@ -49,9 +49,9 @@ export default function AuditReportPage() {
       date: formData.date,
       reportDate: formData.date,
       generatedByUserId: user.uid,
-      summary: `ऑडिट: ${formData.centerName}. निकाल: ${formData.auditResult}. फॅट: C-${formData.quality.cowFat}/B-${formData.quality.bufFat}.`,
-      overallSummary: `केंद्र: ${formData.centerName}, कोड: ${formData.centerCode}, निकाल: ${formData.auditResult}`,
-      fullData: { ...formData },
+      summary: `ऑडिट: ${formData.centerName}. निकाल: ${formData.auditResult}. दूध: ${formData.totalMilk}L. फॅट: C-${formData.quality.cowFat}/B-${formData.quality.bufFat}.`,
+      overallSummary: `केंद्र: ${formData.centerName}, कोड: ${formData.centerCode}, ऑडिट निकाल: ${formData.auditResult}`,
+      fullData: { ...formData, auditor: user.displayName || "Quality Auditor" },
       createdAt: new Date().toISOString()
     }
     addDocumentNonBlocking(collection(db, 'users', user.uid, 'dailyWorkReports'), report)
@@ -80,85 +80,105 @@ export default function AuditReportPage() {
 
       <div className="space-y-3">
         <Card className="compact-card p-3">
-          <SectionTitle icon={Warehouse} title="१) केंद्राची मूलभूत माहिती" />
-          <div className="grid grid-cols-2 gap-2">
-            <div className="space-y-0.5 col-span-2"><Label className="compact-label">केंद्राचे नाव *</Label><Input className="compact-input h-9" value={formData.centerName} onChange={e => setFormData({...formData, centerName: e.target.value})} /></div>
-            <div className="space-y-0.5"><Label className="compact-label">केंद्र कोड *</Label><Input className="compact-input h-9" value={formData.centerCode} onChange={e => setFormData({...formData, centerCode: e.target.value})} /></div>
-            <div className="space-y-0.5"><Label className="compact-label">मोबाईल</Label><Input className="compact-input h-9" value={formData.mobile} onChange={e => setFormData({...formData, mobile: e.target.value})} /></div>
-          </div>
-        </Card>
-
-        <Card className="compact-card p-3 bg-primary/5">
-          <SectionTitle icon={Laptop} title="२) तांत्रिक व वीज सुविधा ऑडिट" />
+          <SectionTitle icon={Warehouse} title="१) केंद्राची मूलभूत माहिती (GENERAL)" />
           <div className="grid grid-cols-1 gap-2">
-            <div className="flex items-center space-x-2 bg-white/50 p-2 rounded-xl border border-primary/10">
-              <Checkbox id="audit-comp" checked={formData.computerAvailable} onCheckedChange={(v) => setFormData({...formData, computerAvailable: !!v})} />
-              <Label htmlFor="audit-comp" className="text-[10px] font-black uppercase cursor-pointer">कॉम्प्युटर उपलब्ध आहे?</Label>
+            <div className="space-y-0.5"><Label className="compact-label">केंद्राचे नाव *</Label><Input className="compact-input h-8" value={formData.centerName} onChange={e => setFormData({...formData, centerName: e.target.value})} /></div>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="space-y-0.5"><Label className="compact-label">केंद्र कोड *</Label><Input className="compact-input h-8" value={formData.centerCode} onChange={e => setFormData({...formData, centerCode: e.target.value})} /></div>
+              <div className="space-y-0.5"><Label className="compact-label">मालक</Label><Input className="compact-input h-8" value={formData.ownerName} onChange={e => setFormData({...formData, ownerName: e.target.value})} /></div>
             </div>
-            <div className="flex items-center space-x-2 bg-white/50 p-2 rounded-xl border border-primary/10">
-              <Checkbox id="audit-ups" checked={formData.upsInverterAvailable} onCheckedChange={(v) => setFormData({...formData, upsInverterAvailable: !!v})} />
-              <Label htmlFor="audit-ups" className="text-[10px] font-black uppercase cursor-pointer">UPS / इनव्हर्टर सुरू आहे?</Label>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="space-y-0.5"><Label className="compact-label">FSSAI क्र.</Label><Input className="compact-input h-8" value={formData.fssaiNo} onChange={e => setFormData({...formData, fssaiNo: e.target.value})} /></div>
+              <div className="space-y-0.5"><Label className="compact-label">वैधता मुदत</Label><Input type="date" className="compact-input h-8" value={formData.validDate} onChange={e => setFormData({...formData, validDate: e.target.value})} /></div>
             </div>
-            <div className="flex items-center space-x-2 bg-white/50 p-2 rounded-xl border border-primary/10">
-              <Checkbox id="audit-solar" checked={formData.solarAvailable} onCheckedChange={(v) => setFormData({...formData, solarAvailable: !!v})} />
-              <Label htmlFor="audit-solar" className="text-[10px] font-black uppercase cursor-pointer">सोलर पॅनेल सुरू आहेत?</Label>
-            </div>
+          </div>
+        </Card>
+
+        <Card className="compact-card p-3 bg-blue-50/20 border-blue-100">
+          <SectionTitle icon={History} title="२) दैनिक संकलन माहिती (STATS)" />
+          <div className="grid grid-cols-2 gap-2 mb-2">
+            <div className="space-y-0.5"><Label className="compact-label text-[8px]">उत्पादक संख्या</Label><Input className="compact-input h-7" value={formData.producers} onChange={e => setFormData({...formData, producers: e.target.value})} /></div>
+            <div className="space-y-0.5"><Label className="compact-label text-[8px]">एकूण संकलन (L)</Label><Input className="compact-input h-7 font-black" value={formData.totalMilk} onChange={e => setFormData({...formData, totalMilk: e.target.value})} /></div>
+          </div>
+          <div className="responsive-table-wrapper">
+            <table className="w-full text-[8px]">
+              <thead className="bg-blue-100/50">
+                <tr className="font-black uppercase tracking-tighter"><th className="p-1">SHIFT</th><th className="p-1">COW (L)</th><th className="p-1">BUF (L)</th></tr>
+              </thead>
+              <tbody className="divide-y divide-blue-100">
+                <tr><td className="p-1 font-bold">MORN</td><td className="p-0.5"><Input className="h-6 text-[9px] p-0.5 border-none bg-white" value={formData.mornCow} onChange={e => setFormData({...formData, mornCow: e.target.value})} /></td><td className="p-0.5"><Input className="h-6 text-[9px] p-0.5 border-none bg-white" value={formData.mornBuf} onChange={e => setFormData({...formData, mornBuf: e.target.value})} /></td></tr>
+                <tr><td className="p-1 font-bold">EVE</td><td className="p-0.5"><Input className="h-6 text-[9px] p-0.5 border-none bg-white" value={formData.eveCow} onChange={e => setFormData({...formData, eveCow: e.target.value})} /></td><td className="p-0.5"><Input className="h-6 text-[9px] p-0.5 border-none bg-white" value={formData.eveBuf} onChange={e => setFormData({...formData, eveBuf: e.target.value})} /></td></tr>
+              </tbody>
+            </table>
           </div>
         </Card>
 
         <Card className="compact-card p-3">
-          <SectionTitle icon={FlaskConical} title="३) रासायनिक चाचण्या (Tests)" />
-          <div className="grid grid-cols-2 gap-2">
+          <SectionTitle icon={FlaskConical} title="३) गुणवत्ता व चाचण्या (QUALITY)" />
+          <div className="grid grid-cols-2 gap-3 mb-3">
+            <div className="space-y-1">
+              <Label className="text-[8px] font-black text-slate-500">COW (F/S)</Label>
+              <div className="flex gap-1"><Input className="h-7 text-[9px] text-center" placeholder="FAT" value={formData.quality.cowFat} onChange={e => setFormData({...formData, quality: {...formData.quality, cowFat: e.target.value}})} /><Input className="h-7 text-[9px] text-center" placeholder="SNF" value={formData.quality.cowSnf} onChange={e => setFormData({...formData, quality: {...formData.quality, cowSnf: e.target.value}})} /></div>
+            </div>
+            <div className="space-y-1">
+              <Label className="text-[8px] font-black text-slate-500">BUF (F/S)</Label>
+              <div className="flex gap-1"><Input className="h-7 text-[9px] text-center" placeholder="FAT" value={formData.quality.bufFat} onChange={e => setFormData({...formData, quality: {...formData.quality, bufFat: e.target.value}})} /><Input className="h-7 text-[9px] text-center" placeholder="SNF" value={formData.quality.bufSnf} onChange={e => setFormData({...formData, quality: {...formData.quality, bufSnf: e.target.value}})} /></div>
+            </div>
+          </div>
+          <div className="grid grid-cols-3 gap-2 border-t border-dashed pt-2">
             {[
-              { label: 'Sugar Test', key: 'sugar' },
-              { label: 'Soda Test', key: 'soda' },
-              { label: 'COB Test', key: 'cob' },
+              { l: 'SUGAR', k: 'sugar' }, { l: 'SODA', k: 'soda' }, { l: 'COB', k: 'cob' }
             ].map(it => (
-              <div key={it.key} className="space-y-0.5">
-                <Label className="text-[8px] font-black text-slate-500 uppercase">{it.label}</Label>
-                <RadioGroup value={(formData.chemicalTests as any)[it.key]} onValueChange={v => setFormData({...formData, chemicalTests: {...formData.chemicalTests, [it.key]: v}})} className="flex gap-1.5">
-                  <div className="flex items-center gap-1"><RadioGroupItem value="NEG" id={`${it.key}-n`} className="h-2.5 w-2.5"/><Label htmlFor={`${it.key}-n`} className="text-[8px] font-black">NEG</Label></div>
-                  <div className="flex items-center gap-1"><RadioGroupItem value="POS" id={`${it.key}-p`} className="h-2.5 w-2.5"/><Label htmlFor={`${it.key}-p`} className="text-[8px] font-black">POS</Label></div>
+              <div key={it.k} className="space-y-1">
+                <Label className="text-[7px] font-black opacity-50">{it.l} TEST</Label>
+                <RadioGroup value={(formData.tests as any)[it.k]} onValueChange={v => setFormData({...formData, tests: {...formData.tests, [it.k]: v}})} className="flex gap-1">
+                  <div className="flex items-center gap-0.5"><RadioGroupItem value="NEG" className="h-2 w-2"/><Label className="text-[7px]">NEG</Label></div>
+                  <div className="flex items-center gap-0.5"><RadioGroupItem value="POS" className="h-2 w-2"/><Label className="text-[7px]">POS</Label></div>
                 </RadioGroup>
               </div>
             ))}
-            <div className="space-y-0.5"><Label className="text-[8px] font-black text-slate-500 uppercase">Acidity %</Label><Input className="h-8 text-[10px] p-1 bg-slate-50 font-black" value={formData.chemicalTests.acidity} onChange={e => setFormData({...formData, chemicalTests: {...formData.chemicalTests, acidity: e.target.value}})} /></div>
+          </div>
+          <div className="grid grid-cols-3 gap-2 mt-2">
+            <div className="space-y-0.5"><Label className="text-[7px] font-black">MBRT (MIN)</Label><Input className="h-7 text-[9px] p-1" value={formData.tests.mbrt} onChange={e => setFormData({...formData, tests: {...formData.tests, mbrt: e.target.value}})} /></div>
+            <div className="space-y-0.5"><Label className="text-[7px] font-black">ACIDITY%</Label><Input className="h-7 text-[9px] p-1" value={formData.tests.acidity} onChange={e => setFormData({...formData, tests: {...formData.tests, acidity: e.target.value}})} /></div>
+            <div className="space-y-0.5"><Label className="text-[7px] font-black">DENSITY</Label><Input className="h-7 text-[9px] p-1" value={formData.tests.density} onChange={e => setFormData({...formData, tests: {...formData.tests, density: e.target.value}})} /></div>
           </div>
         </Card>
 
         <Card className="compact-card p-3">
-          <SectionTitle icon={Droplets} title="४) स्वच्छता व संरचना" />
-          <div className="space-y-2">
+          <SectionTitle icon={Droplets} title="४) स्वच्छता चेकलिस्ट (HYGIENE)" />
+          <div className="grid grid-cols-2 gap-1.5">
             {[
-              { label: 'केंद्र स्वच्छ?', key: 'center' },
-              { label: 'मजला स्वच्छ?', key: 'floor' },
-              { label: 'कर्मचारी स्वच्छ?', key: 'staff' },
-              { label: 'कचरा व्यवस्थापन?', key: 'waste' },
+              { l: 'केंद्र स्वच्छ', k: 'center' }, { l: 'मजला स्वच्छ', k: 'floor' },
+              { l: 'ड्रेन सिस्टीम', k: 'drainage' }, { l: 'कर्मचारी स्वच्छ', k: 'staff' },
+              { l: 'उपकरणे स्वच्छ', k: 'equipment' }, { l: 'कचरा व्य.', k: 'waste' }
             ].map(it => (
-              <div key={it.key} className="flex justify-between items-center border-b border-dotted pb-1">
-                <Label className="text-[9px] font-bold uppercase text-slate-600">{it.label}</Label>
-                <RadioGroup value={(formData.hygiene as any)[it.key]} onValueChange={v => setFormData({...formData, hygiene: {...formData.hygiene, [it.key]: v}})} className="flex gap-2">
-                  <div className="flex items-center gap-1"><RadioGroupItem value="OK" id={`hy-${it.key}-ok`} className="h-2.5 w-2.5"/><Label htmlFor={`hy-${it.key}-ok`} className="text-[8px] font-black">होय</Label></div>
-                  <div className="flex items-center gap-1"><RadioGroupItem value="NOT" id={`hy-${it.key}-no`} className="h-2.5 w-2.5"/><Label htmlFor={`hy-${it.key}-no`} className="text-[8px] font-black">नाही</Label></div>
-                </RadioGroup>
+              <div key={it.k} className="flex items-center space-x-1.5 bg-slate-50 p-1 rounded-lg border border-slate-100">
+                <Checkbox checked={(formData.hygiene as any)[it.k]} onCheckedChange={v => setFormData({...formData, hygiene: {...formData.hygiene, [it.k]: !!v}})} className="h-3 w-3" />
+                <span className="text-[7.5px] font-black uppercase tracking-tighter">{it.l}</span>
               </div>
             ))}
           </div>
         </Card>
 
-        <Card className="compact-card p-3 bg-primary/5">
-          <SectionTitle icon={AlertCircle} title="५) ऑडिट निकाल" />
-          <div className="space-y-2">
-            <div className="space-y-0.5"><Label className="compact-label">एकूण ऑडिट निकाल</Label>
+        <Card className="compact-card p-3 bg-amber-50/20 border-amber-100">
+          <SectionTitle icon={AlertCircle} title="५) ऑडिट निकाल (RESULT)" />
+          <div className="space-y-3">
+            <div className="space-y-1">
+              <Label className="compact-label">एकूण ऑडिट निकाल</Label>
               <RadioGroup value={formData.auditResult} onValueChange={v => setFormData({...formData, auditResult: v})} className="flex flex-wrap gap-1.5">
-                {['EXCELLENT', 'GOOD', 'POOR', 'FAIL'].map(o => <div key={o} className="compact-radio-item p-1 border-primary/10"><RadioGroupItem value={o} id={`res-${o}`} className="h-2.5 w-2.5"/><Label htmlFor={`res-${o}`} className="text-[8px] font-black px-1">{o}</Label></div>)}
+                {['EXCELLENT', 'GOOD', 'NEEDS IMP.', 'POOR'].map(o => <div key={o} className="compact-radio-item p-1 border-primary/10 bg-white"><RadioGroupItem value={o} id={`res-${o}`} className="h-2.5 w-2.5"/><Label htmlFor={`res-${o}`} className="text-[8px] font-black px-1">{o}</Label></div>)}
               </RadioGroup>
             </div>
-            <div className="space-y-0.5"><Label className="compact-label">शिफारसी</Label><Textarea className="compact-input h-16 p-2 text-[10px] font-medium" value={formData.recommendations} onChange={e => setFormData({...formData, recommendations: e.target.value})} placeholder="शिफारसी लिहा..." /></div>
+            <div className="space-y-0.5"><Label className="compact-label">शिफारसी व सुधारणा</Label><Textarea className="compact-input h-14 p-2 text-[10px]" value={formData.recommendations} onChange={e => setFormData({...formData, recommendations: e.target.value})} placeholder="..." /></div>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="space-y-0.5"><Label className="compact-label">पुढील ऑडिट तारीख</Label><Input type="date" className="compact-input h-8" value={formData.nextAuditDate} onChange={e => setFormData({...formData, nextAuditDate: e.target.value})} /></div>
+              <div className="space-y-0.5"><Label className="compact-label">प्रतिनिधी नाव</Label><Input className="compact-input h-8" value={formData.repName} onChange={e => setFormData({...formData, repName: e.target.value})} /></div>
+            </div>
           </div>
         </Card>
 
-        <Button onClick={handleSave} className="compact-button w-full bg-primary text-white shadow-lg shadow-primary/20 mb-10 h-11 font-black uppercase transition-all active:scale-95">
+        <Button onClick={handleSave} className="compact-button w-full bg-primary text-white shadow-lg shadow-primary/20 mb-10 h-11 uppercase font-black transition-all active:scale-95">
           ऑडिट जतन करा (SUBMIT)
         </Button>
       </div>
