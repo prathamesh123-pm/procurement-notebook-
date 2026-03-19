@@ -10,7 +10,7 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
-import { Dialog, DialogContent } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { useUser, useFirestore, useCollection, useMemoFirebase, deleteDocumentNonBlocking } from "@/firebase"
 import { collection, doc } from "firebase/firestore"
@@ -108,14 +108,17 @@ export default function ReportsPage() {
 
       <Dialog open={isViewOpen} onOpenChange={setIsViewOpen}>
         <DialogContent className="max-w-[450px] p-0 rounded-2xl overflow-hidden border-none shadow-2xl">
-          <div className="p-2 bg-slate-50 border-b flex items-center justify-between">
-            <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest px-2">अहवाल तपशील</span>
+          <DialogHeader className="p-2 bg-slate-50 border-b flex flex-row items-center justify-between space-y-0">
+            <div>
+              <DialogTitle className="text-[9px] font-black uppercase text-slate-400 tracking-widest px-2">अहवाल तपशील</DialogTitle>
+              <DialogDescription className="sr-only">अहवालाची सविस्तर माहिती</DialogDescription>
+            </div>
             <div className="flex gap-1">
               <Button size="icon" variant="ghost" onClick={() => window.print()} className="h-7 w-7"><Printer className="h-3.5 w-3.5" /></Button>
               <Button size="icon" variant="ghost" onClick={() => handleDeleteReport(selectedReport?.id)} className="h-7 w-7 text-destructive"><Trash2 className="h-3.5 w-3.5" /></Button>
               <Button size="icon" variant="ghost" onClick={() => setIsViewOpen(false)} className="h-7 w-7"><X className="h-3.5 w-3.5" /></Button>
             </div>
-          </div>
+          </DialogHeader>
           <ScrollArea className="max-h-[70vh] p-4 bg-white">
             {selectedReport && (
               <div className="text-[9px] font-mono text-black space-y-3" id="printable-area">

@@ -306,6 +306,7 @@ function SuppliersContent() {
         <DialogContent className="max-w-[500px] p-0 overflow-hidden rounded-3xl border-none shadow-2xl bg-white">
           <DialogHeader className="p-3 bg-primary text-white">
             <DialogTitle className="text-sm font-black uppercase tracking-widest">माहिती बदला: {selectedSupplier?.name}</DialogTitle>
+            <DialogDescription className="text-[8px] text-white/70 uppercase">सप्लायरची माहिती अद्ययावत करा.</DialogDescription>
           </DialogHeader>
           <ScrollArea className="max-h-[80vh] p-4">
             <div className="space-y-6">
