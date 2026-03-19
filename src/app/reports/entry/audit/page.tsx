@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { 
@@ -59,34 +59,34 @@ export default function AuditReportPage() {
   return (
     <div className="compact-form-container">
       <div className="flex items-center gap-2 border-b pb-2 mb-2">
-        <Button variant="ghost" size="icon" onClick={() => router.back()} className="h-8 w-8 rounded-full">
+        <Button variant="ghost" size="icon" onClick={() => router.back()} className="h-8 w-8 rounded-full shrink-0">
           <ArrowLeft className="h-4 w-4" />
         </Button>
-        <div>
-          <h2 className="text-sm font-black text-slate-900 flex items-center gap-1.5 uppercase">
-            <ClipboardCheck className="h-4 w-4 text-primary" /> केंद्र ऑडिट (AUDIT)
+        <div className="min-w-0">
+          <h2 className="text-xs font-black text-slate-900 flex items-center gap-1.5 uppercase truncate">
+            <ClipboardCheck className="h-3.5 w-3.5 text-primary shrink-0" /> केंद्र ऑडिट (AUDIT)
           </h2>
-          <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">{formData.date}</p>
+          <p className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">{formData.date}</p>
         </div>
       </div>
 
       <Card className="compact-card">
-        <div className="space-y-3">
+        <div className="space-y-2">
           <div className="flex items-center gap-1.5 border-b pb-1">
-            <Microscope className="h-3.5 w-3.5 text-primary" />
-            <h3 className="text-[10px] font-black uppercase text-primary tracking-widest">१) केंद्राची माहिती</h3>
+            <Microscope className="h-3 w-3 text-primary" />
+            <h3 className="text-[9px] font-black uppercase text-primary tracking-widest">१) केंद्राची माहिती</h3>
           </div>
-          <div className="grid grid-cols-1 gap-2.5">
-            <div className="space-y-1">
+          <div className="space-y-2">
+            <div className="space-y-0.5">
               <Label className="compact-label">केंद्राचे नाव *</Label>
               <Input className="compact-input" value={formData.centerName} onChange={e => setFormData({...formData, centerName: e.target.value})} placeholder="..." />
             </div>
             <div className="grid grid-cols-2 gap-2">
-              <div className="space-y-1">
+              <div className="space-y-0.5">
                 <Label className="compact-label">कोड (Code)</Label>
                 <Input className="compact-input" value={formData.code} onChange={e => setFormData({...formData, code: e.target.value})} placeholder="..." />
               </div>
-              <div className="space-y-1">
+              <div className="space-y-0.5">
                 <Label className="compact-label">ऑपरेटर</Label>
                 <Input className="compact-input" value={formData.operator} onChange={e => setFormData({...formData, operator: e.target.value})} placeholder="..." />
               </div>
@@ -96,22 +96,21 @@ export default function AuditReportPage() {
       </Card>
 
       <Card className="compact-card">
-        <div className="space-y-3">
+        <div className="space-y-2">
           <div className="flex items-center gap-1.5 border-b pb-1">
-            <FlaskConical className="h-3.5 w-3.5 text-primary" />
-            <h3 className="text-[10px] font-black uppercase text-primary tracking-widest">२) तांत्रिक तपासणी</h3>
+            <FlaskConical className="h-3 w-3 text-primary" />
+            <h3 className="text-[9px] font-black uppercase text-primary tracking-widest">२) तांत्रिक तपासणी</h3>
           </div>
           
-          <div className="space-y-3">
+          <div className="space-y-2">
             {[
-              { label: 'काटा (Weighing Scale)', key: 'weighingScale', options: ['OK', 'NOT-OK'] },
-              { label: 'फॅट मशीन (Fat Machine)', key: 'fatMachine', options: ['OK', 'NOT-OK'] },
+              { label: 'काटा (Scale)', key: 'weighingScale', options: ['OK', 'NOT-OK'] },
+              { label: 'फॅट मशीन (Fat)', key: 'fatMachine', options: ['OK', 'NOT-OK'] },
               { label: 'केमिकल्स स्टॉक', key: 'chemicals', options: ['OK', 'SHORT'] },
-              { label: 'स्वच्छता (Hygiene)', key: 'hygiene', options: ['GOOD', 'AVERAGE', 'POOR'] },
-              { label: 'सॅम्पलिंग पद्धत', key: 'samplingMethod', options: ['PROPER', 'WRONG'] },
+              { label: 'स्वच्छता (Hygiene)', key: 'hygiene', options: ['GOOD', 'POOR'] },
               { label: 'नोंदवही / रेकॉर्ड्स', key: 'recordsMaintenance', options: ['OK', 'PENDING'] },
             ].map((item) => (
-              <div key={item.key} className="space-y-1">
+              <div key={item.key} className="space-y-0.5">
                 <Label className="compact-label">{item.label}</Label>
                 <RadioGroup 
                   value={(formData as any)[item.key]} 
@@ -132,25 +131,19 @@ export default function AuditReportPage() {
       </Card>
 
       <Card className="compact-card">
-        <div className="space-y-3">
-          <div className="flex items-center gap-1.5 border-b pb-1">
-            <AlertCircle className="h-3.5 w-3.5 text-primary" />
-            <h3 className="text-[10px] font-black uppercase text-primary tracking-widest">३) शिफारसी व सुधारणा</h3>
-          </div>
-          <div className="space-y-1">
-            <Label className="compact-label">महत्वाच्या शिफारसी (Recommendations)</Label>
-            <Textarea 
-              className="compact-input min-h-[80px] h-auto p-2" 
-              value={formData.recommendations} 
-              onChange={e => setFormData({...formData, recommendations: e.target.value})} 
-              placeholder="..." 
-            />
-          </div>
+        <div className="space-y-1">
+          <Label className="compact-label flex items-center gap-1"><AlertCircle className="h-3 w-3" /> शिफारसी (Recommendations)</Label>
+          <Textarea 
+            className="compact-input min-h-[50px] h-auto p-1.5" 
+            value={formData.recommendations} 
+            onChange={e => setFormData({...formData, recommendations: e.target.value})} 
+            placeholder="..." 
+          />
         </div>
       </Card>
 
       <Button onClick={handleSave} className="compact-button w-full bg-primary text-white shadow-primary/20 mb-10">
-        <Save className="h-4 w-4" /> ऑडिट जतन करा (SUBMIT)
+        <Save className="h-3.5 w-3.5" /> ऑडिट जतन करा (SUBMIT)
       </Button>
     </div>
   )
