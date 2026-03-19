@@ -1,10 +1,11 @@
+
 "use client"
 
 import * as React from "react"
 import { 
   LayoutDashboard, ListTodo, MapPin, LogOut, Milk, 
   ClipboardCheck, Archive, UserCircle, Warehouse, 
-  Settings2, FileEdit, X, ChevronLeft, ChevronRight
+  Settings2, X
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -44,12 +45,6 @@ const items = [
     url: "/work-log",
     icon: ListTodo,
     sub: "Tasks"
-  },
-  {
-    title: "फॉर्म भरा",
-    url: "/forms",
-    icon: FileEdit,
-    sub: "Forms"
   },
   {
     title: "संकलन केंद्र",
