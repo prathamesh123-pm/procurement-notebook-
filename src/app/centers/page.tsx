@@ -7,8 +7,8 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { 
-  Warehouse, Plus, Search, MapPin, Edit, Truck, FlaskConical, X, ChevronRight, Trash2, 
-  Laptop, Zap, Sun, ClipboardList, Battery, Box, CheckCircle2
+  Warehouse, Plus, Search, MapPin, Edit, Truck, X, ChevronRight, Trash2, 
+  Laptop, Zap, Sun, ClipboardList, Box, CheckCircle2, Info
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
@@ -251,7 +251,7 @@ export default function CentersPage() {
                     </h4>
                     <div className="grid grid-cols-1 gap-1.5">
                       <div><p className="text-[8px] text-muted-foreground uppercase font-black">मोबाईल</p><p className="text-[10px] font-black">{selectedCenter.mobile || "-"}</p></div>
-                      <div><p className="text-[8px] text-muted-foreground uppercase font-black">FSSAI मुदत</p><p className="text-[10px] font-black">{selectedCenter.fssaiExpiry || "-"}</p></div>
+                      <div><p className="text-[8px] text-muted-foreground uppercase font-black">गाव स्पर्धा</p><p className="text-[10px] font-black">{selectedCenter.competition || "-"}</p></div>
                     </div>
                   </div>
                 </div>
@@ -354,9 +354,13 @@ export default function CentersPage() {
                     <Label className="text-[9px] uppercase font-black opacity-60">ऑपरेटर नाव</Label>
                     <Input value={formData.operatorName} onChange={e => setFormData({...formData, operatorName: e.target.value})} className="h-9 text-[11px] rounded-lg bg-muted/20 border-none font-black p-3" placeholder="..." />
                   </div>
-                  <div className="col-span-2 space-y-1">
+                  <div className="space-y-1">
                     <Label className="text-[9px] uppercase font-black opacity-60">गाव (Village)</Label>
                     <Input value={formData.village} onChange={e => setFormData({...formData, village: e.target.value})} className="h-9 text-[11px] rounded-lg bg-muted/20 border-none font-black p-3" placeholder="..." />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-[9px] uppercase font-black opacity-60">गाव स्पर्धा (Competition)</Label>
+                    <Input value={formData.competition} onChange={e => setFormData({...formData, competition: e.target.value})} className="h-9 text-[11px] rounded-lg bg-muted/20 border-none font-black p-3" placeholder="उदा. अमूल" />
                   </div>
                 </div>
               </div>
