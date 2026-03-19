@@ -26,8 +26,7 @@ export default function AuditReportPage() {
     date: new Date().toISOString().split('T')[0],
     centerName: "", code: "", operator: "",
     weighingScale: "OK", fatMachine: "OK", chemicals: "OK", hygiene: "GOOD",
-    samplingMethod: "PROPER", recordsMaintenance: "OK",
-    recommendations: ""
+    recordsMaintenance: "OK", recommendations: ""
   })
 
   useEffect(() => setMounted(true), [])
@@ -57,7 +56,7 @@ export default function AuditReportPage() {
   if (!mounted) return null
 
   return (
-    <div className="compact-form-container">
+    <div className="compact-form-container px-2">
       <div className="flex items-center gap-2 border-b pb-2 mb-2">
         <Button variant="ghost" size="icon" onClick={() => router.back()} className="h-8 w-8 rounded-full shrink-0">
           <ArrowLeft className="h-4 w-4" />
@@ -70,81 +69,65 @@ export default function AuditReportPage() {
         </div>
       </div>
 
-      <Card className="compact-card">
-        <div className="space-y-2">
-          <div className="flex items-center gap-1.5 border-b pb-1">
-            <Microscope className="h-3 w-3 text-primary" />
-            <h3 className="text-[9px] font-black uppercase text-primary tracking-widest">१) केंद्राची माहिती</h3>
-          </div>
+      <div className="space-y-2">
+        <Card className="compact-card">
           <div className="space-y-2">
-            <div className="space-y-0.5">
-              <Label className="compact-label">केंद्राचे नाव *</Label>
-              <Input className="compact-input" value={formData.centerName} onChange={e => setFormData({...formData, centerName: e.target.value})} placeholder="..." />
-            </div>
-            <div className="grid grid-cols-2 gap-2">
+            <h3 className="text-[9px] font-black uppercase text-primary border-b pb-0.5 flex items-center gap-1"><Microscope className="h-3 w-3" /> १) केंद्राची माहिती</h3>
+            <div className="space-y-1.5">
               <div className="space-y-0.5">
-                <Label className="compact-label">कोड (Code)</Label>
-                <Input className="compact-input" value={formData.code} onChange={e => setFormData({...formData, code: e.target.value})} placeholder="..." />
+                <Label className="compact-label">केंद्राचे नाव *</Label>
+                <Input className="compact-input h-9" value={formData.centerName} onChange={e => setFormData({...formData, centerName: e.target.value})} />
               </div>
-              <div className="space-y-0.5">
-                <Label className="compact-label">ऑपरेटर</Label>
-                <Input className="compact-input" value={formData.operator} onChange={e => setFormData({...formData, operator: e.target.value})} placeholder="..." />
+              <div className="grid grid-cols-2 gap-2">
+                <div className="space-y-0.5">
+                  <Label className="compact-label">कोड (Code)</Label>
+                  <Input className="compact-input h-9" value={formData.code} onChange={e => setFormData({...formData, code: e.target.value})} />
+                </div>
+                <div className="space-y-0.5">
+                  <Label className="compact-label">ऑपरेटर</Label>
+                  <Input className="compact-input h-9" value={formData.operator} onChange={e => setFormData({...formData, operator: e.target.value})} />
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </Card>
+        </Card>
 
-      <Card className="compact-card">
-        <div className="space-y-2">
-          <div className="flex items-center gap-1.5 border-b pb-1">
-            <FlaskConical className="h-3 w-3 text-primary" />
-            <h3 className="text-[9px] font-black uppercase text-primary tracking-widest">२) तांत्रिक तपासणी</h3>
-          </div>
-          
+        <Card className="compact-card">
           <div className="space-y-2">
-            {[
-              { label: 'काटा (Scale)', key: 'weighingScale', options: ['OK', 'NOT-OK'] },
-              { label: 'फॅट मशीन (Fat)', key: 'fatMachine', options: ['OK', 'NOT-OK'] },
-              { label: 'केमिकल्स स्टॉक', key: 'chemicals', options: ['OK', 'SHORT'] },
-              { label: 'स्वच्छता (Hygiene)', key: 'hygiene', options: ['GOOD', 'POOR'] },
-              { label: 'नोंदवही / रेकॉर्ड्स', key: 'recordsMaintenance', options: ['OK', 'PENDING'] },
-            ].map((item) => (
-              <div key={item.key} className="space-y-0.5">
-                <Label className="compact-label">{item.label}</Label>
-                <RadioGroup 
-                  value={(formData as any)[item.key]} 
-                  onValueChange={v => setFormData({...formData, [item.key]: v})}
-                  className="compact-radio-group"
-                >
-                  {item.options.map(opt => (
-                    <div key={opt} className="compact-radio-item">
-                      <RadioGroupItem value={opt} id={`audit-${item.key}-${opt}`} className="h-2.5 w-2.5" />
-                      <Label htmlFor={`audit-${item.key}-${opt}`} className="compact-radio-label">{opt}</Label>
-                    </div>
-                  ))}
-                </RadioGroup>
-              </div>
-            ))}
+            <h3 className="text-[9px] font-black uppercase text-primary border-b pb-0.5 flex items-center gap-1"><FlaskConical className="h-3 w-3" /> २) तांत्रिक तपासणी</h3>
+            <div className="space-y-2">
+              {[
+                { label: 'काटा (Scale)', key: 'weighingScale', options: ['OK', 'NOT-OK'] },
+                { label: 'फॅट मशीन (Fat)', key: 'fatMachine', options: ['OK', 'NOT-OK'] },
+                { label: 'केमिकल्स स्टॉक', key: 'chemicals', options: ['OK', 'SHORT'] },
+                { label: 'स्वच्छता (Hygiene)', key: 'hygiene', options: ['GOOD', 'POOR'] },
+                { label: 'रेकॉर्ड्स', key: 'recordsMaintenance', options: ['OK', 'PENDING'] },
+              ].map((item) => (
+                <div key={item.key} className="space-y-0.5">
+                  <Label className="compact-label">{item.label}</Label>
+                  <RadioGroup value={(formData as any)[item.key]} onValueChange={v => setFormData({...formData, [item.key]: v})} className="compact-radio-group">
+                    {item.options.map(opt => (
+                      <div key={opt} className="compact-radio-item">
+                        <RadioGroupItem value={opt} id={`audit-${item.key}-${opt}`} className="h-2.5 w-2.5" />
+                        <Label htmlFor={`audit-${item.key}-${opt}`} className="compact-radio-label">{opt}</Label>
+                      </div>
+                    ))}
+                  </RadioGroup>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      </Card>
+        </Card>
 
-      <Card className="compact-card">
-        <div className="space-y-1">
-          <Label className="compact-label flex items-center gap-1"><AlertCircle className="h-3 w-3" /> शिफारसी (Recommendations)</Label>
-          <Textarea 
-            className="compact-input min-h-[50px] h-auto p-1.5" 
-            value={formData.recommendations} 
-            onChange={e => setFormData({...formData, recommendations: e.target.value})} 
-            placeholder="..." 
-          />
-        </div>
-      </Card>
+        <Card className="compact-card">
+          <div className="space-y-1">
+            <Label className="compact-label flex items-center gap-1"><AlertCircle className="h-3 w-3" /> शिफारसी (Recommendations)</Label>
+            <Textarea className="compact-input min-h-[60px] h-auto p-2" value={formData.recommendations} onChange={e => setFormData({...formData, recommendations: e.target.value})} placeholder="..." />
+          </div>
+        </Card>
 
-      <Button onClick={handleSave} className="compact-button w-full bg-primary text-white shadow-primary/20 mb-10">
-        <Save className="h-3.5 w-3.5" /> ऑडिट जतन करा (SUBMIT)
-      </Button>
+        <Button onClick={handleSave} className="compact-button w-full h-10 bg-primary text-white mb-10"><Save className="h-3.5 w-3.5 mr-1.5" /> ऑडिट जतन करा (SUBMIT)</Button>
+      </div>
     </div>
   )
 }
