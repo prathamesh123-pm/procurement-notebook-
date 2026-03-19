@@ -1,10 +1,11 @@
+
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { 
-  Archive, Eye, Search, X, Printer, Plus, Trash2, FileEdit
+  Archive, Eye, Search, X, Printer, Plus, Trash2, FileEdit, ClipboardCheck, ShieldCheck, Truck, ListTodo, Microscope
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
@@ -51,12 +52,11 @@ export default function ReportsPage() {
   if (!mounted || isLoading) return <div className="p-20 text-center animate-pulse italic font-black uppercase text-[9px] opacity-50">लोड होत आहे...</div>
 
   const reportTypes = [
-    { title: "जप्ती व दंड", sub: "Seizure", type: "seizure" },
-    { title: "दूध सर्व्हे", sub: "Survey", type: "survey" },
-    { title: "चिलिंग सेंटर", sub: "Chilling", type: "chilling" },
-    { title: "ब्रेकडाऊन", sub: "Breakdown", type: "breakdown" },
-    { title: "दैनिक कामकाज", sub: "Daily", type: "daily" },
-    { title: "केंद्र ऑडिट", sub: "Audit", type: "audit" },
+    { title: "दूध सर्व्हे", sub: "Survey", type: "survey", icon: ClipboardCheck },
+    { title: "FSSAI तपासणी", sub: "FSSAI", type: "fssai", icon: ShieldCheck },
+    { title: "ब्रेकडाऊन", sub: "Breakdown", type: "breakdown", icon: Truck },
+    { title: "दैनिक कामकाज", sub: "Daily", type: "daily", icon: ListTodo },
+    { title: "केंद्र ऑडिट", sub: "Audit", type: "audit", icon: Microscope },
   ]
 
   return (
@@ -68,40 +68,34 @@ export default function ReportsPage() {
         <p className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">Archive History</p>
       </div>
 
-      <div className="grid grid-cols-3 gap-1.5 mb-4">
+      <div className="grid grid-cols-3 sm:grid-cols-5 gap-1.5 mb-4">
         {reportTypes.map((rt) => (
-          <Button key={rt.sub} asChild variant="outline" className="h-12 flex flex-col items-center justify-center p-1 rounded-xl hover:border-primary group transition-all">
+          <Button key={rt.sub} asChild variant="outline" className="h-14 flex flex-col items-center justify-center p-1 rounded-xl hover:border-primary group transition-all border-primary/10 bg-white">
             <Link href={`/reports/entry/${rt.type}`}>
-              <span className="text-[9px] font-black text-slate-900 group-hover:text-primary leading-tight text-center">{rt.title}</span>
-              <span className="text-[7px] text-slate-400 font-bold uppercase tracking-tighter">{rt.sub}</span>
+              <rt.icon className="h-3 w-3 text-primary mb-1 group-hover:scale-110 transition-transform" />
+              <span className="text-[8px] font-black text-slate-900 leading-tight text-center">{rt.title}</span>
             </Link>
           </Button>
         ))}
-        <Button asChild variant="outline" className="h-12 flex flex-col items-center justify-center p-1 rounded-xl bg-primary/5 border-primary/20 hover:bg-primary/10">
-          <Link href="/form-builder">
-            <FileEdit className="h-3 w-3 text-primary mb-0.5" />
-            <span className="text-[8px] font-black text-primary uppercase">बिल्डर</span>
-          </Link>
-        </Button>
       </div>
 
-      <Card className="compact-card p-1.5 mb-3 bg-slate-50">
+      <Card className="compact-card p-1.5 mb-3 bg-white border-primary/5">
         <div className="flex gap-1.5">
           <div className="relative flex-1">
             <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 text-slate-400" />
-            <Input className="compact-input h-7 pl-6 text-[10px]" placeholder="शोधा..." />
+            <Input className="compact-input h-8 pl-6 text-[10px]" placeholder="शोधा..." />
           </div>
-          <Input type="date" className="compact-input h-7 w-28 text-[10px]" value={filterDate} onChange={e => setFilterDate(e.target.value)} />
+          <Input type="date" className="compact-input h-8 w-28 text-[10px]" value={filterDate} onChange={e => setFilterDate(e.target.value)} />
         </div>
       </Card>
 
       <div className="space-y-1.5">
         {filteredReports.map((report) => (
-          <Card key={report.id} className="compact-card p-2 border-l-2 border-l-primary/30 hover:border-l-primary cursor-pointer active:scale-[0.98] transition-all" onClick={() => { setSelectedReport(report); setIsViewOpen(true); }}>
+          <Card key={report.id} className="compact-card p-2 border-l-2 border-l-primary hover:bg-primary/5 cursor-pointer active:scale-[0.98] transition-all bg-white" onClick={() => { setSelectedReport(report); setIsViewOpen(true); }}>
             <div className="flex justify-between items-start gap-2">
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-1.5 mb-0.5">
-                  <h4 className="font-black text-[11px] truncate uppercase">{report.type}</h4>
+                  <h4 className="font-black text-[10px] truncate uppercase text-slate-800">{report.type}</h4>
                   <Badge className="h-3 px-1 text-[7px] font-black bg-primary/10 text-primary border-none">{report.date}</Badge>
                 </div>
                 <p className="text-[9px] text-slate-500 line-clamp-1 italic font-medium">{report.summary}</p>
