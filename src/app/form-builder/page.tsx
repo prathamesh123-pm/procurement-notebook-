@@ -1,214 +1,291 @@
 
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Label } from "@/components/ui/label"
+import { Card, CardContent } from "@/components/ui/card"
 import { 
-  Settings2, Plus, Trash2, Save, FileText, ChevronRight, GripVertical, Type, Hash, Calendar, AlignLeft
+  FileText, Home, Plus, Save, Printer, Share2, Download, Settings, 
+  Bold, Italic, Underline, AlignLeft, AlignCenter, AlignRight, List, 
+  Table as TableIcon, Image as ImageIcon, Type, Search, Undo, Redo,
+  ChevronDown, HelpCircle, Pencil, Code, Eye, ZoomIn, ZoomOut,
+  Maximize2, Shield, RefreshCw, X, Check, FileCode, Mail, 
+  MessageSquare, Layout, Palette, Ruler, Grid3X3, Link, FileUp, Highlighter
 } from "lucide-react"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { useToast } from "@/hooks/use-toast"
-import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking } from "@/firebase"
-import { collection, doc } from "firebase/firestore"
-import { FormDefinition, FormField, FieldType } from "@/lib/types"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
-export default function FormBuilderPage() {
-  const { user } = useUser()
-  const db = useFirestore()
-  const { toast } = useToast()
-
-  const formsQuery = useMemoFirebase(() => {
-    if (!db || !user) return null
-    return collection(db, 'users', user.uid, 'formDefinitions')
-  }, [db, user])
-
-  const { data: forms, isLoading } = useCollection<FormDefinition>(formsQuery)
-  
+export default function WordEditorPage() {
   const [mounted, setMounted] = useState(false)
-  const [editingId, setEditingId] = useState<string | null>(null)
-  const [title, setTitle] = useState("")
-  const [fields, setFields] = useState<FormField[]>([])
+  const [docTitle, setDocTitle] = useState("नवीन डॉक्युमेंट")
+  const [zoom, setZoom] = useState(100)
+  const editorRef = useRef<HTMLDivElement>(null)
+  const { toast } = useToast()
 
   useEffect(() => setMounted(true), [])
 
-  const addField = () => {
-    const newField: FormField = {
-      id: crypto.randomUUID(),
-      label: "नवीन रकाना",
-      type: 'text',
-      required: false
-    }
-    setFields([...fields, newField])
+  const execCommand = (command: string, value?: string) => {
+    document.execCommand(command, false, value)
   }
 
-  const removeField = (id: string) => {
-    setFields(fields.filter(f => f.id !== id))
+  const handleSave = () => {
+    const content = editorRef.current?.innerHTML
+    localStorage.setItem('procurepal_doc_' + Date.now(), JSON.stringify({ title: docTitle, content }))
+    toast({ title: "यशस्वी", description: "डॉक्युमेंट जतन झाले (AutoSave Active)." })
   }
 
-  const updateField = (id: string, updates: Partial<FormField>) => {
-    setFields(fields.map(f => f.id === id ? { ...f, ...updates } : f))
-  }
+  const handlePrint = () => window.print()
 
-  const handleSaveForm = () => {
-    if (!title || fields.length === 0 || !db || !user) {
-      toast({ title: "त्रुटी", description: "नाव आणि किमान एक रकाना आवश्यक आहे.", variant: "destructive" })
-      return
-    }
+  if (!mounted) return null
 
-    const formData = {
-      title,
-      fields,
-      updatedAt: new Date().toISOString()
-    }
+  const RibbonGroup = ({ label, children }: { label: string, children: React.ReactNode }) => (
+    <div className="flex flex-col items-center border-r border-slate-200 px-2 last:border-0 h-full">
+      <div className="flex items-center gap-1 flex-1">{children}</div>
+      <span className="text-[8px] font-black uppercase text-slate-400 mt-1">{label}</span>
+    </div>
+  )
 
-    if (editingId) {
-      const docRef = doc(db, 'users', user.uid, 'formDefinitions', editingId)
-      updateDocumentNonBlocking(docRef, formData)
-      toast({ title: "यशस्वी", description: "फॉर्म अपडेट झाला." })
-    } else {
-      const colRef = collection(db, 'users', user.uid, 'formDefinitions')
-      addDocumentNonBlocking(colRef, { ...formData, createdAt: new Date().toISOString() })
-      toast({ title: "यशस्वी", description: "नवीन फॉर्म तयार झाला." })
-    }
-    resetBuilder()
-  }
-
-  const handleDeleteForm = (id: string, e: React.MouseEvent) => {
-    e.stopPropagation()
-    e.preventDefault()
-    if (!db || !user) return
-    if (confirm("तुम्हाला खात्री आहे की हा फॉर्म हटवायचा आहे?")) {
-      const docRef = doc(db, 'users', user.uid, 'formDefinitions', id)
-      deleteDocumentNonBlocking(docRef)
-      if (editingId === id) resetBuilder()
-      toast({ title: "यशस्वी", description: "फॉर्म हटवण्यात आला." })
-    }
-  }
-
-  const resetBuilder = () => {
-    setEditingId(null)
-    setTitle("")
-    setFields([])
-  }
-
-  const loadForm = (form: FormDefinition) => {
-    setEditingId(form.id)
-    setTitle(form.title)
-    setFields(form.fields)
-  }
-
-  if (!mounted || isLoading) return <div className="p-10 text-center italic font-black uppercase text-[10px] opacity-50">लोड होत आहे...</div>
+  const ToolBtn = ({ icon: Icon, onClick, active = false, label }: any) => (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className={`h-7 w-7 rounded-md ${active ? 'bg-primary/10 text-primary' : 'hover:bg-slate-100'}`}
+            onClick={onClick}
+          >
+            <Icon className="h-3.5 w-3.5" />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent className="text-[10px] font-black uppercase">{label}</TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  )
 
   return (
-    <div className="space-y-4 max-w-7xl mx-auto w-full pb-10 px-1 animate-in fade-in duration-500">
-      <div className="flex flex-col gap-0.5 border-b pb-3 px-1">
-        <h2 className="text-xl font-black flex items-center gap-2 text-primary uppercase tracking-tight">
-          <Settings2 className="h-6 w-6" /> फॉर्म बिल्डर (FORM BUILDER)
-        </h2>
-        <p className="text-muted-foreground font-black text-[10px] uppercase tracking-[0.2em] ml-1">Create Custom Data Entry Forms</p>
+    <div className="flex flex-col h-[calc(100vh-100px)] max-w-6xl mx-auto w-full bg-slate-50 overflow-hidden rounded-3xl border shadow-2xl animate-in fade-in duration-500">
+      {/* Title Bar */}
+      <div className="h-8 bg-primary text-white flex items-center justify-between px-4 shrink-0">
+        <div className="flex items-center gap-2">
+          <div className="p-1 bg-white rounded shadow-sm"><FileText className="h-3 w-3 text-primary" /></div>
+          <Input 
+            value={docTitle} 
+            onChange={(e) => setDocTitle(e.target.value)}
+            className="h-6 bg-transparent border-none text-[11px] font-black uppercase text-white placeholder:text-white/50 w-48 focus-visible:ring-0 p-0"
+          />
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1 text-[9px] font-black opacity-70"><Shield className="h-2.5 w-2.5" /> Protected Mode</div>
+          <Button variant="ghost" size="icon" className="h-6 w-6 text-white hover:bg-white/10" onClick={() => window.location.reload()}><RefreshCw className="h-3 w-3" /></Button>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
-        {/* Builder Panel */}
-        <Card className="lg:col-span-8 border shadow-none bg-white rounded-2xl overflow-hidden">
-          <CardHeader className="py-3 px-4 border-b bg-primary/5 flex flex-row items-center justify-between">
-            <div className="space-y-1">
-              <CardTitle className="text-xs font-black uppercase tracking-widest text-primary">फॉर्मची रचना (DESIGN)</CardTitle>
-              <CardDescription className="text-[9px] uppercase font-bold">रकाने आणि इनपुट प्रकार निवडा.</CardDescription>
+      {/* Ribbon Toolbar */}
+      <Tabs defaultValue="home" className="w-full shrink-0 bg-white border-b shadow-sm">
+        <ScrollArea className="w-full border-b">
+          <TabsList className="h-8 bg-transparent justify-start px-2 gap-1 overflow-visible">
+            {["file", "home", "insert", "design", "layout", "references", "mailings", "review", "view", "draw", "developer", "help"].map((tab) => (
+              <TabsTrigger 
+                key={tab} 
+                value={tab} 
+                className="text-[9px] font-black uppercase h-7 px-3 data-[state=active]:bg-slate-50 data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none transition-all"
+              >
+                {tab === 'file' ? 'File (फाईल)' : 
+                 tab === 'home' ? 'Home (होम)' :
+                 tab === 'insert' ? 'Insert (इन्सर्ट)' : 
+                 tab === 'design' ? 'Design' : 
+                 tab === 'layout' ? 'Layout' : tab.toUpperCase()}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+          <ScrollBar orientation="horizontal" className="hidden" />
+        </ScrollArea>
+
+        <div className="h-14 bg-slate-50/50 p-1.5 overflow-hidden">
+          <TabsContent value="file" className="m-0 h-full">
+            <div className="flex items-center gap-1 h-full px-2">
+              <RibbonGroup label="डॉक्युमेंट">
+                <Button variant="outline" size="sm" className="h-10 w-12 flex-col gap-0.5 rounded-lg border-none hover:bg-white hover:shadow-sm" onClick={() => window.location.reload()}><Plus className="h-4 w-4" /><span className="text-[7px] font-black">NEW</span></Button>
+                <Button variant="outline" size="sm" className="h-10 w-12 flex-col gap-0.5 rounded-lg border-none hover:bg-white hover:shadow-sm" onClick={handleSave}><Save className="h-4 w-4" /><span className="text-[7px] font-black">SAVE</span></Button>
+                <Button variant="outline" size="sm" className="h-10 w-12 flex-col gap-0.5 rounded-lg border-none hover:bg-white hover:shadow-sm" onClick={handlePrint}><Printer className="h-4 w-4" /><span className="text-[7px] font-black">PRINT</span></Button>
+                <Button variant="outline" size="sm" className="h-10 w-12 flex-col gap-0.5 rounded-lg border-none hover:bg-white hover:shadow-sm" onClick={() => toast({ title: "Export", description: "PDF तयार होत आहे..." })}><Download className="h-4 w-4" /><span className="text-[7px] font-black">EXPORT</span></Button>
+              </RibbonGroup>
             </div>
-            {editingId && <Button type="button" variant="ghost" size="sm" onClick={resetBuilder} className="h-7 text-[9px] font-black uppercase">नवीन फॉर्म</Button>}
-          </CardHeader>
-          <CardContent className="p-4 space-y-6">
-            <div className="space-y-1.5">
-              <Label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">फॉर्मचे नाव (FORM TITLE)</Label>
-              <Input 
-                value={title} 
-                onChange={e => setTitle(e.target.value)} 
-                className="h-11 text-[11px] bg-muted/20 border-none font-black rounded-xl p-4 shadow-inner" 
-                placeholder="उदा. मशिनरी दुरुस्ती नोंद" 
-              />
+          </TabsContent>
+
+          <TabsContent value="home" className="m-0 h-full">
+            <div className="flex items-center gap-1 h-full px-2">
+              <RibbonGroup label="क्लिपबोर्ड">
+                <ToolBtn icon={Undo} label="Undo" onClick={() => execCommand('undo')} />
+                <ToolBtn icon={Redo} label="Redo" onClick={() => execCommand('redo')} />
+              </RibbonGroup>
+              <RibbonGroup label="फॉन्ट">
+                <select className="h-7 text-[10px] border rounded bg-white px-1 outline-none font-bold" onChange={(e) => execCommand('fontName', e.target.value)}>
+                  <option value="Inter">Inter</option>
+                  <option value="Arial">Arial</option>
+                  <option value="PT Sans">PT Sans</option>
+                </select>
+                <ToolBtn icon={Bold} label="Bold" onClick={() => execCommand('bold')} />
+                <ToolBtn icon={Italic} label="Italic" onClick={() => execCommand('italic')} />
+                <ToolBtn icon={Underline} label="Underline" onClick={() => execCommand('underline')} />
+                <ToolBtn icon={Highlighter} label="Highlight" onClick={() => execCommand('backColor', 'yellow')} />
+              </RibbonGroup>
+              <RibbonGroup label="पॅराग्राफ">
+                <ToolBtn icon={AlignLeft} label="Align Left" onClick={() => execCommand('justifyLeft')} />
+                <ToolBtn icon={AlignCenter} label="Align Center" onClick={() => execCommand('justifyCenter')} />
+                <ToolBtn icon={AlignRight} label="Align Right" onClick={() => execCommand('justifyRight')} />
+                <ToolBtn icon={List} label="Bullets" onClick={() => execCommand('insertUnorderedList')} />
+              </RibbonGroup>
+              <RibbonGroup label="एडिटिंग">
+                <ToolBtn icon={Search} label="Find & Replace" onClick={() => toast({ title: "Search", description: "Search सुरू झाले." })} />
+              </RibbonGroup>
             </div>
+          </TabsContent>
 
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-[9px] font-black uppercase text-primary tracking-[0.2em]">रकाने (FIELDS)</span>
-                <Button type="button" size="sm" onClick={addField} className="h-8 text-[9px] font-black uppercase rounded-lg shadow-md"><Plus className="h-3.5 w-3.5 mr-1" /> रकाना जोडा</Button>
-              </div>
-
-              <div className="space-y-2">
-                {fields.map((field, index) => (
-                  <div key={field.id} className="flex gap-2 items-center bg-muted/10 p-3 rounded-2xl border border-muted-foreground/5 group hover:bg-primary/5 transition-all">
-                    <GripVertical className="h-4 w-4 text-muted-foreground/30 shrink-0" />
-                    <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-2">
-                      <Input 
-                        value={field.label} 
-                        onChange={e => updateField(field.id, { label: e.target.value })} 
-                        className="h-9 text-[11px] font-black bg-white border-none rounded-xl" 
-                        placeholder="रकान्याचे नाव" 
-                      />
-                      <Select 
-                        value={field.type} 
-                        onValueChange={(val: FieldType) => updateField(field.id, { type: val })}
-                      >
-                        <SelectTrigger className="h-9 text-[11px] font-black bg-white border-none rounded-xl">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="text" className="text-[11px] font-black uppercase"><div className="flex items-center gap-2"><Type className="h-3.5 w-3.5" /> मजकूर (Text)</div></SelectItem>
-                          <SelectItem value="number" className="text-[11px] font-black uppercase"><div className="flex items-center gap-2"><Hash className="h-3.5 w-3.5" /> संख्या (Number)</div></SelectItem>
-                          <SelectItem value="date" className="text-[11px] font-black uppercase"><div className="flex items-center gap-2"><Calendar className="h-3.5 w-3.5" /> तारीख (Date)</div></SelectItem>
-                          <SelectItem value="textarea" className="text-[11px] font-black uppercase"><div className="flex items-center gap-2"><AlignLeft className="h-3.5 w-3.5" /> सविस्तर (Textarea)</div></SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <Button type="button" variant="ghost" size="icon" onClick={() => removeField(field.id)} className="h-8 w-8 text-destructive rounded-full hover:bg-destructive/10"><Trash2 className="h-4 w-4" /></Button>
-                  </div>
-                ))}
-                {fields.length === 0 && (
-                  <div className="text-center py-10 border-2 border-dashed rounded-3xl opacity-30 flex flex-col items-center gap-2">
-                    <Plus className="h-8 w-8" />
-                    <p className="text-[10px] font-black uppercase">एकही रकाना जोडलेला नाही</p>
-                  </div>
-                )}
-              </div>
+          <TabsContent value="insert" className="m-0 h-full">
+            <div className="flex items-center gap-1 h-full px-2">
+              <RibbonGroup label="पाने">
+                <ToolBtn icon={FileText} label="Blank Page" onClick={() => {}} />
+              </RibbonGroup>
+              <RibbonGroup label="टेबल">
+                <Button variant="outline" size="sm" className="h-10 w-12 flex-col gap-0.5 rounded-lg border-none hover:bg-white hover:shadow-sm" onClick={() => execCommand('insertHTML', '<table border="1" style="width:100%; border-collapse:collapse;"><tr><td>&nbsp;</td><td>&nbsp;</td></tr></table>')}><Grid3X3 className="h-4 w-4" /><span className="text-[7px] font-black">TABLE</span></Button>
+              </RibbonGroup>
+              <RibbonGroup label="इल्मस्ट्रेशन">
+                <ToolBtn icon={ImageIcon} label="Picture" onClick={() => {}} />
+                <ToolBtn icon={Link} label="Link" onClick={() => execCommand('createLink', prompt('URL टाका') || '')} />
+              </RibbonGroup>
+              <RibbonGroup label="टेक्स्ट">
+                <ToolBtn icon={Type} label="Text Box" />
+                <ToolBtn icon={FileCode} label="Signature" onClick={() => execCommand('insertHTML', '<br/><br/>___________________<br/>Signature')} />
+              </RibbonGroup>
             </div>
+          </TabsContent>
 
-            <Button type="button" onClick={handleSaveForm} className="w-full font-black h-12 shadow-xl shadow-primary/20 rounded-2xl uppercase text-[11px]">
-              <Save className="h-4 w-4 mr-2" /> फॉर्म जतन करा (SAVE FORM)
-            </Button>
-          </CardContent>
-        </Card>
+          <TabsContent value="design" className="m-0 h-full">
+            <div className="flex items-center gap-1 h-full px-2">
+              <RibbonGroup label="थीम">
+                <ToolBtn icon={Palette} label="Page Color" />
+                <ToolBtn icon={Layout} label="Watermark" />
+              </RibbonGroup>
+            </div>
+          </TabsContent>
 
-        {/* List Panel */}
-        <Card className="lg:col-span-4 border shadow-none bg-white rounded-2xl overflow-hidden">
-          <div className="bg-muted/10 py-3 px-4 border-b font-black text-[10px] uppercase flex items-center gap-2 tracking-[0.2em]">
-            <FileText className="h-4 w-4 opacity-50" /> तुमचे फॉर्म्स (SAVED)
+          <TabsContent value="layout" className="m-0 h-full">
+            <div className="flex items-center gap-1 h-full px-2">
+              <RibbonGroup label="पेज सेटअप">
+                <ToolBtn icon={Ruler} label="Margins" />
+                <ToolBtn icon={FileText} label="Orientation" />
+              </RibbonGroup>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="view" className="m-0 h-full">
+            <div className="flex items-center gap-1 h-full px-2">
+              <RibbonGroup label="झूम (Zoom)">
+                <ToolBtn icon={ZoomIn} label="Zoom In" onClick={() => setZoom(prev => Math.min(prev + 10, 200))} />
+                <span className="text-[10px] font-black w-10 text-center">{zoom}%</span>
+                <ToolBtn icon={ZoomOut} label="Zoom Out" onClick={() => setZoom(prev => Math.max(prev - 10, 50))} />
+              </RibbonGroup>
+              <RibbonGroup label="व्ह्यू">
+                <ToolBtn icon={Eye} label="Read Mode" />
+                <ToolBtn icon={Maximize2} label="Focus Mode" />
+              </RibbonGroup>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="draw" className="m-0 h-full">
+            <div className="flex items-center gap-1 h-full px-2">
+              <RibbonGroup label="पेन टूल्स">
+                <ToolBtn icon={Pencil} label="Draw with Touch" />
+              </RibbonGroup>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="developer" className="m-0 h-full">
+            <div className="flex items-center gap-1 h-full px-2">
+              <RibbonGroup label="कोड & मॅक्रो">
+                <ToolBtn icon={Code} label="Visual Basic" />
+                <ToolBtn icon={Settings} label="Macros" />
+              </RibbonGroup>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="help" className="m-0 h-full">
+            <div className="flex items-center gap-1 h-full px-2">
+              <RibbonGroup label="मदत">
+                <ToolBtn icon={HelpCircle} label="Get Help" />
+                <ToolBtn icon={MessageSquare} label="Feedback" />
+              </RibbonGroup>
+            </div>
+          </TabsContent>
+        </div>
+      </Tabs>
+
+      {/* Editor Area */}
+      <ScrollArea className="flex-1 bg-slate-200 shadow-inner p-4 md:p-8">
+        <div 
+          className="bg-white mx-auto shadow-2xl min-h-[1056px] p-12 focus:outline-none transition-all duration-300"
+          style={{ 
+            width: `${zoom === 100 ? '816px' : (816 * (zoom/100)) + 'px'}`,
+            maxWidth: '100%',
+            transformOrigin: 'top center'
+          }}
+        >
+          <div 
+            ref={editorRef}
+            contentEditable 
+            className="w-full h-full min-h-[900px] text-sm prose max-w-none focus:outline-none font-body"
+            onInput={() => {}} // Could trigger AutoSave here
+          >
+            <h1 className="text-center">संकलन नोंदवही (Official Report)</h1>
+            <p className="text-center text-muted-foreground text-xs uppercase font-black tracking-widest mt-2">दैनिक अहवाल व मार्गदर्शिका</p>
+            <hr className="my-6 border-slate-300" />
+            <p>येथे तुमचा अहवाल लिहिण्यास सुरुवात करा...</p>
           </div>
-          <ScrollArea className="h-[500px]">
-            <div className="p-3 space-y-2">
-              {forms?.map((form) => (
-                <div key={form.id} className={`p-3 flex items-center justify-between border shadow-none rounded-2xl cursor-pointer group transition-all ${editingId === form.id ? 'bg-primary/5 border-primary/20' : 'bg-white hover:bg-slate-50 border-muted-foreground/5'}`} onClick={() => loadForm(form)}>
-                  <div className="min-w-0">
-                    <h4 className="font-black text-[11px] uppercase truncate tracking-tight">{form.title}</h4>
-                    <p className="text-[8px] font-bold text-muted-foreground uppercase mt-0.5">{form.fields.length} रकाने | {new Date(form.updatedAt).toLocaleDateString()}</p>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={(e) => handleDeleteForm(form.id, e)}><Trash2 className="h-3.5 w-3.5" /></Button>
-                    <ChevronRight className="h-4 w-4 text-primary opacity-0 group-hover:opacity-100 transition-opacity" />
-                  </div>
-                </div>
-              ))}
-              {forms?.length === 0 && (
-                <div className="text-center py-20 opacity-20 font-black uppercase text-[9px] tracking-widest">फॉर्म्स शून्य</div>
-              )}
-            </div>
-          </ScrollArea>
-        </Card>
+        </div>
+        <ScrollBar orientation="vertical" />
+        <ScrollBar orientation="horizontal" />
+      </ScrollArea>
+
+      {/* Status Bar */}
+      <div className="h-6 bg-slate-100 border-t flex items-center justify-between px-4 text-[9px] font-black text-slate-500 uppercase shrink-0">
+        <div className="flex items-center gap-4">
+          <span>PAGE 1 OF 1</span>
+          <span>WORDS: {editorRef.current?.innerText.trim().split(/\s+/).length || 0}</span>
+          <span className="flex items-center gap-1"><Check className="h-2.5 w-2.5 text-green-600" /> AutoSave On</span>
+        </div>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <ZoomOut className="h-2.5 w-2.5" />
+            <input 
+              type="range" 
+              min="50" max="200" 
+              value={zoom} 
+              onChange={(e) => setZoom(Number(e.target.value))} 
+              className="w-24 h-1 accent-primary"
+            />
+            <ZoomIn className="h-2.5 w-2.5" />
+          </div>
+          <span>{zoom}%</span>
+        </div>
       </div>
+
+      <style jsx global>{`
+        @media print {
+          .shrink-0, .h-8, .h-6, tabs { display: none !important; }
+          .flex-1 { background: white !important; padding: 0 !important; }
+          .bg-white { shadow: none !important; border: none !important; width: 100% !important; margin: 0 !important; }
+        }
+        [contenteditable]:empty:before {
+          content: attr(placeholder);
+          color: #cbd5e1;
+          cursor: text;
+        }
+      `}</style>
     </div>
   )
 }

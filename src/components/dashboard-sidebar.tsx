@@ -5,7 +5,7 @@ import * as React from "react"
 import { 
   LayoutDashboard, ListTodo, MapPin, LogOut, Milk, 
   ClipboardCheck, Archive, UserCircle, Warehouse, 
-  Settings2, X
+  Settings2, X, FileEdit
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -67,8 +67,8 @@ const items = [
   {
     title: "फॉर्म बिल्डर",
     url: "/form-builder",
-    icon: Settings2,
-    sub: "Settings"
+    icon: FileEdit,
+    sub: "Word Editor"
   },
   {
     title: "प्रोफाईल",
@@ -97,7 +97,7 @@ export function DashboardSidebar() {
 
   return (
     <Sidebar collapsible="icon" className="border-r-0 bg-white">
-      <SidebarHeader className="px-4 py-6 bg-white relative">
+      <SidebarHeader className="px-4 py-6 bg-white relative border-b border-slate-50">
         <div className="flex items-center gap-3">
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-2xl shadow-primary/30 shrink-0 transform transition-transform hover:scale-105 duration-300">
             <Milk className="h-7 w-7" />
