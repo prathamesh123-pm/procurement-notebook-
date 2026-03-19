@@ -84,6 +84,9 @@ export interface CollectionCenter {
   iceBlocks?: number;
   cattleFeedBrand?: string;
   competition?: string;
+  paymentCycle?: string;
+  spaceOwnership?: 'Self' | 'Rented';
+  hygieneGrade?: string;
   additionalNotes?: string;
   material: CenterMaterial;
   updatedAt: string;

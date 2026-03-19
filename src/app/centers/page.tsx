@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect } from "react"
@@ -8,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { 
   Warehouse, Plus, Search, MapPin, Edit, Truck, X, ChevronRight, Trash2, 
-  Laptop, Zap, Sun, ClipboardList, Box, CheckCircle2, Milk, Info, ShieldCheck, Droplets
+  Laptop, Zap, Sun, Box, CheckCircle2, Milk, ShieldCheck, Droplets, Info, Star, Wallet, Building
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
@@ -44,7 +43,9 @@ export default function CentersPage() {
     fssaiNumber: "", fssaiExpiry: "",
     cowQty: "0", cowFat: "0", cowSnf: "0",
     bufQty: "0", bufFat: "0", bufSnf: "0",
-    iceBlocks: "0", cattleFeedBrand: "", competition: "", additionalNotes: "",
+    iceBlocks: "0", cattleFeedBrand: "", competition: "", paymentCycle: "7 Days",
+    spaceOwnership: "Self" as 'Self' | 'Rented', hygieneGrade: "A",
+    additionalNotes: "",
     weighingScaleBrand: "", fatMachineBrand: "", chemicalsStock: "",
     batteryCondition: "", milkCansCount: "0",
     computerAvailable: false, upsInverterAvailable: false, solarAvailable: false,
@@ -60,7 +61,8 @@ export default function CentersPage() {
       name: "", code: "", operatorName: "", mobile: "", village: "", routeId: "",
       fssaiNumber: "", fssaiExpiry: "", cowQty: "0", cowFat: "0", cowSnf: "0",
       bufQty: "0", bufFat: "0", bufSnf: "0", iceBlocks: "0", cattleFeedBrand: "",
-      competition: "", additionalNotes: "", weighingScaleBrand: "", fatMachineBrand: "",
+      competition: "", paymentCycle: "7 Days", spaceOwnership: "Self", hygieneGrade: "A",
+      additionalNotes: "", weighingScaleBrand: "", fatMachineBrand: "",
       chemicalsStock: "", batteryCondition: "", milkCansCount: "0",
       computerAvailable: false, upsInverterAvailable: false, solarAvailable: false,
       equipment: []
@@ -84,6 +86,9 @@ export default function CentersPage() {
       iceBlocks: String(center.iceBlocks || 0),
       cattleFeedBrand: center.cattleFeedBrand || "",
       competition: center.competition || "",
+      paymentCycle: center.paymentCycle || "7 Days",
+      spaceOwnership: center.spaceOwnership || "Self",
+      hygieneGrade: center.hygieneGrade || "A",
       additionalNotes: center.additionalNotes || "",
       weighingScaleBrand: center.material.weighingScaleBrand || "",
       fatMachineBrand: center.material.fatMachineBrand || "",
@@ -111,7 +116,9 @@ export default function CentersPage() {
       cowMilk: { quantity: Number(formData.cowQty), fat: Number(formData.cowFat), snf: Number(formData.cowSnf) },
       buffaloMilk: { quantity: Number(formData.bufQty), fat: Number(formData.bufFat), snf: Number(formData.bufSnf) },
       iceBlocks: Number(formData.iceBlocks), cattleFeedBrand: formData.cattleFeedBrand,
-      competition: formData.competition, additionalNotes: formData.additionalNotes,
+      competition: formData.competition, paymentCycle: formData.paymentCycle,
+      spaceOwnership: formData.spaceOwnership, hygieneGrade: formData.hygieneGrade,
+      additionalNotes: formData.additionalNotes,
       material: {
         weighingScaleBrand: formData.weighingScaleBrand, fatMachineBrand: formData.fatMachineBrand,
         chemicalsStock: formData.chemicalsStock, batteryCondition: formData.batteryCondition,
@@ -174,7 +181,7 @@ export default function CentersPage() {
           <h2 className="text-lg font-black text-foreground flex items-center gap-2 uppercase tracking-tight">
             <Warehouse className="h-5 w-5 text-primary" /> संकलन केंद्र (CENTERS)
           </h2>
-          <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Profile & Inventory</p>
+          <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Advanced Profile & Audit</p>
         </div>
         <Button type="button" onClick={handleOpenAdd} size="sm" className="w-full sm:w-auto font-black h-9 text-[10px] rounded-xl px-5 uppercase shadow-lg shadow-primary/20 transition-all active:scale-95">
           <Plus className="h-3.5 w-3.5 mr-1.5" /> नवीन केंद्र
@@ -222,7 +229,7 @@ export default function CentersPage() {
             <div className="p-3 border-b flex items-center justify-between bg-primary/5">
               <div className="min-w-0">
                 <h3 className="text-xs font-black truncate uppercase text-slate-900">{selectedCenter.name}</h3>
-                <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Operator: {selectedCenter.operatorName || "N/A"}</p>
+                <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Op: {selectedCenter.operatorName || "N/A"} | {selectedCenter.village}</p>
               </div>
               <div className="flex gap-1.5">
                 <Button type="button" variant="outline" size="icon" className="h-8 w-8 text-primary border-primary/20 hover:bg-primary/5 rounded-lg" onClick={() => handleOpenEdit(selectedCenter)}>
@@ -238,22 +245,29 @@ export default function CentersPage() {
                 <div className="grid grid-cols-2 gap-2">
                   <div className="bg-muted/20 p-2.5 rounded-xl border border-muted-foreground/5 space-y-1.5">
                     <h4 className="text-[9px] font-black uppercase text-primary tracking-widest flex items-center gap-1.5">
-                      <Truck className="h-3 w-3" /> तांत्रिक व रसायने
+                      <ShieldCheck className="h-3 w-3" /> परवाना व स्थिती
                     </h4>
                     <div className="space-y-1">
-                      <div><p className="text-[8px] text-muted-foreground uppercase font-black">काटा ब्रँड</p><p className="text-[10px] font-black">{selectedCenter.material.weighingScaleBrand || "-"}</p></div>
-                      <div><p className="text-[8px] text-muted-foreground uppercase font-black">रसायन साठा</p><p className="text-[10px] font-black">{selectedCenter.material.chemicalsStock || "-"}</p></div>
+                      <div><p className="text-[8px] text-muted-foreground uppercase font-black">FSSAI No</p><p className="text-[10px] font-black">{selectedCenter.fssaiNumber || "-"}</p></div>
+                      <div className="flex justify-between items-center"><p className="text-[8px] text-muted-foreground uppercase font-black">Grade</p><Badge className="h-4 px-1.5 text-[8px] font-black bg-emerald-500 text-white border-none">{selectedCenter.hygieneGrade || "A"}</Badge></div>
                     </div>
                   </div>
                   <div className="bg-muted/20 p-2.5 rounded-xl border border-muted-foreground/5 space-y-1.5">
                     <h4 className="text-[9px] font-black uppercase text-primary tracking-widest flex items-center gap-1.5">
-                      <ShieldCheck className="h-3 w-3" /> परवाना व मुदत
+                      <Wallet className="h-3 w-3" /> व्यवहार माहिती
                     </h4>
                     <div className="space-y-1">
-                      <div><p className="text-[8px] text-muted-foreground uppercase font-black">FSSAI No</p><p className="text-[10px] font-black">{selectedCenter.fssaiNumber || "-"}</p></div>
-                      <div><p className="text-[8px] text-muted-foreground uppercase font-black">Valid Date</p><p className="text-[10px] font-black">{selectedCenter.fssaiExpiry || "-"}</p></div>
+                      <div><p className="text-[8px] text-muted-foreground uppercase font-black">Payment Cycle</p><p className="text-[10px] font-black">{selectedCenter.paymentCycle || "7 Days"}</p></div>
+                      <div><p className="text-[8px] text-muted-foreground uppercase font-black">मालकी</p><p className="text-[10px] font-black">{selectedCenter.spaceOwnership || "Self"}</p></div>
                     </div>
                   </div>
+                </div>
+
+                <div className="bg-amber-50/50 p-2.5 rounded-xl border border-amber-100 space-y-1">
+                  <h4 className="text-[9px] font-black uppercase text-amber-700 tracking-widest flex items-center gap-1.5">
+                    <Info className="h-3 w-3" /> बाजारपेठ स्पर्धा
+                  </h4>
+                  <p className="text-[10px] font-bold text-amber-900 uppercase">स्पर्धा: {selectedCenter.competition || "N/A"}</p>
                 </div>
 
                 <div className="space-y-1.5">
@@ -305,7 +319,7 @@ export default function CentersPage() {
         <DialogContent className="max-w-[480px] p-0 overflow-hidden bg-white rounded-3xl border-none shadow-2xl">
           <DialogHeader className="p-3 bg-primary text-white sticky top-0 z-10">
             <DialogTitle className="text-sm font-black uppercase tracking-widest">{dialogMode === 'add' ? 'नवीन केंद्र जोडा' : 'माहिती अद्ययावत करा'}</DialogTitle>
-            <DialogDescription className="text-[8px] text-white/70 uppercase">केंद्राचे संपूर्ण तांत्रिक व इन्व्हेंटरी तपशील भरा.</DialogDescription>
+            <DialogDescription className="text-[8px] text-white/70 uppercase">केंद्राचे संपूर्ण तांत्रिक, व्यावसायिक व इन्व्हेंटरी तपशील भरा.</DialogDescription>
           </DialogHeader>
           <ScrollArea className="max-h-[80vh] p-4 bg-white">
             <div className="space-y-5 pb-6">
@@ -316,6 +330,8 @@ export default function CentersPage() {
                 <div className="grid grid-cols-2 gap-2.5">
                   <div className="col-span-2 space-y-1"><Label className="text-[9px] uppercase font-black opacity-60">केंद्राचे नाव *</Label><Input value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="h-9 text-[11px] rounded-lg bg-muted/20 border-none font-black" /></div>
                   <div className="space-y-1"><Label className="text-[9px] uppercase font-black opacity-60">कोड *</Label><Input value={formData.code} onChange={e => setFormData({...formData, code: e.target.value})} className="h-9 text-[11px] rounded-lg bg-muted/20 border-none font-black" /></div>
+                  <div className="space-y-1"><Label className="text-[9px] uppercase font-black opacity-60">ऑपरेटरचे नाव</Label><Input value={formData.operatorName} onChange={e => setFormData({...formData, operatorName: e.target.value})} className="h-9 text-[11px] rounded-lg bg-muted/20 border-none font-black" /></div>
+                  <div className="space-y-1"><Label className="text-[9px] uppercase font-black opacity-60">गाव (Village)</Label><Input value={formData.village} onChange={e => setFormData({...formData, village: e.target.value})} className="h-9 text-[11px] rounded-lg bg-muted/20 border-none font-black" /></div>
                   <div className="space-y-1"><Label className="text-[9px] uppercase font-black opacity-60">मोबाईल</Label><Input value={formData.mobile} onChange={e => setFormData({...formData, mobile: e.target.value})} className="h-9 text-[11px] rounded-lg bg-muted/20 border-none font-black" /></div>
                   <div className="space-y-1"><Label className="text-[9px] uppercase font-black opacity-60">FSSAI No</Label><Input value={formData.fssaiNumber} onChange={e => setFormData({...formData, fssaiNumber: e.target.value})} className="h-9 text-[11px] rounded-lg bg-muted/20 border-none font-black" /></div>
                   <div className="space-y-1"><Label className="text-[9px] uppercase font-black opacity-60">Expiry Date</Label><Input type="date" value={formData.fssaiExpiry} onChange={e => setFormData({...formData, fssaiExpiry: e.target.value})} className="h-9 text-[11px] rounded-lg bg-muted/20 border-none font-black" /></div>
@@ -328,9 +344,9 @@ export default function CentersPage() {
                 </h4>
                 <div className="grid grid-cols-2 gap-2.5">
                   <div className="space-y-1"><Label className="text-[9px] uppercase font-black opacity-60">काटा ब्रँड</Label><Input value={formData.weighingScaleBrand} onChange={e => setFormData({...formData, weighingScaleBrand: e.target.value})} className="h-9 text-[11px] rounded-lg bg-muted/20 border-none font-black" /></div>
+                  <div className="space-y-1"><Label className="text-[9px] uppercase font-black opacity-60">मशीन ब्रँड</Label><Input value={formData.fatMachineBrand} onChange={e => setFormData({...formData, fatMachineBrand: e.target.value})} className="h-9 text-[11px] rounded-lg bg-muted/20 border-none font-black" /></div>
                   <div className="space-y-1"><Label className="text-[9px] uppercase font-black opacity-60">रसायन स्टॉक</Label><Input value={formData.chemicalsStock} onChange={e => setFormData({...formData, chemicalsStock: e.target.value})} className="h-9 text-[11px] rounded-lg bg-muted/20 border-none font-black" placeholder="उदा. 5 L" /></div>
                   <div className="space-y-1"><Label className="text-[9px] uppercase font-black opacity-60">बॅटरी स्थिती</Label><Input value={formData.batteryCondition} onChange={e => setFormData({...formData, batteryCondition: e.target.value})} className="h-9 text-[11px] rounded-lg bg-muted/20 border-none font-black" placeholder="Good / Poor" /></div>
-                  <div className="space-y-1"><Label className="text-[9px] uppercase font-black opacity-60">एकूण कॅन</Label><Input type="number" value={formData.milkCansCount} onChange={e => setFormData({...formData, milkCansCount: e.target.value})} className="h-9 text-[11px] rounded-lg bg-muted/20 border-none font-black" /></div>
                 </div>
                 
                 <div className="grid grid-cols-1 gap-2 pt-1">
@@ -351,9 +367,30 @@ export default function CentersPage() {
 
               <div className="space-y-2">
                 <h4 className="text-[10px] font-black uppercase text-primary border-b pb-1 tracking-widest flex items-center gap-2">
-                  <Milk className="h-3.5 w-3.5" /> ३) दूध संकलन व पशुखाद्य
+                  <Info className="h-3.5 w-3.5" /> ३) व्यावसायिक व दूध संकलन
                 </h4>
                 <div className="grid grid-cols-1 gap-3">
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-1"><Label className="text-[9px] uppercase font-black opacity-60">गाव स्पर्धा</Label><Input value={formData.competition} onChange={e => setFormData({...formData, competition: e.target.value})} className="h-9 text-[11px] rounded-lg bg-muted/20 border-none font-black" placeholder="उदा. अमूल" /></div>
+                    <div className="space-y-1"><Label className="text-[9px] uppercase font-black opacity-60">पेमेंट सायकल</Label>
+                      <Select value={formData.paymentCycle} onValueChange={v => setFormData({...formData, paymentCycle: v})}>
+                        <SelectTrigger className="h-9 text-[11px] bg-muted/20 border-none font-black"><SelectValue /></SelectTrigger>
+                        <SelectContent><SelectItem value="7 Days">7 दिवस</SelectItem><SelectItem value="10 Days">10 दिवस</SelectItem><SelectItem value="15 Days">15 दिवस</SelectItem></SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-1"><Label className="text-[9px] uppercase font-black opacity-60">जागेची मालकी</Label>
+                      <Select value={formData.spaceOwnership} onValueChange={v => setFormData({...formData, spaceOwnership: v as any})}>
+                        <SelectTrigger className="h-9 text-[11px] bg-muted/20 border-none font-black"><SelectValue /></SelectTrigger>
+                        <SelectContent><SelectItem value="Self">स्वतःची</SelectItem><SelectItem value="Rented">भाड्याची</SelectItem></SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-1"><Label className="text-[9px] uppercase font-black opacity-60">स्वच्छता ग्रेड</Label>
+                      <Select value={formData.hygieneGrade} onValueChange={v => setFormData({...formData, hygieneGrade: v})}>
+                        <SelectTrigger className="h-9 text-[11px] bg-muted/20 border-none font-black"><SelectValue /></SelectTrigger>
+                        <SelectContent><SelectItem value="A">A (उत्तम)</SelectItem><SelectItem value="B">B (चांगले)</SelectItem><SelectItem value="C">C (सुधारणे आवश्यक)</SelectItem></SelectContent>
+                      </Select>
+                    </div>
+                  </div>
                   <div className="grid grid-cols-2 gap-2">
                     <div className="space-y-1"><Label className="text-[9px] uppercase font-black opacity-60">पशुखाद्य ब्रँड</Label><Input value={formData.cattleFeedBrand} onChange={e => setFormData({...formData, cattleFeedBrand: e.target.value})} className="h-9 text-[11px] rounded-lg bg-muted/20 border-none font-black" /></div>
                     <div className="space-y-1"><Label className="text-[9px] uppercase font-black opacity-60">बर्फ लाद्या</Label><Input type="number" value={formData.iceBlocks} onChange={e => setFormData({...formData, iceBlocks: e.target.value})} className="h-9 text-[11px] rounded-lg bg-muted/20 border-none font-black" /></div>
