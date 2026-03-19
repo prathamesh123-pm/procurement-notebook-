@@ -11,6 +11,7 @@ export interface Task {
   completedAt?: string;
   supplierName?: string;
   supplierId?: string;
+  assignedToUserId: string;
 }
 
 export interface MilkMetrics {
@@ -37,6 +38,7 @@ export interface Supplier {
   additionalInfo?: string;
   cowMilk?: MilkMetrics;
   buffaloMilk?: MilkMetrics;
+  adulterationKitInfo?: string;
   // Procurement specific fields
   iceBlocks?: number;
   scaleBrand?: string;
@@ -51,6 +53,7 @@ export interface Supplier {
   upsInverterAvailable?: boolean;
   solarAvailable?: boolean;
   equipment?: EquipmentItem[];
+  updatedAt: string;
 }
 
 export interface CenterMaterial {
@@ -83,6 +86,7 @@ export interface CollectionCenter {
   competition?: string;
   additionalNotes?: string;
   material: CenterMaterial;
+  updatedAt: string;
 }
 
 export interface Route {
@@ -93,6 +97,7 @@ export interface Route {
   costPerKm: number;
   supplierIds: string[];
   iceBlocks?: number;
+  updatedAt?: string;
 }
 
 export interface BreakdownLoss {
@@ -115,18 +120,23 @@ export interface BreakdownRecord {
   losses: BreakdownLoss[];
   date: string;
   totalLossAmount: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
-export type ReportType = 'Daily Office Work' | 'Field Visit' | 'Route Visit' | 'Daily Task' | 'Breakdown' | 'Custom Form';
+export type ReportType = 'Daily Office Work' | 'Field Visit' | 'Route Visit' | 'Daily Task' | 'Breakdown' | 'Custom Form' | 'Collection Center Audit' | 'FSSAI Center Inspection' | 'Seizure & Penalty' | 'Milk Procurement Survey' | 'Chilling Report' | 'Transport Breakdown Report' | 'Daily Work Report';
 
 export interface Report {
   id: string;
   type: ReportType;
   date: string;
-  workItemsCount: number;
-  interactionsCount: number;
+  reportDate: string;
+  generatedByUserId: string;
   summary: string;
+  overallSummary: string;
   fullData?: any;
+  createdAt: string;
+  updatedAt?: string;
 }
 
 // Form Builder Types
