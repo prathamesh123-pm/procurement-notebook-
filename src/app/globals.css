@@ -29,27 +29,27 @@
 
 @layer components {
   .compact-form-container {
-    @apply max-w-[500px] mx-auto w-full px-2 py-3 space-y-2;
+    @apply max-w-[480px] mx-auto w-full px-2 py-2 space-y-1.5;
   }
   
   .compact-card {
-    @apply border shadow-none bg-white rounded-xl overflow-hidden p-2 space-y-2 border-muted-foreground/10;
+    @apply border shadow-none bg-white rounded-lg overflow-hidden p-2 space-y-1.5 border-muted-foreground/10;
   }
 
   .compact-label {
-    @apply text-[11px] font-black uppercase text-slate-500 tracking-wider mb-0.5 block leading-none;
+    @apply text-[10px] font-black uppercase text-slate-500 tracking-wider mb-0.5 block leading-none;
   }
 
   .compact-input {
-    @apply h-8 text-[13px] font-bold bg-slate-50 border border-slate-100 rounded-lg px-2 focus-visible:ring-primary shadow-inner w-full outline-none;
+    @apply h-8 text-[12px] font-bold bg-slate-50 border border-slate-100 rounded-md px-2 focus-visible:ring-primary shadow-inner w-full outline-none transition-all;
   }
 
   .compact-button {
-    @apply h-9 px-3 text-[11px] font-black uppercase rounded-lg transition-all shadow-md active:scale-95 flex items-center justify-center gap-1.5;
+    @apply h-9 px-3 text-[10px] font-black uppercase rounded-lg transition-all shadow-md active:scale-95 flex items-center justify-center gap-1.5;
   }
 
   .compact-radio-group {
-    @apply flex flex-wrap gap-1.5 mt-0.5;
+    @apply flex flex-wrap gap-1 mt-0.5;
   }
 
   .compact-radio-item {
@@ -57,7 +57,7 @@
   }
 
   .compact-radio-label {
-    @apply text-[10px] font-black uppercase cursor-pointer leading-none;
+    @apply text-[9px] font-black uppercase cursor-pointer leading-none;
   }
 
   .responsive-table-wrapper {
@@ -74,6 +74,6 @@ h1, h2, h3, h4 {
 }
 
 /* Custom Scrollbar */
-::-webkit-scrollbar { width: 3px; height: 3px; }
+::-webkit-scrollbar { width: 2px; height: 2px; }
 ::-webkit-scrollbar-track { @apply bg-transparent; }
-::-webkit-scrollbar-thumb { @apply bg-slate-200 rounded-full hover:bg-slate-300; }
+::-webkit-scrollbar-thumb { @apply bg-slate-200 rounded-full; }
