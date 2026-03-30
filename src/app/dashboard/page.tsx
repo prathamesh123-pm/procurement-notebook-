@@ -2,7 +2,7 @@
 "use client"
 
 import { Card, CardContent } from "@/components/ui/card"
-import { ListTodo, MapPin, TrendingUp, Warehouse, ArrowRight, Calendar, Milk, ArrowUpRight } from "lucide-react"
+import { ListTodo, MapPin, TrendingUp, Warehouse, ArrowRight, Calendar, Milk, ArrowUpRight, ShieldAlert } from "lucide-react"
 import { useEffect, useState, useMemo } from "react"
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
@@ -103,7 +103,7 @@ export default function DashboardOverview() {
   const actions = [
     { title: "दैनिक अहवाल", sub: "Daily Report", href: "/daily-report", color: "bg-blue-600", icon: Calendar },
     { title: "कामकाज नोंद", sub: "Work Log", href: "/work-log", color: "bg-orange-600", icon: ListTodo },
-    { title: "संकलन केंद्र", sub: "Centers", href: "/centers", color: "bg-purple-600", icon: Warehouse },
+    { title: "जप्ती व दंड", sub: "Seizure", href: "/reports/entry/seizure", color: "bg-amber-600", icon: ShieldAlert },
     { title: "रूट माहिती", sub: "Routes", href: "/routes", color: "bg-emerald-600", icon: MapPin },
   ]
 

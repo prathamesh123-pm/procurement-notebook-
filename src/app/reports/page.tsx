@@ -7,7 +7,7 @@ import { Card } from "@/components/ui/card"
 import { 
   Archive, Eye, Search, X, Printer, Trash2, FileEdit, Truck, ListTodo, 
   ShieldAlert, ChevronRight, Filter, FileText, Milk, MapPin, Briefcase, 
-  ClipboardCheck, FileSignature
+  ClipboardCheck, FileSignature, Plus
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
@@ -313,11 +313,16 @@ export default function ReportsPage() {
 
   return (
     <div className="compact-form-container pb-20 max-w-[500px] mx-auto px-2">
-      <div className="flex flex-col gap-0.5 border-b pb-2 mb-3">
-        <h2 className="text-sm font-black text-slate-900 flex items-center gap-2 uppercase tracking-tight">
-          <Archive className="h-4 w-4 text-primary" /> अहवाल व्यवस्थापन (REPORTS)
-        </h2>
-        <p className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest ml-0.5">Archive & Management</p>
+      <div className="flex items-center justify-between border-b pb-2 mb-3">
+        <div className="flex flex-col gap-0.5">
+          <h2 className="text-sm font-black text-slate-900 flex items-center gap-2 uppercase tracking-tight">
+            <Archive className="h-4 w-4 text-primary" /> अहवाल व्यवस्थापन (REPORTS)
+          </h2>
+          <p className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest ml-0.5">Archive & Management</p>
+        </div>
+        <Button asChild size="sm" className="h-8 text-[9px] font-black uppercase rounded-xl shadow-lg shadow-primary/20">
+          <Link href="/reports/entry/seizure"><Plus className="h-3.5 w-3.5 mr-1" /> नवीन जप्ती</Link>
+        </Button>
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
