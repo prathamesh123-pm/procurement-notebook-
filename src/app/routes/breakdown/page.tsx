@@ -44,14 +44,14 @@ export default function BreakdownPage() {
   const [formData, setFormData] = useState({
     routeName: "", 
     vehicleNumber: "", 
-    vehicleType: "TEMPO",
+    vehicleType: "Pick-up",
     driverName: "",
     driverMobile: "",
     breakdownTime: "",
     location: "", 
     reason: "", 
     severity: "MINOR",
-    faultResponsibility: "MAINTENANCE",
+    faultResponsibility: "ड्रायव्हर",
     estimatedRepairTime: "",
     estimatedRepairCost: "0",
     detailedDescription: "",
@@ -138,9 +138,9 @@ export default function BreakdownPage() {
   const resetForm = () => { 
     setEditingId(null); 
     setFormData({ 
-      routeName: "", vehicleNumber: "", vehicleType: "TEMPO", driverName: "", driverMobile: "", 
+      routeName: "", vehicleNumber: "", vehicleType: "Pick-up", driverName: "", driverMobile: "", 
       breakdownTime: "", location: "", reason: "", severity: "MINOR",
-      faultResponsibility: "MAINTENANCE", estimatedRepairTime: "",
+      faultResponsibility: "ड्रायव्हर", estimatedRepairTime: "",
       estimatedRepairCost: "0", detailedDescription: "", losses: [] 
     }) 
   }
@@ -169,7 +169,6 @@ export default function BreakdownPage() {
             </div>
           </CardHeader>
           <CardContent className="p-3 space-y-5">
-            {/* 1. Primary Vehicle & Driver Info */}
             <div className="space-y-3">
               <h4 className="text-[9px] font-black uppercase text-primary border-b pb-1 tracking-widest flex items-center gap-2">
                 <User className="h-3 w-3" /> १) वाहन व ड्रायव्हर माहिती
@@ -177,21 +176,12 @@ export default function BreakdownPage() {
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">रूट (ROUTE) *</Label><Input value={formData.routeName} onChange={e => setFormData({...formData, routeName: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" /></div>
                 <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">गाडी नंबर *</Label><Input value={formData.vehicleNumber} onChange={e => setFormData({...formData, vehicleNumber: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" placeholder="MH..." /></div>
-                <div className="space-y-0.5">
-                  <Label className="text-[9px] font-black uppercase opacity-60">गाडीचा प्रकार</Label>
-                  <Input 
-                    value={formData.vehicleType} 
-                    onChange={e => setFormData({...formData, vehicleType: e.target.value})} 
-                    className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" 
-                    placeholder="उदा. टेम्पो"
-                  />
-                </div>
+                <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">गाडीचा प्रकार</Label><Input value={formData.vehicleType} onChange={e => setFormData({...formData, vehicleType: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" placeholder="उदा. Pick-up" /></div>
                 <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">ड्रायव्हरचे नाव</Label><Input value={formData.driverName} onChange={e => setFormData({...formData, driverName: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" /></div>
                 <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">ड्रायव्हर मोबाईल</Label><Input value={formData.driverMobile} onChange={e => setFormData({...formData, driverMobile: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" /></div>
               </div>
             </div>
 
-            {/* 2. Breakdown Details */}
             <div className="space-y-3">
               <h4 className="text-[9px] font-black uppercase text-rose-600 border-b pb-1 tracking-widest flex items-center gap-2">
                 <Clock className="h-3 w-3" /> २) ब्रेकडाऊन तपशील
@@ -215,18 +205,12 @@ export default function BreakdownPage() {
                   </RadioGroup>
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[9px] font-black uppercase opacity-60">कोणाच्या चुकीमुळे बिघाड झाला?</Label>
-                  <Input 
-                    value={formData.faultResponsibility} 
-                    onChange={e => setFormData({...formData, faultResponsibility: e.target.value})} 
-                    className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" 
-                    placeholder="उदा. ड्रायव्हर"
-                  />
+                  <Label className="text-[9px] font-black uppercase opacity-60">बिघाडास जबाबदार</Label>
+                  <Input value={formData.faultResponsibility} onChange={e => setFormData({...formData, faultResponsibility: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" placeholder="उदा. ड्रायव्हर" />
                 </div>
               </div>
             </div>
 
-            {/* 3. Repair & Cost */}
             <div className="space-y-3">
               <h4 className="text-[9px] font-black uppercase text-amber-600 border-b pb-1 tracking-widest flex items-center gap-2">
                 <Wrench className="h-3 w-3" /> ३) दुरुस्ती व अंदाजे खर्च
@@ -240,7 +224,6 @@ export default function BreakdownPage() {
             
             <AIGuidanceCard context={formData.detailedDescription || formData.reason} formType="breakdown" />
 
-            {/* 4. Loss Log */}
             <div className="space-y-2 pt-2">
               <div className="flex items-center justify-between">
                 <span className="text-[9px] font-black uppercase text-rose-700 tracking-[0.2em] flex items-center gap-1.5"><ShieldAlert className="h-3.5 w-3.5" /> नुकसान तपशील (LOSS LOG)</span>
@@ -307,7 +290,6 @@ export default function BreakdownPage() {
           </CardContent>
         </Card>
 
-        {/* Recent Logs Panel */}
         <Card className="lg:col-span-4 border shadow-none bg-white rounded-xl overflow-hidden border-muted-foreground/10">
           <div className="bg-muted/10 py-3 px-3 border-b font-black text-[9px] uppercase flex items-center gap-2 tracking-[0.2em]">
             <History className="h-3.5 w-3.5 opacity-50" /> जुन्या नोंदी (LOGS)

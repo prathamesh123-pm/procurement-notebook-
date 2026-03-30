@@ -120,8 +120,8 @@ export default function ReportsPage() {
             <p>तारीख: {d.reportDate || '---'}</p>
           </div>
           <div className="text-right space-y-0.5">
-            <p>गाडी: {d.vehicleNumber || '---'}</p>
-            <p>स्लिप नं: {d.slipNo || '---'}</p>
+            <p>वाहन: {d.vehicleNumber || '---'}</p>
+            <p>स्लिप क्र: {d.slipNo || '---'}</p>
           </div>
         </div>
 
@@ -129,7 +129,7 @@ export default function ReportsPage() {
           <thead>
             <tr className="bg-slate-100 font-black text-[7px]">
               <th className="border border-black p-0.5 text-center w-5">क्र.</th>
-              <th className="border border-black p-0.5 text-left">केंद्राचे नाव , कोड</th>
+              <th className="border border-black p-0.5 text-left">केंद्राचे नाव व कोड</th>
               <th className="border border-black p-0.5 text-center">बर्फ वापर</th>
               <th className="border border-black p-0.5 text-center">आगमन</th>
               <th className="border border-black p-0.5 text-center">रिकामे</th>
@@ -162,10 +162,14 @@ export default function ReportsPage() {
           </tbody>
         </table>
 
-        <div className="mt-1 flex justify-between font-black text-[7px] uppercase border-t border-dashed border-black/20 pt-0.5">
-          <div className="flex gap-2">
-            <p>KM: {d.totalKm || '0'}</p>
-            <p className="text-rose-600">तूट: {d.shortageLiters || '0'} L</p>
+        <div className="mt-1 grid grid-cols-2 font-black text-[7px] uppercase border-t border-dashed border-black/20 pt-0.5">
+          <div>
+            <p>सुरवात RD: {d.startReading || '0'}</p>
+            <p>शेवट RD: {d.endReading || '0'}</p>
+          </div>
+          <div className="text-right">
+            <p>एकूण KM: {d.totalKm || '0'}</p>
+            <p className="text-rose-600">दूध तूट: {d.shortageLiters || '0'} L</p>
           </div>
         </div>
 
@@ -216,39 +220,60 @@ export default function ReportsPage() {
       repId: "आयडी",
       shift: "शिफ्ट",
       workType: "कामाचा प्रकार",
-      summary: "तपशील",
+      summary: "तपशील / सारांश",
       vehicleNo: "वाहन क्रमांक",
-      vehicleType: "गाडी प्रकार",
-      driverName: "ड्रायव्हर",
-      mobile: "मोबाईल",
+      vehicleNumber: "वाहन क्रमांक",
+      vehicleType: "गाडीचा प्रकार",
+      driverName: "ड्रायव्हरचे नाव",
+      driverMobile: "ड्रायव्हर मोबाईल",
+      mobile: "संपर्क क्रमांक",
       routeName: "रूटचे नाव",
       breakdownTime: "बिघाड वेळ",
-      location: "लोकेशन",
+      location: "बिघाड ठिकाण",
       reason: "बिघाडाचे मुख्य कारण",
       severity: "बिघाडाचे स्वरूप",
+      faultResponsibility: "बिघाडास जबाबदार",
       detailedReason: "सविस्तर माहिती",
+      detailedDescription: "सविस्तर वर्णन",
       estimatedRepairTime: "दुरुस्ती वेळ",
       estimatedRepairCost: "दुरुस्ती खर्च (₹)",
-      recoveryVehicleNo: "पर्यायी वाहन क्र.",
+      recoveryVehicleNo: "पर्यायी गाडी क्र.",
       recoveryArrivalTime: "पर्यायी गाडी वेळ",
       milkHot: "दूध गरम झाले?",
       milkSour: "दूध आंबट झाले?",
       alternateArrangement: "पर्यायी सोय?",
       lossAmount: "नुकसान रक्कम (₹)",
-      supplierName: "नाव",
+      totalLossAmount: "एकूण नुकसान (₹)",
+      supplierName: "पुरवठादार नाव",
       supplierId: "आयडी / कोड",
       seizureQty: "जप्ती प्रमाण (L)",
       fineAmount: "दंड रक्कम (₹)",
       notes: "विशेष नोंदी",
       title: "शीर्षक",
       remark: "शेरा / कार्यवाही",
-      status: "स्थिती"
+      status: "स्थिती",
+      morningQty: "सकाळ संकलन (L)",
+      eveningQty: "संध्याकाळ संकलन (L)",
+      fat: "फॅट (%)",
+      snf: "SNF (%)",
+      result: "अंतिम निकाल",
+      centerName: "केंद्राचे नाव",
+      centerCode: "केंद्र कोड",
+      auditDate: "ऑडिट तारीख",
+      capacity: "क्षमता (L)",
+      licenseStatus: "परवाना स्थिती",
+      ownerName: "मालकाचे नाव",
+      district: "जिल्हा",
+      taluka: "तालुका"
     };
 
     const entries = Object.entries(d).filter(([key, val]) => {
       return typeof val !== 'object' && 
              key !== 'routeVisitLogs' && 
+             key !== 'losses' &&
              key !== 'centerLosses' && 
+             key !== 'fieldVisitPoints' &&
+             key !== 'officeWorkPoints' &&
              key !== 'reportType' && 
              key !== 'isWordDoc' && 
              key !== 'content' &&
@@ -267,7 +292,7 @@ export default function ReportsPage() {
 
         <div className="grid grid-cols-2 gap-2 mb-2 font-black text-[7px] uppercase border-b border-dashed border-black/20 pb-1">
           <p>तारीख: {report.date}</p>
-          <p className="text-right">ID: #{report.id.slice(-8).toUpperCase()}</p>
+          <p className="text-right">अहवाल क्र: #{report.id.slice(-8).toUpperCase()}</p>
         </div>
 
         <table className="w-full border-collapse border border-black">
@@ -287,25 +312,25 @@ export default function ReportsPage() {
           </tbody>
         </table>
 
-        {d.centerLosses && d.centerLosses.length > 0 && (
+        {d.losses && d.losses.length > 0 && (
           <div className="mt-2">
-            <p className="font-black text-[7px] uppercase mb-0.5">नुकसान तपशील (CENTER LOSS LOG):</p>
+            <p className="font-black text-[7px] uppercase mb-0.5">नुकसान तपशील (LOSS LOG):</p>
             <table className="w-full border-collapse border border-black text-[7px]">
-              <thead className="bg-slate-50 font-black">
+              <thead className="bg-slate-50 font-black uppercase">
                 <tr>
-                  <th className="border border-black p-0.5">कोड</th>
-                  <th className="border border-black p-0.5">नाव</th>
-                  <th className="border border-black p-0.5">दूध (L)</th>
-                  <th className="border border-black p-0.5">नुकसान (₹)</th>
+                  <th className="border border-black p-0.5">ID/नाव</th>
+                  <th className="border border-black p-0.5">प्रकार</th>
+                  <th className="border border-black p-0.5">लिटर (L)</th>
+                  <th className="border border-black p-0.5">रक्कम (₹)</th>
                 </tr>
               </thead>
               <tbody>
-                {d.centerLosses.map((l: any, i: number) => (
-                  <tr key={i} className="text-center">
-                    <td className="border border-black p-0.5">{l.centerCode}</td>
-                    <td className="border border-black p-0.5 text-left truncate">{l.centerName}</td>
+                {d.losses.map((l: any, i: number) => (
+                  <tr key={i} className="text-center font-bold">
+                    <td className="border border-black p-0.5 text-left truncate">{l.supplierCode} {l.supplierName}</td>
+                    <td className="border border-black p-0.5">{l.milkType}</td>
                     <td className="border border-black p-0.5">{l.qtyLiters}</td>
-                    <td className="border border-black p-0.5">{l.lossAmount}</td>
+                    <td className="border border-black p-0.5 text-rose-600">{l.lossAmount}</td>
                   </tr>
                 ))}
               </tbody>
