@@ -33,11 +33,23 @@ export default function ReportsPage() {
   const { data: firestoreReports, isLoading } = useCollection(reportsQuery)
   const [filterDate, setFilterDate] = useState<string>("")
   const [searchQuery, setSearchQuery] = useState("")
+  const [typeFilter, setTypeFilter] = useState<string | null>(null)
   const [selectedReport, setSelectedReport] = useState<any | null>(null)
   const [isViewOpen, setIsViewOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => setMounted(true), [])
+
+  const reportTypes = [
+    { title: "रूट व्हिजिट", type: "Route Visit", icon: Truck, color: "text-blue-600", bg: "bg-blue-50" },
+    { title: "क्षेत्र भेट", type: "Field Visit", icon: MapPin, color: "text-emerald-600", bg: "bg-emerald-50" },
+    { title: "ऑफिस काम", type: "Daily Office Work", icon: Briefcase, color: "text-purple-600", bg: "bg-purple-50" },
+    { title: "ब्रेकडाऊन", type: "Transport Breakdown Report", icon: Truck, color: "text-rose-600", bg: "bg-rose-50" },
+    { title: "कामकाज नोंद", type: "Daily Task", icon: ListTodo, color: "text-orange-600", bg: "bg-orange-50" },
+    { title: "जप्ती व दंड", type: "Seizure & Penalty", icon: ShieldAlert, color: "text-amber-600", bg: "bg-amber-50" },
+    { title: "दैनिक कामकाज", type: "Daily Work Report", icon: ClipboardCheck, color: "text-indigo-600", bg: "bg-indigo-50" },
+    { title: "वर्ड फॉर्म", type: "Official Document", icon: FileSignature, color: "text-slate-600", bg: "bg-slate-50" },
+  ]
 
   const filteredReports = useMemo(() => {
     const list = firestoreReports || []
@@ -45,9 +57,10 @@ export default function ReportsPage() {
       const matchesDate = filterDate === "" || r.date === filterDate
       const q = searchQuery.toLowerCase()
       const matchesSearch = r.type?.toLowerCase().includes(q) || r.summary?.toLowerCase().includes(q)
-      return matchesDate && matchesSearch
+      const matchesType = !typeFilter || r.type === typeFilter
+      return matchesDate && matchesSearch && matchesType
     }).sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime())
-  }, [firestoreReports, filterDate, searchQuery])
+  }, [firestoreReports, filterDate, searchQuery, typeFilter])
 
   const handleDeleteReport = (id: string, e?: React.MouseEvent) => {
     if (e) {
@@ -82,17 +95,6 @@ export default function ReportsPage() {
   }
 
   if (!mounted || isLoading) return <div className="p-20 text-center animate-pulse italic font-black uppercase text-[9px] opacity-50">लोड होत आहे...</div>
-
-  const reportTypes = [
-    { title: "रूट व्हिजिट", href: "/daily-report?type=route-visit", icon: Truck, color: "text-blue-600", bg: "bg-blue-50" },
-    { title: "क्षेत्र भेट", href: "/daily-report?type=field-visit", icon: MapPin, color: "text-emerald-600", bg: "bg-emerald-50" },
-    { title: "ऑफिस काम", href: "/daily-report?type=office-work", icon: Briefcase, color: "text-purple-600", bg: "bg-purple-50" },
-    { title: "ब्रेकडाऊन", href: "/reports/entry/breakdown", icon: Truck, color: "text-rose-600", bg: "bg-rose-50" },
-    { title: "कामकाज नोंद", href: "/work-log", icon: ListTodo, color: "text-orange-600", bg: "bg-orange-50" },
-    { title: "जप्ती व दंड", href: "/reports/entry/seizure", icon: ShieldAlert, color: "text-amber-600", bg: "bg-amber-50" },
-    { title: "दैनिक कामकाज", href: "/reports/entry/daily", icon: ClipboardCheck, color: "text-indigo-600", bg: "bg-indigo-50" },
-    { title: "वर्ड फॉर्म", href: "/form-builder", icon: FileSignature, color: "text-slate-600", bg: "bg-slate-50" },
-  ]
 
   const RouteSlipLayout = ({ report }: { report: any }) => {
     const d = report.fullData || {};
@@ -320,12 +322,14 @@ export default function ReportsPage() {
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
         {reportTypes.map((rt) => (
-          <Link key={rt.title} href={rt.href} className="block">
-            <div className={`h-16 flex flex-col items-center justify-center p-1 rounded-xl border transition-all hover:scale-[1.02] active:scale-95 ${rt.bg} border-muted-foreground/5 shadow-sm`}>
-              <rt.icon className={`h-4 w-4 ${rt.color} mb-1`} />
-              <span className="text-[8px] font-black text-slate-900 leading-tight text-center uppercase">{rt.title}</span>
-            </div>
-          </Link>
+          <div 
+            key={rt.title} 
+            onClick={() => setTypeFilter(typeFilter === rt.type ? null : rt.type)}
+            className={`h-16 flex flex-col items-center justify-center p-1 rounded-xl border transition-all cursor-pointer hover:scale-[1.02] active:scale-95 ${typeFilter === rt.type ? 'ring-2 ring-primary border-primary bg-primary/10 shadow-lg' : rt.bg + ' border-muted-foreground/5 shadow-sm'}`}
+          >
+            <rt.icon className={`h-4 w-4 ${rt.color} mb-1`} />
+            <span className="text-[8px] font-black text-slate-900 leading-tight text-center uppercase">{rt.title}</span>
+          </div>
         ))}
       </div>
 
@@ -338,6 +342,11 @@ export default function ReportsPage() {
           <div className="relative">
             <Input type="date" className="h-8 text-[9px] bg-muted/20 border-none rounded-lg font-bold w-28" value={filterDate} onChange={e => setFilterDate(e.target.value)} />
           </div>
+          {typeFilter && (
+            <Button variant="ghost" size="icon" onClick={() => setTypeFilter(null)} className="h-8 w-8 text-rose-500 bg-rose-50">
+              <X className="h-4 w-4" />
+            </Button>
+          )}
         </div>
       </Card>
 
