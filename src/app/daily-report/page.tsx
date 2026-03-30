@@ -22,7 +22,9 @@ interface RouteVisitEntry {
   id: string;
   centerCode: string;
   supplierName: string;
+  memberCount: string;
   iceAllocated: string;
+  iceUsed: string;
   arrivalTime: string;
   departureTime: string;
   emptyCans: string;
@@ -49,8 +51,8 @@ function DailyReportForm() {
 
   const createEmptyRouteEntry = (): RouteVisitEntry => ({
     id: createId(),
-    centerCode: "", supplierName: "", iceAllocated: "", arrivalTime: "",
-    departureTime: "", emptyCans: "", fullCans: ""
+    centerCode: "", supplierName: "", memberCount: "", iceAllocated: "", iceUsed: "", 
+    arrivalTime: "", departureTime: "", emptyCans: "", fullCans: ""
   });
 
   const createEmptyPoint = (): ReportPoint => ({
@@ -60,7 +62,7 @@ function DailyReportForm() {
 
   const [formData, setFormData] = useState({
     name: "", idNumber: "", reportDate: "", shift: "Sakal", slipNo: "",
-    driverName: "", vehicleNumber: "", routeOutTime: "", routeInTime: "",
+    driverName: "", vehicleNumber: "", routeName: "", routeOutTime: "", routeInTime: "",
     startReading: "", endReading: "", totalKm: "0", shortageLiters: "0",
     excessLiters: "0", routeVisitLogs: [] as RouteVisitEntry[],
     fieldVisitPoints: [] as ReportPoint[],
@@ -133,7 +135,7 @@ function DailyReportForm() {
     let reportCategory = ""
     
     if (reportType === "route-visit") {
-      reportSummary = `रूट व्हिजिट: ${formData.routeVisitLogs.length} केंद्र. वाहन: ${formData.vehicleNumber}. किलोमीटर: ${formData.totalKm}. तूट: ${formData.shortageLiters}L.`
+      reportSummary = `रूट व्हिजिट: ${formData.routeName || 'N/A'}. स्लिप: ${formData.slipNo}. केंद्र: ${formData.routeVisitLogs.length}. किलोमीटर: ${formData.totalKm}.`
       reportCategory = "Route Visit"
     } else if (reportType === "field-visit") {
       const pointsText = formData.fieldVisitPoints.filter(p => p.text).map((p, i) => `${i+1}. ${p.text}`).join(' | ')
@@ -191,11 +193,11 @@ function DailyReportForm() {
         <CardContent className="p-3 grid grid-cols-2 gap-3">
           <div className="space-y-0.5">
             <Label className="text-[9px] font-black uppercase text-muted-foreground tracking-widest">तुमचे नाव</Label>
-            <Input className="h-8 text-[11px] bg-muted/20 border-none rounded-lg font-black shadow-inner" value={formData.name} readOnly />
+            <Input className="h-8 text-[11px] bg-muted/20 border-none rounded-lg font-black" value={formData.name} readOnly />
           </div>
           <div className="space-y-0.5">
             <Label className="text-[9px] font-black uppercase text-muted-foreground tracking-widest">आजची तारीख</Label>
-            <Input className="h-8 text-[11px] bg-muted/20 border-none rounded-lg font-black shadow-inner" type="date" value={formData.reportDate} onChange={e => setFormData({...formData, reportDate: e.target.value})} />
+            <Input className="h-8 text-[11px] bg-muted/20 border-none rounded-lg font-black" type="date" value={formData.reportDate} onChange={e => setFormData({...formData, reportDate: e.target.value})} />
           </div>
           <div className="col-span-2 space-y-1">
             <Label className="text-[9px] font-black uppercase text-muted-foreground tracking-widest">शिफ्ट (SHIFT)</Label>
@@ -222,21 +224,22 @@ function DailyReportForm() {
 
         <TabsContent value="route-visit" className="space-y-3">
           <Card className="border shadow-none bg-white rounded-xl overflow-hidden border-muted-foreground/10">
-            <CardContent className="p-3 grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <CardContent className="p-3 grid grid-cols-2 sm:grid-cols-3 gap-2">
+              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">SLIP No.</Label><Input className="h-8 text-[10px] bg-muted/20 border-none rounded-lg font-black" value={formData.slipNo} onChange={e => setFormData({...formData, slipNo: e.target.value})} placeholder="22..." /></div>
+              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">रूटचे नाव</Label><Input className="h-8 text-[10px] bg-muted/20 border-none rounded-lg font-black" value={formData.routeName} onChange={e => setFormData({...formData, routeName: e.target.value})} placeholder="MANJARDE" /></div>
               <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">वाहन क्र.</Label><Input className="h-8 text-[10px] bg-muted/20 border-none rounded-lg font-black" value={formData.vehicleNumber} onChange={e => setFormData({...formData, vehicleNumber: e.target.value})} placeholder="MH 10..." /></div>
               <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">ड्रायव्हर</Label><Input className="h-8 text-[10px] bg-muted/20 border-none rounded-lg font-black" value={formData.driverName} onChange={e => setFormData({...formData, driverName: e.target.value})} placeholder="..." /></div>
-              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase text-blue-600">बाहेर वेळ</Label><Input className="h-8 text-[10px] bg-blue-50/50 border-none rounded-lg font-black text-blue-700" type="time" value={formData.routeOutTime} onChange={e => setFormData({...formData, routeOutTime: e.target.value})} /></div>
-              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase text-blue-600">येण्याची वेळ</Label><Input className="h-8 text-[10px] bg-blue-50/50 border-none rounded-lg font-black text-blue-700" type="time" value={formData.routeInTime} onChange={e => setFormData({...formData, routeInTime: e.target.value})} /></div>
-              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">सुरुवात RD</Label><Input className="h-8 text-[10px] bg-muted/20 border-none rounded-lg font-black" type="number" value={formData.startReading} onChange={e => setFormData({...formData, startReading: e.target.value})} /></div>
-              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">शेवट RD</Label><Input className="h-8 text-[10px] bg-muted/20 border-none rounded-lg font-black" type="number" value={formData.endReading} onChange={e => setFormData({...formData, endReading: e.target.value})} /></div>
-              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase text-primary">एकूण KM</Label><Input className="h-8 text-[10px] bg-primary/10 border-none font-black text-primary rounded-lg" value={formData.totalKm} readOnly /></div>
-              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase text-rose-600">तूट (L)</Label><Input className="h-8 text-[10px] bg-rose-50 border-none rounded-lg font-black text-rose-700" type="number" value={formData.shortageLiters} onChange={e => setFormData({...formData, shortageLiters: e.target.value})} /></div>
+              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase text-blue-600">OUT TIME</Label><Input className="h-8 text-[10px] bg-blue-50/50 border-none rounded-lg font-black text-blue-700" type="time" value={formData.routeOutTime} onChange={e => setFormData({...formData, routeOutTime: e.target.value})} /></div>
+              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase text-blue-600">IN TIME</Label><Input className="h-8 text-[10px] bg-blue-50/50 border-none rounded-lg font-black text-blue-700" type="time" value={formData.routeInTime} onChange={e => setFormData({...formData, routeInTime: e.target.value})} /></div>
+              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">START RD</Label><Input className="h-8 text-[10px] bg-muted/20 border-none rounded-lg font-black" type="number" value={formData.startReading} onChange={e => setFormData({...formData, startReading: e.target.value})} /></div>
+              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">END RD</Label><Input className="h-8 text-[10px] bg-muted/20 border-none rounded-lg font-black" type="number" value={formData.endReading} onChange={e => setFormData({...formData, endReading: e.target.value})} /></div>
+              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase text-primary">KM</Label><Input className="h-8 text-[10px] bg-primary/10 border-none font-black text-primary rounded-lg" value={formData.totalKm} readOnly /></div>
             </CardContent>
           </Card>
 
           <div className="space-y-2">
             <div className="flex items-center justify-between px-1">
-              <span className="text-[10px] font-black uppercase text-muted-foreground tracking-widest flex items-center gap-1.5"><ListPlus className="h-3 w-3" /> व्हिजिट लॉग</span>
+              <span className="text-[10px] font-black uppercase text-muted-foreground tracking-widest flex items-center gap-1.5"><ListPlus className="h-3 w-3" /> व्हिजिट लॉग (SLIP DATA)</span>
               <Button type="button" size="sm" onClick={addRouteEntry} className="h-7 text-[9px] px-3 rounded-lg shadow-md font-black uppercase tracking-widest"><Plus className="h-3 w-3 mr-1" /> केंद्र जोडा</Button>
             </div>
 
@@ -244,27 +247,34 @@ function DailyReportForm() {
               {formData.routeVisitLogs.map((entry, index) => (
                 <Card key={entry.id} className="border shadow-none bg-white rounded-xl overflow-hidden border-muted-foreground/10 relative p-2.5">
                   <div className="flex justify-between items-center mb-2">
-                    <span className="text-[10px] font-black text-muted-foreground uppercase opacity-40">व्हिजिट #{index + 1}</span>
+                    <span className="text-[10px] font-black text-muted-foreground uppercase opacity-40"># {index + 1}</span>
                     <Button type="button" variant="ghost" size="icon" onClick={() => removeRouteEntry(entry.id)} className="h-6 w-6 text-rose-400"><Trash2 className="h-3.5 w-3.5" /></Button>
                   </div>
                   <div className="grid grid-cols-2 gap-2">
-                    <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">कोड/नाव</Label>
+                    <div className="col-span-2 space-y-0.5">
+                      <Label className="text-[8px] font-black uppercase opacity-60">सेंटर कोड & नाव</Label>
                       <div className="flex gap-1">
-                        <Input className="h-8 text-[10px] bg-muted/20 border-none rounded-lg font-black w-14 p-1 text-center" placeholder="ID" value={entry.centerCode} onChange={e => updateRouteEntry(entry.id, { centerCode: e.target.value })} />
-                        <Input className="h-8 text-[10px] bg-muted/20 border-none rounded-lg font-black flex-1" placeholder="नाव" value={entry.supplierName} onChange={e => updateRouteEntry(entry.id, { supplierName: e.target.value })} />
+                        <Input className="h-8 text-[10px] bg-muted/20 border-none rounded-lg font-black w-16 p-1 text-center" placeholder="कोड" value={entry.centerCode} onChange={e => updateRouteEntry(entry.id, { centerCode: e.target.value })} />
+                        <Input className="h-8 text-[10px] bg-muted/20 border-none rounded-lg font-black flex-1" placeholder="केंद्राचे नाव" value={entry.supplierName} onChange={e => updateRouteEntry(entry.id, { supplierName: e.target.value })} />
                       </div>
                     </div>
-                    <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">बर्फ</Label><Input className="h-8 text-[10px] bg-muted/20 border-none rounded-lg text-center" value={entry.iceAllocated} onChange={e => updateRouteEntry(entry.id, { iceAllocated: e.target.value })} /></div>
-                    <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase text-blue-600 flex items-center gap-1"><Clock className="h-2 w-2" /> वेळ (IN / OUT)</Label>
+                    <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">मेंबर संख्या</Label><Input className="h-8 text-[10px] bg-muted/20 border-none rounded-lg text-center" value={entry.memberCount} onChange={e => updateRouteEntry(entry.id, { memberCount: e.target.value })} /></div>
+                    <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">बर्फ वाटप / वापर</Label>
+                      <div className="flex gap-1">
+                        <Input className="h-8 text-[10px] bg-muted/20 border-none rounded-lg text-center flex-1" placeholder="वाटप" value={entry.iceAllocated} onChange={e => updateRouteEntry(entry.id, { iceAllocated: e.target.value })} />
+                        <Input className="h-8 text-[10px] bg-muted/20 border-none rounded-lg text-center flex-1" placeholder="वापर" value={entry.iceUsed} onChange={e => updateRouteEntry(entry.id, { iceUsed: e.target.value })} />
+                      </div>
+                    </div>
+                    <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase text-blue-600">वेळ (IN / OUT)</Label>
                       <div className="flex gap-1">
                         <Input className="h-8 text-[9px] bg-blue-50/50 border-none rounded-lg p-1 text-center font-black" type="time" value={entry.arrivalTime} onChange={e => updateRouteEntry(entry.id, { arrivalTime: e.target.value })} />
                         <Input className="h-8 text-[9px] bg-blue-50/50 border-none rounded-lg p-1 text-center font-black" type="time" value={entry.departureTime} onChange={e => updateRouteEntry(entry.id, { departureTime: e.target.value })} />
                       </div>
                     </div>
-                    <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60 flex items-center gap-1"><Box className="h-2 w-2" /> कॅन (रिका / भर)</Label>
+                    <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">कॅन (उतरलेले / भरलेले)</Label>
                       <div className="flex gap-1">
-                        <Input className="h-8 text-[10px] bg-muted/20 border-none rounded-lg text-center font-black" placeholder="E" value={entry.emptyCans} onChange={e => updateRouteEntry(entry.id, { emptyCans: e.target.value })} />
-                        <Input className="h-8 text-[10px] bg-primary/10 border-none rounded-lg text-center font-black text-primary" placeholder="F" value={entry.fullCans} onChange={e => updateRouteEntry(entry.id, { fullCans: e.target.value })} />
+                        <Input className="h-8 text-[10px] bg-muted/20 border-none rounded-lg text-center font-black flex-1" placeholder="E" value={entry.emptyCans} onChange={e => updateRouteEntry(entry.id, { emptyCans: e.target.value })} />
+                        <Input className="h-8 text-[10px] bg-primary/10 border-none rounded-lg text-center font-black text-primary flex-1" placeholder="F" value={entry.fullCans} onChange={e => updateRouteEntry(entry.id, { fullCans: e.target.value })} />
                       </div>
                     </div>
                   </div>
