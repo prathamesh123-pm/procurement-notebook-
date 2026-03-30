@@ -28,12 +28,15 @@ export interface EquipmentItem {
   ownership: 'Self' | 'Company';
 }
 
+export type SupplierType = 'Gavali' | 'Gotha' | 'Center';
+
 export interface Supplier {
   id: string;
   name: string;
   address: string;
   mobile: string;
   routeId: string;
+  supplierType: SupplierType;
   competition?: string;
   additionalInfo?: string;
   cowMilk?: MilkMetrics;
@@ -78,6 +81,8 @@ export interface CollectionCenter {
   routeId?: string;
   fssaiNumber?: string;
   fssaiExpiry?: string;
+  isLinkedToSupplier?: boolean;
+  supplierId?: string;
   // Expanded metrics and logistics
   cowMilk?: MilkMetrics;
   buffaloMilk?: MilkMetrics;

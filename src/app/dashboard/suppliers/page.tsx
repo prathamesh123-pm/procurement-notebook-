@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect, useMemo, Suspense } from "react"
@@ -7,8 +6,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
-import { Supplier, Route, EquipmentItem } from "@/lib/types"
-import { Plus, Search, Filter, Phone, MapPin, Trash2, Milk, X, Laptop, Zap, Sun, ShieldAlert, History, Edit, CheckCircle2, Box } from "lucide-react"
+import { Supplier, Route, EquipmentItem, SupplierType } from "@/lib/types"
+import { Plus, Search, Filter, Phone, MapPin, Trash2, Milk, X, Laptop, Zap, Sun, ShieldAlert, History, Edit, CheckCircle2, Box, UserCheck } from "lucide-react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogDescription } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -17,10 +16,12 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking } from "@/firebase"
 import { collection, doc } from "firebase/firestore"
+import { useToast } from "@/hooks/use-toast"
 
 function SuppliersContent() {
   const { user } = useUser()
   const db = useFirestore()
+  const { toast } = useToast()
   const searchParams = useSearchParams()
   const initialRouteFilter = searchParams.get('route') || 'all'
 
@@ -46,7 +47,7 @@ function SuppliersContent() {
 
   // Form state
   const [formData, setFormData] = useState<Partial<Supplier>>({
-    id: "", name: "", address: "", mobile: "", routeId: "", competition: "", additionalInfo: "",
+    id: "", name: "", address: "", mobile: "", routeId: "", supplierType: "Gavali", competition: "", additionalInfo: "",
     iceBlocks: 0, scaleBrand: "", fatMachineBrand: "", cattleFeedBrand: "", fssaiNumber: "", fssaiExpiry: "",
     milkCansCount: 0, computerAvailable: false, upsInverterAvailable: false, solarAvailable: false,
     adulterationKitInfo: "",
@@ -59,7 +60,7 @@ function SuppliersContent() {
 
   const resetFormData = () => {
     setFormData({ 
-      id: "", name: "", address: "", mobile: "", routeId: "", competition: "", additionalInfo: "",
+      id: "", name: "", address: "", mobile: "", routeId: "", supplierType: "Gavali", competition: "", additionalInfo: "",
       iceBlocks: 0, scaleBrand: "", fatMachineBrand: "", cattleFeedBrand: "", fssaiNumber: "", fssaiExpiry: "",
       milkCansCount: 0, computerAvailable: false, upsInverterAvailable: false, solarAvailable: false,
       adulterationKitInfo: "",
@@ -70,13 +71,45 @@ function SuppliersContent() {
   }
 
   const handleAddSupplier = () => {
-    if (!formData.name || !formData.id || !db) return
+    if (!formData.name || !formData.id || !db || !user) return
     const newSupp = {
       ...formData,
       updatedAt: new Date().toISOString()
     }
     const colRef = collection(db, 'suppliers')
     addDocumentNonBlocking(colRef, newSupp)
+
+    // logic for Utpadak Center: Automatically add to Centers collection
+    if (formData.supplierType === 'Center') {
+      const centerColRef = collection(db, 'users', user.uid, 'centers')
+      const centerData = {
+        name: formData.name,
+        code: formData.id,
+        village: formData.address,
+        mobile: formData.mobile,
+        operatorName: formData.name,
+        routeId: formData.routeId,
+        isLinkedToSupplier: true,
+        supplierId: formData.id,
+        cowMilk: formData.cowMilk,
+        buffaloMilk: formData.buffaloMilk,
+        material: {
+          weighingScaleBrand: formData.scaleBrand,
+          fatMachineBrand: formData.fatMachineBrand,
+          milkCansCount: formData.milkCansCount,
+          computerAvailable: formData.computerAvailable,
+          upsInverterAvailable: formData.upsInverterAvailable,
+          solarAvailable: formData.solarAvailable,
+          equipment: formData.equipment
+        },
+        updatedAt: new Date().toISOString()
+      }
+      addDocumentNonBlocking(centerColRef, centerData)
+      toast({ title: "यशस्वी", description: "सप्लायर आणि केंद्र दोन्ही जतन झाले." })
+    } else {
+      toast({ title: "यशस्वी", description: "सप्लायर प्रोफाइल जतन झाले." })
+    }
+
     setIsAdding(false)
     resetFormData()
   }
@@ -87,6 +120,7 @@ function SuppliersContent() {
     updateDocumentNonBlocking(docRef, { ...formData, updatedAt: new Date().toISOString() })
     setIsEditing(false)
     setSelectedSupplier(null)
+    toast({ title: "यशस्वी", description: "माहिती अद्ययावत झाली." })
   }
 
   const deleteSupplier = (id: string) => {
@@ -94,6 +128,7 @@ function SuppliersContent() {
     if (confirm("तुम्हाला खात्री आहे की हा सप्लायर हटवायचा आहे?")) {
       const docRef = doc(db, 'suppliers', id)
       deleteDocumentNonBlocking(docRef)
+      toast({ title: "यशस्वी", description: "सप्लायर हटवला." })
     }
   }
 
@@ -148,6 +183,19 @@ function SuppliersContent() {
                     <Phone className="h-3 w-3" /> १) प्राथमिक माहिती
                   </h4>
                   <div className="grid grid-cols-2 gap-2.5">
+                    <div className="space-y-1 col-span-2">
+                      <Label className="text-[9px] font-black uppercase text-muted-foreground opacity-60">सप्लायर प्रकार (Type)</Label>
+                      <Select value={formData.supplierType} onValueChange={(val: SupplierType) => setFormData({...formData, supplierType: val})}>
+                        <SelectTrigger className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg p-3">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Gavali" className="text-[11px] font-black">गवळी (Gavali)</SelectItem>
+                          <SelectItem value="Gotha" className="text-[11px] font-black">गोठा (Gotha)</SelectItem>
+                          <SelectItem value="Center" className="text-[11px] font-black">उत्पादक केंद्र (Center)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                     <div className="space-y-1 col-span-2"><Label className="text-[9px] font-black uppercase text-muted-foreground opacity-60">नाव</Label><Input value={formData.name ?? ""} onChange={e => setFormData({...formData, name: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-bold rounded-lg p-3" placeholder="..." /></div>
                     <div className="space-y-1"><Label className="text-[9px] font-black uppercase text-muted-foreground opacity-60">आयडी (ID)</Label><Input value={formData.id ?? ""} onChange={e => setFormData({...formData, id: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-bold rounded-lg p-3" placeholder="..." /></div>
                     <div className="space-y-1"><Label className="text-[9px] font-black uppercase text-muted-foreground opacity-60">मोबाईल</Label><Input value={formData.mobile ?? ""} onChange={e => setFormData({...formData, mobile: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-bold rounded-lg p-3" placeholder="..." /></div>
@@ -268,7 +316,10 @@ function SuppliersContent() {
                 }}>
                   <TableCell className="py-2 px-4">
                     <div className="flex flex-col">
-                      <span className="font-black text-[11px] text-slate-900 truncate max-w-[120px] uppercase">{supp.name}</span>
+                      <div className="flex items-center gap-1.5">
+                        <span className="font-black text-[11px] text-slate-900 truncate max-w-[120px] uppercase">{supp.name}</span>
+                        {supp.supplierType === 'Center' && <Badge className="bg-emerald-500 h-3 px-1 text-[6px] font-black uppercase border-none">Center</Badge>}
+                      </div>
                       <span className="text-[8px] text-muted-foreground font-black uppercase flex items-center gap-1">
                         <Badge variant="outline" className="h-3 px-1 text-[6px] font-black bg-primary/5 text-primary border-none">ID: {supp.id?.slice(-4)}</Badge>
                         <Phone className="h-2 w-2" /> {supp.mobile}
@@ -311,6 +362,20 @@ function SuppliersContent() {
           <ScrollArea className="max-h-[80vh] p-4">
             <div className="space-y-6">
               <div className="grid grid-cols-1 gap-3">
+                 <div className="space-y-1">
+                    <Label className="text-[9px] font-black uppercase text-muted-foreground opacity-60">प्रकार</Label>
+                    <Select value={formData.supplierType} onValueChange={(val: SupplierType) => setFormData({...formData, supplierType: val})}>
+                      <SelectTrigger className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Gavali" className="text-[11px] font-black">गवळी</SelectItem>
+                        <SelectItem value="Gotha" className="text-[11px] font-black">गोठा</SelectItem>
+                        <SelectItem value="Center" className="text-[11px] font-black">उत्पादक केंद्र</SelectItem>
+                      </SelectContent>
+                    </Select>
+                 </div>
+
                  <div className="flex items-start gap-2 p-3 rounded-xl bg-muted/20 border border-muted-foreground/5">
                     <MapPin className="h-4 w-4 text-primary shrink-0 mt-0.5" />
                     <div>
