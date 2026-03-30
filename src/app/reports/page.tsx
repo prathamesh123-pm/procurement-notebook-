@@ -99,7 +99,7 @@ export default function ReportsPage() {
 
     return (
       <div className="bg-white p-2 font-mono text-[9px] text-black border border-black/10 rounded shadow-sm max-w-[800px] mx-auto overflow-x-auto" id="printable-area">
-        {/* Header Section - Stripped Down */}
+        {/* Header Section */}
         <div className="flex justify-between items-center border-b border-black pb-1 mb-2">
           <div className="font-black uppercase text-[10px]">रूट व्हिजिट अहवाल (ROUTE VISIT)</div>
           <div className="text-right font-black leading-tight text-[8px]">
@@ -112,21 +112,20 @@ export default function ReportsPage() {
           <div className="space-y-0.5">
             <p>रूट: {d.routeName || '---'}</p>
             <p>ड्रायव्हर: {d.driverName || '---'}</p>
+            <p>तारीख: {d.reportDate || '---'}</p>
           </div>
           <div className="text-right space-y-0.5">
-            <p>तारीख: {d.reportDate || '---'}</p>
             <p>गाडी: {d.vehicleNumber || '---'}</p>
             <p>स्लिप नं: {d.slipNo || '---'}</p>
           </div>
         </div>
 
-        {/* Main Table - Simplified */}
+        {/* Main Table */}
         <table className="w-full border-collapse border border-black">
           <thead>
             <tr className="bg-slate-50 font-black text-[8px]">
               <th className="border border-black p-1 text-center w-6">क्र.</th>
-              <th className="border border-black p-1 text-center">सेंटर कोड</th>
-              <th className="border border-black p-1 text-center">मेंबर</th>
+              <th className="border border-black p-1 text-left">केंद्राचे नाव , कोड</th>
               <th className="border border-black p-1 text-center">बर्फ वापर</th>
               <th className="border border-black p-1 text-center">आगमन</th>
               <th className="border border-black p-1 text-center">रिकामे</th>
@@ -138,9 +137,10 @@ export default function ReportsPage() {
             {logs.map((log: any, idx: number) => (
               <tr key={idx} className="font-bold text-[8px]">
                 <td className="border border-black p-1 text-center">{idx + 1}</td>
-                <td className="border border-black p-1 text-center uppercase">{log.centerCode || '---'}</td>
-                <td className="border border-black p-1 text-center">{log.memberCount || '0'}</td>
-                <td className="border border-black p-1 text-center">{log.iceUsed || '-'}</td>
+                <td className="border border-black p-1 text-left uppercase">
+                  {log.supplierName || '---'} , {log.centerCode || '---'}
+                </td>
+                <td className="border border-black p-1 text-center">{log.iceUsed || '0'}</td>
                 <td className="border border-black p-1 text-center">{log.arrivalTime || '--:--'}</td>
                 <td className="border border-black p-1 text-center">{log.emptyCans || '0'}</td>
                 <td className="border border-black p-1 text-center">{log.departureTime || '--:--'}</td>
@@ -150,7 +150,6 @@ export default function ReportsPage() {
             {/* Summary Row */}
             <tr className="bg-slate-100 font-black text-[8px]">
               <td className="border border-black p-1 text-center" colSpan={2}>एकूण (TOTAL)</td>
-              <td className="border border-black p-1 text-center">-</td>
               <td className="border border-black p-1 text-center">{totalIceUsed}</td>
               <td className="border border-black p-1 text-center">-</td>
               <td className="border border-black p-1 text-center">{totalEmpty}</td>
