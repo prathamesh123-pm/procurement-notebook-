@@ -1,26 +1,28 @@
 
 "use client"
 
-import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
+import { useState, useEffect, Suspense } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
 import { Card } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { 
-  ArrowLeft, Save, Truck, AlertTriangle, Milk, User, IndianRupee
+  ArrowLeft, Save, Truck, AlertTriangle, Milk, User, IndianRupee, RefreshCw
 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
-import { useUser, useFirestore, addDocumentNonBlocking } from "@/firebase"
-import { collection } from "firebase/firestore"
+import { useUser, useFirestore, useDoc, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking } from "@/firebase"
+import { collection, doc } from "firebase/firestore"
 
-export default function BreakdownReportPage() {
+function BreakdownReportForm() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const { user } = useUser()
   const db = useFirestore()
   const { toast } = useToast()
+  const editId = searchParams.get('edit')
+
   const [mounted, setMounted] = useState(false)
 
   const [formData, setFormData] = useState({
@@ -31,11 +33,30 @@ export default function BreakdownReportPage() {
     lossAmount: "0"
   })
 
-  useEffect(() => setMounted(true), [])
+  const reportRef = useMemoFirebase(() => {
+    if (!db || !user || !editId) return null
+    return doc(db, 'users', user.uid, 'dailyWorkReports', editId)
+  }, [db, user, editId])
+
+  const { data: existingReport, isLoading } = useDoc(reportRef)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (existingReport && existingReport.fullData) {
+      setFormData(existingReport.fullData)
+    }
+  }, [existingReport])
 
   const handleSave = () => {
-    if (!db || !user || !formData.vehicleNo) return
-    const report = {
+    if (!db || !user || !formData.vehicleNo) {
+      toast({ title: "त्रुटी", description: "वाहन क्रमांक आवश्यक आहे.", variant: "destructive" })
+      return
+    }
+
+    const reportData = {
       type: 'Transport Breakdown Report',
       date: formData.date,
       reportDate: formData.date,
@@ -43,21 +64,30 @@ export default function BreakdownReportPage() {
       summary: `ब्रेकडाऊन: ${formData.vehicleNo}. नुकसान: ₹${formData.lossAmount}. कारण: ${formData.reason}.`,
       overallSummary: `वाहन: ${formData.vehicleNo}, ड्रायव्हर: ${formData.driverName}, एकूण नुकसान: ₹${formData.lossAmount}`,
       fullData: { ...formData },
-      createdAt: new Date().toISOString()
+      updatedAt: new Date().toISOString()
     }
-    addDocumentNonBlocking(collection(db, 'users', user.uid, 'dailyWorkReports'), report)
-    toast({ title: "यशस्वी", description: "ब्रेकडाऊन अहवाल जतन झाला." })
+
+    if (editId) {
+      const docRef = doc(db, 'users', user.uid, 'dailyWorkReports', editId)
+      updateDocumentNonBlocking(docRef, reportData)
+      toast({ title: "यशस्वी", description: "ब्रेकडाऊन अहवाल अपडेट झाला." })
+    } else {
+      const colRef = collection(db, 'users', user.uid, 'dailyWorkReports')
+      addDocumentNonBlocking(colRef, { ...reportData, createdAt: new Date().toISOString() })
+      toast({ title: "यशस्वी", description: "ब्रेकडाऊन अहवाल जतन झाला." })
+    }
+    
     router.push('/reports')
   }
 
-  if (!mounted) return null
+  if (!mounted || isLoading) return <div className="p-20 text-center font-black uppercase text-[10px] opacity-50 animate-pulse">लोड होत आहे...</div>
 
   return (
     <div className="compact-form-container px-2">
       <div className="flex items-center gap-2 border-b pb-2 mb-3">
-        <Button variant="ghost" size="icon" onClick={() => router.back()} className="h-8 w-8 shrink-0"><ArrowLeft className="h-4 w-4" /></Button>
+        <Button variant="ghost" size="icon" onClick={() => router.push('/reports')} className="h-8 w-8 shrink-0"><ArrowLeft className="h-4 w-4" /></Button>
         <div className="min-w-0">
-          <h2 className="text-xs font-black uppercase truncate flex items-center gap-1.5 text-rose-600"><Truck className="h-3.5 w-3.5" /> ब्रेकडाऊन (BREAKDOWN)</h2>
+          <h2 className="text-xs font-black uppercase truncate flex items-center gap-1.5 text-rose-600"><Truck className="h-3.5 w-3.5" /> {editId ? 'ब्रेकडाऊन अपडेट' : 'ब्रेकडाऊन (BREAKDOWN)'}</h2>
           <p className="text-[8px] font-bold text-muted-foreground uppercase">{formData.date}</p>
         </div>
       </div>
@@ -126,9 +156,18 @@ export default function BreakdownReportPage() {
         </Card>
 
         <Button onClick={handleSave} className="compact-button w-full bg-rose-600 text-white shadow-lg mb-10 h-11 uppercase font-black tracking-widest">
-          ब्रेकडाऊन अहवाल जतन करा (SUBMIT)
+          {editId ? <RefreshCw className="h-4 w-4 mr-1.5" /> : <Save className="h-4 w-4 mr-1.5" />}
+          {editId ? 'ब्रेकडाऊन अपडेट करा' : 'ब्रेकडाऊन अहवाल जतन करा'}
         </Button>
       </div>
     </div>
+  )
+}
+
+export default function BreakdownReportPage() {
+  return (
+    <Suspense fallback={<div className="p-20 text-center font-black uppercase text-[10px] opacity-50 animate-pulse">लोड होत आहे...</div>}>
+      <BreakdownReportForm />
+    </Suspense>
   )
 }

@@ -1,6 +1,7 @@
+
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -9,12 +10,12 @@ import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/hooks/use-toast"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { 
-  ClipboardCheck, Truck, Plus, Trash2, MapPin, Briefcase, Save, ArrowLeft, ListPlus, Clock, Box, Milk
+  ClipboardCheck, Truck, Plus, Trash2, MapPin, Briefcase, Save, ArrowLeft, ListPlus, Clock, Box, RefreshCw
 } from "lucide-react"
-import { useUser, useFirestore, addDocumentNonBlocking } from "@/firebase"
-import { collection } from "firebase/firestore"
+import { useUser, useFirestore, useDoc, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking } from "@/firebase"
+import { collection, doc } from "firebase/firestore"
 import { AIGuidanceCard } from "@/components/ai-guidance-card"
 
 interface RouteVisitEntry {
@@ -33,11 +34,14 @@ interface ReportPoint {
   text: string;
 }
 
-export default function DailyReportPage() {
+function DailyReportForm() {
   const { user } = useUser()
   const db = useFirestore()
   const { toast } = useToast()
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const editId = searchParams.get('edit')
+
   const [mounted, setMounted] = useState(false)
   const [reportType, setReportType] = useState<string>("route-visit")
 
@@ -65,6 +69,13 @@ export default function DailyReportPage() {
     actionsTaken: "", supervisorName: ""
   })
 
+  const reportRef = useMemoFirebase(() => {
+    if (!db || !user || !editId) return null
+    return doc(db, 'users', user.uid, 'dailyWorkReports', editId)
+  }, [db, user, editId])
+
+  const { data: existingReport, isLoading: isReportLoading } = useDoc(reportRef)
+
   useEffect(() => {
     setMounted(true)
     const savedName = localStorage.getItem('procurenote_user_name') || ""
@@ -79,6 +90,15 @@ export default function DailyReportPage() {
       officeWorkPoints: [createEmptyPoint()]
     }))
   }, [])
+
+  useEffect(() => {
+    if (existingReport && existingReport.fullData) {
+      setFormData(existingReport.fullData)
+      if (existingReport.fullData.reportType) {
+        setReportType(existingReport.fullData.reportType)
+      }
+    }
+  }, [existingReport])
 
   useEffect(() => {
     if (formData.startReading && formData.endReading) {
@@ -125,7 +145,7 @@ export default function DailyReportPage() {
       reportCategory = "Daily Office Work"
     }
     
-    const newReport = {
+    const reportData = {
       type: reportCategory,
       date: formData.reportDate,
       reportDate: formData.reportDate,
@@ -133,31 +153,36 @@ export default function DailyReportPage() {
       summary: reportSummary,
       overallSummary: reportSummary,
       fullData: { ...formData, reportType },
-      createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     }
 
-    const colRef = collection(db, 'users', user.uid, 'dailyWorkReports');
-    addDocumentNonBlocking(colRef, newReport);
+    if (editId) {
+      const docRef = doc(db, 'users', user.uid, 'dailyWorkReports', editId);
+      updateDocumentNonBlocking(docRef, reportData);
+      toast({ title: "यशस्वी", description: "अहवाल अपडेट झाला." })
+    } else {
+      const colRef = collection(db, 'users', user.uid, 'dailyWorkReports');
+      addDocumentNonBlocking(colRef, { ...reportData, createdAt: new Date().toISOString() });
+      toast({ title: "यशस्वी", description: "अहवाल जतन केला." })
+    }
     
-    toast({ title: "अहवाल जतन केला", description: "माहिती यशस्वीरित्या सेव्ह झाली." })
     router.push('/reports')
   }
 
-  if (!mounted) return null
+  if (!mounted || isReportLoading) return <div className="p-20 text-center font-black uppercase text-[10px] opacity-50 animate-pulse">लोड होत आहे...</div>
 
   return (
     <div className="space-y-3 max-w-[500px] mx-auto w-full pb-20 px-1 animate-in fade-in duration-500">
       <div className="flex items-center justify-between border-b pb-2 px-1">
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" onClick={() => router.back()} className="h-8 w-8 rounded-full">
+          <Button variant="ghost" size="icon" onClick={() => router.push('/reports')} className="h-8 w-8 rounded-full">
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <div>
             <h2 className="text-sm font-black text-slate-900 uppercase flex items-center gap-1.5">
-              <ClipboardCheck className="h-4 w-4 text-primary" /> दैनिक अहवाल
+              <ClipboardCheck className="h-4 w-4 text-primary" /> {editId ? 'अहवाल बदला' : 'दैनिक अहवाल'}
             </h2>
-            <p className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest ml-0.5">Daily Submission</p>
+            <p className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest ml-0.5">{editId ? 'Update Report' : 'Daily Submission'}</p>
           </div>
         </div>
       </div>
@@ -215,47 +240,7 @@ export default function DailyReportPage() {
               <Button type="button" size="sm" onClick={addRouteEntry} className="h-7 text-[9px] px-3 rounded-lg shadow-md font-black uppercase tracking-widest"><Plus className="h-3 w-3 mr-1" /> केंद्र जोडा</Button>
             </div>
 
-            {/* Desktop View Table */}
-            <div className="hidden md:block border rounded-xl overflow-hidden border-muted-foreground/10 bg-white">
-              <table className="w-full text-xs">
-                <thead>
-                  <tr className="bg-muted/50 text-[9px] font-black uppercase border-b">
-                    <th className="p-2 text-center w-8">#</th>
-                    <th className="p-2 text-left">कोड</th>
-                    <th className="p-2 text-left">नाव</th>
-                    <th className="p-2 text-center">बर्फ</th>
-                    <th className="p-2 text-center">वेळ</th>
-                    <th className="p-2 text-center">रिकामे</th>
-                    <th className="p-2 text-center">भरलेले</th>
-                    <th className="p-2 w-8"></th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {formData.routeVisitLogs.map((entry, index) => (
-                    <tr key={entry.id} className="hover:bg-muted/5 group">
-                      <td className="p-2 text-center text-[10px] font-black opacity-30">{index + 1}</td>
-                      <td className="p-1"><Input className="h-7 text-[10px] border-none bg-muted/20 rounded-md font-black" value={entry.centerCode} onChange={e => updateRouteEntry(entry.id, { centerCode: e.target.value })} /></td>
-                      <td className="p-1"><Input className="h-7 text-[10px] border-none bg-muted/20 rounded-md font-black" value={entry.supplierName} onChange={e => updateRouteEntry(entry.id, { supplierName: e.target.value })} /></td>
-                      <td className="p-1"><Input className="h-7 text-[10px] border-none bg-muted/20 rounded-md text-center" value={entry.iceAllocated} onChange={e => updateRouteEntry(entry.id, { iceAllocated: e.target.value })} /></td>
-                      <td className="p-1">
-                        <div className="flex gap-0.5">
-                          <Input className="h-7 text-[9px] border-none bg-blue-50/50 p-1 rounded-md" type="time" value={entry.arrivalTime} onChange={e => updateRouteEntry(entry.id, { arrivalTime: e.target.value })} />
-                          <Input className="h-7 text-[9px] border-none bg-blue-50/50 p-1 rounded-md" type="time" value={entry.departureTime} onChange={e => updateRouteEntry(entry.id, { departureTime: e.target.value })} />
-                        </div>
-                      </td>
-                      <td className="p-1"><Input className="h-7 text-[10px] border-none bg-muted/20 rounded-md text-center" value={entry.emptyCans} onChange={e => updateRouteEntry(entry.id, { emptyCans: e.target.value })} /></td>
-                      <td className="p-1"><Input className="h-7 text-[10px] border-none bg-primary/5 text-primary font-black rounded-md text-center" value={entry.fullCans} onChange={e => updateRouteEntry(entry.id, { fullCans: e.target.value })} /></td>
-                      <td className="p-1">
-                        <Button type="button" variant="ghost" size="icon" onClick={() => removeRouteEntry(entry.id)} className="h-6 w-6 text-rose-400 hover:text-rose-600 rounded-md"><Trash2 className="h-3.5 w-3.5" /></Button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Mobile View Cards */}
-            <div className="md:hidden space-y-2">
+            <div className="space-y-2">
               {formData.routeVisitLogs.map((entry, index) => (
                 <Card key={entry.id} className="border shadow-none bg-white rounded-xl overflow-hidden border-muted-foreground/10 relative p-2.5">
                   <div className="flex justify-between items-center mb-2">
@@ -359,11 +344,20 @@ export default function DailyReportPage() {
               <Input className="h-9 text-[11px] bg-white/10 border-none rounded-xl font-bold text-white" value={formData.supervisorName} onChange={e => setFormData({...formData, supervisorName: e.target.value})} />
             </div>
             <Button type="button" onClick={handleSave} className="w-full font-black h-12 rounded-xl shadow-2xl bg-primary text-white text-xs uppercase tracking-widest transition-all active:scale-95">
-              <Save className="h-4 w-4 mr-2" /> अहवाल जतन करा
+              {editId ? <RefreshCw className="h-4 w-4 mr-2" /> : <Save className="h-4 w-4 mr-2" />} 
+              {editId ? 'अहवाल अपडेट करा' : 'अहवाल जतन करा'}
             </Button>
           </div>
         </CardContent>
       </Card>
     </div>
+  )
+}
+
+export default function DailyReportPage() {
+  return (
+    <Suspense fallback={<div className="p-20 text-center font-black uppercase text-[10px] opacity-50 animate-pulse">लोड होत आहे...</div>}>
+      <DailyReportForm />
+    </Suspense>
   )
 }

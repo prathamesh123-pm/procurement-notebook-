@@ -1,10 +1,11 @@
+
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { 
-  Archive, Eye, Search, X, Printer, Plus, Trash2, FileEdit, ClipboardCheck, ShieldCheck, Truck, ListTodo, Microscope, ShieldAlert
+  Archive, Eye, Search, X, Printer, Trash2, FileEdit, Truck, ListTodo, ShieldAlert, ChevronRight, Filter
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
@@ -14,11 +15,13 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { useUser, useFirestore, useCollection, useMemoFirebase, deleteDocumentNonBlocking } from "@/firebase"
 import { collection, doc } from "firebase/firestore"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 
 export default function ReportsPage() {
   const { user } = useUser()
   const db = useFirestore()
   const { toast } = useToast()
+  const router = useRouter()
   
   const reportsQuery = useMemoFirebase(() => {
     if (!db || !user) return null
@@ -27,6 +30,7 @@ export default function ReportsPage() {
 
   const { data: firestoreReports, isLoading } = useCollection(reportsQuery)
   const [filterDate, setFilterDate] = useState<string>("")
+  const [searchQuery, setSearchQuery] = useState("")
   const [selectedReport, setSelectedReport] = useState<any | null>(null)
   const [isViewOpen, setIsViewOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
@@ -35,110 +39,215 @@ export default function ReportsPage() {
 
   const filteredReports = useMemo(() => {
     const list = firestoreReports || []
-    return list.filter(r => filterDate === "" || r.date === filterDate)
-      .sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime())
-  }, [firestoreReports, filterDate])
+    return list.filter(r => {
+      const matchesDate = filterDate === "" || r.date === filterDate
+      const q = searchQuery.toLowerCase()
+      const matchesSearch = r.type?.toLowerCase().includes(q) || r.summary?.toLowerCase().includes(q)
+      return matchesDate && matchesSearch
+    }).sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime())
+  }, [firestoreReports, filterDate, searchQuery])
 
-  const handleDeleteReport = (id: string) => {
+  const handleDeleteReport = (id: string, e?: React.MouseEvent) => {
+    if (e) {
+      e.stopPropagation()
+      e.preventDefault()
+    }
     if (!db || !user) return
-    if (confirm("हटवायचे आहे का?")) {
+    if (confirm("तुम्हाला खात्री आहे की हा अहवाल हटवायचा आहे?")) {
       deleteDocumentNonBlocking(doc(db, 'users', user.uid, 'dailyWorkReports', id))
       setIsViewOpen(false)
       toast({ title: "यशस्वी", description: "अहवाल हटवण्यात आला." })
     }
   }
 
+  const handleEditReport = (report: any, e?: React.MouseEvent) => {
+    if (e) {
+      e.stopPropagation()
+      e.preventDefault()
+    }
+    const typeMap: Record<string, string> = {
+      'Route Visit': '/daily-report',
+      'Field Visit': '/daily-report',
+      'Daily Office Work': '/daily-report',
+      'Transport Breakdown Report': '/reports/entry/breakdown',
+      'Daily Work Report': '/reports/entry/daily',
+      'Seizure & Penalty': '/reports/entry/seizure',
+      'Daily Task': '/work-log'
+    }
+    const path = typeMap[report.type] || '/reports'
+    router.push(`${path}?edit=${report.id}`)
+  }
+
   if (!mounted || isLoading) return <div className="p-20 text-center animate-pulse italic font-black uppercase text-[9px] opacity-50">लोड होत आहे...</div>
 
   const reportTypes = [
-    { title: "ब्रेकडाऊन", sub: "Breakdown", type: "breakdown", icon: Truck },
-    { title: "दैनिक कामकाज", sub: "Daily", type: "daily", icon: ListTodo },
-    { title: "जप्ती व दंड", sub: "Seizure", type: "seizure", icon: ShieldAlert },
+    { title: "ब्रेकडाऊन", sub: "Breakdown", type: "breakdown", icon: Truck, color: "text-rose-600", bg: "bg-rose-50" },
+    { title: "दैनिक कामकाज", sub: "Daily", type: "daily", icon: ListTodo, color: "text-blue-600", bg: "bg-blue-50" },
+    { title: "जप्ती व दंड", sub: "Seizure", type: "seizure", icon: ShieldAlert, color: "text-amber-600", bg: "bg-amber-50" },
   ]
 
   return (
     <div className="compact-form-container pb-20">
-      <div className="flex flex-col gap-0.5 border-b pb-2 mb-3">
-        <h2 className="text-sm font-black text-slate-900 flex items-center gap-2 uppercase">
-          <Archive className="h-4 w-4 text-primary" /> अहवाल व्यवस्थापन
+      <div className="flex flex-col gap-0.5 border-b pb-2 mb-3 px-1">
+        <h2 className="text-sm font-black text-slate-900 flex items-center gap-2 uppercase tracking-tight">
+          <Archive className="h-4 w-4 text-primary" /> अहवाल व्यवस्थापन (REPORTS)
         </h2>
-        <p className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">Archive History</p>
+        <p className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest ml-0.5">Archive & Management</p>
       </div>
 
-      <div className="grid grid-cols-3 gap-1.5 mb-4">
+      <div className="grid grid-cols-3 gap-2 mb-4 px-1">
         {reportTypes.map((rt) => (
-          <Button key={rt.sub} asChild variant="outline" className="h-14 flex flex-col items-center justify-center p-1 rounded-xl hover:border-primary group transition-all border-primary/10 bg-white">
-            <Link href={`/reports/entry/${rt.type}`}>
-              <rt.icon className="h-3 w-3 text-primary mb-1 group-hover:scale-110 transition-transform" />
-              <span className="text-[8px] font-black text-slate-900 leading-tight text-center">{rt.title}</span>
-            </Link>
-          </Button>
+          <Link key={rt.sub} href={`/reports/entry/${rt.type}`} className="block">
+            <div className={`h-16 flex flex-col items-center justify-center p-1 rounded-2xl border transition-all hover:scale-[1.02] active:scale-95 ${rt.bg} border-muted-foreground/5 shadow-sm`}>
+              <rt.icon className={`h-4 w-4 ${rt.color} mb-1`} />
+              <span className="text-[8px] font-black text-slate-900 leading-tight text-center uppercase">{rt.title}</span>
+            </div>
+          </Link>
         ))}
       </div>
 
-      <Card className="compact-card p-1.5 mb-3 bg-white border-primary/5">
-        <div className="flex gap-1.5">
+      <Card className="compact-card p-2 mb-3 bg-white border-muted-foreground/10">
+        <div className="flex gap-2">
           <div className="relative flex-1">
-            <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 text-slate-400" />
-            <Input className="compact-input h-8 pl-6 text-[10px]" placeholder="शोधा..." />
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
+            <Input className="h-9 pl-8 text-[11px] bg-muted/20 border-none rounded-xl font-bold" placeholder="शोधा (Search)..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
           </div>
-          <Input type="date" className="compact-input h-8 w-28 text-[10px]" value={filterDate} onChange={e => setFilterDate(e.target.value)} />
+          <div className="relative">
+            <Filter className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3 w-3 text-slate-400" />
+            <Input type="date" className="h-9 pl-7 w-32 text-[10px] bg-muted/20 border-none rounded-xl font-bold" value={filterDate} onChange={e => setFilterDate(e.target.value)} />
+          </div>
         </div>
       </Card>
 
-      <div className="space-y-1.5">
-        {filteredReports.map((report) => (
-          <Card key={report.id} className="compact-card p-2 border-l-2 border-l-primary hover:bg-primary/5 cursor-pointer active:scale-[0.98] transition-all bg-white" onClick={() => { setSelectedReport(report); setIsViewOpen(true); }}>
-            <div className="flex justify-between items-start gap-2">
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-1.5 mb-0.5">
-                  <h4 className="font-black text-[10px] truncate uppercase text-slate-800">{report.type}</h4>
-                  <Badge className="h-3 px-1 text-[7px] font-black bg-primary/10 text-primary border-none">{report.date}</Badge>
-                </div>
-                <p className="text-[9px] text-slate-500 line-clamp-1 italic font-medium">{report.summary}</p>
-              </div>
-              <Eye className="h-3.5 w-3.5 text-slate-300 shrink-0 mt-1" />
-            </div>
-          </Card>
-        ))}
+      <div className="bg-white rounded-2xl border border-muted-foreground/10 overflow-hidden shadow-sm">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-muted/30 border-b">
+                <th className="p-3 text-[9px] font-black uppercase text-muted-foreground tracking-widest">तारीख / प्रकार</th>
+                <th className="p-3 text-[9px] font-black uppercase text-muted-foreground tracking-widest text-right">क्रिया (ACTIONS)</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-muted-foreground/5">
+              {filteredReports.map((report) => (
+                <tr key={report.id} className="hover:bg-primary/5 transition-colors cursor-pointer group" onClick={() => { setSelectedReport(report); setIsViewOpen(true); }}>
+                  <td className="p-3">
+                    <div className="flex flex-col gap-0.5 min-w-0">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[10px] font-black uppercase text-slate-900 truncate max-w-[150px]">{report.type}</span>
+                        <Badge className="h-3.5 px-1.5 text-[7px] font-black bg-primary/10 text-primary border-none rounded-md">{report.date}</Badge>
+                      </div>
+                      <p className="text-[9px] text-muted-foreground line-clamp-1 italic font-medium">{report.summary}</p>
+                    </div>
+                  </td>
+                  <td className="p-3 text-right">
+                    <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Button variant="ghost" size="icon" className="h-7 w-7 text-primary hover:bg-primary/10 rounded-lg" onClick={(e) => handleEditReport(report, e)}>
+                        <FileEdit className="h-3.5 w-3.5" />
+                      </Button>
+                      <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:bg-destructive/10 rounded-lg" onClick={(e) => handleDeleteReport(report.id, e)}>
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </Button>
+                      <ChevronRight className="h-4 w-4 text-muted-foreground/30 ml-1 mt-1.5" />
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              {filteredReports.length === 0 && (
+                <tr>
+                  <td colSpan={2} className="py-20 text-center opacity-20 font-black uppercase text-[10px] tracking-[0.3em]">नोंदी उपलब्ध नाहीत</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <Dialog open={isViewOpen} onOpenChange={setIsViewOpen}>
-        <DialogContent className="max-w-[450px] p-0 rounded-2xl overflow-hidden border-none shadow-2xl">
-          <DialogHeader className="p-2 bg-slate-50 border-b flex flex-row items-center justify-between space-y-0">
-            <div>
-              <DialogTitle className="text-[9px] font-black uppercase text-slate-400 tracking-widest px-2">अहवाल तपशील</DialogTitle>
+        <DialogContent className="max-w-[480px] p-0 rounded-3xl overflow-hidden border-none shadow-2xl bg-white">
+          <DialogHeader className="p-3 bg-slate-50 border-b flex flex-row items-center justify-between space-y-0">
+            <div className="min-w-0">
+              <DialogTitle className="text-[10px] font-black uppercase text-slate-400 tracking-widest px-2 truncate">अहवाल तपशील (REPORT DETAILS)</DialogTitle>
               <DialogDescription className="sr-only">अहवालाची सविस्तर माहिती</DialogDescription>
             </div>
-            <div className="flex gap-1">
-              <Button size="icon" variant="ghost" onClick={() => window.print()} className="h-7 w-7"><Printer className="h-3.5 w-3.5" /></Button>
-              <Button size="icon" variant="ghost" onClick={() => handleDeleteReport(selectedReport?.id)} className="h-7 w-7 text-destructive"><Trash2 className="h-3.5 w-3.5" /></Button>
-              <Button size="icon" variant="ghost" onClick={() => setIsViewOpen(false)} className="h-7 w-7"><X className="h-3.5 w-3.5" /></Button>
+            <div className="flex gap-1 shrink-0">
+              <Button size="icon" variant="ghost" onClick={() => handleEditReport(selectedReport)} className="h-8 w-8 text-primary hover:bg-primary/5 rounded-full"><FileEdit className="h-4 w-4" /></Button>
+              <Button size="icon" variant="ghost" onClick={() => window.print()} className="h-8 w-8 text-slate-600 hover:bg-slate-100 rounded-full"><Printer className="h-4 w-4" /></Button>
+              <Button size="icon" variant="ghost" onClick={() => handleDeleteReport(selectedReport?.id)} className="h-8 w-8 text-destructive hover:bg-destructive/5 rounded-full"><Trash2 className="h-4 w-4" /></Button>
+              <Button size="icon" variant="ghost" onClick={() => setIsViewOpen(false)} className="h-8 w-8 text-slate-400 rounded-full"><X className="h-5 w-5" /></Button>
             </div>
           </DialogHeader>
-          <ScrollArea className="max-h-[70vh] p-4 bg-white">
+          <ScrollArea className="max-h-[75vh] p-6 bg-white">
             {selectedReport && (
-              <div className="text-[9px] font-mono text-black space-y-3" id="printable-area">
-                <div className="border-b pb-2 text-center">
-                  <h1 className="text-xs font-black uppercase">{selectedReport.type} REPORT</h1>
-                  <p className="text-[7px] font-bold opacity-50 uppercase">संकलन नोंदवही (OFFICIAL)</p>
+              <div className="text-[10px] font-mono text-black space-y-5" id="printable-area">
+                <div className="border-b-2 border-black pb-3 text-center space-y-1">
+                  <h1 className="text-sm font-black uppercase tracking-tighter">संकलन नोंदवही (OFFICIAL REPORT)</h1>
+                  <p className="text-[8px] font-bold opacity-60 uppercase tracking-widest">Digital Procurement Management System</p>
                 </div>
-                <div className="grid grid-cols-2 gap-2 uppercase font-black text-[8px] opacity-70">
-                  <div>DATE: {selectedReport.date}</div>
-                  <div className="text-right">ID: {selectedReport.id.slice(-6)}</div>
+                
+                <div className="grid grid-cols-2 gap-4 uppercase font-black text-[9px]">
+                  <div className="space-y-1">
+                    <p className="opacity-50">DATE:</p>
+                    <p className="text-black">{selectedReport.date}</p>
+                  </div>
+                  <div className="space-y-1 text-right">
+                    <p className="opacity-50">REPORT ID:</p>
+                    <p className="text-black">#{selectedReport.id.slice(-8).toUpperCase()}</p>
+                  </div>
                 </div>
-                <div className="space-y-1">
-                  <div className="font-black uppercase border-b pb-0.5">अहवाल सारांश (SUMMARY):</div>
-                  <p className="italic leading-relaxed whitespace-pre-wrap">{selectedReport.summary || selectedReport.overallSummary}</p>
+
+                <div className="space-y-2 py-2 border-y border-dashed border-black/20">
+                  <p className="text-[9px] font-black opacity-50 uppercase">प्रकार (TYPE):</p>
+                  <p className="text-[11px] font-black uppercase text-primary">{selectedReport.type}</p>
                 </div>
-                <div className="mt-8 grid grid-cols-2 gap-4 text-center pt-2 border-t opacity-40 uppercase font-black text-[7px]">
-                  <div>OFFICER SIGN</div><div>SUPERVISOR SIGN</div>
+
+                <div className="space-y-2">
+                  <div className="font-black uppercase border-b border-black/10 pb-1 text-[9px] opacity-50">अहवाल सारांश (SUMMARY):</div>
+                  <p className="leading-relaxed whitespace-pre-wrap font-medium text-slate-800 text-[11px]">
+                    {selectedReport.summary || selectedReport.overallSummary}
+                  </p>
+                </div>
+
+                {selectedReport.fullData && (
+                  <div className="space-y-3 pt-2">
+                    <div className="font-black uppercase border-b border-black/10 pb-1 text-[9px] opacity-50">अतिरिक्त तपशील (DETAILS):</div>
+                    <div className="grid grid-cols-1 gap-2 bg-muted/10 p-3 rounded-xl">
+                      {Object.entries(selectedReport.fullData).map(([key, val]: [string, any]) => {
+                        if (typeof val === 'object' || key === 'routeVisitLogs' || key === 'centerLosses') return null;
+                        return (
+                          <div key={key} className="flex justify-between border-b border-black/5 pb-1 last:border-0">
+                            <span className="opacity-50 uppercase text-[8px] font-black">{key.replace(/([A-Z])/g, ' $1')}</span>
+                            <span className="text-right font-bold">{String(val)}</span>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                <div className="mt-12 grid grid-cols-2 gap-10 text-center pt-6 border-t border-black/10 opacity-60 uppercase font-black text-[8px]">
+                  <div className="space-y-10">
+                    <div className="h-1 bg-black/10 w-full" />
+                    <p>OFFICER SIGN</p>
+                  </div>
+                  <div className="space-y-10">
+                    <div className="h-1 bg-black/10 w-full" />
+                    <p>SUPERVISOR SIGN</p>
+                  </div>
                 </div>
               </div>
             )}
           </ScrollArea>
         </DialogContent>
       </Dialog>
+
+      <style jsx global>{`
+        @media print {
+          body * { visibility: hidden; }
+          #printable-area, #printable-area * { visibility: visible; }
+          #printable-area { position: absolute; left: 0; top: 0; width: 100%; padding: 20px; }
+        }
+      `}</style>
     </div>
   )
 }

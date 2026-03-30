@@ -1,8 +1,8 @@
 
 "use client"
 
-import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
+import { useState, useEffect, Suspense } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -10,17 +10,20 @@ import { Card } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { 
-  ArrowLeft, Save, ListTodo, User, Calendar, Clock
+  ArrowLeft, Save, ListTodo, User, Clock, RefreshCw
 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
-import { useUser, useFirestore, addDocumentNonBlocking } from "@/firebase"
-import { collection } from "firebase/firestore"
+import { useUser, useFirestore, useDoc, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking } from "@/firebase"
+import { collection, doc } from "firebase/firestore"
 
-export default function DailyWorkReportPage() {
+function DailyWorkReportForm() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const { user } = useUser()
   const db = useFirestore()
   const { toast } = useToast()
+  const editId = searchParams.get('edit')
+
   const [mounted, setMounted] = useState(false)
 
   const [formData, setFormData] = useState({
@@ -29,14 +32,28 @@ export default function DailyWorkReportPage() {
     workType: "OFFICE", summary: "", problems: "", actionTaken: ""
   })
 
+  const reportRef = useMemoFirebase(() => {
+    if (!db || !user || !editId) return null
+    return doc(db, 'users', user.uid, 'dailyWorkReports', editId)
+  }, [db, user, editId])
+
+  const { data: existingReport, isLoading } = useDoc(reportRef)
+
   useEffect(() => {
     setMounted(true)
-    if (user) setFormData(prev => ({...prev, repName: user.displayName || ""}))
-  }, [user])
+    if (user && !editId) setFormData(prev => ({...prev, repName: user.displayName || ""}))
+  }, [user, editId])
+
+  useEffect(() => {
+    if (existingReport && existingReport.fullData) {
+      setFormData(existingReport.fullData)
+    }
+  }, [existingReport])
 
   const handleSave = () => {
     if (!db || !user) return
-    const report = {
+    
+    const reportData = {
       type: 'Daily Work Report',
       date: formData.date,
       reportDate: formData.date,
@@ -44,21 +61,30 @@ export default function DailyWorkReportPage() {
       summary: `कामकाज: ${formData.workType}. सारांश: ${formData.summary.slice(0, 40)}...`,
       overallSummary: `प्रतिनिधी: ${formData.repName}, शिफ्ट: ${formData.shift}, प्रकार: ${formData.workType}`,
       fullData: { ...formData },
-      createdAt: new Date().toISOString()
+      updatedAt: new Date().toISOString()
     }
-    addDocumentNonBlocking(collection(db, 'users', user.uid, 'dailyWorkReports'), report)
-    toast({ title: "यशस्वी", description: "दैनिक कामकाज अहवाल जतन झाला." })
+
+    if (editId) {
+      const docRef = doc(db, 'users', user.uid, 'dailyWorkReports', editId)
+      updateDocumentNonBlocking(docRef, reportData)
+      toast({ title: "यशस्वी", description: "कामकाज अहवाल अपडेट झाला." })
+    } else {
+      const colRef = collection(db, 'users', user.uid, 'dailyWorkReports')
+      addDocumentNonBlocking(colRef, { ...reportData, createdAt: new Date().toISOString() })
+      toast({ title: "यशस्वी", description: "कामकाज अहवाल जतन झाला." })
+    }
+    
     router.push('/reports')
   }
 
-  if (!mounted) return null
+  if (!mounted || isLoading) return <div className="p-20 text-center font-black uppercase text-[10px] opacity-50 animate-pulse">लोड होत आहे...</div>
 
   return (
     <div className="compact-form-container">
       <div className="flex items-center gap-2 border-b pb-2 mb-3">
-        <Button variant="ghost" size="icon" onClick={() => router.back()} className="h-8 w-8 shrink-0"><ArrowLeft className="h-4 w-4" /></Button>
+        <Button variant="ghost" size="icon" onClick={() => router.push('/reports')} className="h-8 w-8 shrink-0"><ArrowLeft className="h-4 w-4" /></Button>
         <div className="min-w-0">
-          <h2 className="text-xs font-black uppercase truncate flex items-center gap-1.5"><ListTodo className="h-3.5 w-3.5 text-primary" /> दैनिक कामकाज (DAILY)</h2>
+          <h2 className="text-xs font-black uppercase truncate flex items-center gap-1.5"><ListTodo className="h-3.5 w-3.5 text-primary" /> {editId ? 'कामकाज अपडेट' : 'दैनिक कामकाज (DAILY)'}</h2>
           <p className="text-[8px] font-bold text-muted-foreground uppercase">{formData.date}</p>
         </div>
       </div>
@@ -102,9 +128,18 @@ export default function DailyWorkReportPage() {
         </Card>
 
         <Button onClick={handleSave} className="compact-button w-full bg-primary text-white shadow-lg mb-10 h-11 uppercase font-black">
-          अहवाल जतन करा (SUBMIT)
+          {editId ? <RefreshCw className="h-4 w-4 mr-1.5" /> : <Save className="h-4 w-4 mr-1.5" />}
+          {editId ? 'अहवाल अपडेट करा' : 'अहवाल जतन करा'}
         </Button>
       </div>
     </div>
+  )
+}
+
+export default function DailyWorkReportPage() {
+  return (
+    <Suspense fallback={<div className="p-20 text-center font-black uppercase text-[10px] opacity-50 animate-pulse">लोड होत आहे...</div>}>
+      <DailyWorkReportForm />
+    </Suspense>
   )
 }
