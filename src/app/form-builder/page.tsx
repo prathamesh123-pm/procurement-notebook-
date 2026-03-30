@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect, useRef } from "react"
@@ -13,7 +12,7 @@ import {
   Highlighter, Code, Sparkles, Box, FileSignature, Type as TypeIcon,
   Columns, Rows, Trash2, PlusCircle, Palette, FileBox, Layout as LayoutIcon,
   Search, Languages, ShieldCheck, Cpu, Terminal, Braces, Compass,
-  MoveHorizontal, Scaling, FileType, StickyNote, ScanText, Ruler
+  MoveHorizontal, Scaling, FileType, StickyNote, ScanText, Ruler, RotateCcw
 } from "lucide-react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
@@ -105,7 +104,7 @@ export default function WordEditorPage() {
     const rowIndex = cell.parentNode.rowIndex
     table.deleteRow(rowIndex)
     if (table.rows.length === 0) table.remove()
-    toast({ title: "यशस्वी", description: "ओळ काढली गेली." })
+    toast({ title: "यशस्वी", description: "ओळ काढला गेली." })
   }
 
   const handleSave = () => {
