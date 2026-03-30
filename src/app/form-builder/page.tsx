@@ -11,7 +11,9 @@ import {
   Eye, ZoomIn, ZoomOut, Maximize2, Shield, RefreshCw, X, Check, 
   Mail, Share2, Layers, Grid3X3, Link as LinkIcon, 
   Highlighter, Code, Sparkles, Box, FileSignature, Type as TypeIcon,
-  Columns, Rows, Trash2, PlusCircle
+  Columns, Rows, Trash2, PlusCircle, Palette, FileBox, Layout as LayoutIcon,
+  Search, Languages, ShieldCheck, Cpu, Terminal, Braces, Compass,
+  MoveHorizontal, Scaling, FileType, StickyNote, ScanText, Ruler
 } from "lucide-react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
@@ -267,6 +269,73 @@ export default function WordEditorPage() {
                 <BigToolBtn icon={X} label="- COL" onClick={handleRemoveColumn} variant="outline" />
                 <BigToolBtn icon={Rows} label="+ ROW" onClick={handleInsertRow} variant="outline" />
                 <BigToolBtn icon={Trash2} label="- ROW" onClick={handleRemoveRow} variant="outline" />
+              </RibbonGroup>
+            </TabsContent>
+
+            <TabsContent value="design" className="m-0 h-full flex items-center gap-0.5">
+              <RibbonGroup label="THEMES">
+                <BigToolBtn icon={Palette} label="THEMES" />
+                <BigToolBtn icon={FileSignature} label="STYLE" />
+              </RibbonGroup>
+              <RibbonGroup label="PAGE BACKGROUND">
+                <ToolBtn icon={LayoutIcon} label="WATERMARK" />
+                <ToolBtn icon={Palette} label="COLOR" />
+                <ToolBtn icon={Box} label="BORDERS" />
+              </RibbonGroup>
+            </TabsContent>
+
+            <TabsContent value="layout" className="m-0 h-full flex items-center gap-0.5">
+              <RibbonGroup label="PAGE SETUP">
+                <BigToolBtn icon={Scaling} label="MARGINS" />
+                <BigToolBtn icon={RotateCcw} label="ORIENT" />
+                <BigToolBtn icon={Maximize2} label="SIZE" />
+              </RibbonGroup>
+              <RibbonGroup label="PARAGRAPH">
+                <ToolBtn icon={MoveHorizontal} label="INDENT" />
+                <ToolBtn icon={PlusCircle} label="SPACING" />
+              </RibbonGroup>
+            </TabsContent>
+
+            <TabsContent value="view" className="m-0 h-full flex items-center gap-0.5">
+              <RibbonGroup label="VIEWS">
+                <BigToolBtn icon={Eye} label="READ" />
+                <BigToolBtn icon={LayoutIcon} label="PRINT" variant="secondary" />
+              </RibbonGroup>
+              <RibbonGroup label="SHOW">
+                <ToolBtn icon={Ruler} label="RULER" />
+                <ToolBtn icon={Grid3X3} label="GRID" />
+              </RibbonGroup>
+              <RibbonGroup label="ZOOM">
+                <BigToolBtn icon={ZoomIn} label="100%" onClick={() => setZoom(100)} />
+                <BigToolBtn icon={Scaling} label="PAGE" />
+              </RibbonGroup>
+            </TabsContent>
+
+            <TabsContent value="review" className="m-0 h-full flex items-center gap-0.5">
+              <RibbonGroup label="PROOFING">
+                <BigToolBtn icon={ScanText} label="SPELL" />
+                <BigToolBtn icon={FileType} label="COUNT" />
+              </RibbonGroup>
+              <RibbonGroup label="LANGUAGE">
+                <BigToolBtn icon={Languages} label="TRANS" />
+              </RibbonGroup>
+              <RibbonGroup label="PROTECT">
+                <BigToolBtn icon={ShieldCheck} label="RESTRICT" />
+              </RibbonGroup>
+            </TabsContent>
+
+            <TabsContent value="dev" className="m-0 h-full flex items-center gap-0.5">
+              <RibbonGroup label="CODE">
+                <BigToolBtn icon={Terminal} label="MACROS" />
+                <BigToolBtn icon={Cpu} label="ADD-INS" />
+              </RibbonGroup>
+              <RibbonGroup label="CONTROLS">
+                <ToolBtn icon={Box} label="CHECKBOX" />
+                <ToolBtn icon={TypeIcon} label="TEXT" />
+                <ToolBtn icon={PlusCircle} label="COMBO" />
+              </RibbonGroup>
+              <RibbonGroup label="XML">
+                <BigToolBtn icon={Braces} label="MAPPING" />
               </RibbonGroup>
             </TabsContent>
           </div>
