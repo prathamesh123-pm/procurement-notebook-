@@ -88,13 +88,101 @@ export default function ReportsPage() {
       'Daily Work Report': '/reports/entry/daily',
       'Seizure & Penalty': '/reports/entry/seizure',
       'Daily Task': '/work-log',
-      'Official Document': '/form-builder'
+      'Official Document': '/form-builder',
+      'Milk Procurement Survey': '/reports/entry/survey',
+      'Collection Center Audit': '/reports/entry/audit',
+      'Chilling Report': '/reports/entry/chilling',
+      'FSSAI Center Inspection': '/reports/entry/fssai'
     }
     const path = typeMap[report.type] || '/reports'
     router.push(`${path}?edit=${report.id}`)
   }
 
   if (!mounted || isLoading) return <div className="p-20 text-center animate-pulse italic font-black uppercase text-[9px] opacity-50">लोड होत आहे...</div>
+
+  const labelMap: Record<string, string> = {
+    // Common
+    achievements: "आजची मोठी कामगिरी",
+    problems: "महत्त्वाच्या समस्या",
+    actionsTaken: "केलेली कार्यवाही",
+    actionTaken: "केलेली कार्यवाही",
+    supervisorName: "सुपरवायझर",
+    repName: "प्रतिनिधी नाव",
+    repId: "आयडी",
+    shift: "शिफ्ट",
+    workType: "कामाचा प्रकार",
+    summary: "तपशील / सारांश",
+    
+    // Breakdown & Transport
+    vehicleNo: "वाहन क्रमांक",
+    vehicleNumber: "वाहन क्रमांक",
+    vehicleType: "गाडीचा प्रकार",
+    driverName: "ड्रायव्हरचे नाव",
+    driverMobile: "ड्रायव्हर मोबाईल",
+    mobile: "संपर्क क्रमांक",
+    routeName: "रूटचे नाव",
+    breakdownTime: "बिघाड वेळ",
+    location: "बिघाड ठिकाण",
+    reason: "बिघाडाचे मुख्य कारण",
+    severity: "बिघाडाचे स्वरूप",
+    faultResponsibility: "बिघाडास जबाबदार",
+    detailedReason: "सविस्तर माहिती",
+    detailedDescription: "सविस्तर वर्णन",
+    estimatedRepairTime: "दुरुस्ती वेळ",
+    estimatedRepairCost: "दुरुस्ती खर्च (₹)",
+    recoveryVehicleNo: "पर्यायी गाडी क्र.",
+    recoveryArrivalTime: "पर्यायी गाडी वेळ",
+    milkHot: "दूध गरम झाले?",
+    milkSour: "दूध आंबट झाले?",
+    alternateArrangement: "पर्यायी सोय?",
+    lossAmount: "नुकसान रक्कम (₹)",
+    totalLossAmount: "एकूण नुकसान (₹)",
+    
+    // Seizure
+    supplierName: "पुरवठादार नाव",
+    supplierId: "आयडी / कोड",
+    seizureQty: "जप्ती प्रमाण (L)",
+    fineAmount: "दंड रक्कम (₹)",
+    notes: "विशेष नोंदी",
+    
+    // Tasks
+    title: "शीर्षक",
+    remark: "शेरा / कार्यवाही",
+    status: "स्थिती",
+    
+    // Audit / Chilling / FSSAI
+    morningQty: "सकाळ संकलन (L)",
+    eveningQty: "संध्याकाळ संकलन (L)",
+    fat: "फॅट (%)",
+    snf: "SNF (%)",
+    result: "अंतिम निकाल",
+    centerName: "केंद्राचे नाव",
+    centerCode: "केंद्र कोड",
+    auditDate: "ऑडिट तारीख",
+    capacity: "क्षमता (L)",
+    licenseStatus: "परवाना स्थिती",
+    ownerName: "मालकाचे नाव",
+    district: "जिल्हा",
+    taluka: "तालुका",
+    tempAtArrival: "आगमनाचे तापमान (°C)",
+    tempAfterChilling: "चिलिंग नंतर तापमान (°C)",
+    waterSupply: "पाणी पुरवठा",
+    powerBackup: "पॉवर बॅकअप",
+    hygieneStandard: "स्वच्छता निकष",
+    staffUniform: "स्टाफ गणवेश",
+    fssaiDisplay: "FSSAI डिस्प्ले",
+    iceBankStatus: "आईस बँक स्थिती",
+    observations: "निरीक्षणे",
+    
+    // Survey
+    type: "प्रकार (Type)",
+    facility: "सुविधा (Facility)",
+    plantHygiene: "स्वच्छता (Hygiene)",
+    milkSource: "दूध स्रोत",
+    totalMilk: "एकूण दूध (L)",
+    paymentCycle: "पेमेंट सायकल",
+    otherInfo: "इतर माहिती"
+  };
 
   const RouteSlipLayout = ({ report }: { report: any }) => {
     const d = report.fullData || {};
@@ -210,63 +298,7 @@ export default function ReportsPage() {
 
   const GenericTableLayout = ({ report }: { report: any }) => {
     const d = report.fullData || {};
-    const labelMap: Record<string, string> = {
-      achievements: "आजची मोठी कामगिरी",
-      problems: "महत्त्वाच्या समस्या",
-      actionsTaken: "केलेली कार्यवाही",
-      actionTaken: "केलेली कार्यवाही",
-      supervisorName: "सुपरवायझर",
-      repName: "प्रतिनिधी नाव",
-      repId: "आयडी",
-      shift: "शिफ्ट",
-      workType: "कामाचा प्रकार",
-      summary: "तपशील / सारांश",
-      vehicleNo: "वाहन क्रमांक",
-      vehicleNumber: "वाहन क्रमांक",
-      vehicleType: "गाडीचा प्रकार",
-      driverName: "ड्रायव्हरचे नाव",
-      driverMobile: "ड्रायव्हर मोबाईल",
-      mobile: "संपर्क क्रमांक",
-      routeName: "रूटचे नाव",
-      breakdownTime: "बिघाड वेळ",
-      location: "बिघाड ठिकाण",
-      reason: "बिघाडाचे मुख्य कारण",
-      severity: "बिघाडाचे स्वरूप",
-      faultResponsibility: "बिघाडास जबाबदार",
-      detailedReason: "सविस्तर माहिती",
-      detailedDescription: "सविस्तर वर्णन",
-      estimatedRepairTime: "दुरुस्ती वेळ",
-      estimatedRepairCost: "दुरुस्ती खर्च (₹)",
-      recoveryVehicleNo: "पर्यायी गाडी क्र.",
-      recoveryArrivalTime: "पर्यायी गाडी वेळ",
-      milkHot: "दूध गरम झाले?",
-      milkSour: "दूध आंबट झाले?",
-      alternateArrangement: "पर्यायी सोय?",
-      lossAmount: "नुकसान रक्कम (₹)",
-      totalLossAmount: "एकूण नुकसान (₹)",
-      supplierName: "पुरवठादार नाव",
-      supplierId: "आयडी / कोड",
-      seizureQty: "जप्ती प्रमाण (L)",
-      fineAmount: "दंड रक्कम (₹)",
-      notes: "विशेष नोंदी",
-      title: "शीर्षक",
-      remark: "शेरा / कार्यवाही",
-      status: "स्थिती",
-      morningQty: "सकाळ संकलन (L)",
-      eveningQty: "संध्याकाळ संकलन (L)",
-      fat: "फॅट (%)",
-      snf: "SNF (%)",
-      result: "अंतिम निकाल",
-      centerName: "केंद्राचे नाव",
-      centerCode: "केंद्र कोड",
-      auditDate: "ऑडिट तारीख",
-      capacity: "क्षमता (L)",
-      licenseStatus: "परवाना स्थिती",
-      ownerName: "मालकाचे नाव",
-      district: "जिल्हा",
-      taluka: "तालुका"
-    };
-
+    
     const entries = Object.entries(d).filter(([key, val]) => {
       return typeof val !== 'object' && 
              key !== 'routeVisitLogs' && 
@@ -282,6 +314,11 @@ export default function ReportsPage() {
              key !== 'reportDate' &&
              key !== 'id';
     });
+
+    const formatVal = (key: string, val: any): string => {
+      if (typeof val === 'object' && val !== null) return JSON.stringify(val);
+      return String(val || "-");
+    }
 
     return (
       <div className="bg-white p-1 font-mono text-[8px] text-black border border-black/20 rounded" id="printable-area">
@@ -306,7 +343,14 @@ export default function ReportsPage() {
             {entries.map(([key, val]) => (
               <tr key={key} className="font-bold text-[8px]">
                 <td className="border border-black p-1 bg-slate-50 uppercase text-[7px]">{labelMap[key] || key.toUpperCase()}</td>
-                <td className="border border-black p-1 whitespace-pre-wrap">{String(val || "-")}</td>
+                <td className="border border-black p-1 whitespace-pre-wrap">{formatVal(key, val)}</td>
+              </tr>
+            ))}
+            {/* Flatten some specific nested survey data if it exists */}
+            {d.infrastructure && Object.entries(d.infrastructure).map(([k, v]) => (
+              <tr key={k} className="font-bold text-[8px]">
+                <td className="border border-black p-1 bg-slate-50 uppercase text-[7px]">{labelMap[k] || `INFRA: ${k.toUpperCase()}`}</td>
+                <td className="border border-black p-1">{String(v || "-")}</td>
               </tr>
             ))}
           </tbody>
