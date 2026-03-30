@@ -92,14 +92,12 @@ export default function ReportsPage() {
     const d = report.fullData || {};
     const logs = d.routeVisitLogs || [];
     
-    // Calculations
     const totalEmpty = logs.reduce((sum: number, l: any) => sum + (Number(l.emptyCans) || 0), 0);
     const totalFull = logs.reduce((sum: number, l: any) => sum + (Number(l.fullCans) || 0), 0);
     const totalIceUsed = logs.reduce((sum: number, l: any) => sum + (Number(l.iceUsed) || 0), 0);
 
     return (
       <div className="bg-white p-2 font-mono text-[9px] text-black border border-black/10 rounded shadow-sm max-w-[800px] mx-auto overflow-x-auto" id="printable-area">
-        {/* Header Section */}
         <div className="flex justify-between items-center border-b border-black pb-1 mb-2">
           <div className="font-black uppercase text-[10px]">रूट व्हिजिट अहवाल (ROUTE VISIT)</div>
           <div className="text-right font-black leading-tight text-[8px]">
@@ -107,7 +105,6 @@ export default function ReportsPage() {
           </div>
         </div>
 
-        {/* Info Section */}
         <div className="grid grid-cols-2 gap-x-4 mb-2 font-black text-[8px] uppercase">
           <div className="space-y-0.5">
             <p>रूट: {d.routeName || '---'}</p>
@@ -120,7 +117,6 @@ export default function ReportsPage() {
           </div>
         </div>
 
-        {/* Main Table */}
         <table className="w-full border-collapse border border-black">
           <thead>
             <tr className="bg-slate-50 font-black text-[8px]">
@@ -147,7 +143,6 @@ export default function ReportsPage() {
                 <td className="border border-black p-1 text-center">{log.fullCans || '0'}</td>
               </tr>
             ))}
-            {/* Summary Row */}
             <tr className="bg-slate-100 font-black text-[8px]">
               <td className="border border-black p-1 text-center" colSpan={2}>एकूण (TOTAL)</td>
               <td className="border border-black p-1 text-center">{totalIceUsed}</td>
@@ -159,7 +154,6 @@ export default function ReportsPage() {
           </tbody>
         </table>
 
-        {/* Reading and KM Info */}
         <div className="mt-2 flex justify-between font-black text-[8px] uppercase border-t border-dashed border-black/20 pt-1">
           <div className="flex gap-4">
             <p>सुरुवात: {d.startReading || '0'}</p>
@@ -168,6 +162,40 @@ export default function ReportsPage() {
           </div>
           <p className="text-rose-600">तूट: {d.shortageLiters || '0'} L</p>
         </div>
+
+        {/* Additional Info Section */}
+        {(d.achievements || d.problems || d.actionsTaken) && (
+          <div className="mt-3 space-y-2 border-t border-black/10 pt-2 uppercase text-[8px] font-black">
+            {d.achievements && (
+              <div className="flex flex-col">
+                <span className="text-emerald-700">१) आजची मोठी कामगिरी:</span>
+                <p className="font-bold normal-case text-[9px] mt-0.5 whitespace-pre-wrap">{d.achievements}</p>
+              </div>
+            )}
+            {d.problems && (
+              <div className="flex flex-col">
+                <span className="text-rose-700">२) महत्त्वाच्या समस्या:</span>
+                <p className="font-bold normal-case text-[9px] mt-0.5 whitespace-pre-wrap">{d.problems}</p>
+              </div>
+            )}
+            {d.actionsTaken && (
+              <div className="flex flex-col">
+                <span className="text-blue-700">३) केलेली कार्यवाही:</span>
+                <p className="font-bold normal-case text-[9px] mt-0.5 whitespace-pre-wrap">{d.actionsTaken}</p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Supervisor Signature */}
+        {d.supervisorName && (
+          <div className="mt-4 flex justify-end">
+            <div className="text-right">
+              <p className="text-[7px] opacity-50 uppercase">सुपरवायझर:</p>
+              <p className="font-black text-[9px] border-b border-black inline-block min-w-[100px] uppercase text-center">{d.supervisorName}</p>
+            </div>
+          </div>
+        )}
       </div>
     );
   };
@@ -305,11 +333,27 @@ export default function ReportsPage() {
                         <div className="font-black uppercase border-b border-black/10 pb-1 text-[9px] opacity-50">अतिरिक्त तपशील (DETAILS):</div>
                         <div className="grid grid-cols-1 gap-2 bg-muted/10 p-3 rounded-xl">
                           {Object.entries(selectedReport.fullData).map(([key, val]: [string, any]) => {
-                            if (typeof val === 'object' || key === 'routeVisitLogs' || key === 'centerLosses' || key === 'reportType') return null;
+                            if (typeof val === 'object' || key === 'routeVisitLogs' || key === 'centerLosses' || key === 'reportType' || key === 'isWordDoc' || key === 'content') return null;
+                            
+                            const labelMap: Record<string, string> = {
+                              achievements: "आजची मोठी कामगिरी",
+                              problems: "महत्त्वाच्या समस्या",
+                              actionsTaken: "केलेली कार्यवाही",
+                              actionTaken: "केलेली कार्यवाही",
+                              supervisorName: "सुपरवायझर",
+                              repName: "प्रतिनिधी नाव",
+                              repId: "आयडी",
+                              shift: "शिफ्ट",
+                              workType: "कामाचा प्रकार",
+                              summary: "सारांश"
+                            };
+                            
+                            const label = labelMap[key] || key.replace(/([A-Z])/g, ' $1').toUpperCase();
+
                             return (
-                              <div key={key} className="flex justify-between border-b border-black/5 pb-1 last:border-0">
-                                <span className="opacity-50 uppercase text-[8px] font-black">{key.replace(/([A-Z])/g, ' $1')}</span>
-                                <span className="text-right font-bold">{String(val)}</span>
+                              <div key={key} className="flex flex-col border-b border-black/5 pb-1 last:border-0">
+                                <span className="opacity-50 uppercase text-[7px] font-black">{label}</span>
+                                <span className="font-bold text-[10px]">{String(val)}</span>
                               </div>
                             )
                           })}
