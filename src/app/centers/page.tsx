@@ -233,6 +233,7 @@ export default function CentersPage() {
             </div>
             <ScrollArea className="max-h-[600px]">
               <div className="p-3 space-y-4 pb-10">
+                {/* 1. Primary Grid */}
                 <div className="grid grid-cols-2 gap-2">
                   <div className="bg-muted/20 p-2.5 rounded-xl border border-muted-foreground/5 space-y-1.5">
                     <h4 className="text-[9px] font-black uppercase text-primary tracking-widest flex items-center gap-1.5">
@@ -254,6 +255,7 @@ export default function CentersPage() {
                   </div>
                 </div>
 
+                {/* 2. Business Info */}
                 <div className="grid grid-cols-2 gap-2">
                   <div className="bg-muted/20 p-2.5 rounded-xl border border-muted-foreground/5 space-y-1.5">
                     <h4 className="text-[9px] font-black uppercase text-primary tracking-widest flex items-center gap-1.5">
@@ -273,6 +275,7 @@ export default function CentersPage() {
                   </div>
                 </div>
 
+                {/* 3. Facilities Check */}
                 <div className="space-y-1.5">
                   <h4 className="text-[9px] font-black uppercase text-primary tracking-widest">सुविधा व ऊर्जा बॅकअप</h4>
                   <div className="grid grid-cols-3 gap-2">
@@ -291,6 +294,7 @@ export default function CentersPage() {
                   </div>
                 </div>
 
+                {/* 4. Milk Summary */}
                 <div className="space-y-1.5">
                   <h4 className="text-[9px] font-black uppercase text-primary tracking-widest">दूध संकलन सारांश (AVG MILK)</h4>
                   <div className="grid grid-cols-2 gap-2">
@@ -307,6 +311,7 @@ export default function CentersPage() {
                   </div>
                 </div>
 
+                {/* 5. Technical Details */}
                 <div className="space-y-1.5">
                   <h4 className="text-[9px] font-black uppercase text-primary tracking-widest">तांत्रिक व साहित्य तपशील</h4>
                   <div className="bg-muted/10 p-2.5 rounded-xl border border-muted-foreground/5 grid grid-cols-2 gap-y-2 gap-x-4">
@@ -320,6 +325,7 @@ export default function CentersPage() {
                   </div>
                 </div>
 
+                {/* 6. Equipment List */}
                 {selectedCenter.material?.equipment && selectedCenter.material.equipment.length > 0 && (
                   <div className="space-y-1.5">
                     <h4 className="text-[9px] font-black uppercase text-primary tracking-widest flex items-center gap-1.5">
@@ -352,6 +358,7 @@ export default function CentersPage() {
                   </div>
                 )}
 
+                {/* 7. Additional Notes */}
                 {selectedCenter.additionalNotes && (
                   <div className="space-y-1.5">
                     <h4 className="text-[9px] font-black uppercase text-primary tracking-widest flex items-center gap-1.5">
@@ -448,6 +455,7 @@ export default function CentersPage() {
                     <div className="space-y-1"><Label className="text-[9px] uppercase font-black opacity-60">पशुखाद्य ब्रँड</Label><Input value={formData.cattleFeedBrand} onChange={e => setFormData({...formData, cattleFeedBrand: e.target.value})} className="h-9 text-[11px] rounded-lg bg-muted/20 border-none font-black" /></div>
                     <div className="space-y-1"><Label className="text-[9px] uppercase font-black opacity-60">बर्फ लाद्या</Label><Input type="number" value={formData.iceBlocks} onChange={e => setFormData({...formData, iceBlocks: e.target.value})} className="h-9 text-[11px] rounded-lg bg-muted/20 border-none font-black" /></div>
                   </div>
+                  {/* Avg Milk Metrics */}
                   <div className="p-3 border rounded-xl bg-blue-50/20 space-y-2">
                     <p className="text-[9px] font-black text-blue-700 uppercase tracking-widest flex items-center gap-1.5"><Milk className="h-3 w-3" /> गाय दूध (AVG COW)</p>
                     <div className="grid grid-cols-3 gap-2">
