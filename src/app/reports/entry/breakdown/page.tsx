@@ -9,12 +9,13 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { 
-  ArrowLeft, Save, Truck, AlertTriangle, Milk, User, IndianRupee, RefreshCw, Plus, X, MapPin, Clock, Phone
+  ArrowLeft, Save, Truck, AlertTriangle, Milk, User, IndianRupee, RefreshCw, Plus, X, MapPin, Clock, Phone, Settings, Wrench
 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { useUser, useFirestore, useDoc, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking } from "@/firebase"
 import { collection, doc } from "firebase/firestore"
 import { AIGuidanceCard } from "@/components/ai-guidance-card"
+import { Textarea } from "@/components/ui/textarea"
 
 interface CenterLoss {
   id: string;
@@ -45,9 +46,15 @@ function BreakdownReportForm() {
     breakdownTime: "", 
     location: "", 
     reason: "ENGINE",
+    severity: "MINOR", // NEW
+    detailedReason: "", // NEW
     milkHot: "NO", 
     milkSour: "NO",
     alternateArrangement: "YES",
+    recoveryVehicleNo: "", // NEW
+    recoveryArrivalTime: "", // NEW
+    estimatedRepairTime: "", // NEW
+    estimatedRepairCost: "0", // NEW
     lossAmount: "0",
     centerLosses: [] as CenterLoss[]
   })
@@ -98,8 +105,8 @@ function BreakdownReportForm() {
       date: formData.date,
       reportDate: formData.date,
       generatedByUserId: user.uid,
-      summary: `ब्रेकडाऊन: ${formData.vehicleNo || '-'}. रूट: ${formData.routeName || '-'}. एकूण नुकसान: ₹${totalCalculatedLoss || formData.lossAmount}. कारण: ${formData.reason || '-'}. पर्यायी सोय: ${formData.alternateArrangement || '-'}.`,
-      overallSummary: `वाहन: ${formData.vehicleNo || '-'}, ड्रायव्हर: ${formData.driverName || '-'}, नुकसान: ₹${totalCalculatedLoss || formData.lossAmount}`,
+      summary: `ब्रेकडाऊन: ${formData.vehicleNo}. रूट: ${formData.routeName}. नुकसान: ₹${totalCalculatedLoss || formData.lossAmount}. पर्यायी सोय: ${formData.recoveryVehicleNo || '-'}.`,
+      overallSummary: `वाहन: ${formData.vehicleNo}, ड्रायव्हर: ${formData.driverName}, नुकसान: ₹${totalCalculatedLoss || formData.lossAmount}`,
       fullData: { ...formData, lossAmount: totalCalculatedLoss > 0 ? String(totalCalculatedLoss) : formData.lossAmount },
       updatedAt: new Date().toISOString()
     }
@@ -120,7 +127,7 @@ function BreakdownReportForm() {
   if (!mounted || isLoading) return <div className="p-20 text-center font-black uppercase text-[10px] opacity-50 animate-pulse">लोड होत आहे...</div>
 
   return (
-    <div className="compact-form-container px-2 max-w-[500px] mx-auto pb-20">
+    <div className="compact-form-container px-2 max-w-[550px] mx-auto pb-20">
       <div className="flex items-center gap-2 border-b pb-2 mb-3">
         <Button variant="ghost" size="icon" onClick={() => router.push('/reports')} className="h-8 w-8 shrink-0"><ArrowLeft className="h-4 w-4" /></Button>
         <div className="min-w-0">
@@ -157,9 +164,18 @@ function BreakdownReportForm() {
           </div>
           <div className="space-y-3">
             <div className="grid grid-cols-2 gap-2">
-              <div className="space-y-0.5"><Label className="compact-label flex items-center gap-1"><Clock className="h-2 w-2" /> वेळ</Label><Input type="time" className="compact-input h-9 bg-white" value={formData.breakdownTime || ""} onChange={e => setFormData({...formData, breakdownTime: e.target.value})} /></div>
-              <div className="space-y-0.5"><Label className="compact-label flex items-center gap-1"><MapPin className="h-2 w-2" /> लोकेशन</Label><Input className="compact-input h-9 bg-white" value={formData.location || ""} onChange={e => setFormData({...formData, location: e.target.value})} /></div>
+              <div className="space-y-0.5"><Label className="compact-label flex items-center gap-1"><Clock className="h-2 w-2" /> बिघाड वेळ</Label><Input type="time" className="compact-input h-9 bg-white" value={formData.breakdownTime || ""} onChange={e => setFormData({...formData, breakdownTime: e.target.value})} /></div>
+              <div className="space-y-0.5"><Label className="compact-label flex items-center gap-1"><MapPin className="h-2 w-2" /> बिघाड ठिकाण</Label><Input className="compact-input h-9 bg-white" value={formData.location || ""} onChange={e => setFormData({...formData, location: e.target.value})} /></div>
             </div>
+            
+            <div className="space-y-1">
+              <Label className="compact-label">बिघाडाचे स्वरूप (Severity)</Label>
+              <RadioGroup value={formData.severity || "MINOR"} onValueChange={v => setFormData({...formData, severity: v})} className="flex gap-3">
+                <div className="flex items-center gap-1 bg-white px-3 py-1.5 rounded-lg border border-rose-100"><RadioGroupItem value="MINOR" id="sev-min" className="h-2.5 w-2.5"/><Label htmlFor="sev-min" className="text-[8px] font-black text-amber-600">छोटा (MINOR)</Label></div>
+                <div className="flex items-center gap-1 bg-white px-3 py-1.5 rounded-lg border border-rose-100"><RadioGroupItem value="MAJOR" id="sev-maj" className="h-2.5 w-2.5"/><Label htmlFor="sev-maj" className="text-[8px] font-black text-rose-600">मोठा (MAJOR)</Label></div>
+              </RadioGroup>
+            </div>
+
             <div className="space-y-1">
               <Label className="compact-label">बिघाडाचे कारण</Label>
               <RadioGroup value={formData.reason || "ENGINE"} onValueChange={v => setFormData({...formData, reason: v})} className="flex flex-wrap gap-1.5">
@@ -171,13 +187,43 @@ function BreakdownReportForm() {
                 ))}
               </RadioGroup>
             </div>
+
+            <div className="space-y-0.5">
+              <Label className="compact-label">कारणाचे सविस्तर वर्णन</Label>
+              <Textarea className="compact-input h-16 p-2 bg-white" value={formData.detailedReason || ""} onChange={e => setFormData({...formData, detailedReason: e.target.value})} placeholder="..." />
+            </div>
+          </div>
+        </Card>
+
+        <Card className="compact-card p-3 border-primary/10">
+          <div className="flex items-center gap-1.5 border-b border-primary/10 pb-1 mb-2">
+            <Settings className="h-3 w-3 text-primary" />
+            <h3 className="text-[10px] font-black uppercase text-primary tracking-widest">३) दुरुस्ती व पर्यायी सोय</h3>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-0.5">
+              <Label className="compact-label">दुरुस्तीसाठी लागणारा वेळ</Label>
+              <Input className="compact-input h-9" value={formData.estimatedRepairTime || ""} onChange={e => setFormData({...formData, estimatedRepairTime: e.target.value})} placeholder="उदा. 4 तास" />
+            </div>
+            <div className="space-y-0.5">
+              <Label className="compact-label">अंदाजे खर्च (₹)</Label>
+              <Input type="number" className="compact-input h-9" value={formData.estimatedRepairCost || "0"} onChange={e => setFormData({...formData, estimatedRepairCost: e.target.value})} />
+            </div>
+            <div className="space-y-0.5">
+              <Label className="compact-label">पर्यायी गाडी क्र.</Label>
+              <Input className="compact-input h-9" value={formData.recoveryVehicleNo || ""} onChange={e => setFormData({...formData, recoveryVehicleNo: e.target.value})} placeholder="MH..." />
+            </div>
+            <div className="space-y-0.5">
+              <Label className="compact-label">पर्यायी गाडी वेळ</Label>
+              <Input type="time" className="compact-input h-9" value={formData.recoveryArrivalTime || ""} onChange={e => setFormData({...formData, recoveryArrivalTime: e.target.value})} />
+            </div>
           </div>
         </Card>
 
         <Card className="compact-card p-3 bg-amber-50/20 border-amber-100">
           <div className="flex items-center gap-1.5 border-b border-amber-200 pb-1 mb-2">
             <Milk className="h-3 w-3 text-amber-600" />
-            <h3 className="text-[10px] font-black uppercase text-amber-600 tracking-widest">३) दुधाची स्थिती व सोय</h3>
+            <h3 className="text-[10px] font-black uppercase text-amber-600 tracking-widest">४) दुधाची स्थिती</h3>
           </div>
           <div className="grid grid-cols-1 gap-2">
             <div className="flex items-center justify-between p-2 bg-white rounded-xl border border-amber-100 shadow-sm">
@@ -192,13 +238,6 @@ function BreakdownReportForm() {
               <RadioGroup value={formData.milkSour || "NO"} onValueChange={v => setFormData({...formData, milkSour: v})} className="flex gap-3">
                 <div className="flex items-center gap-1"><RadioGroupItem value="YES" id="ms-y" className="h-2.5 w-2.5"/><Label htmlFor="ms-y" className="text-[8px] font-black">हो</Label></div>
                 <div className="flex items-center gap-1"><RadioGroupItem value="NO" id="ms-n" className="h-2.5 w-2.5"/><Label htmlFor="ms-n" className="text-[8px] font-black">नाही</Label></div>
-              </RadioGroup>
-            </div>
-            <div className="flex items-center justify-between p-2 bg-white rounded-xl border border-amber-100 shadow-sm">
-              <span className="text-[9px] font-black uppercase">पर्यायी गाडी लावली?</span>
-              <RadioGroup value={formData.alternateArrangement || "YES"} onValueChange={v => setFormData({...formData, alternateArrangement: v})} className="flex gap-3">
-                <div className="flex items-center gap-1"><RadioGroupItem value="YES" id="aa-y" className="h-2.5 w-2.5"/><Label htmlFor="aa-y" className="text-[8px] font-black">हो</Label></div>
-                <div className="flex items-center gap-1"><RadioGroupItem value="NO" id="aa-n" className="h-2.5 w-2.5"/><Label htmlFor="aa-n" className="text-[8px] font-black">नाही</Label></div>
               </RadioGroup>
             </div>
           </div>
@@ -234,7 +273,7 @@ function BreakdownReportForm() {
           </div>
         </div>
 
-        <AIGuidanceCard context={formData.reason} formType="breakdown" />
+        <AIGuidanceCard context={formData.detailedReason || formData.reason} formType="breakdown" />
 
         <Button onClick={handleSave} className="compact-button w-full bg-rose-600 text-white shadow-xl shadow-rose-200 mt-4 mb-10 h-12 uppercase font-black tracking-[0.2em] transition-all active:scale-95">
           {editId ? <RefreshCw className="h-4 w-4 mr-2" /> : <Save className="h-4 w-4 mr-2" />}
