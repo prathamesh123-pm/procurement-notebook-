@@ -95,7 +95,10 @@ function DailyReportForm() {
 
   useEffect(() => {
     if (existingReport && existingReport.fullData) {
-      setFormData(existingReport.fullData)
+      setFormData(prev => ({
+        ...prev,
+        ...existingReport.fullData
+      }))
       if (existingReport.fullData.reportType) {
         setReportType(existingReport.fullData.reportType)
       }
@@ -193,15 +196,15 @@ function DailyReportForm() {
         <CardContent className="p-3 grid grid-cols-2 gap-3">
           <div className="space-y-0.5">
             <Label className="text-[9px] font-black uppercase text-muted-foreground tracking-widest">तुमचे नाव</Label>
-            <Input className="h-8 text-[11px] bg-muted/20 border-none rounded-lg font-black" value={formData.name} readOnly />
+            <Input className="h-8 text-[11px] bg-muted/20 border-none rounded-lg font-black" value={formData.name || ""} readOnly />
           </div>
           <div className="space-y-0.5">
             <Label className="text-[9px] font-black uppercase text-muted-foreground tracking-widest">आजची तारीख</Label>
-            <Input className="h-8 text-[11px] bg-muted/20 border-none rounded-lg font-black" type="date" value={formData.reportDate} onChange={e => setFormData({...formData, reportDate: e.target.value})} />
+            <Input className="h-8 text-[11px] bg-muted/20 border-none rounded-lg font-black" type="date" value={formData.reportDate || ""} onChange={e => setFormData({...formData, reportDate: e.target.value})} />
           </div>
           <div className="col-span-2 space-y-1">
             <Label className="text-[9px] font-black uppercase text-muted-foreground tracking-widest">शिफ्ट (SHIFT)</Label>
-            <RadioGroup value={formData.shift} onValueChange={v => setFormData({...formData, shift: v})} className="flex gap-3">
+            <RadioGroup value={formData.shift || "Sakal"} onValueChange={v => setFormData({...formData, shift: v})} className="flex gap-3">
               <div className="flex items-center space-x-1.5 bg-muted/10 px-3 py-1.5 rounded-lg border border-muted-foreground/5 cursor-pointer">
                 <RadioGroupItem value="Sakal" id="sakal" className="h-3 w-3" />
                 <Label htmlFor="sakal" className="text-[10px] font-black cursor-pointer uppercase">सकाळ</Label>
@@ -225,15 +228,15 @@ function DailyReportForm() {
         <TabsContent value="route-visit" className="space-y-3">
           <Card className="border shadow-none bg-white rounded-xl overflow-hidden border-muted-foreground/10">
             <CardContent className="p-3 grid grid-cols-2 sm:grid-cols-3 gap-2">
-              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">SLIP No.</Label><Input className="h-8 text-[10px] bg-muted/20 border-none rounded-lg font-black" value={formData.slipNo} onChange={e => setFormData({...formData, slipNo: e.target.value})} placeholder="22..." /></div>
-              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">रूटचे नाव</Label><Input className="h-8 text-[10px] bg-muted/20 border-none rounded-lg font-black" value={formData.routeName} onChange={e => setFormData({...formData, routeName: e.target.value})} placeholder="MANJARDE" /></div>
-              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">वाहन क्र.</Label><Input className="h-8 text-[10px] bg-muted/20 border-none rounded-lg font-black" value={formData.vehicleNumber} onChange={e => setFormData({...formData, vehicleNumber: e.target.value})} placeholder="MH 10..." /></div>
-              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">ड्रायव्हर</Label><Input className="h-8 text-[10px] bg-muted/20 border-none rounded-lg font-black" value={formData.driverName} onChange={e => setFormData({...formData, driverName: e.target.value})} placeholder="..." /></div>
-              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase text-blue-600">OUT TIME</Label><Input className="h-8 text-[10px] bg-blue-50/50 border-none rounded-lg font-black text-blue-700" type="time" value={formData.routeOutTime} onChange={e => setFormData({...formData, routeOutTime: e.target.value})} /></div>
-              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase text-blue-600">IN TIME</Label><Input className="h-8 text-[10px] bg-blue-50/50 border-none rounded-lg font-black text-blue-700" type="time" value={formData.routeInTime} onChange={e => setFormData({...formData, routeInTime: e.target.value})} /></div>
-              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">START RD</Label><Input className="h-8 text-[10px] bg-muted/20 border-none rounded-lg font-black" type="number" value={formData.startReading} onChange={e => setFormData({...formData, startReading: e.target.value})} /></div>
-              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">END RD</Label><Input className="h-8 text-[10px] bg-muted/20 border-none rounded-lg font-black" type="number" value={formData.endReading} onChange={e => setFormData({...formData, endReading: e.target.value})} /></div>
-              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase text-primary">KM</Label><Input className="h-8 text-[10px] bg-primary/10 border-none font-black text-primary rounded-lg" value={formData.totalKm} readOnly /></div>
+              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">SLIP No.</Label><Input className="h-8 text-[10px] bg-muted/20 border-none rounded-lg font-black" value={formData.slipNo || ""} onChange={e => setFormData({...formData, slipNo: e.target.value})} placeholder="22..." /></div>
+              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">रूटचे नाव</Label><Input className="h-8 text-[10px] bg-muted/20 border-none rounded-lg font-black" value={formData.routeName || ""} onChange={e => setFormData({...formData, routeName: e.target.value})} placeholder="MANJARDE" /></div>
+              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">वाहन क्र.</Label><Input className="h-8 text-[10px] bg-muted/20 border-none rounded-lg font-black" value={formData.vehicleNumber || ""} onChange={e => setFormData({...formData, vehicleNumber: e.target.value})} placeholder="MH 10..." /></div>
+              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">ड्रायव्हर</Label><Input className="h-8 text-[10px] bg-muted/20 border-none rounded-lg font-black" value={formData.driverName || ""} onChange={e => setFormData({...formData, driverName: e.target.value})} placeholder="..." /></div>
+              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase text-blue-600">OUT TIME</Label><Input className="h-8 text-[10px] bg-blue-50/50 border-none rounded-lg font-black text-blue-700" type="time" value={formData.routeOutTime || ""} onChange={e => setFormData({...formData, routeOutTime: e.target.value})} /></div>
+              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase text-blue-600">IN TIME</Label><Input className="h-8 text-[10px] bg-blue-50/50 border-none rounded-lg font-black text-blue-700" type="time" value={formData.routeInTime || ""} onChange={e => setFormData({...formData, routeInTime: e.target.value})} /></div>
+              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">START RD</Label><Input className="h-8 text-[10px] bg-muted/20 border-none rounded-lg font-black" type="number" value={formData.startReading || ""} onChange={e => setFormData({...formData, startReading: e.target.value})} /></div>
+              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">END RD</Label><Input className="h-8 text-[10px] bg-muted/20 border-none rounded-lg font-black" type="number" value={formData.endReading || ""} onChange={e => setFormData({...formData, endReading: e.target.value})} /></div>
+              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase text-primary">KM</Label><Input className="h-8 text-[10px] bg-primary/10 border-none font-black text-primary rounded-lg" value={formData.totalKm || "0"} readOnly /></div>
             </CardContent>
           </Card>
 
@@ -254,27 +257,27 @@ function DailyReportForm() {
                     <div className="col-span-2 space-y-0.5">
                       <Label className="text-[8px] font-black uppercase opacity-60">सेंटर कोड & नाव</Label>
                       <div className="flex gap-1">
-                        <Input className="h-8 text-[10px] bg-muted/20 border-none rounded-lg font-black w-16 p-1 text-center" placeholder="कोड" value={entry.centerCode} onChange={e => updateRouteEntry(entry.id, { centerCode: e.target.value })} />
-                        <Input className="h-8 text-[10px] bg-muted/20 border-none rounded-lg font-black flex-1" placeholder="केंद्राचे नाव" value={entry.supplierName} onChange={e => updateRouteEntry(entry.id, { supplierName: e.target.value })} />
+                        <Input className="h-8 text-[10px] bg-muted/20 border-none rounded-lg font-black w-16 p-1 text-center" placeholder="कोड" value={entry.centerCode || ""} onChange={e => updateRouteEntry(entry.id, { centerCode: e.target.value })} />
+                        <Input className="h-8 text-[10px] bg-muted/20 border-none rounded-lg font-black flex-1" placeholder="केंद्राचे नाव" value={entry.supplierName || ""} onChange={e => updateRouteEntry(entry.id, { supplierName: e.target.value })} />
                       </div>
                     </div>
-                    <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">मेंबर संख्या</Label><Input className="h-8 text-[10px] bg-muted/20 border-none rounded-lg text-center" value={entry.memberCount} onChange={e => updateRouteEntry(entry.id, { memberCount: e.target.value })} /></div>
+                    <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">मेंबर संख्या</Label><Input className="h-8 text-[10px] bg-muted/20 border-none rounded-lg text-center" value={entry.memberCount || ""} onChange={e => updateRouteEntry(entry.id, { memberCount: e.target.value })} /></div>
                     <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">बर्फ वाटप / वापर</Label>
                       <div className="flex gap-1">
-                        <Input className="h-8 text-[10px] bg-muted/20 border-none rounded-lg text-center flex-1" placeholder="वाटप" value={entry.iceAllocated} onChange={e => updateRouteEntry(entry.id, { iceAllocated: e.target.value })} />
-                        <Input className="h-8 text-[10px] bg-muted/20 border-none rounded-lg text-center flex-1" placeholder="वापर" value={entry.iceUsed} onChange={e => updateRouteEntry(entry.id, { iceUsed: e.target.value })} />
+                        <Input className="h-8 text-[10px] bg-muted/20 border-none rounded-lg text-center flex-1" placeholder="वाटप" value={entry.iceAllocated || ""} onChange={e => updateRouteEntry(entry.id, { iceAllocated: e.target.value })} />
+                        <Input className="h-8 text-[10px] bg-muted/20 border-none rounded-lg text-center flex-1" placeholder="वापर" value={entry.iceUsed || ""} onChange={e => updateRouteEntry(entry.id, { iceUsed: e.target.value })} />
                       </div>
                     </div>
                     <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase text-blue-600">वेळ (IN / OUT)</Label>
                       <div className="flex gap-1">
-                        <Input className="h-8 text-[9px] bg-blue-50/50 border-none rounded-lg p-1 text-center font-black" type="time" value={entry.arrivalTime} onChange={e => updateRouteEntry(entry.id, { arrivalTime: e.target.value })} />
-                        <Input className="h-8 text-[9px] bg-blue-50/50 border-none rounded-lg p-1 text-center font-black" type="time" value={entry.departureTime} onChange={e => updateRouteEntry(entry.id, { departureTime: e.target.value })} />
+                        <Input className="h-8 text-[9px] bg-blue-50/50 border-none rounded-lg p-1 text-center font-black" type="time" value={entry.arrivalTime || ""} onChange={e => updateRouteEntry(entry.id, { arrivalTime: e.target.value })} />
+                        <Input className="h-8 text-[9px] bg-blue-50/50 border-none rounded-lg p-1 text-center font-black" type="time" value={entry.departureTime || ""} onChange={e => updateRouteEntry(entry.id, { departureTime: e.target.value })} />
                       </div>
                     </div>
                     <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">कॅन (उतरलेले / भरलेले)</Label>
                       <div className="flex gap-1">
-                        <Input className="h-8 text-[10px] bg-muted/20 border-none rounded-lg text-center font-black flex-1" placeholder="E" value={entry.emptyCans} onChange={e => updateRouteEntry(entry.id, { emptyCans: e.target.value })} />
-                        <Input className="h-8 text-[10px] bg-primary/10 border-none rounded-lg text-center font-black text-primary flex-1" placeholder="F" value={entry.fullCans} onChange={e => updateRouteEntry(entry.id, { fullCans: e.target.value })} />
+                        <Input className="h-8 text-[10px] bg-muted/20 border-none rounded-lg text-center font-black flex-1" placeholder="E" value={entry.emptyCans || ""} onChange={e => updateRouteEntry(entry.id, { emptyCans: e.target.value })} />
+                        <Input className="h-8 text-[10px] bg-primary/10 border-none rounded-lg text-center font-black text-primary flex-1" placeholder="F" value={entry.fullCans || ""} onChange={e => updateRouteEntry(entry.id, { fullCans: e.target.value })} />
                       </div>
                     </div>
                   </div>
@@ -295,7 +298,7 @@ function DailyReportForm() {
                 <div key={point.id} className="flex gap-2 items-start group">
                   <div className="h-8 w-8 rounded-lg bg-muted/20 flex items-center justify-center font-black text-[10px] text-muted-foreground shrink-0 border border-muted-foreground/5">{index + 1}</div>
                   <Textarea 
-                    value={point.text} 
+                    value={point.text || ""} 
                     onChange={e => updateFieldPoint(point.id, e.target.value)} 
                     placeholder="..." 
                     className="min-h-[50px] text-[11px] rounded-lg bg-muted/10 border-none font-medium shadow-inner p-2" 
@@ -319,7 +322,7 @@ function DailyReportForm() {
                 <div key={point.id} className="flex gap-2 items-start group">
                   <div className="h-8 w-8 rounded-lg bg-muted/20 flex items-center justify-center font-black text-[10px] text-muted-foreground shrink-0 border border-muted-foreground/5">{index + 1}</div>
                   <Textarea 
-                    value={point.text} 
+                    value={point.text || ""} 
                     onChange={e => updateOfficePoint(point.id, e.target.value)} 
                     placeholder="..." 
                     className="min-h-[50px] text-[11px] rounded-lg bg-muted/10 border-none font-medium shadow-inner p-2" 
@@ -337,21 +340,21 @@ function DailyReportForm() {
           <div className="grid grid-cols-1 gap-4">
             <div className="space-y-1">
               <Label className="text-[9px] font-black uppercase text-emerald-400 tracking-widest">आजची मोठी कामगिरी</Label>
-              <Textarea value={formData.achievements} onChange={e => setFormData({...formData, achievements: e.target.value})} className="min-h-[50px] text-[10px] rounded-xl bg-white/10 border-none font-bold p-2 text-white" placeholder="..." />
+              <Textarea value={formData.achievements || ""} onChange={e => setFormData({...formData, achievements: e.target.value})} className="min-h-[50px] text-[10px] rounded-xl bg-white/10 border-none font-bold p-2 text-white" placeholder="..." />
             </div>
             <div className="space-y-1">
               <Label className="text-[9px] font-black uppercase text-rose-400 tracking-widest">महत्त्वाच्या समस्या</Label>
-              <Textarea value={formData.problems} onChange={e => setFormData({...formData, problems: e.target.value})} className="min-h-[50px] text-[10px] rounded-xl bg-white/10 border-none font-bold p-2 text-white" placeholder="..." />
+              <Textarea value={formData.problems || ""} onChange={e => setFormData({...formData, problems: e.target.value})} className="min-h-[50px] text-[10px] rounded-xl bg-white/10 border-none font-bold p-2 text-white" placeholder="..." />
             </div>
             <div className="space-y-1">
               <Label className="text-[9px] font-black uppercase text-blue-400 tracking-widest">केलेली कार्यवाही</Label>
-              <Textarea value={formData.actionsTaken} onChange={e => setFormData({...formData, actionsTaken: e.target.value})} className="min-h-[50px] text-[10px] rounded-xl bg-white/10 border-none font-bold p-2 text-white" placeholder="..." />
+              <Textarea value={formData.actionsTaken || ""} onChange={e => setFormData({...formData, actionsTaken: e.target.value})} className="min-h-[50px] text-[10px] rounded-xl bg-white/10 border-none font-bold p-2 text-white" placeholder="..." />
             </div>
           </div>
           <div className="flex flex-col gap-4 pt-3 border-t border-white/10">
             <div className="space-y-1">
               <Label className="text-[9px] font-black uppercase text-slate-400 tracking-widest">सुपरवायझरचे नाव</Label>
-              <Input className="h-9 text-[11px] bg-white/10 border-none rounded-xl font-bold text-white" value={formData.supervisorName} onChange={e => setFormData({...formData, supervisorName: e.target.value})} />
+              <Input className="h-9 text-[11px] bg-white/10 border-none rounded-xl font-bold text-white" value={formData.supervisorName || ""} onChange={e => setFormData({...formData, supervisorName: e.target.value})} />
             </div>
             <Button type="button" onClick={handleSave} className="w-full font-black h-12 rounded-xl shadow-2xl bg-primary text-white text-xs uppercase tracking-widest transition-all active:scale-95">
               {editId ? <RefreshCw className="h-4 w-4 mr-2" /> : <Save className="h-4 w-4 mr-2" />} 
