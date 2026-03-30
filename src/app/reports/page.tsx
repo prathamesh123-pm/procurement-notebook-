@@ -1,11 +1,10 @@
-
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { 
-  Archive, Eye, Search, X, Printer, Plus, Trash2, FileEdit, ClipboardCheck, ShieldCheck, Truck, ListTodo, Microscope
+  Archive, Eye, Search, X, Printer, Plus, Trash2, FileEdit, ClipboardCheck, ShieldCheck, Truck, ListTodo, Microscope, ShieldAlert
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
@@ -52,11 +51,9 @@ export default function ReportsPage() {
   if (!mounted || isLoading) return <div className="p-20 text-center animate-pulse italic font-black uppercase text-[9px] opacity-50">लोड होत आहे...</div>
 
   const reportTypes = [
-    { title: "दूध सर्व्हे", sub: "Survey", type: "survey", icon: ClipboardCheck },
-    { title: "FSSAI तपासणी", sub: "FSSAI", type: "fssai", icon: ShieldCheck },
     { title: "ब्रेकडाऊन", sub: "Breakdown", type: "breakdown", icon: Truck },
     { title: "दैनिक कामकाज", sub: "Daily", type: "daily", icon: ListTodo },
-    { title: "केंद्र ऑडिट", sub: "Audit", type: "audit", icon: Microscope },
+    { title: "जप्ती व दंड", sub: "Seizure", type: "seizure", icon: ShieldAlert },
   ]
 
   return (
@@ -68,7 +65,7 @@ export default function ReportsPage() {
         <p className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">Archive History</p>
       </div>
 
-      <div className="grid grid-cols-3 sm:grid-cols-5 gap-1.5 mb-4">
+      <div className="grid grid-cols-3 gap-1.5 mb-4">
         {reportTypes.map((rt) => (
           <Button key={rt.sub} asChild variant="outline" className="h-14 flex flex-col items-center justify-center p-1 rounded-xl hover:border-primary group transition-all border-primary/10 bg-white">
             <Link href={`/reports/entry/${rt.type}`}>
