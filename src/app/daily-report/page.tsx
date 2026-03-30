@@ -22,7 +22,6 @@ interface RouteVisitEntry {
   id: string;
   centerCode: string;
   supplierName: string;
-  memberCount: string;
   iceAllocated: string;
   iceUsed: string;
   arrivalTime: string;
@@ -52,7 +51,7 @@ function DailyReportForm() {
 
   const createEmptyRouteEntry = (): RouteVisitEntry => ({
     id: createId(),
-    centerCode: "", supplierName: "", memberCount: "", iceAllocated: "", iceUsed: "", 
+    centerCode: "", supplierName: "", iceAllocated: "", iceUsed: "", 
     arrivalTime: "", departureTime: "", emptyCans: "", fullCans: ""
   });
 
@@ -268,7 +267,6 @@ function DailyReportForm() {
                         <Input className="h-8 text-[10px] bg-muted/20 border-none rounded-lg font-black flex-1" placeholder="केंद्राचे नाव" value={entry.supplierName || ""} onChange={e => updateRouteEntry(entry.id, { supplierName: e.target.value })} />
                       </div>
                     </div>
-                    <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">मेंबर संख्या</Label><Input className="h-8 text-[10px] bg-muted/20 border-none rounded-lg text-center" value={entry.memberCount || ""} onChange={e => updateRouteEntry(entry.id, { memberCount: e.target.value })} /></div>
                     <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">बर्फ वापर</Label>
                       <div className="flex gap-1">
                         <Input className="h-8 text-[10px] bg-muted/20 border-none rounded-lg text-center flex-1" placeholder="वापर" value={entry.iceUsed || ""} onChange={e => updateRouteEntry(entry.id, { iceUsed: e.target.value })} />
