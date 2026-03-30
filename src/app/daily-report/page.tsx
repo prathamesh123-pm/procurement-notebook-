@@ -43,6 +43,7 @@ function DailyReportForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const editId = searchParams.get('edit')
+  const typeParam = searchParams.get('type')
 
   const [mounted, setMounted] = useState(false)
   const [reportType, setReportType] = useState<string>("route-visit")
@@ -92,6 +93,12 @@ function DailyReportForm() {
       officeWorkPoints: [createEmptyPoint()]
     }))
   }, [])
+
+  useEffect(() => {
+    if (typeParam && ["route-visit", "field-visit", "office-work"].includes(typeParam)) {
+      setReportType(typeParam)
+    }
+  }, [typeParam])
 
   useEffect(() => {
     if (existingReport && existingReport.fullData) {
@@ -262,9 +269,8 @@ function DailyReportForm() {
                       </div>
                     </div>
                     <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">मेंबर संख्या</Label><Input className="h-8 text-[10px] bg-muted/20 border-none rounded-lg text-center" value={entry.memberCount || ""} onChange={e => updateRouteEntry(entry.id, { memberCount: e.target.value })} /></div>
-                    <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">बर्फ वाटप / वापर</Label>
+                    <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">बर्फ वापर</Label>
                       <div className="flex gap-1">
-                        <Input className="h-8 text-[10px] bg-muted/20 border-none rounded-lg text-center flex-1" placeholder="वाटप" value={entry.iceAllocated || ""} onChange={e => updateRouteEntry(entry.id, { iceAllocated: e.target.value })} />
                         <Input className="h-8 text-[10px] bg-muted/20 border-none rounded-lg text-center flex-1" placeholder="वापर" value={entry.iceUsed || ""} onChange={e => updateRouteEntry(entry.id, { iceUsed: e.target.value })} />
                       </div>
                     </div>

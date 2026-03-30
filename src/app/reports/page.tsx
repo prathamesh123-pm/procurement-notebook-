@@ -5,7 +5,9 @@ import { useState, useMemo, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { 
-  Archive, Eye, Search, X, Printer, Trash2, FileEdit, Truck, ListTodo, ShieldAlert, ChevronRight, Filter, FileText, Milk
+  Archive, Eye, Search, X, Printer, Trash2, FileEdit, Truck, ListTodo, 
+  ShieldAlert, ChevronRight, Filter, FileText, Milk, MapPin, Briefcase, 
+  ClipboardCheck, FileSignature
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
@@ -82,9 +84,14 @@ export default function ReportsPage() {
   if (!mounted || isLoading) return <div className="p-20 text-center animate-pulse italic font-black uppercase text-[9px] opacity-50">लोड होत आहे...</div>
 
   const reportTypes = [
-    { title: "ब्रेकडाऊन", sub: "Breakdown", type: "breakdown", icon: Truck, color: "text-rose-600", bg: "bg-rose-50" },
-    { title: "दैनिक कामकाज", sub: "Daily", type: "daily", icon: ListTodo, color: "text-blue-600", bg: "bg-blue-50" },
-    { title: "जप्ती व दंड", sub: "Seizure", type: "seizure", icon: ShieldAlert, color: "text-amber-600", bg: "bg-amber-50" },
+    { title: "रूट व्हिजिट", href: "/daily-report?type=route-visit", icon: Truck, color: "text-blue-600", bg: "bg-blue-50" },
+    { title: "क्षेत्र भेट", href: "/daily-report?type=field-visit", icon: MapPin, color: "text-emerald-600", bg: "bg-emerald-50" },
+    { title: "ऑफिस काम", href: "/daily-report?type=office-work", icon: Briefcase, color: "text-purple-600", bg: "bg-purple-50" },
+    { title: "ब्रेकडाऊन", href: "/reports/entry/breakdown", icon: Truck, color: "text-rose-600", bg: "bg-rose-50" },
+    { title: "कामकाज नोंद", href: "/work-log", icon: ListTodo, color: "text-orange-600", bg: "bg-orange-50" },
+    { title: "जप्ती व दंड", href: "/reports/entry/seizure", icon: ShieldAlert, color: "text-amber-600", bg: "bg-amber-50" },
+    { title: "दैनिक कामकाज", href: "/reports/entry/daily", icon: ClipboardCheck, color: "text-indigo-600", bg: "bg-indigo-50" },
+    { title: "वर्ड फॉर्म", href: "/form-builder", icon: FileSignature, color: "text-slate-600", bg: "bg-slate-50" },
   ]
 
   const RouteSlipLayout = ({ report }: { report: any }) => {
@@ -121,7 +128,7 @@ export default function ReportsPage() {
             <tr className="bg-slate-100 font-black text-[7px]">
               <th className="border border-black p-0.5 text-center w-5">क्र.</th>
               <th className="border border-black p-0.5 text-left">केंद्राचे नाव , कोड</th>
-              <th className="border border-black p-0.5 text-center">बर्फ</th>
+              <th className="border border-black p-0.5 text-center">बर्फ वापर</th>
               <th className="border border-black p-0.5 text-center">आगमन</th>
               <th className="border border-black p-0.5 text-center">रिकामे</th>
               <th className="border border-black p-0.5 text-center">निर्गमन</th>
@@ -311,11 +318,11 @@ export default function ReportsPage() {
         <p className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest ml-0.5">Archive & Management</p>
       </div>
 
-      <div className="grid grid-cols-3 gap-2 mb-4">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
         {reportTypes.map((rt) => (
-          <Link key={rt.sub} href={`/reports/entry/${rt.type}`} className="block">
-            <div className={`h-14 flex flex-col items-center justify-center p-1 rounded-xl border transition-all hover:scale-[1.02] active:scale-95 ${rt.bg} border-muted-foreground/5 shadow-sm`}>
-              <rt.icon className={`h-3.5 w-3.5 ${rt.color} mb-1`} />
+          <Link key={rt.title} href={rt.href} className="block">
+            <div className={`h-16 flex flex-col items-center justify-center p-1 rounded-xl border transition-all hover:scale-[1.02] active:scale-95 ${rt.bg} border-muted-foreground/5 shadow-sm`}>
+              <rt.icon className={`h-4 w-4 ${rt.color} mb-1`} />
               <span className="text-[8px] font-black text-slate-900 leading-tight text-center uppercase">{rt.title}</span>
             </div>
           </Link>
