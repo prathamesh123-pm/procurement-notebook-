@@ -1,3 +1,4 @@
+
 "use client"
 
 import { Card, CardContent } from "@/components/ui/card"
@@ -24,14 +25,14 @@ export default function DashboardOverview() {
   }, [db, user])
 
   const routesQuery = useMemoFirebase(() => {
-    if (!db) return null
+    if (!db || !user) return null
     return collection(db, 'routes')
-  }, [db])
+  }, [db, user])
 
   const suppliersQuery = useMemoFirebase(() => {
-    if (!db) return null
+    if (!db || !user) return null
     return collection(db, 'suppliers')
-  }, [db])
+  }, [db, user])
 
   const { data: centers } = useCollection(centersQuery)
   const { data: tasks } = useCollection(tasksQuery)

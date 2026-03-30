@@ -21,14 +21,14 @@ export default function RoutesPage() {
   const { toast } = useToast()
 
   const routesQuery = useMemoFirebase(() => {
-    if (!db) return null
+    if (!db || !user) return null
     return collection(db, 'routes')
-  }, [db])
+  }, [db, user])
 
   const suppliersQuery = useMemoFirebase(() => {
-    if (!db) return null
+    if (!db || !user) return null
     return collection(db, 'suppliers')
-  }, [db])
+  }, [db, user])
 
   const { data: routes, isLoading } = useCollection(routesQuery)
   const { data: suppliers } = useCollection(suppliersQuery)

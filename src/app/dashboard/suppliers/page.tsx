@@ -25,14 +25,14 @@ function SuppliersContent() {
   const initialRouteFilter = searchParams.get('route') || 'all'
 
   const routesQuery = useMemoFirebase(() => {
-    if (!db) return null
+    if (!db || !user) return null
     return collection(db, 'routes')
-  }, [db])
+  }, [db, user])
 
   const suppliersQuery = useMemoFirebase(() => {
-    if (!db) return null
+    if (!db || !user) return null
     return collection(db, 'suppliers')
-  }, [db])
+  }, [db, user])
 
   const { data: routes } = useCollection<Route>(routesQuery)
   const { data: suppliers } = useCollection<Supplier>(suppliersQuery)

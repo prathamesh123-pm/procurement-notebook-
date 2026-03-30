@@ -30,14 +30,14 @@ export default function RouteDetailsPage() {
   const db = useFirestore()
 
   const routesQuery = useMemoFirebase(() => {
-    if (!db) return null
+    if (!db || !user) return null
     return collection(db, 'routes')
-  }, [db])
+  }, [db, user])
 
   const suppliersQuery = useMemoFirebase(() => {
-    if (!db) return null
+    if (!db || !user) return null
     return collection(db, 'suppliers')
-  }, [db])
+  }, [db, user])
 
   const { data: allRoutes } = useCollection(routesQuery)
   const { data: allSuppliers, isLoading } = useCollection<Supplier>(suppliersQuery)
