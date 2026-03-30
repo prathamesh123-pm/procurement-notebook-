@@ -5,7 +5,7 @@ import { useState, useMemo, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { 
-  Archive, Eye, Search, X, Printer, Trash2, FileEdit, Truck, ListTodo, ShieldAlert, ChevronRight, Filter
+  Archive, Eye, Search, X, Printer, Trash2, FileEdit, Truck, ListTodo, ShieldAlert, ChevronRight, Filter, FileText
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
@@ -72,7 +72,8 @@ export default function ReportsPage() {
       'Transport Breakdown Report': '/reports/entry/breakdown',
       'Daily Work Report': '/reports/entry/daily',
       'Seizure & Penalty': '/reports/entry/seizure',
-      'Daily Task': '/work-log'
+      'Daily Task': '/work-log',
+      'Official Document': '/form-builder'
     }
     const path = typeMap[report.type] || '/reports'
     router.push(`${path}?edit=${report.id}`)
@@ -134,7 +135,7 @@ export default function ReportsPage() {
                   <td className="p-3">
                     <div className="flex flex-col gap-0.5 min-w-0">
                       <div className="flex items-center gap-1.5">
-                        <span className="text-[10px] font-black uppercase text-slate-900 truncate max-w-[150px]">{report.type}</span>
+                        <span className="text-[10px] font-black uppercase text-slate-900 truncate max-w-[150px]">{report.type === 'Official Document' ? 'वर्ड दस्तऐवज' : report.type}</span>
                         <Badge className="h-3.5 px-1.5 text-[7px] font-black bg-primary/10 text-primary border-none rounded-md">{report.date}</Badge>
                       </div>
                       <p className="text-[9px] text-muted-foreground line-clamp-1 italic font-medium">{report.summary}</p>
@@ -164,7 +165,7 @@ export default function ReportsPage() {
       </div>
 
       <Dialog open={isViewOpen} onOpenChange={setIsViewOpen}>
-        <DialogContent className="max-w-[480px] p-0 rounded-3xl overflow-hidden border-none shadow-2xl bg-white">
+        <DialogContent className="max-w-[600px] p-0 rounded-3xl overflow-hidden border-none shadow-2xl bg-white">
           <DialogHeader className="p-3 bg-slate-50 border-b flex flex-row items-center justify-between space-y-0">
             <div className="min-w-0">
               <DialogTitle className="text-[10px] font-black uppercase text-slate-400 tracking-widest px-2 truncate">अहवाल तपशील (REPORT DETAILS)</DialogTitle>
@@ -177,64 +178,70 @@ export default function ReportsPage() {
               <Button size="icon" variant="ghost" onClick={() => setIsViewOpen(false)} className="h-8 w-8 text-slate-400 rounded-full"><X className="h-5 w-5" /></Button>
             </div>
           </DialogHeader>
-          <ScrollArea className="max-h-[75vh] p-6 bg-white">
+          <ScrollArea className="max-h-[85vh] p-6 bg-white">
             {selectedReport && (
               <div className="text-[10px] font-mono text-black space-y-5" id="printable-area">
-                <div className="border-b-2 border-black pb-3 text-center space-y-1">
-                  <h1 className="text-sm font-black uppercase tracking-tighter">संकलन नोंदवही (OFFICIAL REPORT)</h1>
-                  <p className="text-[8px] font-bold opacity-60 uppercase tracking-widest">Digital Procurement Management System</p>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4 uppercase font-black text-[9px]">
-                  <div className="space-y-1">
-                    <p className="opacity-50">DATE:</p>
-                    <p className="text-black">{selectedReport.date}</p>
-                  </div>
-                  <div className="space-y-1 text-right">
-                    <p className="opacity-50">REPORT ID:</p>
-                    <p className="text-black">#{selectedReport.id.slice(-8).toUpperCase()}</p>
-                  </div>
-                </div>
-
-                <div className="space-y-2 py-2 border-y border-dashed border-black/20">
-                  <p className="text-[9px] font-black opacity-50 uppercase">प्रकार (TYPE):</p>
-                  <p className="text-[11px] font-black uppercase text-primary">{selectedReport.type}</p>
-                </div>
-
-                <div className="space-y-2">
-                  <div className="font-black uppercase border-b border-black/10 pb-1 text-[9px] opacity-50">अहवाल सारांश (SUMMARY):</div>
-                  <p className="leading-relaxed whitespace-pre-wrap font-medium text-slate-800 text-[11px]">
-                    {selectedReport.summary || selectedReport.overallSummary}
-                  </p>
-                </div>
-
-                {selectedReport.fullData && (
-                  <div className="space-y-3 pt-2">
-                    <div className="font-black uppercase border-b border-black/10 pb-1 text-[9px] opacity-50">अतिरिक्त तपशील (DETAILS):</div>
-                    <div className="grid grid-cols-1 gap-2 bg-muted/10 p-3 rounded-xl">
-                      {Object.entries(selectedReport.fullData).map(([key, val]: [string, any]) => {
-                        if (typeof val === 'object' || key === 'routeVisitLogs' || key === 'centerLosses') return null;
-                        return (
-                          <div key={key} className="flex justify-between border-b border-black/5 pb-1 last:border-0">
-                            <span className="opacity-50 uppercase text-[8px] font-black">{key.replace(/([A-Z])/g, ' $1')}</span>
-                            <span className="text-right font-bold">{String(val)}</span>
-                          </div>
-                        )
-                      })}
+                {selectedReport.fullData?.isWordDoc ? (
+                  <div className="prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: selectedReport.fullData.content }} />
+                ) : (
+                  <>
+                    <div className="border-b-2 border-black pb-3 text-center space-y-1">
+                      <h1 className="text-sm font-black uppercase tracking-tighter">संकलन नोंदवही (OFFICIAL REPORT)</h1>
+                      <p className="text-[8px] font-bold opacity-60 uppercase tracking-widest">Digital Procurement Management System</p>
                     </div>
-                  </div>
-                )}
+                    
+                    <div className="grid grid-cols-2 gap-4 uppercase font-black text-[9px]">
+                      <div className="space-y-1">
+                        <p className="opacity-50">DATE:</p>
+                        <p className="text-black">{selectedReport.date}</p>
+                      </div>
+                      <div className="space-y-1 text-right">
+                        <p className="opacity-50">REPORT ID:</p>
+                        <p className="text-black">#{selectedReport.id.slice(-8).toUpperCase()}</p>
+                      </div>
+                    </div>
 
-                <div className="mt-12 grid grid-cols-2 gap-10 text-center pt-6 border-t border-black/10 opacity-60 uppercase font-black text-[8px]">
-                  <div className="space-y-10">
-                    <div className="h-1 bg-black/10 w-full" />
-                    <p>OFFICER SIGN</p>
-                  </div>
-                  <div className="space-y-10">
-                    <div className="h-1 bg-black/10 w-full" />
-                    <p>SUPERVISOR SIGN</p>
-                  </div>
-                </div>
+                    <div className="space-y-2 py-2 border-y border-dashed border-black/20">
+                      <p className="text-[9px] font-black opacity-50 uppercase">प्रकार (TYPE):</p>
+                      <p className="text-[11px] font-black uppercase text-primary">{selectedReport.type}</p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <div className="font-black uppercase border-b border-black/10 pb-1 text-[9px] opacity-50">अहवाल सारांश (SUMMARY):</div>
+                      <p className="leading-relaxed whitespace-pre-wrap font-medium text-slate-800 text-[11px]">
+                        {selectedReport.summary || selectedReport.overallSummary}
+                      </p>
+                    </div>
+
+                    {selectedReport.fullData && (
+                      <div className="space-y-3 pt-2">
+                        <div className="font-black uppercase border-b border-black/10 pb-1 text-[9px] opacity-50">अतिरिक्त तपशील (DETAILS):</div>
+                        <div className="grid grid-cols-1 gap-2 bg-muted/10 p-3 rounded-xl">
+                          {Object.entries(selectedReport.fullData).map(([key, val]: [string, any]) => {
+                            if (typeof val === 'object' || key === 'routeVisitLogs' || key === 'centerLosses') return null;
+                            return (
+                              <div key={key} className="flex justify-between border-b border-black/5 pb-1 last:border-0">
+                                <span className="opacity-50 uppercase text-[8px] font-black">{key.replace(/([A-Z])/g, ' $1')}</span>
+                                <span className="text-right font-bold">{String(val)}</span>
+                              </div>
+                            )
+                          })}
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="mt-12 grid grid-cols-2 gap-10 text-center pt-6 border-t border-black/10 opacity-60 uppercase font-black text-[8px]">
+                      <div className="space-y-10">
+                        <div className="h-1 bg-black/10 w-full" />
+                        <p>OFFICER SIGN</p>
+                      </div>
+                      <div className="space-y-10">
+                        <div className="h-1 bg-black/10 w-full" />
+                        <p>SUPERVISOR SIGN</p>
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
             )}
           </ScrollArea>

@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect, useRef } from "react"
@@ -16,6 +17,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { useToast } from "@/hooks/use-toast"
+import { useUser, useFirestore, addDocumentNonBlocking } from "@/firebase"
+import { collection } from "firebase/firestore"
+import { useRouter } from "next/navigation"
 
 export default function WordEditorPage() {
   const [mounted, setMounted] = useState(false)
@@ -23,6 +27,9 @@ export default function WordEditorPage() {
   const [zoom, setZoom] = useState(100)
   const editorRef = useRef<HTMLDivElement>(null)
   const { toast } = useToast()
+  const { user } = useUser()
+  const db = useFirestore()
+  const router = useRouter()
 
   useEffect(() => setMounted(true), [])
 
@@ -32,7 +39,7 @@ export default function WordEditorPage() {
 
   const getParentTableInfo = () => {
     const selection = window.getSelection()
-    if (!selection?.rangeCount) return null
+    if (!selection?.rangeCount) return { table: null, cell: null }
     let node: any = selection.getRangeAt(0).startContainer
     let cell = null
     let table = null
@@ -100,9 +107,30 @@ export default function WordEditorPage() {
   }
 
   const handleSave = () => {
+    if (!db || !user) {
+      toast({ title: "त्रुटी", description: "लॉगिन आवश्यक आहे.", variant: "destructive" })
+      return
+    }
     const content = editorRef.current?.innerHTML
-    localStorage.setItem('procurepal_doc_' + Date.now(), JSON.stringify({ title: docTitle, content }))
-    toast({ title: "यशस्वी", description: "डॉक्युमेंट जतन झाले." })
+    
+    const reportData = {
+      type: 'Official Document',
+      date: new Date().toISOString().split('T')[0],
+      reportDate: new Date().toISOString().split('T')[0],
+      generatedByUserId: user.uid,
+      summary: `वर्ड दस्तऐवज: ${docTitle}`,
+      overallSummary: `वर्ड दस्तऐवज: ${docTitle}`,
+      fullData: { 
+        title: docTitle, 
+        content: content,
+        isWordDoc: true
+      },
+      createdAt: new Date().toISOString()
+    }
+
+    addDocumentNonBlocking(collection(db, 'users', user.uid, 'dailyWorkReports'), reportData)
+    toast({ title: "यशस्वी", description: "डॉक्युमेंट अहवालात जतन झाले." })
+    router.push('/reports')
   }
 
   const handlePrint = () => window.print()
@@ -192,86 +220,67 @@ export default function WordEditorPage() {
         </ScrollArea>
 
         <div className="h-12 bg-white p-0.5">
-          <ScrollArea className="w-full h-full">
-            <div className="flex items-center gap-0.5 h-full px-1 min-w-max">
-              <TabsContent value="file" className="m-0 h-full flex items-center">
-                <RibbonGroup label="FILE">
-                  <BigToolBtn icon={Plus} label="NEW" />
-                  <BigToolBtn icon={Save} label="SAVE" onClick={handleSave} />
-                  <BigToolBtn icon={Printer} label="PRINT" onClick={handlePrint} />
-                  <BigToolBtn icon={Download} label="EXPORT" />
-                </RibbonGroup>
-                <RibbonGroup label="SHARE">
-                  <BigToolBtn icon={Share2} label="SHARE" />
-                  <BigToolBtn icon={Mail} label="EMAIL" />
-                </RibbonGroup>
-              </TabsContent>
+          <div className="flex items-center gap-0.5 h-full px-1 min-w-max overflow-x-auto">
+            <TabsContent value="file" className="m-0 h-full flex items-center gap-0.5">
+              <RibbonGroup label="FILE">
+                <BigToolBtn icon={Plus} label="NEW" />
+                <BigToolBtn icon={Save} label="SAVE" onClick={handleSave} />
+                <BigToolBtn icon={Printer} label="PRINT" onClick={handlePrint} />
+                <BigToolBtn icon={Download} label="EXPORT" />
+              </RibbonGroup>
+              <RibbonGroup label="SHARE">
+                <BigToolBtn icon={Share2} label="SHARE" />
+                <BigToolBtn icon={Mail} label="EMAIL" />
+              </RibbonGroup>
+            </TabsContent>
 
-              <TabsContent value="home" className="m-0 h-full flex items-center">
-                <RibbonGroup label="EDIT">
-                  <ToolBtn icon={Undo} label="Undo" onClick={() => execCommand('undo')} />
-                  <ToolBtn icon={Redo} label="Redo" onClick={() => execCommand('redo')} />
-                </RibbonGroup>
-                <RibbonGroup label="FONT">
-                  <select className="h-5 text-[8px] border rounded bg-slate-50 px-1 outline-none font-black" onChange={(e) => execCommand('fontName', e.target.value)}>
-                    <option value="Inter">Inter</option>
-                    <option value="Arial">Arial</option>
-                    <option value="Times New Roman">Times</option>
-                  </select>
-                  <ToolBtn icon={Bold} label="Bold" onClick={() => execCommand('bold')} />
-                  <ToolBtn icon={Italic} label="Italic" onClick={() => execCommand('italic')} />
-                  <ToolBtn icon={Underline} label="Underline" onClick={() => execCommand('underline')} />
-                </RibbonGroup>
-                <RibbonGroup label="PARA">
-                  <ToolBtn icon={AlignLeft} label="Left" onClick={() => execCommand('justifyLeft')} />
-                  <ToolBtn icon={AlignCenter} label="Center" onClick={() => execCommand('justifyCenter')} />
-                  <ToolBtn icon={AlignRight} label="Right" onClick={() => execCommand('justifyRight')} />
-                  <ToolBtn icon={List} label="Bullets" onClick={() => execCommand('insertUnorderedList')} />
-                </RibbonGroup>
-              </TabsContent>
+            <TabsContent value="home" className="m-0 h-full flex items-center gap-0.5">
+              <RibbonGroup label="EDIT">
+                <ToolBtn icon={Undo} label="Undo" onClick={() => execCommand('undo')} />
+                <ToolBtn icon={Redo} label="Redo" onClick={() => execCommand('redo')} />
+              </RibbonGroup>
+              <RibbonGroup label="FONT">
+                <select className="h-5 text-[8px] border rounded bg-slate-50 px-1 outline-none font-black" onChange={(e) => execCommand('fontName', e.target.value)}>
+                  <option value="Inter">Inter</option>
+                  <option value="Arial">Arial</option>
+                  <option value="Times New Roman">Times</option>
+                </select>
+                <ToolBtn icon={Bold} label="Bold" onClick={() => execCommand('bold')} />
+                <ToolBtn icon={Italic} label="Italic" onClick={() => execCommand('italic')} />
+                <ToolBtn icon={Underline} label="Underline" onClick={() => execCommand('underline')} />
+              </RibbonGroup>
+              <RibbonGroup label="PARA">
+                <ToolBtn icon={AlignLeft} label="Left" onClick={() => execCommand('justifyLeft')} />
+                <ToolBtn icon={AlignCenter} label="Center" onClick={() => execCommand('justifyCenter')} />
+                <ToolBtn icon={AlignRight} label="Right" onClick={() => execCommand('justifyRight')} />
+                <ToolBtn icon={List} label="Bullets" onClick={() => execCommand('insertUnorderedList')} />
+              </RibbonGroup>
+            </TabsContent>
 
-              <TabsContent value="insert" className="m-0 h-full flex items-center">
-                <RibbonGroup label="OBJECTS">
-                  <BigToolBtn icon={Layers} label="PAGES" />
-                  <BigToolBtn icon={Grid3X3} label="TABLE" onClick={() => execCommand('insertHTML', '<table border="1" style="width:100%; border-collapse:collapse; margin:10px 0; border: 1px solid #ddd;"><tr><td style="padding:8px; border: 1px solid #ddd;">&nbsp;</td><td style="padding:8px; border: 1px solid #ddd;">&nbsp;</td></tr><tr><td style="padding:8px; border: 1px solid #ddd;">&nbsp;</td><td style="padding:8px; border: 1px solid #ddd;">&nbsp;</td></tr></table>')} />
-                </RibbonGroup>
-                <RibbonGroup label="TABLE TOOLS">
-                  <BigToolBtn icon={Columns} label="+ COL" onClick={handleInsertColumn} variant="outline" />
-                  <BigToolBtn icon={X} label="- COL" onClick={handleRemoveColumn} variant="outline" />
-                  <BigToolBtn icon={Rows} label="+ ROW" onClick={handleInsertRow} variant="outline" />
-                  <BigToolBtn icon={Trash2} label="- ROW" onClick={handleRemoveRow} variant="outline" />
-                </RibbonGroup>
-                <RibbonGroup label="MEDIA">
-                  <ToolBtn icon={ImageIcon} label="Pic" />
-                  <ToolBtn icon={LinkIcon} label="Link" />
-                </RibbonGroup>
-              </TabsContent>
-
-              <TabsContent value="dev" className="m-0 h-full flex items-center">
-                <RibbonGroup label="DEV">
-                  <BigToolBtn icon={Code} label="VBA" />
-                  <BigToolBtn icon={Settings} label="MACROS" />
-                </RibbonGroup>
-                <RibbonGroup label="UI">
-                  <ToolBtn icon={TypeIcon} label="Label" />
-                  <ToolBtn icon={Check} label="Check" />
-                  <ToolBtn icon={Sparkles} label="AI" />
-                </RibbonGroup>
-              </TabsContent>
-            </div>
-            <ScrollBar orientation="horizontal" />
-          </ScrollArea>
+            <TabsContent value="insert" className="m-0 h-full flex items-center gap-0.5">
+              <RibbonGroup label="OBJECTS">
+                <BigToolBtn icon={Layers} label="PAGES" />
+                <BigToolBtn icon={Grid3X3} label="TABLE" onClick={() => execCommand('insertHTML', '<table border="1" style="width:100%; border-collapse:collapse; margin:10px 0; border: 1px solid #ddd;"><tr><td style="padding:8px; border: 1px solid #ddd;">&nbsp;</td><td style="padding:8px; border: 1px solid #ddd;">&nbsp;</td></tr><tr><td style="padding:8px; border: 1px solid #ddd;">&nbsp;</td><td style="padding:8px; border: 1px solid #ddd;">&nbsp;</td></tr></table>')} />
+              </RibbonGroup>
+              <RibbonGroup label="TABLE TOOLS">
+                <BigToolBtn icon={Columns} label="+ COL" onClick={handleInsertColumn} variant="outline" />
+                <BigToolBtn icon={X} label="- COL" onClick={handleRemoveColumn} variant="outline" />
+                <BigToolBtn icon={Rows} label="+ ROW" onClick={handleInsertRow} variant="outline" />
+                <BigToolBtn icon={Trash2} label="- ROW" onClick={handleRemoveRow} variant="outline" />
+              </RibbonGroup>
+            </TabsContent>
+          </div>
         </div>
       </Tabs>
 
       {/* Editor Area */}
-      <ScrollArea className="flex-1 bg-slate-200 shadow-inner p-1">
+      <ScrollArea className="flex-1 bg-slate-200 shadow-inner p-1 sm:p-4">
         <div 
-          className="bg-white mx-auto shadow-2xl min-h-[1100px] p-6 sm:p-12 focus:outline-none transition-all duration-300"
+          className="bg-white mx-auto shadow-2xl min-h-[1100px] p-6 sm:p-12 focus:outline-none transition-all duration-300 origin-top"
           style={{ 
-            width: `${zoom === 100 ? '100%' : zoom + '%'}`,
-            maxWidth: '850px',
-            transformOrigin: 'top center'
+            width: '100%',
+            maxWidth: '210mm', // A4 Width
+            transform: zoom !== 100 ? `scale(${zoom/100})` : 'none'
           }}
         >
           <div 
@@ -283,7 +292,7 @@ export default function WordEditorPage() {
             <h1 className="text-center" style={{margin: '0 0 10px 0', fontSize: '18px', fontWeight: '900', textTransform: 'uppercase'}}>संकलन नोंदवही (Official Report)</h1>
             <p className="text-center text-muted-foreground text-[8px] uppercase font-black tracking-[0.3em]" style={{margin: '0 0 15px 0'}}>दैनिक अहवाल व मार्गदर्शिका - Procurement Document</p>
             <hr style={{margin: '10px 0', border: 'none', borderTop: '2px solid #333'}} />
-            <p>येथे मजकूर लिहिण्यास सुरुवात करा. तुम्ही वरून <b>टेबल</b> इन्सर्ट करू शकता आणि त्यामध्ये कॉलम्स किंवा रोज जोडू/काढू शकता.</p>
+            <p>येथे मजकूर लिहिण्यास सुरुवात करा...</p>
           </div>
         </div>
         <ScrollBar orientation="vertical" />
@@ -300,7 +309,7 @@ export default function WordEditorPage() {
           <span className="opacity-50">ZOOM</span>
           <input 
             type="range" 
-            min="50" max="150" 
+            min="30" max="150" 
             value={zoom} 
             onChange={(e) => setZoom(Number(e.target.value))} 
             className="w-16 h-1 accent-primary cursor-pointer"
@@ -311,9 +320,9 @@ export default function WordEditorPage() {
 
       <style jsx global>{`
         @media print {
-          .shrink-0, tabs, header, nav, footer, .sidebar { display: none !important; }
+          .shrink-0, tabs, header, nav, footer, .sidebar, .h-4 { display: none !important; }
           .flex-1 { background: white !important; padding: 0 !important; }
-          .bg-white { box-shadow: none !important; border: none !important; width: 100% !important; margin: 0 !important; }
+          .bg-white { box-shadow: none !important; border: none !important; width: 100% !important; margin: 0 !important; transform: none !important; }
         }
         [contenteditable]:empty:before {
           content: "येथे लिहा...";

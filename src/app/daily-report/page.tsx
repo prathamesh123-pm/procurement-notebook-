@@ -133,11 +133,11 @@ function DailyReportForm() {
     let reportCategory = ""
     
     if (reportType === "route-visit") {
-      reportSummary = `रूट व्हिजिट: ${formData.routeVisitLogs.length} केंद्र. वाहन: ${formData.vehicleNumber}. KM: ${formData.totalKm}.`
+      reportSummary = `रूट व्हिजिट: ${formData.routeVisitLogs.length} केंद्र. वाहन: ${formData.vehicleNumber}. किलोमीटर: ${formData.totalKm}. तूट: ${formData.shortageLiters}L.`
       reportCategory = "Route Visit"
     } else if (reportType === "field-visit") {
       const pointsText = formData.fieldVisitPoints.filter(p => p.text).map((p, i) => `${i+1}. ${p.text}`).join(' | ')
-      reportSummary = `क्षेत्र भेट: ${pointsText || "निरीक्षणे नोंदवली नाहीत."}`
+      reportSummary = `क्षेत्र भेट: ${pointsText || "कोणतीही माहिती नाही."}`
       reportCategory = "Field Visit"
     } else {
       const pointsText = formData.officeWorkPoints.filter(p => p.text).map((p, i) => `${i+1}. ${p.text}`).join(' | ')
@@ -159,7 +159,7 @@ function DailyReportForm() {
     if (editId) {
       const docRef = doc(db, 'users', user.uid, 'dailyWorkReports', editId);
       updateDocumentNonBlocking(docRef, reportData);
-      toast({ title: "यशस्वी", description: "अहवाल अपडेट झाला." })
+      toast({ title: "यशस्वी", description: "अहवाल अद्ययावत झाला." })
     } else {
       const colRef = collection(db, 'users', user.uid, 'dailyWorkReports');
       addDocumentNonBlocking(colRef, { ...reportData, createdAt: new Date().toISOString() });
@@ -225,18 +225,18 @@ function DailyReportForm() {
             <CardContent className="p-3 grid grid-cols-2 sm:grid-cols-4 gap-2">
               <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">वाहन क्र.</Label><Input className="h-8 text-[10px] bg-muted/20 border-none rounded-lg font-black" value={formData.vehicleNumber} onChange={e => setFormData({...formData, vehicleNumber: e.target.value})} placeholder="MH 10..." /></div>
               <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">ड्रायव्हर</Label><Input className="h-8 text-[10px] bg-muted/20 border-none rounded-lg font-black" value={formData.driverName} onChange={e => setFormData({...formData, driverName: e.target.value})} placeholder="..." /></div>
-              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase text-blue-600">OUT TIME</Label><Input className="h-8 text-[10px] bg-blue-50/50 border-none rounded-lg font-black text-blue-700" type="time" value={formData.routeOutTime} onChange={e => setFormData({...formData, routeOutTime: e.target.value})} /></div>
-              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase text-blue-600">IN TIME</Label><Input className="h-8 text-[10px] bg-blue-50/50 border-none rounded-lg font-black text-blue-700" type="time" value={formData.routeInTime} onChange={e => setFormData({...formData, routeInTime: e.target.value})} /></div>
-              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">START RD</Label><Input className="h-8 text-[10px] bg-muted/20 border-none rounded-lg font-black" type="number" value={formData.startReading} onChange={e => setFormData({...formData, startReading: e.target.value})} /></div>
-              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">END RD</Label><Input className="h-8 text-[10px] bg-muted/20 border-none rounded-lg font-black" type="number" value={formData.endReading} onChange={e => setFormData({...formData, endReading: e.target.value})} /></div>
-              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase text-primary">TOTAL KM</Label><Input className="h-8 text-[10px] bg-primary/10 border-none font-black text-primary rounded-lg" value={formData.totalKm} readOnly /></div>
-              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase text-rose-600">तूट (LTR)</Label><Input className="h-8 text-[10px] bg-rose-50 border-none rounded-lg font-black text-rose-700" type="number" value={formData.shortageLiters} onChange={e => setFormData({...formData, shortageLiters: e.target.value})} /></div>
+              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase text-blue-600">बाहेर वेळ</Label><Input className="h-8 text-[10px] bg-blue-50/50 border-none rounded-lg font-black text-blue-700" type="time" value={formData.routeOutTime} onChange={e => setFormData({...formData, routeOutTime: e.target.value})} /></div>
+              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase text-blue-600">येण्याची वेळ</Label><Input className="h-8 text-[10px] bg-blue-50/50 border-none rounded-lg font-black text-blue-700" type="time" value={formData.routeInTime} onChange={e => setFormData({...formData, routeInTime: e.target.value})} /></div>
+              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">सुरुवात RD</Label><Input className="h-8 text-[10px] bg-muted/20 border-none rounded-lg font-black" type="number" value={formData.startReading} onChange={e => setFormData({...formData, startReading: e.target.value})} /></div>
+              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">शेवट RD</Label><Input className="h-8 text-[10px] bg-muted/20 border-none rounded-lg font-black" type="number" value={formData.endReading} onChange={e => setFormData({...formData, endReading: e.target.value})} /></div>
+              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase text-primary">एकूण KM</Label><Input className="h-8 text-[10px] bg-primary/10 border-none font-black text-primary rounded-lg" value={formData.totalKm} readOnly /></div>
+              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase text-rose-600">तूट (L)</Label><Input className="h-8 text-[10px] bg-rose-50 border-none rounded-lg font-black text-rose-700" type="number" value={formData.shortageLiters} onChange={e => setFormData({...formData, shortageLiters: e.target.value})} /></div>
             </CardContent>
           </Card>
 
           <div className="space-y-2">
             <div className="flex items-center justify-between px-1">
-              <span className="text-[10px] font-black uppercase text-muted-foreground tracking-widest flex items-center gap-1.5"><ListPlus className="h-3 w-3" /> व्हिजिट लॉग (DETAILS)</span>
+              <span className="text-[10px] font-black uppercase text-muted-foreground tracking-widest flex items-center gap-1.5"><ListPlus className="h-3 w-3" /> व्हिजिट लॉग</span>
               <Button type="button" size="sm" onClick={addRouteEntry} className="h-7 text-[9px] px-3 rounded-lg shadow-md font-black uppercase tracking-widest"><Plus className="h-3 w-3 mr-1" /> केंद्र जोडा</Button>
             </div>
 

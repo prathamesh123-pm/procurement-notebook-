@@ -87,7 +87,7 @@ function BreakdownReportForm() {
       <div className="flex items-center gap-2 border-b pb-2 mb-3">
         <Button variant="ghost" size="icon" onClick={() => router.push('/reports')} className="h-8 w-8 shrink-0"><ArrowLeft className="h-4 w-4" /></Button>
         <div className="min-w-0">
-          <h2 className="text-xs font-black uppercase truncate flex items-center gap-1.5 text-rose-600"><Truck className="h-3.5 w-3.5" /> {editId ? 'ब्रेकडाऊन अपडेट' : 'ब्रेकडाऊन (BREAKDOWN)'}</h2>
+          <h2 className="text-xs font-black uppercase truncate flex items-center gap-1.5 text-rose-600"><Truck className="h-3.5 w-3.5" /> {editId ? 'ब्रेकडाऊन अपडेट' : 'ब्रेकडाऊन अहवाल'}</h2>
           <p className="text-[8px] font-bold text-muted-foreground uppercase">{formData.date}</p>
         </div>
       </div>
@@ -134,15 +134,15 @@ function BreakdownReportForm() {
             <div className="flex items-center justify-between p-1 bg-white rounded-lg border border-amber-100">
               <span className="text-[8px] font-black uppercase px-1">दूध गरम झाले?</span>
               <RadioGroup value={formData.milkHot} onValueChange={v => setFormData({...formData, milkHot: v})} className="flex gap-1.5">
-                <div className="flex items-center gap-1"><RadioGroupItem value="YES" id="h-y" className="h-2 w-2"/><Label htmlFor="h-y" className="text-[7px]">Y</Label></div>
-                <div className="flex items-center gap-1"><RadioGroupItem value="NO" id="h-n" className="h-2 w-2"/><Label htmlFor="h-n" className="text-[7px]">N</Label></div>
+                <div className="flex items-center gap-1"><RadioGroupItem value="YES" id="h-y" className="h-2 w-2"/><Label htmlFor="h-y" className="text-[7px]">हो</Label></div>
+                <div className="flex items-center gap-1"><RadioGroupItem value="NO" id="h-n" className="h-2 w-2"/><Label htmlFor="h-n" className="text-[7px]">नाही</Label></div>
               </RadioGroup>
             </div>
             <div className="flex items-center justify-between p-1 bg-white rounded-lg border border-amber-100">
               <span className="text-[8px] font-black uppercase px-1">दूध आंबट झाले?</span>
               <RadioGroup value={formData.milkSour} onValueChange={v => setFormData({...formData, milkSour: v})} className="flex gap-1.5">
-                <div className="flex items-center gap-1"><RadioGroupItem value="YES" id="s-y" className="h-2 w-2"/><Label htmlFor="s-y" className="text-[7px]">Y</Label></div>
-                <div className="flex items-center gap-1"><RadioGroupItem value="NO" id="s-n" className="h-2 w-2"/><Label htmlFor="s-n" className="text-[7px]">N</Label></div>
+                <div className="flex items-center gap-1"><RadioGroupItem value="YES" id="s-y" className="h-2 w-2"/><Label htmlFor="s-y" className="text-[7px]">हो</Label></div>
+                <div className="flex items-center gap-1"><RadioGroupItem value="NO" id="s-n" className="h-2 w-2"/><Label htmlFor="s-n" className="text-[7px]">नाही</Label></div>
               </RadioGroup>
             </div>
           </div>
@@ -157,7 +157,7 @@ function BreakdownReportForm() {
 
         <Button onClick={handleSave} className="compact-button w-full bg-rose-600 text-white shadow-lg mb-10 h-11 uppercase font-black tracking-widest">
           {editId ? <RefreshCw className="h-4 w-4 mr-1.5" /> : <Save className="h-4 w-4 mr-1.5" />}
-          {editId ? 'ब्रेकडाऊन अपडेट करा' : 'ब्रेकडाऊन अहवाल जतन करा'}
+          {editId ? 'अहवाल अद्ययावत करा' : 'अहवाल जतन करा'}
         </Button>
       </div>
     </div>
