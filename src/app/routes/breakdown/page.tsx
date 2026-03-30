@@ -16,7 +16,6 @@ import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBl
 import { collection, doc } from "firebase/firestore"
 import { AIGuidanceCard } from "@/components/ai-guidance-card"
 import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 
 interface DetailedBreakdownLoss {
@@ -180,15 +179,12 @@ export default function BreakdownPage() {
                 <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">गाडी नंबर *</Label><Input value={formData.vehicleNumber} onChange={e => setFormData({...formData, vehicleNumber: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" placeholder="MH..." /></div>
                 <div className="space-y-0.5">
                   <Label className="text-[9px] font-black uppercase opacity-60">गाडीचा प्रकार</Label>
-                  <Select value={formData.vehicleType} onValueChange={v => setFormData({...formData, vehicleType: v})}>
-                    <SelectTrigger className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg"><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="PICKUP" className="text-[11px] font-black">पिकअप (PICKUP)</SelectItem>
-                      <SelectItem value="TEMPO" className="text-[11px] font-black">टेम्पो (TEMPO)</SelectItem>
-                      <SelectItem value="TRUCK" className="text-[11px] font-black">ट्रक (TRUCK)</SelectItem>
-                      <SelectItem value="OTHER" className="text-[11px] font-black">इतर (OTHER)</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <Input 
+                    value={formData.vehicleType} 
+                    onChange={e => setFormData({...formData, vehicleType: e.target.value})} 
+                    className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" 
+                    placeholder="उदा. टेम्पो"
+                  />
                 </div>
                 <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">ड्रायव्हरचे नाव</Label><Input value={formData.driverName} onChange={e => setFormData({...formData, driverName: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" /></div>
                 <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">ड्रायव्हर मोबाईल</Label><Input value={formData.driverMobile} onChange={e => setFormData({...formData, driverMobile: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" /></div>
@@ -220,11 +216,12 @@ export default function BreakdownPage() {
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-[9px] font-black uppercase opacity-60">कोणाच्या चुकीमुळे बिघाड झाला?</Label>
-                  <RadioGroup value={formData.faultResponsibility} onValueChange={v => setFormData({...formData, faultResponsibility: v})} className="flex flex-wrap gap-2">
-                    <div className="flex items-center gap-1 bg-muted/10 px-2 py-1 rounded-md border"><RadioGroupItem value="DRIVER" id="f-d" className="h-2.5 w-2.5" /><Label htmlFor="f-d" className="text-[8px] font-black">ड्रायव्हर</Label></div>
-                    <div className="flex items-center gap-1 bg-muted/10 px-2 py-1 rounded-md border"><RadioGroupItem value="MAINTENANCE" id="f-m" className="h-2.5 w-2.5" /><Label htmlFor="f-m" className="text-[8px] font-black">मेंटेनन्स</Label></div>
-                    <div className="flex items-center gap-1 bg-muted/10 px-2 py-1 rounded-md border"><RadioGroupItem value="EXTERNAL" id="f-e" className="h-2.5 w-2.5" /><Label htmlFor="f-e" className="text-[8px] font-black">बाह्य कारण</Label></div>
-                  </RadioGroup>
+                  <Input 
+                    value={formData.faultResponsibility} 
+                    onChange={e => setFormData({...formData, faultResponsibility: e.target.value})} 
+                    className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" 
+                    placeholder="उदा. ड्रायव्हर"
+                  />
                 </div>
               </div>
             </div>
