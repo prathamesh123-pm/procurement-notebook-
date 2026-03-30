@@ -98,114 +98,76 @@ export default function ReportsPage() {
     const totalIceUsed = logs.reduce((sum: number, l: any) => sum + (Number(l.iceUsed) || 0), 0);
 
     return (
-      <div className="bg-white p-4 font-mono text-[9px] text-black border-2 border-black/10 rounded shadow-sm max-w-[800px] mx-auto overflow-x-auto" id="printable-area">
-        {/* Header Section */}
-        <div className="flex justify-between items-start border-b-2 border-black pb-2 mb-2">
-          <div className="flex items-center gap-2">
-            <div className="border-2 border-black rounded-full p-1 h-10 w-10 flex items-center justify-center font-black text-center leading-none">
-              M/S B.G.<br/>Chitale
-            </div>
-            <div>
-              <h1 className="text-sm font-black uppercase leading-none">M/S. B. G. CHITALE DAIRY, BHILAWADI STATION</h1>
-              <div className="mt-1 flex items-center gap-4 font-black">
-                <span className="border border-black px-3 py-0.5 rounded">SLIP No. : {d.slipNo || '---'}</span>
-              </div>
-            </div>
-          </div>
-          <div className="text-right font-black leading-tight">
-            <p>OUT TIME : {d.routeOutTime || '--:--'}</p>
-            <p>IN TIME  : {d.routeInTime || '--:--'}</p>
+      <div className="bg-white p-2 font-mono text-[9px] text-black border border-black/10 rounded shadow-sm max-w-[800px] mx-auto overflow-x-auto" id="printable-area">
+        {/* Header Section - Stripped Down */}
+        <div className="flex justify-between items-center border-b border-black pb-1 mb-2">
+          <div className="font-black uppercase text-[10px]">रूट व्हिजिट अहवाल (ROUTE VISIT)</div>
+          <div className="text-right font-black leading-tight text-[8px]">
+            <p>OUT: {d.routeOutTime || '--:--'} | IN: {d.routeInTime || '--:--'}</p>
           </div>
         </div>
 
         {/* Info Section */}
-        <div className="grid grid-cols-2 gap-x-10 mb-2 font-black">
+        <div className="grid grid-cols-2 gap-x-4 mb-2 font-black text-[8px] uppercase">
           <div className="space-y-0.5">
-            <p>Route Name : <span className="uppercase">{d.routeName || '---'}</span></p>
-            <p>Driver Name : <span className="uppercase">{d.driverName || '---'}</span></p>
+            <p>रूट: {d.routeName || '---'}</p>
+            <p>ड्रायव्हर: {d.driverName || '---'}</p>
           </div>
           <div className="text-right space-y-0.5">
-            <p>Date : {d.reportDate || '---'}</p>
-            <p>Vehicle No : <span className="uppercase">{d.vehicleNumber || '---'}</span></p>
+            <p>तारीख: {d.reportDate || '---'}</p>
+            <p>गाडी: {d.vehicleNumber || '---'}</p>
+            <p>स्लिप नं: {d.slipNo || '---'}</p>
           </div>
         </div>
 
-        {/* Main Table */}
-        <table className="w-full border-collapse border-2 border-black">
+        {/* Main Table - Simplified */}
+        <table className="w-full border-collapse border border-black">
           <thead>
-            <tr className="bg-slate-50 font-black">
-              <th className="border border-black p-1 text-center w-8">क्र.</th>
-              <th className="border border-black p-1 text-left">रूटचे नांव (Supplier)</th>
-              <th className="border border-black p-1 text-center">सेंटर</th>
+            <tr className="bg-slate-50 font-black text-[8px]">
+              <th className="border border-black p-1 text-center w-6">क्र.</th>
+              <th className="border border-black p-1 text-center">सेंटर कोड</th>
               <th className="border border-black p-1 text-center">मेंबर</th>
-              <th className="border border-black p-1 text-center">बर्फ</th>
               <th className="border border-black p-1 text-center">बर्फ वापर</th>
-              <th className="border border-black p-1 text-center">पोहोचलेली वेळ</th>
-              <th className="border border-black p-1 text-center">उतरलेले कॅन</th>
-              <th className="border border-black p-1 text-center">निघालेली वेळ</th>
-              <th className="border border-black p-1 text-center">भरलेले कॅन</th>
-              <th className="border border-black p-1 text-center">सही</th>
+              <th className="border border-black p-1 text-center">आगमन</th>
+              <th className="border border-black p-1 text-center">रिकामे</th>
+              <th className="border border-black p-1 text-center">निर्गमन</th>
+              <th className="border border-black p-1 text-center">भरलेले</th>
             </tr>
           </thead>
           <tbody>
             {logs.map((log: any, idx: number) => (
-              <tr key={idx} className="font-bold">
+              <tr key={idx} className="font-bold text-[8px]">
                 <td className="border border-black p-1 text-center">{idx + 1}</td>
-                <td className="border border-black p-1 uppercase">{log.supplierName || '---'}</td>
-                <td className="border border-black p-1 text-center">{log.centerCode || '---'}</td>
+                <td className="border border-black p-1 text-center uppercase">{log.centerCode || '---'}</td>
                 <td className="border border-black p-1 text-center">{log.memberCount || '0'}</td>
-                <td className="border border-black p-1 text-center">{log.iceAllocated || '-'}</td>
                 <td className="border border-black p-1 text-center">{log.iceUsed || '-'}</td>
                 <td className="border border-black p-1 text-center">{log.arrivalTime || '--:--'}</td>
                 <td className="border border-black p-1 text-center">{log.emptyCans || '0'}</td>
                 <td className="border border-black p-1 text-center">{log.departureTime || '--:--'}</td>
                 <td className="border border-black p-1 text-center">{log.fullCans || '0'}</td>
-                <td className="border border-black p-1 text-center w-12"></td>
               </tr>
             ))}
             {/* Summary Row */}
-            <tr className="bg-slate-100 font-black">
-              <td className="border border-black p-1 text-center" colSpan={2}>TOTAL</td>
-              <td className="border border-black p-1 text-center">-</td>
-              <td className="border border-black p-1 text-center">-</td>
+            <tr className="bg-slate-100 font-black text-[8px]">
+              <td className="border border-black p-1 text-center" colSpan={2}>एकूण (TOTAL)</td>
               <td className="border border-black p-1 text-center">-</td>
               <td className="border border-black p-1 text-center">{totalIceUsed}</td>
               <td className="border border-black p-1 text-center">-</td>
               <td className="border border-black p-1 text-center">{totalEmpty}</td>
               <td className="border border-black p-1 text-center">-</td>
               <td className="border border-black p-1 text-center">{totalFull}</td>
-              <td className="border border-black p-1 text-center">-</td>
             </tr>
           </tbody>
         </table>
 
-        {/* Reading and KM Info (Extra but useful) */}
-        <div className="mt-2 flex gap-10 font-black border-b border-dashed border-black/20 pb-2">
-          <p>START RD: {d.startReading || '---'}</p>
-          <p>END RD: {d.endReading || '---'}</p>
-          <p>TOTAL KM: {d.totalKm || '0'}</p>
-          <p className="text-rose-600">SHORTAGE: {d.shortageLiters || '0'} L</p>
-        </div>
-
-        {/* Footer Section */}
-        <div className="mt-8 flex justify-between px-4 font-black uppercase text-[8px]">
-          <div className="text-center space-y-10">
-            <div className="h-[1px] w-24 bg-black" />
-            <p>Watchman</p>
+        {/* Reading and KM Info */}
+        <div className="mt-2 flex justify-between font-black text-[8px] uppercase border-t border-dashed border-black/20 pt-1">
+          <div className="flex gap-4">
+            <p>सुरुवात: {d.startReading || '0'}</p>
+            <p>शेवट: {d.endReading || '0'}</p>
+            <p>एकूण: {d.totalKm || '0'} KM</p>
           </div>
-          <div className="text-center space-y-10">
-            <div className="h-[1px] w-24 bg-black" />
-            <p>Driver</p>
-          </div>
-          <div className="text-center space-y-10">
-            <div className="h-[1px] w-24 bg-black" />
-            <p>Security Supervisor</p>
-          </div>
-        </div>
-
-        {/* Note Section */}
-        <div className="mt-6 border-t-2 border-black pt-2 font-black text-[10px]">
-          <p>टिप : ड्रायव्हरने रूटवर जाताना पेनड्राईव्ह किंवा मटेरियल असेल तर घेऊन जाणे</p>
+          <p className="text-rose-600">तूट: {d.shortageLiters || '0'} L</p>
         </div>
       </div>
     );
