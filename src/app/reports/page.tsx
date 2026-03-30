@@ -233,7 +233,10 @@ export default function ReportsPage() {
       supplierId: "आयडी / कोड",
       seizureQty: "जप्ती प्रमाण (L)",
       fineAmount: "दंड रक्कम (₹)",
-      notes: "विशेष नोंदी"
+      notes: "विशेष नोंदी",
+      title: "शीर्षक",
+      remark: "शेरा / कार्यवाही",
+      status: "स्थिती"
     };
 
     const entries = Object.entries(d).filter(([key, val]) => {
@@ -245,7 +248,8 @@ export default function ReportsPage() {
              key !== 'content' &&
              key !== 'name' &&
              key !== 'date' &&
-             key !== 'reportDate';
+             key !== 'reportDate' &&
+             key !== 'id';
     });
 
     return (
@@ -271,7 +275,7 @@ export default function ReportsPage() {
             {entries.map(([key, val]) => (
               <tr key={key} className="font-bold text-[8px]">
                 <td className="border border-black p-1 bg-slate-50 uppercase text-[7px]">{labelMap[key] || key.toUpperCase()}</td>
-                <td className="border border-black p-1 whitespace-pre-wrap">{String(val)}</td>
+                <td className="border border-black p-1 whitespace-pre-wrap">{String(val || "-")}</td>
               </tr>
             ))}
           </tbody>

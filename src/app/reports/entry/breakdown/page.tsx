@@ -82,7 +82,7 @@ function BreakdownReportForm() {
   }
 
   const updateCenterRow = (id: string, updates: Partial<CenterLoss>) => {
-    setFormData({ ...formData, centerLosses: formData.centerLosses.map(c => i === id ? { ...c, ...updates } : c) })
+    setFormData({ ...formData, centerLosses: formData.centerLosses.map(c => c.id === id ? { ...c, ...updates } : c) })
   }
 
   const handleSave = () => {
@@ -98,8 +98,8 @@ function BreakdownReportForm() {
       date: formData.date,
       reportDate: formData.date,
       generatedByUserId: user.uid,
-      summary: `ब्रेकडाऊन: ${formData.vehicleNo}. रूट: ${formData.routeName}. एकूण नुकसान: ₹${totalCalculatedLoss || formData.lossAmount}. कारण: ${formData.reason}. पर्यायी सोय: ${formData.alternateArrangement}.`,
-      overallSummary: `वाहन: ${formData.vehicleNo}, ड्रायव्हर: ${formData.driverName}, नुकसान: ₹${totalCalculatedLoss || formData.lossAmount}`,
+      summary: `ब्रेकडाऊन: ${formData.vehicleNo || '-'}. रूट: ${formData.routeName || '-'}. एकूण नुकसान: ₹${totalCalculatedLoss || formData.lossAmount}. कारण: ${formData.reason || '-'}. पर्यायी सोय: ${formData.alternateArrangement || '-'}.`,
+      overallSummary: `वाहन: ${formData.vehicleNo || '-'}, ड्रायव्हर: ${formData.driverName || '-'}, नुकसान: ₹${totalCalculatedLoss || formData.lossAmount}`,
       fullData: { ...formData, lossAmount: totalCalculatedLoss > 0 ? String(totalCalculatedLoss) : formData.lossAmount },
       updatedAt: new Date().toISOString()
     }
