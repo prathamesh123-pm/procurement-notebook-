@@ -4,7 +4,7 @@
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { 
@@ -12,11 +12,21 @@ import {
 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { BreakdownLoss } from "@/lib/types"
 import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking } from "@/firebase"
 import { collection, doc } from "firebase/firestore"
 import { AIGuidanceCard } from "@/components/ai-guidance-card"
 import { Textarea } from "@/components/ui/textarea"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Badge } from "@/components/ui/badge"
+
+interface DetailedBreakdownLoss {
+  id: string;
+  supplierCode: string;
+  supplierName: string;
+  milkType: 'MIX' | 'COW';
+  qtyLiters: string;
+  lossAmount: string;
+}
 
 export default function BreakdownPage() {
   const { user } = useUser()
@@ -35,6 +45,7 @@ export default function BreakdownPage() {
   const [formData, setFormData] = useState({
     routeName: "", 
     vehicleNumber: "", 
+    vehicleType: "TEMPO",
     driverName: "",
     driverMobile: "",
     breakdownTime: "",
@@ -45,19 +56,28 @@ export default function BreakdownPage() {
     estimatedRepairTime: "",
     estimatedRepairCost: "0",
     detailedDescription: "",
-    losses: [] as BreakdownLoss[]
+    losses: [] as DetailedBreakdownLoss[]
   })
 
   useEffect(() => setMounted(true), [])
 
   const handleAddLossRow = () => {
-    const newLoss: BreakdownLoss = { id: crypto.randomUUID(), supplierCode: "", supplierName: "", bufMilkLossLiters: "", cowMilkLossLiters: "", lossAmount: "" }
+    const newLoss: DetailedBreakdownLoss = { 
+      id: crypto.randomUUID(), 
+      supplierCode: "", 
+      supplierName: "", 
+      milkType: 'MIX',
+      qtyLiters: "", 
+      lossAmount: "" 
+    }
     setFormData({ ...formData, losses: [...formData.losses, newLoss] })
   }
 
-  const handleRemoveLossRow = (id: string) => { setFormData({ ...formData, losses: formData.losses.filter(l => l.id !== id) }) }
+  const handleRemoveLossRow = (id: string) => { 
+    setFormData({ ...formData, losses: formData.losses.filter(l => l.id !== id) }) 
+  }
 
-  const updateLossRow = (id: string, updates: Partial<BreakdownLoss>) => {
+  const updateLossRow = (id: string, updates: Partial<DetailedBreakdownLoss>) => {
     setFormData({ ...formData, losses: formData.losses.map(l => l.id === id ? { ...l, ...updates } : l) })
   }
 
@@ -89,8 +109,8 @@ export default function BreakdownPage() {
         date: recordData.date,
         reportDate: recordData.date,
         generatedByUserId: user.uid,
-        summary: `ब्रेकडाऊन: ${formData.routeName}. नुकसान: ₹${totalLoss}. कारण: ${formData.reason}. जबाबदारी: ${formData.faultResponsibility}`,
-        overallSummary: `गाडी: ${formData.vehicleNumber}, ड्रायव्हर: ${formData.driverName}, नुकसान: ₹${totalLoss}`,
+        summary: `ब्रेकडाऊन: ${formData.routeName}. नुकसान: ₹${totalLoss}. प्रकार: ${formData.vehicleType}. जबाबदारी: ${formData.faultResponsibility}`,
+        overallSummary: `वाहन: ${formData.vehicleNumber}, प्रकार: ${formData.vehicleType}, नुकसान: ₹${totalLoss}`,
         fullData: {
           ...recordData,
           name: user.displayName || "Procurement Officer",
@@ -119,7 +139,7 @@ export default function BreakdownPage() {
   const resetForm = () => { 
     setEditingId(null); 
     setFormData({ 
-      routeName: "", vehicleNumber: "", driverName: "", driverMobile: "", 
+      routeName: "", vehicleNumber: "", vehicleType: "TEMPO", driverName: "", driverMobile: "", 
       breakdownTime: "", location: "", reason: "", severity: "MINOR",
       faultResponsibility: "MAINTENANCE", estimatedRepairTime: "",
       estimatedRepairCost: "0", detailedDescription: "", losses: [] 
@@ -127,6 +147,8 @@ export default function BreakdownPage() {
   }
 
   if (!mounted || isLoading) return <div className="p-10 text-center italic font-black uppercase text-[10px] opacity-50">लोड होत आहे...</div>
+
+  const currentTotalLoss = formData.losses.reduce((acc, curr) => acc + (Number(curr.lossAmount) || 0), 0);
 
   return (
     <div className="space-y-3 max-w-7xl mx-auto w-full pb-10 px-1 animate-in fade-in duration-500">
@@ -156,6 +178,18 @@ export default function BreakdownPage() {
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">रूट (ROUTE) *</Label><Input value={formData.routeName} onChange={e => setFormData({...formData, routeName: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" /></div>
                 <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">गाडी नंबर *</Label><Input value={formData.vehicleNumber} onChange={e => setFormData({...formData, vehicleNumber: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" placeholder="MH..." /></div>
+                <div className="space-y-0.5">
+                  <Label className="text-[9px] font-black uppercase opacity-60">गाडीचा प्रकार</Label>
+                  <Select value={formData.vehicleType} onValueChange={v => setFormData({...formData, vehicleType: v})}>
+                    <SelectTrigger className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="PICKUP" className="text-[11px] font-black">पिकअप (PICKUP)</SelectItem>
+                      <SelectItem value="TEMPO" className="text-[11px] font-black">टेम्पो (TEMPO)</SelectItem>
+                      <SelectItem value="TRUCK" className="text-[11px] font-black">ट्रक (TRUCK)</SelectItem>
+                      <SelectItem value="OTHER" className="text-[11px] font-black">इतर (OTHER)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
                 <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">ड्रायव्हरचे नाव</Label><Input value={formData.driverName} onChange={e => setFormData({...formData, driverName: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" /></div>
                 <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">ड्रायव्हर मोबाईल</Label><Input value={formData.driverMobile} onChange={e => setFormData({...formData, driverMobile: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" /></div>
               </div>
@@ -220,6 +254,8 @@ export default function BreakdownPage() {
                   <thead>
                     <tr className="bg-rose-50/50 text-[8px] font-black border-b uppercase tracking-widest text-rose-700">
                       <th className="p-2 text-left">कोड/गवळी नाव</th>
+                      <th className="p-2 text-center">प्रकार</th>
+                      <th className="p-2 text-center">Ltr</th>
                       <th className="p-2 text-right">रक्कम (₹)</th>
                       <th className="p-2 w-8"></th>
                     </tr>
@@ -228,8 +264,21 @@ export default function BreakdownPage() {
                     {formData.losses.map((loss) => (
                       <tr key={loss.id} className="border-b last:border-0 bg-white">
                         <td className="p-0 flex">
-                          <Input placeholder="ID" value={loss.supplierCode} onChange={e => updateLossRow(loss.id, { supplierCode: e.target.value })} className="h-8 w-14 text-[10px] border-none font-black border-r rounded-none bg-transparent" />
+                          <Input placeholder="ID" value={loss.supplierCode} onChange={e => updateLossRow(loss.id, { supplierCode: e.target.value })} className="h-8 w-12 text-[10px] border-none font-black border-r rounded-none bg-transparent" />
                           <Input placeholder="NAME" value={loss.supplierName} onChange={e => updateLossRow(loss.id, { supplierName: e.target.value })} className="h-8 text-[10px] border-none font-black rounded-none flex-1 bg-transparent" />
+                        </td>
+                        <td className="p-0 text-center">
+                          <select 
+                            value={loss.milkType} 
+                            onChange={e => updateLossRow(loss.id, { milkType: e.target.value as any })}
+                            className="h-8 text-[9px] font-black bg-transparent border-none outline-none text-center"
+                          >
+                            <option value="MIX">MIX</option>
+                            <option value="COW">COW</option>
+                          </select>
+                        </td>
+                        <td className="p-0">
+                          <Input type="number" placeholder="0" value={loss.qtyLiters} onChange={e => updateLossRow(loss.id, { qtyLiters: e.target.value })} className="h-8 text-[10px] border-none text-center font-black bg-transparent" />
                         </td>
                         <td className="p-0">
                           <Input type="number" value={loss.lossAmount} onChange={e => updateLossRow(loss.id, { lossAmount: e.target.value })} className="h-8 text-[10px] border-none text-right font-black bg-transparent text-rose-600" />
@@ -241,11 +290,17 @@ export default function BreakdownPage() {
                     ))}
                     {formData.losses.length === 0 && (
                       <tr>
-                        <td colSpan={3} className="p-10 text-center text-muted-foreground opacity-30 uppercase font-black text-[8px] tracking-widest italic">नुकसानीची नोंद करण्यासाठी 'जोडा' बटण दाबा</td>
+                        <td colSpan={5} className="p-10 text-center text-muted-foreground opacity-30 uppercase font-black text-[8px] tracking-widest italic">नुकसानीची नोंद करण्यासाठी 'जोडा' बटण दाबा</td>
                       </tr>
                     )}
                   </tbody>
                 </table>
+              </div>
+              <div className="flex justify-end pt-2">
+                <div className="bg-rose-600 text-white px-4 py-2 rounded-xl flex items-center gap-3 shadow-lg">
+                  <span className="text-[10px] font-black uppercase tracking-widest">एकूण नुकसान:</span>
+                  <span className="text-sm font-black flex items-center"><IndianRupee className="h-3.5 w-3.5 mr-0.5" />{currentTotalLoss}</span>
+                </div>
               </div>
             </div>
 
@@ -269,7 +324,7 @@ export default function BreakdownPage() {
                       <h4 className="font-black text-[11px] truncate uppercase tracking-tight text-slate-900">{record.routeName}</h4>
                       <Badge className={`h-3 px-1 text-[6px] font-black uppercase border-none ${record.severity === 'MAJOR' ? 'bg-rose-500' : 'bg-amber-500'}`}>{record.severity}</Badge>
                     </div>
-                    <p className="text-[9px] font-bold text-muted-foreground uppercase mt-0.5">{record.vehicleNumber} | {record.driverName || '---'}</p>
+                    <p className="text-[9px] font-bold text-muted-foreground uppercase mt-0.5">{record.vehicleNumber} | {record.vehicleType}</p>
                     <div className="flex items-center gap-2 mt-1">
                       <span className="text-[8px] font-black text-rose-600 bg-rose-50 px-1 rounded">₹{record.totalLossAmount}</span>
                       <span className="text-[8px] font-black text-muted-foreground opacity-50 uppercase">{record.date}</span>
