@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Task } from "@/lib/types"
-import { Plus, Search, ListTodo, User, Hash, CheckCircle2, X, Edit, Trash2 } from "lucide-react"
+import { Plus, Search, ListTodo, User, Hash, CheckCircle2, X, Edit, Trash2, PlusCircle } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
 import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking } from "@/firebase"
@@ -33,7 +33,9 @@ export default function WorkLogPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [mounted, setMounted] = useState(false)
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
-  const [tempRemark, setTempRemark] = useState("")
+  
+  // State for multiple remark points
+  const [remarkPoints, setRemarkPoints] = useState<string[]>([""])
   const [isDetailOpen, setIsDetailOpen] = useState(false)
 
   useEffect(() => {
@@ -65,21 +67,39 @@ export default function WorkLogPage() {
     toast({ title: "यशस्वी", description: "टास्क जतन झाला." })
   }
 
+  const addRemarkPoint = () => setRemarkPoints([...remarkPoints, ""])
+  const removeRemarkPoint = (index: number) => {
+    if (remarkPoints.length > 1) {
+      setRemarkPoints(remarkPoints.filter((_, i) => i !== index))
+    }
+  }
+  const updateRemarkPoint = (index: number, value: string) => {
+    const updated = [...remarkPoints]
+    updated[index] = value
+    setRemarkPoints(updated)
+  }
+
   const completeTask = (taskId: string) => {
     if (!db || !user || !taskId) return
     const task = firestoreTasks?.find(t => t.id === taskId)
     if (!task) return
+    
+    // Format points into a numbered string for the report
+    const formattedRemark = remarkPoints
+      .filter(p => p.trim())
+      .map((p, i) => `${i + 1}. ${p}`)
+      .join(' | ')
     
     const reportData = { 
       type: 'Daily Task', 
       date: new Date().toISOString().split('T')[0], 
       reportDate: new Date().toISOString().split('T')[0],
       generatedByUserId: user.uid,
-      summary: `गवळी: ${task.supplierName || 'N/A'}. टास्क: ${task.title}. कार्यवाही: ${tempRemark}`, 
-      overallSummary: `गवळी: ${task.supplierName || 'N/A'}. टास्क: ${task.title}. कार्यवाही: ${tempRemark}`,
+      summary: `गवळी: ${task.supplierName || 'N/A'}. टास्क: ${task.title}. कार्यवाही: ${formattedRemark}`, 
+      overallSummary: `गवळी: ${task.supplierName || 'N/A'}. टास्क: ${task.title}. कार्यवाही: ${formattedRemark}`,
       fullData: { 
         ...task, 
-        remark: tempRemark, 
+        remark: formattedRemark, 
         status: 'completed',
         name: user.displayName || "Procurement Officer"
       },
@@ -91,7 +111,7 @@ export default function WorkLogPage() {
     const taskRef = doc(db, 'users', user.uid, 'tasks', taskId);
     updateDocumentNonBlocking(taskRef, { 
       status: 'completed', 
-      remark: tempRemark, 
+      remark: formattedRemark, 
       completedAt: new Date().toISOString() 
     });
     
@@ -154,7 +174,11 @@ export default function WorkLogPage() {
           {isLoading ? (
             <div className="text-center py-10 italic text-muted-foreground font-black uppercase text-[9px] opacity-50">लोड होत आहे...</div>
           ) : pendingTasks.length > 0 ? pendingTasks.map(task => (
-            <Card key={task.id} className="border shadow-none bg-white hover:bg-primary/5 cursor-pointer border-l-4 border-l-primary rounded-xl overflow-hidden relative group transition-all" onClick={() => { setSelectedTask(task); setTempRemark(task.remark || ""); setIsDetailOpen(true); }}>
+            <Card key={task.id} className="border shadow-none bg-white hover:bg-primary/5 cursor-pointer border-l-4 border-l-primary rounded-xl overflow-hidden relative group transition-all" onClick={() => { 
+              setSelectedTask(task); 
+              setRemarkPoints([""]); // Reset points when opening new task
+              setIsDetailOpen(true); 
+            }}>
               <div className="p-3 flex items-center justify-between gap-2">
                 <div className="flex flex-col gap-1 min-w-0 flex-1">
                   <h4 className="font-black text-[12px] text-slate-900 truncate uppercase tracking-tight">{task.title}</h4>
@@ -182,7 +206,7 @@ export default function WorkLogPage() {
           <DialogHeader className="p-4 bg-primary text-white flex flex-row items-center justify-between">
             <div>
               <DialogTitle className="text-xs font-black flex items-center gap-2 uppercase tracking-widest"><ListTodo className="h-4 w-4" /> टास्क तपशील (TASK DETAIL)</DialogTitle>
-              <DialogDescription className="text-[8px] text-white/70 uppercase">कार्यवाहीची नोंद करा.</DialogDescription>
+              <DialogDescription className="text-[8px] text-white/70 uppercase">कार्यवाहीची नोंद करा (मुद्द्यांनुसार).</DialogDescription>
             </div>
             <Button type="button" variant="ghost" size="icon" onClick={() => setIsDetailOpen(false)} className="text-white hover:bg-white/10 rounded-full h-8 w-8"><X className="h-5 w-5" /></Button>
           </DialogHeader>
@@ -191,9 +215,32 @@ export default function WorkLogPage() {
               <h3 className="text-xs font-black text-slate-900 mb-1 uppercase tracking-widest">{selectedTask?.title}</h3>
             </div>
             
-            <div className="space-y-1.5">
-              <Label className="text-[9px] font-black uppercase text-primary tracking-[0.2em] flex items-center gap-1.5"><Edit className="h-3.5 w-3.5" /> कार्यवाही / शेरा (REMARK)</Label>
-              <Textarea placeholder="पूर्ण केल्यावर माहिती लिहा..." value={tempRemark} onChange={e => setTempRemark(e.target.value)} className="min-h-[100px] text-[11px] font-black rounded-2xl bg-slate-50 border-none focus-visible:ring-primary shadow-inner p-3" />
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <Label className="text-[9px] font-black uppercase text-primary tracking-[0.2em] flex items-center gap-1.5"><Edit className="h-3.5 w-3.5" /> कार्यवाही / शेरा (REMARK POINTS)</Label>
+                <Button type="button" variant="outline" size="sm" onClick={addRemarkPoint} className="h-7 text-[9px] font-black gap-1 rounded-lg border-primary/20 text-primary">
+                  <PlusCircle className="h-3 w-3" /> मुद्दा जोडा
+                </Button>
+              </div>
+              
+              <ScrollArea className="max-h-[300px] pr-2">
+                <div className="space-y-2">
+                  {remarkPoints.map((point, index) => (
+                    <div key={index} className="flex gap-2 items-start">
+                      <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center font-black text-[10px] text-primary shrink-0 border border-primary/5">{index + 1}</div>
+                      <Input 
+                        value={point} 
+                        onChange={e => updateRemarkPoint(index, e.target.value)} 
+                        placeholder="मुद्दा लिहा..." 
+                        className="h-9 text-[11px] font-bold bg-slate-50 border-none rounded-xl px-3 focus-visible:ring-primary shadow-inner"
+                      />
+                      <Button type="button" variant="ghost" size="icon" onClick={() => removeRemarkPoint(index)} className="h-8 w-8 text-rose-400 hover:bg-rose-50 rounded-lg shrink-0">
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </ScrollArea>
             </div>
           </div>
           <DialogFooter className="p-4 border-t bg-slate-50 flex gap-2 justify-end">
