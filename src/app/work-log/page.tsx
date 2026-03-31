@@ -14,6 +14,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogD
 import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking } from "@/firebase"
 import { collection, doc } from "firebase/firestore"
 import { AIGuidanceCard } from "@/components/ai-guidance-card"
+import { ScrollArea } from "@/components/ui/scroll-area"
 
 export default function WorkLogPage() {
   const { user } = useUser()
