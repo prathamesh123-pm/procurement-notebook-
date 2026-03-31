@@ -100,12 +100,18 @@ export default function ReportsPage() {
   }
 
   const labelMap: Record<string, string> = {
+    displayName: "अहवाल सादरकर्ता",
+    name: "अहवाल सादरकर्ता",
+    employeeId: "अधिकारी आयडी (Emp ID)",
+    idNumber: "अधिकारी आयडी (Emp ID)",
     supplierName: "पुरवठादार / गवळी नाव",
     supplierId: "आयडी / कोड नंबर",
     title: "टास्क शीर्षक",
     remark: "शेरा / कार्यवाही",
     actionTaken: "केलेली कार्यवाही",
     actionsTaken: "केलेली कार्यवाही",
+    achievements: "आजची मोठी कामगिरी",
+    problems: "महत्त्वाच्या समस्या",
     routeName: "रूटचे नाव",
     vehicleNumber: "वाहन क्रमांक",
     vehicleNo: "वाहन क्रमांक",
@@ -155,10 +161,16 @@ export default function ReportsPage() {
   };
 
   const orderedKeys = [
+    "displayName",
+    "name",
+    "employeeId",
+    "idNumber",
     "supplierName", 
     "supplierId", 
     "title", 
     "remark", 
+    "achievements",
+    "problems",
     "actionTaken", 
     "actionsTaken",
     "repName", 
@@ -243,11 +255,13 @@ export default function ReportsPage() {
 
         <div className="grid grid-cols-2 gap-4 mb-4 font-black text-[10px] uppercase">
           <div className="space-y-1 p-2 bg-slate-50 border border-slate-200 rounded-lg print:bg-white print:border-black">
-            <div className="flex justify-between border-b border-slate-200 pb-0.5"><span>रूट नाव:</span> <span className="text-primary print:text-black">{d.routeName || '---'}</span></div>
+            <div className="flex justify-between border-b border-slate-200 pb-0.5"><span>सादरकर्ता:</span> <span className="text-primary print:text-black">{d.name || d.displayName || '---'}</span></div>
+            <div className="flex justify-between border-b border-slate-200 pb-0.5"><span>रूट नाव:</span> <span>{d.routeName || '---'}</span></div>
             <div className="flex justify-between border-b border-slate-200 pb-0.5"><span>ड्रायव्हर:</span> <span>{d.driverName || '---'}</span></div>
             <div className="flex justify-between"><span>वेळ (IN/OUT):</span> <span>{d.routeInTime || '--:--'} / {d.routeOutTime || '--:--'}</span></div>
           </div>
           <div className="space-y-1 p-2 bg-slate-50 border border-slate-200 rounded-lg print:bg-white print:border-black">
+            <div className="flex justify-between border-b border-slate-200 pb-0.5"><span>आयडी:</span> <span>{d.employeeId || d.idNumber || '---'}</span></div>
             <div className="flex justify-between border-b border-slate-200 pb-0.5"><span>वाहन क्रमांक:</span> <span>{d.vehicleNumber || '---'}</span></div>
             <div className="flex justify-between border-b border-slate-200 pb-0.5"><span>स्लिप नंबर:</span> <span>#{d.slipNo || '---'}</span></div>
             <div className="flex justify-between items-center">
@@ -366,13 +380,15 @@ export default function ReportsPage() {
               </thead>
               <tbody className="divide-y divide-slate-900 print:divide-black">
                 {filteredEntries.map(([key, val]) => {
-                  const isCrucial = ["supplierName", "supplierId", "title", "remark"].includes(key);
+                  const isCrucial = ["supplierName", "supplierId", "title", "remark", "displayName", "name", "employeeId", "idNumber"].includes(key);
+                  const isAlert = ["achievements", "problems", "actionsTaken", "actionTaken"].includes(key);
+                  
                   return (
-                    <tr key={key} className={`font-bold text-[10px] hover:bg-slate-50 transition-colors ${isCrucial ? 'bg-primary/5 print:bg-white' : ''}`}>
+                    <tr key={key} className={`font-bold text-[10px] hover:bg-slate-50 transition-colors ${isCrucial ? 'bg-primary/5 print:bg-white' : ''} ${isAlert ? 'bg-amber-50/30' : ''}`}>
                       <td className="p-2 bg-slate-50 uppercase text-[9px] font-black border-r border-slate-900 print:bg-white print:border-black">
                         {labelMap[key] || key.toUpperCase()}
                       </td>
-                      <td className={`p-2 whitespace-pre-wrap ${isCrucial ? 'text-primary font-black print:text-black' : ''}`}>
+                      <td className={`p-2 whitespace-pre-wrap ${isCrucial ? 'text-primary font-black print:text-black' : ''} ${isAlert ? 'text-slate-900 font-bold' : ''}`}>
                         {formatVal(key, val)}
                       </td>
                     </tr>

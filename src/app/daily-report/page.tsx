@@ -76,22 +76,34 @@ function DailyReportForm() {
     return doc(db, 'users', user.uid, 'dailyWorkReports', editId)
   }, [db, user, editId])
 
+  const profileRef = useMemoFirebase(() => {
+    if (!db || !user) return null
+    return doc(db, 'users', user.uid)
+  }, [db, user])
+
   const { data: existingReport, isLoading: isReportLoading } = useDoc(reportRef)
+  const { data: profileData } = useDoc(profileRef)
 
   useEffect(() => {
     setMounted(true)
-    const savedName = localStorage.getItem('procurenote_user_name') || ""
-    const savedId = localStorage.getItem('procurenote_user_id') || ""
     setFormData(prev => ({ 
       ...prev, 
-      name: savedName, 
-      idNumber: savedId, 
       reportDate: new Date().toISOString().split('T')[0], 
       routeVisitLogs: [createEmptyRouteEntry()],
       fieldVisitPoints: [createEmptyPoint()],
       officeWorkPoints: [createEmptyPoint()]
     }))
   }, [])
+
+  useEffect(() => {
+    if (profileData && !editId) {
+      setFormData(prev => ({
+        ...prev,
+        name: profileData.displayName || prev.name,
+        idNumber: profileData.employeeId || prev.idNumber
+      }))
+    }
+  }, [profileData, editId])
 
   useEffect(() => {
     if (typeParam && ["route-visit", "field-visit", "office-work"].includes(typeParam)) {
@@ -163,7 +175,12 @@ function DailyReportForm() {
       generatedByUserId: user.uid,
       summary: reportSummary,
       overallSummary: reportSummary,
-      fullData: { ...formData, reportType },
+      fullData: { 
+        ...formData, 
+        reportType,
+        displayName: formData.name,
+        employeeId: formData.idNumber
+      },
       updatedAt: new Date().toISOString()
     }
 
@@ -205,10 +222,14 @@ function DailyReportForm() {
             <Input className="h-8 text-[11px] bg-muted/20 border-none rounded-lg font-black" value={formData.name || ""} readOnly />
           </div>
           <div className="space-y-0.5">
-            <Label className="text-[9px] font-black uppercase text-muted-foreground tracking-widest">आजची तारीख</Label>
+            <Label className="text-[9px] font-black uppercase text-muted-foreground tracking-widest">अधिकारी आयडी</Label>
+            <Input className="h-8 text-[11px] bg-muted/20 border-none rounded-lg font-black" value={formData.idNumber || ""} readOnly />
+          </div>
+          <div className="space-y-0.5">
+            <Label className="text-[9px] font-black uppercase text-muted-foreground tracking-widest">तारीख</Label>
             <Input className="h-8 text-[11px] bg-muted/20 border-none rounded-lg font-black" type="date" value={formData.reportDate || ""} onChange={e => setFormData({...formData, reportDate: e.target.value})} />
           </div>
-          <div className="col-span-2 space-y-1">
+          <div className="space-y-1">
             <Label className="text-[9px] font-black uppercase text-muted-foreground tracking-widest">शिफ्ट (SHIFT)</Label>
             <RadioGroup value={formData.shift || "Sakal"} onValueChange={v => setFormData({...formData, shift: v})} className="flex gap-3">
               <div className="flex items-center space-x-1.5 bg-muted/10 px-3 py-1.5 rounded-lg border border-muted-foreground/5 cursor-pointer">
@@ -217,7 +238,7 @@ function DailyReportForm() {
               </div>
               <div className="flex items-center space-x-1.5 bg-muted/10 px-3 py-1.5 rounded-lg border border-muted-foreground/5 cursor-pointer">
                 <RadioGroupItem value="Sandhya" id="sandhya" className="h-3 w-3" />
-                <Label htmlFor="sandhya" className="text-[10px] font-black cursor-pointer uppercase">संध्याकाळ</Label>
+                <Label htmlFor="sandhya" className="text-[10px] font-black cursor-pointer uppercase">संध्या</Label>
               </div>
             </RadioGroup>
           </div>
