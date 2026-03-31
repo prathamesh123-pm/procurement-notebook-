@@ -1,8 +1,7 @@
-
 "use client"
 
 import { Card, CardContent } from "@/components/ui/card"
-import { ListTodo, MapPin, TrendingUp, Warehouse, ArrowRight, Calendar, Milk, ArrowUpRight, ShieldAlert } from "lucide-react"
+import { ListTodo, MapPin, TrendingUp, Warehouse, Calendar, Milk, ArrowUpRight, ShieldAlert } from "lucide-react"
 import { useEffect, useState, useMemo } from "react"
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
@@ -42,10 +41,10 @@ export default function DashboardOverview() {
   useEffect(() => setMounted(true), [])
 
   const stats = useMemo(() => {
-    const routeTotalCow = suppliers?.reduce((acc, s) => acc + (s.cowMilk?.quantity || 0), 0) || 0
-    const routeTotalBuf = suppliers?.reduce((acc, s) => acc + (s.buffaloMilk?.quantity || 0), 0) || 0
-    const centerTotalCow = centers?.reduce((acc, c) => acc + (c.cowMilk?.quantity || 0), 0) || 0
-    const centerTotalBuf = centers?.reduce((acc, c) => acc + (c.buffaloMilk?.quantity || 0), 0) || 0
+    const routeTotalCow = (suppliers || [])?.reduce((acc, s) => acc + (s.cowMilk?.quantity || 0), 0) || 0
+    const routeTotalBuf = (suppliers || [])?.reduce((acc, s) => acc + (s.buffaloMilk?.quantity || 0), 0) || 0
+    const centerTotalCow = (centers || [])?.reduce((acc, c) => acc + (c.cowMilk?.quantity || 0), 0) || 0
+    const centerTotalBuf = (centers || [])?.reduce((acc, c) => acc + (c.buffaloMilk?.quantity || 0), 0) || 0
     
     return {
       cowMilk: routeTotalCow + centerTotalCow,
@@ -53,7 +52,7 @@ export default function DashboardOverview() {
       totalMilk: routeTotalCow + routeTotalBuf + centerTotalCow + centerTotalBuf,
       activeRoutes: routes?.length || 0,
       totalPoints: (suppliers?.length || 0) + (centers?.length || 0),
-      pendingTasks: tasks?.filter(t => t.status === 'pending').length || 0
+      pendingTasks: (tasks || [])?.filter(t => t.status === 'pending').length || 0
     }
   }, [centers, tasks, routes, suppliers])
 
@@ -111,7 +110,7 @@ export default function DashboardOverview() {
     <div className="space-y-8 max-w-6xl mx-auto w-full pb-10 px-2 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center justify-between">
         <div className="space-y-1">
-          <h2 className="text-2xl sm:text-3xl font-black text-slate-900 flex items-center gap-3">
+          <h2 className="text-2xl sm:text-3xl font-black text-foreground flex items-center gap-3">
             <div className="p-2 bg-primary rounded-xl text-white shadow-lg shadow-primary/20">
               <TrendingUp className="h-6 w-6" />
             </div>
