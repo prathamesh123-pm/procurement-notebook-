@@ -7,7 +7,7 @@ import { Card } from "@/components/ui/card"
 import { 
   Archive, Eye, Search, X, Printer, Trash2, FileEdit, Truck, ListTodo, 
   ShieldAlert, ChevronRight, Filter, FileText, Milk, MapPin, Briefcase, 
-  ClipboardCheck, FileSignature, Plus, Info, AlertTriangle, FileCheck, User
+  ClipboardCheck, FileSignature, Plus, Info, AlertTriangle, FileCheck, User, Layers, FileStack
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
@@ -36,6 +36,7 @@ export default function ReportsPage() {
   const [typeFilter, setTypeFilter] = useState<string | null>(null)
   const [selectedReport, setSelectedReport] = useState<any | null>(null)
   const [isViewOpen, setIsViewOpen] = useState(false)
+  const [isGroupView, setIsGroupView] = useState(false) // State for bulk task view
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => setMounted(true), [])
@@ -242,6 +243,15 @@ export default function ReportsPage() {
     "supervisorName"
   ];
 
+  const reportsToRender = useMemo(() => {
+    if (isGroupView && selectedReport?.type === 'Daily Task') {
+      return (firestoreReports || []).filter(r => 
+        r.type === 'Daily Task' && r.date === selectedReport.date
+      ).sort((a, b) => new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime());
+    }
+    return selectedReport ? [selectedReport] : [];
+  }, [isGroupView, selectedReport, firestoreReports]);
+
   const RouteSlipLayout = ({ report }: { report: any }) => {
     const d = report.fullData || {};
     const logs = d.routeVisitLogs || [];
@@ -378,11 +388,10 @@ export default function ReportsPage() {
       return String(val || "-");
     }
 
-    // Identify if this is a breakdown report to style it specially
     const isBreakdown = report.type === 'Transport Breakdown Report';
 
     return (
-      <div className="bg-white p-8 font-sans text-slate-900 border-[3px] border-slate-900 rounded-sm shadow-none print:border-black" id="printable-area">
+      <div className="bg-white p-8 font-sans text-slate-900 border-[3px] border-slate-900 rounded-sm shadow-none print:border-black mb-8 last:mb-0 break-inside-avoid" id="printable-area">
         <div className="border-b-[4px] border-slate-900 pb-6 mb-8 text-center print:border-black">
           <div className="flex justify-center mb-2">
             <div className="p-3 bg-primary text-white rounded-2xl print:bg-black">
@@ -434,7 +443,6 @@ export default function ReportsPage() {
             </table>
           </div>
 
-          {/* Special Section: Breakdown Loss Log */}
           {((d.losses && d.losses.length > 0) || (d.centerLosses && d.centerLosses.length > 0)) && (
             <div className="mt-8 space-y-3">
               <div className="flex items-center gap-2 text-[12px] font-black uppercase text-rose-700">
@@ -471,7 +479,6 @@ export default function ReportsPage() {
             </div>
           )}
 
-          {/* Special Section: Visit Points */}
           {d.fieldVisitPoints && d.fieldVisitPoints.length > 0 && (
             <div className="mt-8 space-y-3">
               <div className="flex items-center gap-2 text-[12px] font-black uppercase text-emerald-700">
@@ -552,7 +559,7 @@ export default function ReportsPage() {
           </thead>
           <tbody className="divide-y divide-slate-50">
             {filteredReports.map((report) => (
-              <tr key={report.id} className="hover:bg-primary/[0.02] transition-colors cursor-pointer group" onClick={() => { setSelectedReport(report); setIsViewOpen(true); }}>
+              <tr key={report.id} className="hover:bg-primary/[0.02] transition-colors cursor-pointer group" onClick={() => { setSelectedReport(report); setIsViewOpen(true); setIsGroupView(false); }}>
                 <td className="p-4">
                   <div className="flex flex-col gap-1.5 min-w-0">
                     <div className="flex items-center gap-2">
@@ -601,30 +608,43 @@ export default function ReportsPage() {
           <DialogHeader className="p-4 bg-white border-b flex flex-row items-center justify-between space-y-0 no-print">
             <div className="flex items-center gap-3 px-4">
               <div className="p-2 bg-primary/10 text-primary rounded-xl">
-                <FileText className="h-5 w-5" />
+                {isGroupView ? <FileStack className="h-5 w-5" /> : <FileText className="h-5 w-5" />}
               </div>
               <div>
-                <DialogTitle className="text-[11px] font-black uppercase text-slate-900 tracking-[0.2em]">अहवाल तपशील</DialogTitle>
-                <DialogDescription className="text-[9px] font-bold uppercase text-slate-400">Official Report Preview</DialogDescription>
+                <DialogTitle className="text-[11px] font-black uppercase text-slate-900 tracking-[0.2em]">{isGroupView ? 'एकत्रित कार्य अहवाल' : 'अहवाल तपशील'}</DialogTitle>
+                <DialogDescription className="text-[9px] font-bold uppercase text-slate-400">{isGroupView ? 'All Daily Tasks' : 'Official Report Preview'}</DialogDescription>
               </div>
             </div>
             <div className="flex gap-2 pr-4">
+              {selectedReport?.type === 'Daily Task' && (
+                <Button 
+                  variant={isGroupView ? "secondary" : "outline"} 
+                  size="sm" 
+                  onClick={() => setIsGroupView(!isGroupView)} 
+                  className="h-10 px-4 font-black uppercase rounded-xl border-primary/20"
+                >
+                  {isGroupView ? <Layers className="h-4 w-4 mr-2" /> : <FileStack className="h-4 w-4 mr-2" />}
+                  {isGroupView ? 'सिंगल टास्क' : 'पूर्ण दिवसाचे टास्क'}
+                </Button>
+              )}
               <Button size="sm" onClick={() => window.print()} className="h-10 px-6 font-black uppercase rounded-xl shadow-lg shadow-primary/20"><Printer className="h-4 w-4 mr-2" /> प्रिंट करा</Button>
               <Button size="icon" variant="ghost" onClick={() => setIsViewOpen(false)} className="h-10 w-10 text-slate-400 hover:bg-slate-100 rounded-xl"><X className="h-6 w-6" /></Button>
             </div>
           </DialogHeader>
           <ScrollArea className="max-h-[85vh] p-6 bg-slate-100">
-            {selectedReport && (
-              <div className="max-w-[210mm] mx-auto transition-all animate-in zoom-in-95 duration-300">
-                {selectedReport.type === 'Route Visit' ? (
-                  <RouteSlipLayout report={selectedReport} />
-                ) : selectedReport.fullData?.isWordDoc ? (
-                  <div className="prose prose-sm max-w-none px-12 py-10 bg-white border-[3px] border-slate-900 rounded-sm shadow-2xl min-h-[600px] print:shadow-none print:border-black" id="printable-area" dangerouslySetInnerHTML={{ __html: selectedReport.fullData.content }} />
-                ) : (
-                  <GenericTableLayout report={selectedReport} />
-                )}
-              </div>
-            )}
+            <div className="max-w-[210mm] mx-auto transition-all animate-in zoom-in-95 duration-300 space-y-8">
+              {reportsToRender.map((report, idx) => (
+                <div key={report.id} className={idx > 0 ? "print:page-break-before-always" : ""}>
+                  {report.type === 'Route Visit' ? (
+                    <RouteSlipLayout report={report} />
+                  ) : report.fullData?.isWordDoc ? (
+                    <div className="prose prose-sm max-w-none px-12 py-10 bg-white border-[3px] border-slate-900 rounded-sm shadow-2xl min-h-[600px] print:shadow-none print:border-black" id="printable-area" dangerouslySetInnerHTML={{ __html: report.fullData.content }} />
+                  ) : (
+                    <GenericTableLayout report={report} />
+                  )}
+                </div>
+              ))}
+            </div>
           </ScrollArea>
         </DialogContent>
       </Dialog>
