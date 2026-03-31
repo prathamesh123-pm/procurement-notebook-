@@ -100,7 +100,7 @@ export default function ReportsPage() {
 
   const labelMap: Record<string, string> = {
     supplierName: "पुरवठादार / गवळी नाव",
-    supplierId: "आयडी / कोड",
+    supplierId: "आयडी / कोड नंबर",
     title: "टास्क शीर्षक",
     remark: "शेरा / कार्यवाही",
     actionTaken: "केलेली कार्यवाही",
@@ -113,7 +113,7 @@ export default function ReportsPage() {
     driverMobile: "ड्रायव्हर मोबाईल",
     mobile: "संपर्क क्रमांक",
     repName: "प्रतिनिधी नाव",
-    repId: "आयडी",
+    repId: "प्रतिनिधी आयडी",
     shift: "शिफ्ट",
     breakdownTime: "बिघाड वेळ",
     location: "बिघाड ठिकाण",
@@ -170,6 +170,7 @@ export default function ReportsPage() {
     computerAvailable: "POP सिस्टम"
   };
 
+  // User requested sequence: Supplier Name -> ID -> Title -> Remark
   const orderedKeys = [
     "supplierName", 
     "supplierId", 
@@ -251,64 +252,64 @@ export default function ReportsPage() {
     const totalIceUsed = logs.reduce((sum: number, l: any) => sum + (Number(l.iceUsed) || 0), 0);
 
     return (
-      <div className="bg-white p-2 font-mono text-[8px] text-black border border-black/40 rounded shadow-sm max-w-full mx-auto" id="printable-area">
-        <div className="flex justify-between items-center border-b-2 border-black pb-1 mb-2">
-          <div className="font-black uppercase text-[10px]">रूट व्हिजिट अहवाल (ROUTE VISIT)</div>
-          <div className="text-right font-black leading-tight text-[8px]">
-            <p>OUT: {d.routeOutTime || '--:--'} | IN: {d.routeInTime || '--:--'}</p>
+      <div className="bg-white p-4 font-mono text-[10px] text-black border-2 border-black rounded shadow-none max-w-full mx-auto" id="printable-area">
+        <div className="flex justify-between items-center border-b-2 border-black pb-2 mb-4">
+          <div className="font-black uppercase text-[12px]">रूट व्हिजिट अहवाल (ROUTE VISIT SLIP)</div>
+          <div className="text-right font-black leading-tight text-[10px]">
+            <p>बाहेर: {d.routeOutTime || '--:--'} | आत: {d.routeInTime || '--:--'}</p>
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-x-4 mb-2 font-black text-[8px] uppercase">
-          <div className="space-y-0.5">
+        <div className="grid grid-cols-2 gap-x-8 mb-4 font-black text-[10px] uppercase">
+          <div className="space-y-1">
             <p>रूट: {d.routeName || '---'}</p>
             <p>ड्रायव्हर: {d.driverName || '---'}</p>
             <p>तारीख: {d.reportDate || '---'}</p>
           </div>
-          <div className="text-right space-y-0.5">
+          <div className="text-right space-y-1">
             <p>वाहन: {d.vehicleNumber || '---'}</p>
             <p>स्लिप क्र: {d.slipNo || '---'}</p>
           </div>
         </div>
 
-        <table className="w-full border-collapse border border-black">
+        <table className="w-full border-collapse border-2 border-black">
           <thead>
-            <tr className="bg-slate-100 font-black text-[8px]">
-              <th className="border border-black p-1 text-center w-6">क्र.</th>
-              <th className="border border-black p-1 text-left">केंद्राचे नाव व कोड</th>
-              <th className="border border-black p-1 text-center">बर्फ वापर</th>
-              <th className="border border-black p-1 text-center">आगमन</th>
-              <th className="border border-black p-1 text-center">रिकामे</th>
-              <th className="border border-black p-1 text-center">निर्गमन</th>
-              <th className="border border-black p-1 text-center">भरलेले</th>
+            <tr className="bg-slate-100 font-black text-[10px]">
+              <th className="border-2 border-black p-2 text-center w-8">क्र.</th>
+              <th className="border-2 border-black p-2 text-left">केंद्राचे नाव व कोड</th>
+              <th className="border-2 border-black p-2 text-center">बर्फ वापर</th>
+              <th className="border-2 border-black p-2 text-center">आगमन</th>
+              <th className="border-2 border-black p-2 text-center">रिकामे</th>
+              <th className="border-2 border-black p-2 text-center">निर्गमन</th>
+              <th className="border-2 border-black p-2 text-center">भरलेले</th>
             </tr>
           </thead>
           <tbody>
             {logs.map((log: any, idx: number) => (
-              <tr key={idx} className="font-bold text-[8px] border-b border-black/10">
-                <td className="border border-black p-1 text-center">{idx + 1}</td>
-                <td className="border border-black p-1 text-left uppercase truncate max-w-[120px]">
+              <tr key={idx} className="font-bold text-[10px] border-b border-black">
+                <td className="border-2 border-black p-2 text-center">{idx + 1}</td>
+                <td className="border-2 border-black p-2 text-left uppercase">
                   {log.supplierName || '---'} , {log.centerCode || '---'}
                 </td>
-                <td className="border border-black p-1 text-center">{log.iceUsed || '0'}</td>
-                <td className="border border-black p-1 text-center">{log.arrivalTime || '--:--'}</td>
-                <td className="border border-black p-1 text-center">{log.emptyCans || '0'}</td>
-                <td className="border border-black p-1 text-center">{log.departureTime || '--:--'}</td>
-                <td className="border border-black p-1 text-center">{log.fullCans || '0'}</td>
+                <td className="border-2 border-black p-2 text-center">{log.iceUsed || '0'}</td>
+                <td className="border-2 border-black p-2 text-center">{log.arrivalTime || '--:--'}</td>
+                <td className="border-2 border-black p-2 text-center">{log.emptyCans || '0'}</td>
+                <td className="border-2 border-black p-2 text-center">{log.departureTime || '--:--'}</td>
+                <td className="border-2 border-black p-2 text-center">{log.fullCans || '0'}</td>
               </tr>
             ))}
-            <tr className="bg-slate-50 font-black text-[8px]">
-              <td className="border border-black p-1 text-center" colSpan={2}>एकूण (TOTAL)</td>
-              <td className="border border-black p-1 text-center">{totalIceUsed}</td>
-              <td className="border border-black p-1 text-center">-</td>
-              <td className="border border-black p-1 text-center">{totalEmpty}</td>
-              <td className="border border-black p-1 text-center">-</td>
-              <td className="border border-black p-1 text-center">{totalFull}</td>
+            <tr className="bg-slate-50 font-black text-[10px]">
+              <td className="border-2 border-black p-2 text-center" colSpan={2}>एकूण (TOTAL)</td>
+              <td className="border-2 border-black p-2 text-center">{totalIceUsed}</td>
+              <td className="border-2 border-black p-2 text-center">-</td>
+              <td className="border-2 border-black p-2 text-center">{totalEmpty}</td>
+              <td className="border-2 border-black p-2 text-center">-</td>
+              <td className="border-2 border-black p-2 text-center">{totalFull}</td>
             </tr>
           </tbody>
         </table>
 
-        <div className="mt-2 grid grid-cols-2 font-black text-[8px] uppercase border-t border-dashed border-black/40 pt-1">
+        <div className="mt-4 grid grid-cols-2 font-black text-[10px] uppercase border-t-2 border-dashed border-black pt-2">
           <div>
             <p>सुरवात RD: {d.startReading || '0'}</p>
             <p>शेवट RD: {d.endReading || '0'}</p>
@@ -320,36 +321,32 @@ export default function ReportsPage() {
         </div>
 
         {(d.achievements || d.problems || d.actionsTaken) && (
-          <div className="mt-2 space-y-1 border-t border-black/20 pt-2 uppercase text-[8px] font-black">
+          <div className="mt-4 space-y-2 border-t-2 border-black pt-4 uppercase text-[10px] font-black">
             {d.achievements && (
               <div className="flex flex-col">
-                <span className="text-emerald-700">१) आजची मोठी कामगिरी:</span>
-                <p className="font-bold normal-case text-[9px] mt-0 whitespace-pre-wrap pl-2 border-l-2 border-emerald-100">{d.achievements}</p>
+                <span className="text-emerald-700 underline">आजची मोठी कामगिरी:</span>
+                <p className="font-bold normal-case text-[11px] mt-1 whitespace-pre-wrap pl-2 border-l-4 border-emerald-100">{d.achievements}</p>
               </div>
             )}
             {d.problems && (
               <div className="flex flex-col">
-                <span className="text-rose-700">२) महत्त्वाच्या समस्या:</span>
-                <p className="font-bold normal-case text-[9px] mt-0 whitespace-pre-wrap pl-2 border-l-2 border-rose-100">{d.problems}</p>
+                <span className="text-rose-700 underline">महत्त्वाच्या समस्या:</span>
+                <p className="font-bold normal-case text-[11px] mt-1 whitespace-pre-wrap pl-2 border-l-4 border-rose-100">{d.problems}</p>
               </div>
             )}
             {d.actionsTaken && (
               <div className="flex flex-col">
-                <span className="text-blue-700">३) केलेली कार्यवाही:</span>
-                <p className="font-bold normal-case text-[9px] mt-0 whitespace-pre-wrap pl-2 border-l-2 border-blue-100">{d.actionsTaken}</p>
+                <span className="text-blue-700 underline">केलेली कार्यवाही:</span>
+                <p className="font-bold normal-case text-[11px] mt-1 whitespace-pre-wrap pl-2 border-l-4 border-blue-100">{d.actionsTaken}</p>
               </div>
             )}
           </div>
         )}
 
-        {d.supervisorName && (
-          <div className="mt-4 flex justify-end">
-            <div className="text-right">
-              <p className="text-[7px] opacity-50 uppercase">सुपरवायझर:</p>
-              <p className="font-black text-[9px] border-b border-black inline-block min-w-[100px] uppercase text-center">{d.supervisorName}</p>
-            </div>
-          </div>
-        )}
+        <div className="mt-12 grid grid-cols-2 gap-12 text-center uppercase font-black text-[10px] opacity-80">
+          <div className="border-t-2 border-black pt-2">अधिकारी सही</div>
+          <div className="border-t-2 border-black pt-2">सुपरवायझर सही</div>
+        </div>
       </div>
     );
   };
@@ -367,51 +364,51 @@ export default function ReportsPage() {
     }
 
     return (
-      <div className="bg-white p-2 font-mono text-[8px] text-black border border-black/40 rounded shadow-sm" id="printable-area">
-        <div className="border-b-2 border-black pb-1 mb-2 text-center">
-          <h1 className="text-[11px] font-black uppercase tracking-tight">संकलन नोंदवही (OFFICIAL REPORT)</h1>
-          <p className="text-[8px] font-bold opacity-60 uppercase tracking-widest">{report.type}</p>
+      <div className="bg-white p-6 font-mono text-[11px] text-black border-2 border-black rounded shadow-none" id="printable-area">
+        <div className="border-b-4 border-black pb-3 mb-4 text-center">
+          <h1 className="text-[16px] font-black uppercase tracking-tight">संकलन नोंदवही (OFFICIAL DAILY REPORT)</h1>
+          <p className="text-[10px] font-bold opacity-70 uppercase tracking-widest mt-1">{report.type}</p>
         </div>
 
-        <div className="grid grid-cols-2 gap-2 mb-2 font-black text-[8px] uppercase border-b border-dashed border-black/40 pb-1">
+        <div className="grid grid-cols-2 gap-4 mb-4 font-black text-[10px] uppercase border-b-2 border-dashed border-black pb-2">
           <p>तारीख: {report.date}</p>
           <p className="text-right">अहवाल क्र: #{report.id.slice(-8).toUpperCase()}</p>
         </div>
 
-        <table className="w-full border-collapse border border-black">
+        <table className="w-full border-collapse border-2 border-black">
           <thead>
-            <tr className="bg-slate-100 font-black text-[8px] uppercase">
-              <th className="border border-black p-1.5 text-left w-1/3">विषय (FIELD)</th>
-              <th className="border border-black p-1.5 text-left">माहिती (DETAILS)</th>
+            <tr className="bg-slate-100 font-black text-[11px] uppercase">
+              <th className="border-2 border-black p-3 text-left w-1/3">विषय (FIELD)</th>
+              <th className="border-2 border-black p-3 text-left">माहिती (DETAILS)</th>
             </tr>
           </thead>
           <tbody>
             {filteredEntries.map(([key, val]) => (
-              <tr key={key} className="font-bold text-[9px] border-b border-black/10">
-                <td className="border border-black p-1.5 bg-slate-50 uppercase text-[8px]">{labelMap[key] || key.toUpperCase()}</td>
-                <td className="border border-black p-1.5 whitespace-pre-wrap">{formatVal(key, val)}</td>
+              <tr key={key} className="font-bold text-[11px] border-b border-black">
+                <td className="border-2 border-black p-3 bg-slate-50 uppercase text-[10px] font-black">{labelMap[key] || key.toUpperCase()}</td>
+                <td className="border-2 border-black p-3 whitespace-pre-wrap">{formatVal(key, val)}</td>
               </tr>
             ))}
           </tbody>
         </table>
 
         {d.centerLosses && d.centerLosses.length > 0 && (
-          <div className="mt-3">
-            <p className="font-black text-[8px] uppercase mb-1 border-b border-black w-fit">नुकसान तपशील (LOSS LOG):</p>
-            <table className="w-full border-collapse border border-black text-[8px]">
-              <thead className="bg-slate-50 font-black uppercase">
+          <div className="mt-6">
+            <p className="font-black text-[11px] uppercase mb-2 border-b-2 border-black w-fit">नुकसान तपशील (LOSS LOG):</p>
+            <table className="w-full border-collapse border-2 border-black text-[10px]">
+              <thead className="bg-slate-100 font-black uppercase">
                 <tr>
-                  <th className="border border-black p-1 text-left">केंद्राचे नाव</th>
-                  <th className="border border-black p-1 text-center">Ltr</th>
-                  <th className="border border-black p-1 text-right">रक्कम (₹)</th>
+                  <th className="border-2 border-black p-2 text-left">केंद्राचे नाव व कोड</th>
+                  <th className="border-2 border-black p-2 text-center w-24">दूध (Ltr)</th>
+                  <th className="border-2 border-black p-2 text-right w-32">नुकसान रक्कम (₹)</th>
                 </tr>
               </thead>
               <tbody>
                 {d.centerLosses.map((l: any, i: number) => (
-                  <tr key={i} className="text-center font-bold border-b border-black/10">
-                    <td className="border border-black p-1 text-left truncate">{l.centerName}</td>
-                    <td className="border border-black p-1">{l.qtyLiters}</td>
-                    <td className="border border-black p-1 text-right text-rose-600">₹{l.lossAmount}</td>
+                  <tr key={i} className="text-center font-bold border-b border-black">
+                    <td className="border-2 border-black p-2 text-left uppercase">{l.centerName} ({l.centerCode || '-'})</td>
+                    <td className="border-2 border-black p-2">{l.qtyLiters}</td>
+                    <td className="border-2 border-black p-2 text-right font-black">₹{l.lossAmount}</td>
                   </tr>
                 ))}
               </tbody>
@@ -419,22 +416,22 @@ export default function ReportsPage() {
           </div>
         )}
 
-        <div className="mt-12 grid grid-cols-2 gap-12 text-center uppercase font-black text-[8px] opacity-70">
-          <div className="border-t border-black/60 pt-1.5">अधिकारी सही</div>
-          <div className="border-t border-black/60 pt-1.5">सुपरवायझर सही</div>
+        <div className="mt-16 grid grid-cols-2 gap-12 text-center uppercase font-black text-[10px] opacity-80">
+          <div className="border-t-2 border-black pt-3">अधिकारी स्वाक्षरी</div>
+          <div className="border-t-2 border-black pt-3">सुपरवायझर स्वाक्षरी</div>
         </div>
       </div>
     );
   };
 
   return (
-    <div className="compact-form-container pb-20 max-w-[500px] mx-auto px-2">
-      <div className="flex items-center justify-between border-b-2 pb-2 mb-4">
+    <div className="compact-form-container pb-20 max-w-[600px] mx-auto px-2">
+      <div className="flex items-center justify-between border-b-2 pb-3 mb-4">
         <div className="flex flex-col gap-0.5">
-          <h2 className="text-base font-black text-slate-900 flex items-center gap-2 uppercase tracking-tight">
-            <Archive className="h-5 w-5 text-primary" /> अहवाल व्यवस्थापन (REPORTS)
+          <h2 className="text-lg font-black text-slate-900 flex items-center gap-2 uppercase tracking-tight">
+            <Archive className="h-5 w-5 text-primary" /> अहवाल व्यवस्थापन
           </h2>
-          <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest ml-0.5">Archive & Management</p>
+          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest ml-0.5">Archive & Management</p>
         </div>
         <Button asChild size="sm" className="h-9 text-[10px] font-black uppercase rounded-xl shadow-lg shadow-primary/20 transition-all active:scale-95">
           <Link href="/reports/entry/seizure"><Plus className="h-4 w-4 mr-1.5" /> नवीन जप्ती</Link>
@@ -455,8 +452,8 @@ export default function ReportsPage() {
       </div>
 
       <Card className="p-2.5 mb-4 bg-white border-muted-foreground/15 shadow-sm rounded-2xl">
-        <div className="flex gap-2">
-          <div className="relative flex-1">
+        <div className="flex flex-wrap gap-2">
+          <div className="relative flex-1 min-w-[150px]">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
             <Input className="h-9 pl-8 text-[11px] bg-muted/20 border-none rounded-xl font-bold" placeholder="नाव किंवा सारांश शोधा..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
           </div>
@@ -514,7 +511,7 @@ export default function ReportsPage() {
       </div>
 
       <Dialog open={isViewOpen} onOpenChange={setIsViewOpen}>
-        <DialogContent className="max-w-[650px] p-0 rounded-3xl overflow-hidden border-none shadow-2xl bg-white">
+        <DialogContent className="max-w-[750px] p-0 rounded-3xl overflow-hidden border-none shadow-2xl bg-white">
           <DialogHeader className="p-3 bg-slate-50 border-b flex flex-row items-center justify-between space-y-0">
             <DialogTitle className="text-[10px] font-black uppercase text-slate-500 tracking-[0.2em] px-3 truncate">अहवाल तपशील (REPORT DETAILS)</DialogTitle>
             <div className="flex gap-2 shrink-0 pr-2">
@@ -522,13 +519,13 @@ export default function ReportsPage() {
               <Button size="icon" variant="ghost" onClick={() => setIsViewOpen(false)} className="h-8 w-8 text-slate-400 hover:bg-slate-100 rounded-xl"><X className="h-5 w-5" /></Button>
             </div>
           </DialogHeader>
-          <ScrollArea className="max-h-[85vh] p-3 bg-white">
+          <ScrollArea className="max-h-[85vh] p-4 bg-white">
             {selectedReport && (
               <div className="space-y-4">
                 {selectedReport.type === 'Route Visit' ? (
                   <RouteSlipLayout report={selectedReport} />
                 ) : selectedReport.fullData?.isWordDoc ? (
-                  <div className="prose prose-sm max-w-none px-6 py-4 bg-white border rounded-2xl shadow-inner min-h-[400px]" dangerouslySetInnerHTML={{ __html: selectedReport.fullData.content }} />
+                  <div className="prose prose-sm max-w-none px-8 py-6 bg-white border-2 border-black rounded-sm shadow-none min-h-[500px]" id="printable-area" dangerouslySetInnerHTML={{ __html: selectedReport.fullData.content }} />
                 ) : (
                   <GenericTableLayout report={selectedReport} />
                 )}
@@ -543,17 +540,21 @@ export default function ReportsPage() {
           body * { visibility: hidden; }
           #printable-area, #printable-area * { visibility: visible; }
           #printable-area { 
-            position: absolute; 
+            position: fixed; 
             left: 0; 
             top: 0; 
-            width: 100%; 
-            padding: 10px; 
-            margin: 0;
-            border: none;
-            box-shadow: none;
+            width: 100% !important; 
+            padding: 20px !important; 
+            margin: 0 !important;
+            border: 2px solid black !important;
+            box-shadow: none !important;
+            background: white !important;
+            z-index: 9999;
           }
           .dialog-content, .scroll-area { overflow: visible !important; height: auto !important; max-height: none !important; }
-          .fixed, .sticky, button, .tabs, header, nav { display: none !important; }
+          .fixed, .sticky, button, .tabs, header, nav, .sidebar { display: none !important; }
+          table { width: 100% !important; border-collapse: collapse !important; }
+          th, td { border: 1px solid black !important; }
         }
       `}</style>
     </div>
