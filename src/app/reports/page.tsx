@@ -98,61 +98,75 @@ export default function ReportsPage() {
     router.push(`${path}?edit=${report.id}`)
   }
 
-  if (!mounted || isLoading) return <div className="p-20 text-center animate-pulse italic font-black uppercase text-[9px] opacity-50">लोड होत आहे...</div>
-
+  // Label Mapping with Logical Sequence
   const labelMap: Record<string, string> = {
-    achievements: "आजची मोठी कामगिरी",
-    problems: "महत्त्वाच्या समस्या",
-    actionsTaken: "केलेली कार्यवाही",
-    actionTaken: "केलेली कार्यवाही",
-    supervisorName: "सुपरवायझर",
-    repName: "प्रतिनिधी नाव",
-    repId: "आयडी",
-    shift: "शिफ्ट",
-    workType: "कामाचा प्रकार",
-    summary: "तपशील / सारांश",
-    vehicleNo: "वाहन क्रमांक",
+    // 1. Vehicle & Route Info
+    routeName: "रूटचे नाव",
     vehicleNumber: "वाहन क्रमांक",
+    vehicleNo: "वाहन क्रमांक",
     vehicleType: "गाडीचा प्रकार",
     driverName: "ड्रायव्हरचे नाव",
     driverMobile: "ड्रायव्हर मोबाईल",
     mobile: "संपर्क क्रमांक",
-    routeName: "रूटचे नाव",
+    
+    // 2. Representative Info
+    repName: "प्रतिनिधी नाव",
+    repId: "आयडी",
+    shift: "शिफ्ट",
+    
+    // 3. Breakdown Details
     breakdownTime: "बिघाड वेळ",
     location: "बिघाड ठिकाण",
     reason: "बिघाडाचे मुख्य कारण",
     severity: "बिघाडाचे स्वरूप",
-    faultResponsibility: "बिघाडास जबाबदार",
+    faultResponsibility: "बिघाडास जबाबदार / कोणाची चूक",
     detailedReason: "सविस्तर माहिती",
     detailedDescription: "सविस्तर वर्णन",
-    estimatedRepairTime: "दुरुस्ती वेळ",
+    
+    // 4. Repair & Assistance
+    estimatedRepairTime: "दुरुस्ती वेळ (तास)",
     estimatedRepairCost: "दुरुस्ती खर्च (₹)",
     recoveryVehicleNo: "पर्यायी गाडी क्र.",
     recoveryArrivalTime: "पर्यायी गाडी वेळ",
-    milkHot: "दूध गरम झाले?",
-    milkSour: "दूध आंबट झाले?",
-    alternateArrangement: "पर्यायी सोय?",
+    
+    // 5. Milk Condition
+    milkHot: "दूध गरम झाले का?",
+    milkSour: "दूध आंबट झाले का?",
+    alternateArrangement: "पर्यायी सोय केली का?",
+    
+    // 6. Work & Summary
+    workType: "कामाचा प्रकार",
+    title: "टास्क शीर्षक",
+    summary: "कामाचा सारांश",
+    problems: "महत्त्वाच्या समस्या",
+    actionTaken: "केलेली कार्यवाही",
+    actionsTaken: "केलेली कार्यवाही",
+    achievements: "आजची मोठी कामगिरी",
+    remark: "शेरा / कार्यवाही",
+    supervisorName: "सुपरवायझर",
+    
+    // 7. Losses & Penalties
     lossAmount: "नुकसान रक्कम (₹)",
     totalLossAmount: "एकूण नुकसान (₹)",
-    supplierName: "पुरवठादार नाव",
-    supplierId: "आयडी / कोड",
-    seizureQty: "जप्ती प्रमाण (L)",
     fineAmount: "दंड रक्कम (₹)",
-    notes: "विशेष नोंदी",
-    title: "शीर्षक",
-    remark: "शेरा / कार्यवाही",
-    status: "स्थिती",
+    seizureQty: "जप्ती प्रमाण (L)",
+    supplierName: "पुरवठादार / गवळी नाव",
+    supplierId: "आयडी / कोड",
+    
+    // 8. Quality & Audit
+    centerName: "केंद्राचे नाव",
+    centerCode: "केंद्र कोड",
+    auditDate: "ऑडिट तारीख",
     morningQty: "सकाळ संकलन (L)",
     eveningQty: "संध्याकाळ संकलन (L)",
     fat: "फॅट (%)",
     snf: "SNF (%)",
     result: "अंतिम निकाल",
-    centerName: "केंद्राचे नाव",
-    centerCode: "केंद्र कोड",
-    auditDate: "ऑडिट तारीख",
+    
+    // 9. Inspection (FSSAI/Chilling)
+    ownerName: "मालकाचे नाव",
     capacity: "क्षमता (L)",
     licenseStatus: "परवाना स्थिती",
-    ownerName: "मालकाचे नाव",
     district: "जिल्हा",
     taluka: "तालुका",
     tempAtArrival: "आगमनाचे तापमान (°C)",
@@ -163,7 +177,9 @@ export default function ReportsPage() {
     staffUniform: "स्टाफ गणवेश",
     fssaiDisplay: "FSSAI डिस्प्ले",
     iceBankStatus: "आईस बँक स्थिती",
-    observations: "निरीक्षणे",
+    observations: "विशेष निरीक्षणे",
+    
+    // 10. Survey
     type: "प्रकार (Type)",
     facility: "सुविधा (Facility)",
     plantHygiene: "स्वच्छता (Hygiene)",
@@ -172,6 +188,22 @@ export default function ReportsPage() {
     paymentCycle: "पेमेंट सायकल",
     otherInfo: "इतर माहिती"
   };
+
+  // The sequence keys order
+  const orderedKeys = [
+    "repName", "repId", "shift", "routeName", "vehicleNumber", "vehicleNo", "vehicleType", 
+    "driverName", "driverMobile", "mobile", "breakdownTime", "location", "reason", "severity", 
+    "faultResponsibility", "detailedReason", "detailedDescription", "estimatedRepairTime", 
+    "estimatedRepairCost", "recoveryVehicleNo", "recoveryArrivalTime", "milkHot", "milkSour", 
+    "alternateArrangement", "workType", "title", "summary", "achievements", "problems", 
+    "actionTaken", "actionsTaken", "remark", "lossAmount", "totalLossAmount", "fineAmount", 
+    "seizureQty", "supplierName", "supplierId", "centerName", "centerCode", "auditDate", 
+    "morningQty", "eveningQty", "fat", "snf", "result", "ownerName", "capacity", "licenseStatus", 
+    "district", "taluka", "tempAtArrival", "tempAfterChilling", "waterSupply", "powerBackup", 
+    "hygieneStandard", "staffUniform", "fssaiDisplay", "iceBankStatus", "observations", 
+    "type", "facility", "plantHygiene", "milkSource", "totalMilk", "paymentCycle", "otherInfo", 
+    "supervisorName"
+  ];
 
   const RouteSlipLayout = ({ report }: { report: any }) => {
     const d = report.fullData || {};
@@ -288,21 +320,10 @@ export default function ReportsPage() {
   const GenericTableLayout = ({ report }: { report: any }) => {
     const d = report.fullData || {};
     
-    const entries = Object.entries(d).filter(([key, val]) => {
-      return typeof val !== 'object' && 
-             key !== 'routeVisitLogs' && 
-             key !== 'losses' &&
-             key !== 'centerLosses' && 
-             key !== 'fieldVisitPoints' &&
-             key !== 'officeWorkPoints' &&
-             key !== 'reportType' && 
-             key !== 'isWordDoc' && 
-             key !== 'content' &&
-             key !== 'name' &&
-             key !== 'date' &&
-             key !== 'reportDate' &&
-             key !== 'id';
-    });
+    // Sort keys based on predefined orderedKeys
+    const filteredEntries = orderedKeys
+      .filter(key => d[key] !== undefined && d[key] !== "" && d[key] !== null)
+      .map(key => [key, d[key]]);
 
     const formatVal = (key: string, val: any): string => {
       if (typeof val === 'object' && val !== null) return JSON.stringify(val);
@@ -329,7 +350,7 @@ export default function ReportsPage() {
             </tr>
           </thead>
           <tbody>
-            {entries.map(([key, val]) => (
+            {filteredEntries.map(([key, val]) => (
               <tr key={key} className="font-bold text-[9px] border-b border-black/10">
                 <td className="border border-black p-1.5 bg-slate-50 uppercase text-[8px]">{labelMap[key] || key.toUpperCase()}</td>
                 <td className="border border-black p-1.5 whitespace-pre-wrap">{formatVal(key, val)}</td>
