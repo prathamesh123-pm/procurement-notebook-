@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { 
-  ArrowLeft, Save, Truck, AlertTriangle, Milk, User, IndianRupee, RefreshCw, PlusCircle, X, MapPin, Clock, Phone, Settings, Wrench
+  ArrowLeft, Save, Truck, AlertTriangle, Milk, User, IndianRupee, RefreshCw, PlusCircle, X, MapPin, Clock, Phone, Settings, Wrench, ShieldAlert
 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { useUser, useFirestore, useDoc, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking } from "@/firebase"
@@ -40,13 +40,13 @@ function BreakdownReportForm() {
     date: new Date().toISOString().split('T')[0],
     routeName: "", 
     vehicleNo: "", 
-    vehicleType: "TEMPO",
+    vehicleType: "",
     capacity: "",
     driverName: "",
     mobile: "",
     breakdownTime: "",
     location: "", 
-    reason: "ENGINE", 
+    reason: "", 
     severity: "MINOR",
     detailedReason: "",
     estimatedRepairTime: "",
@@ -155,10 +155,7 @@ function BreakdownReportForm() {
             <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">गाडी नंबर *</Label><Input value={formData.vehicleNo} onChange={e => setFormData({...formData, vehicleNo: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" placeholder="MH..." /></div>
             <div className="space-y-0.5">
               <Label className="text-[9px] font-black uppercase opacity-60">गाडीचा प्रकार</Label>
-              <RadioGroup value={formData.vehicleType || "TEMPO"} onValueChange={v => setFormData({...formData, vehicleType: v})} className="flex gap-2 mt-1">
-                <div className="flex items-center gap-1 bg-muted/20 px-2 py-1 rounded-md"><RadioGroupItem value="TEMPO" id="v-t" className="h-2.5 w-2.5"/><Label htmlFor="v-t" className="text-[8px] font-black">TEMPO</Label></div>
-                <div className="flex items-center gap-1 bg-muted/20 px-2 py-1 rounded-md"><RadioGroupItem value="PICKUP" id="v-p" className="h-2.5 w-2.5"/><Label htmlFor="v-p" className="text-[8px] font-black">PICKUP</Label></div>
-              </RadioGroup>
+              <Input value={formData.vehicleType} onChange={e => setFormData({...formData, vehicleType: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" placeholder="उदा. टेम्पो / पिकअप" />
             </div>
             <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">गाडी क्षमता (L)</Label><Input value={formData.capacity} onChange={e => setFormData({...formData, capacity: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" /></div>
             <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">ड्रायव्हरचे नाव</Label><Input value={formData.driverName} onChange={e => setFormData({...formData, driverName: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" /></div>
@@ -177,14 +174,7 @@ function BreakdownReportForm() {
               <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">लोकेशन (ठिकाण)</Label><Input value={formData.location} onChange={e => setFormData({...formData, location: e.target.value})} className="h-9 text-[11px] bg-white border-none font-black rounded-lg" placeholder="उदा. माण गाव" /></div>
               <div className="col-span-2 space-y-0.5">
                 <Label className="text-[9px] font-black uppercase opacity-60">बिघाडाचे मुख्य कारण</Label>
-                <RadioGroup value={formData.reason} onValueChange={v => setFormData({...formData, reason: v})} className="flex flex-wrap gap-1.5 mt-1">
-                  {['ENGINE', 'TYRE', 'FUEL', 'ACCIDENT', 'OTHER'].map(o => (
-                    <div key={o} className="flex items-center gap-1 bg-white px-2 py-1.5 rounded-lg border border-rose-100">
-                      <RadioGroupItem value={o} id={`br-${o}`} className="h-2.5 w-2.5"/>
-                      <Label htmlFor={`br-${o}`} className="text-[8px] font-black">{o}</Label>
-                    </div>
-                  ))}
-                </RadioGroup>
+                <Input value={formData.reason} onChange={e => setFormData({...formData, reason: e.target.value})} className="h-9 text-[11px] bg-white border-none font-black rounded-lg" placeholder="उदा. इंजिन ओव्हरहीट / टायर फाटला" />
               </div>
             </div>
             

@@ -44,13 +44,13 @@ export default function BreakdownPage() {
   const [formData, setFormData] = useState({
     routeName: "", 
     vehicleNo: "", 
-    vehicleType: "TEMPO",
+    vehicleType: "",
     capacity: "",
     driverName: "",
     mobile: "",
     breakdownTime: "",
     location: "", 
-    reason: "ENGINE", 
+    reason: "", 
     severity: "MINOR",
     detailedReason: "",
     estimatedRepairTime: "",
@@ -142,8 +142,8 @@ export default function BreakdownPage() {
   const resetForm = () => { 
     setEditingId(null); 
     setFormData({ 
-      routeName: "", vehicleNo: "", vehicleType: "TEMPO", capacity: "", driverName: "", mobile: "", 
-      breakdownTime: "", location: "", reason: "ENGINE", severity: "MINOR",
+      routeName: "", vehicleNo: "", vehicleType: "", capacity: "", driverName: "", mobile: "", 
+      breakdownTime: "", location: "", reason: "", severity: "MINOR",
       detailedReason: "", estimatedRepairTime: "", estimatedRepairCost: "0",
       recoveryVehicleNo: "", recoveryArrivalTime: "", milkHot: "NO", milkSour: "NO", centerLosses: [] 
     }) 
@@ -182,10 +182,7 @@ export default function BreakdownPage() {
                 <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">गाडी नंबर *</Label><Input value={formData.vehicleNo} onChange={e => setFormData({...formData, vehicleNo: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" placeholder="MH..." /></div>
                 <div className="space-y-0.5">
                   <Label className="text-[9px] font-black uppercase opacity-60">गाडीचा प्रकार</Label>
-                  <RadioGroup value={formData.vehicleType || "TEMPO"} onValueChange={v => setFormData({...formData, vehicleType: v})} className="flex gap-2 mt-1">
-                    <div className="flex items-center gap-1 bg-muted/20 px-2 py-1 rounded-md"><RadioGroupItem value="TEMPO" id="v-t" className="h-2.5 w-2.5"/><Label htmlFor="v-t" className="text-[8px] font-black">TEMPO</Label></div>
-                    <div className="flex items-center gap-1 bg-muted/20 px-2 py-1 rounded-md"><RadioGroupItem value="PICKUP" id="v-p" className="h-2.5 w-2.5"/><Label htmlFor="v-p" className="text-[8px] font-black">PICKUP</Label></div>
-                  </RadioGroup>
+                  <Input value={formData.vehicleType} onChange={e => setFormData({...formData, vehicleType: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" placeholder="उदा. टेम्पो / पिकअप" />
                 </div>
                 <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">गाडी क्षमता (L)</Label><Input value={formData.capacity} onChange={e => setFormData({...formData, capacity: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" /></div>
                 <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">ड्रायव्हरचे नाव</Label><Input value={formData.driverName} onChange={e => setFormData({...formData, driverName: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" /></div>
@@ -202,14 +199,7 @@ export default function BreakdownPage() {
                 <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">लोकेशन (ठिकाण)</Label><Input value={formData.location} onChange={e => setFormData({...formData, location: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" placeholder="उदा. माण गाव" /></div>
                 <div className="col-span-2 space-y-0.5">
                   <Label className="text-[9px] font-black uppercase opacity-60">बिघाडाचे मुख्य कारण</Label>
-                  <RadioGroup value={formData.reason} onValueChange={v => setFormData({...formData, reason: v})} className="flex flex-wrap gap-1.5 mt-1">
-                    {['ENGINE', 'TYRE', 'FUEL', 'ACCIDENT', 'OTHER'].map(o => (
-                      <div key={o} className="flex items-center gap-1 bg-muted/10 px-2 py-1.5 rounded-lg border border-muted-foreground/5">
-                        <RadioGroupItem value={o} id={`br-${o}`} className="h-2.5 w-2.5"/>
-                        <Label htmlFor={`br-${o}`} className="text-[8px] font-black">{o}</Label>
-                      </div>
-                    ))}
-                  </RadioGroup>
+                  <Input value={formData.reason} onChange={e => setFormData({...formData, reason: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" placeholder="उदा. इंजिन ओव्हरहीट / टायर पंचर" />
                 </div>
               </div>
               
