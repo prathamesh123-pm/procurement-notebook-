@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect, useMemo, Suspense } from "react"
@@ -45,7 +46,6 @@ function SuppliersContent() {
   const [isAdding, setIsAdding] = useState(false)
   const [mounted, setMounted] = useState(false)
 
-  // Form state - using supplierId for manual ID to avoid conflict with Firestore id
   const [formData, setFormData] = useState<Partial<Supplier>>({
     supplierId: "", name: "", address: "", mobile: "", routeId: "", supplierType: "Gavali", competition: "", additionalInfo: "",
     iceBlocks: 0, scaleBrand: "", fatMachineBrand: "", cattleFeedBrand: "", fssaiNumber: "", fssaiExpiry: "",
@@ -79,28 +79,27 @@ function SuppliersContent() {
     const colRef = collection(db, 'suppliers')
     addDocumentNonBlocking(colRef, newSupp)
 
-    // logic for Utpadak Center: Automatically add to Centers collection
     if (formData.supplierType === 'Center') {
       const centerColRef = collection(db, 'users', user.uid, 'centers')
       const centerData = {
         name: formData.name,
         code: formData.supplierId,
-        village: formData.address,
-        mobile: formData.mobile,
+        village: formData.address || "",
+        mobile: formData.mobile || "",
         operatorName: formData.name,
-        routeId: formData.routeId,
+        routeId: formData.routeId || "",
         isLinkedToSupplier: true,
         supplierId: formData.supplierId,
-        cowMilk: formData.cowMilk,
-        buffaloMilk: formData.buffaloMilk,
+        cowMilk: formData.cowMilk || { quantity: 0, fat: 0, snf: 0 },
+        buffaloMilk: formData.buffaloMilk || { quantity: 0, fat: 0, snf: 0 },
         material: {
-          weighingScaleBrand: formData.scaleBrand,
-          fatMachineBrand: formData.fatMachineBrand,
-          milkCansCount: formData.milkCansCount,
-          computerAvailable: formData.computerAvailable,
-          upsInverterAvailable: formData.upsInverterAvailable,
-          solarAvailable: formData.solarAvailable,
-          equipment: formData.equipment
+          weighingScaleBrand: formData.scaleBrand || "",
+          fatMachineBrand: formData.fatMachineBrand || "",
+          milkCansCount: formData.milkCansCount || 0,
+          computerAvailable: formData.computerAvailable || false,
+          upsInverterAvailable: formData.upsInverterAvailable || false,
+          solarAvailable: formData.solarAvailable || false,
+          equipment: formData.equipment || []
         },
         updatedAt: new Date().toISOString()
       }
@@ -147,9 +146,11 @@ function SuppliersContent() {
 
   const filteredSuppliers = useMemo(() => {
     return (suppliers || []).filter(s => {
-      const matchesSearch = s.name?.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          s.mobile?.includes(searchQuery) ||
-                          s.supplierId?.includes(searchQuery)
+      const name = s.name?.toLowerCase() || ""
+      const mobile = s.mobile || ""
+      const sid = s.supplierId?.toString().toLowerCase() || ""
+      const q = searchQuery.toLowerCase()
+      const matchesSearch = name.includes(q) || mobile.includes(q) || sid.includes(q)
       const matchesRoute = routeFilter === 'all' || s.routeId === routeFilter
       return matchesSearch && matchesRoute
     })

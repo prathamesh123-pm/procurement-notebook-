@@ -1,14 +1,14 @@
 
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { 
   Warehouse, Plus, Search, MapPin, Edit, Truck, X, ChevronRight, Trash2, 
-  Laptop, Zap, Sun, Box, CheckCircle2, Milk, ShieldCheck, Info, Wallet, User, Calendar, ClipboardList, Printer
+  Laptop, Zap, Sun, Box, CheckCircle2, Milk, ShieldCheck, Info, Wallet, User, Calendar, ClipboardList, RefreshCw
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
@@ -158,10 +158,14 @@ export default function CentersPage() {
     }
   }
 
-  const filteredCenters = centers?.filter(center => 
-    center.name?.toLowerCase().includes(searchQuery.toLowerCase()) || 
-    center.code?.toLowerCase().includes(searchQuery.toLowerCase())
-  ) || []
+  const filteredCenters = useMemo(() => {
+    return (centers || []).filter(center => {
+      const name = center.name?.toLowerCase() || ""
+      const code = center.code?.toString().toLowerCase() || ""
+      const q = searchQuery.toLowerCase()
+      return name.includes(q) || code.includes(q)
+    })
+  }, [centers, searchQuery])
 
   if (!mounted || isLoading) return <div className="p-10 text-center italic font-black uppercase text-[10px] opacity-50">लोड होत आहे...</div>
 
@@ -187,7 +191,7 @@ export default function CentersPage() {
               <input placeholder="शोधा (नाव किंवा कोड)..." className="w-full pl-8 h-9 text-[11px] bg-white border border-muted-foreground/10 rounded-lg font-black uppercase outline-none focus:ring-1 focus:ring-primary shadow-inner" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
             </div>
           </div>
-          <ScrollArea className="h-[250px]">
+          <ScrollArea className="h-[300px]">
             <div className="divide-y divide-muted-foreground/5">
               {filteredCenters.map(center => (
                 <div key={center.id} className={`p-3 cursor-pointer hover:bg-muted/50 flex justify-between items-center transition-colors ${selectedCenter?.id === center.id ? 'bg-primary/5 border-l-4 border-primary' : ''}`} onClick={() => setSelectedCenter(center)}>
@@ -196,7 +200,7 @@ export default function CentersPage() {
                     <div className="flex items-center gap-2 mt-1">
                       <Badge variant="secondary" className="text-[8px] font-black h-4 px-1.5 rounded-md bg-muted/50 border-none">{center.code}</Badge>
                       <span className="text-[10px] text-muted-foreground truncate flex items-center gap-1 font-bold">
-                        <MapPin className="h-3 w-3" /> {center.village}
+                        <MapPin className="h-3 w-3" /> {center.village || "पत्ता नाही"}
                       </span>
                     </div>
                   </div>
@@ -233,7 +237,6 @@ export default function CentersPage() {
             </div>
             <ScrollArea className="max-h-[600px]">
               <div className="p-3 space-y-4 pb-10">
-                {/* 1. Primary Grid */}
                 <div className="grid grid-cols-2 gap-2">
                   <div className="bg-muted/20 p-2.5 rounded-xl border border-muted-foreground/5 space-y-1.5">
                     <h4 className="text-[9px] font-black uppercase text-primary tracking-widest flex items-center gap-1.5">
@@ -255,7 +258,6 @@ export default function CentersPage() {
                   </div>
                 </div>
 
-                {/* 2. Business Info */}
                 <div className="grid grid-cols-2 gap-2">
                   <div className="bg-muted/20 p-2.5 rounded-xl border border-muted-foreground/5 space-y-1.5">
                     <h4 className="text-[9px] font-black uppercase text-primary tracking-widest flex items-center gap-1.5">
@@ -275,7 +277,6 @@ export default function CentersPage() {
                   </div>
                 </div>
 
-                {/* 3. Facilities Check */}
                 <div className="space-y-1.5">
                   <h4 className="text-[9px] font-black uppercase text-primary tracking-widest">सुविधा व ऊर्जा बॅकअप</h4>
                   <div className="grid grid-cols-3 gap-2">
@@ -294,7 +295,6 @@ export default function CentersPage() {
                   </div>
                 </div>
 
-                {/* 4. Milk Summary */}
                 <div className="space-y-1.5">
                   <h4 className="text-[9px] font-black uppercase text-primary tracking-widest">दूध संकलन सारांश (AVG MILK)</h4>
                   <div className="grid grid-cols-2 gap-2">
@@ -311,7 +311,6 @@ export default function CentersPage() {
                   </div>
                 </div>
 
-                {/* 5. Technical Details */}
                 <div className="space-y-1.5">
                   <h4 className="text-[9px] font-black uppercase text-primary tracking-widest">तांत्रिक व साहित्य तपशील</h4>
                   <div className="bg-muted/10 p-2.5 rounded-xl border border-muted-foreground/5 grid grid-cols-2 gap-y-2 gap-x-4">
@@ -325,7 +324,6 @@ export default function CentersPage() {
                   </div>
                 </div>
 
-                {/* 6. Equipment List */}
                 {selectedCenter.material?.equipment && selectedCenter.material.equipment.length > 0 && (
                   <div className="space-y-1.5">
                     <h4 className="text-[9px] font-black uppercase text-primary tracking-widest flex items-center gap-1.5">
@@ -358,7 +356,6 @@ export default function CentersPage() {
                   </div>
                 )}
 
-                {/* 7. Additional Notes */}
                 {selectedCenter.additionalNotes && (
                   <div className="space-y-1.5">
                     <h4 className="text-[9px] font-black uppercase text-primary tracking-widest flex items-center gap-1.5">
@@ -455,7 +452,6 @@ export default function CentersPage() {
                     <div className="space-y-1"><Label className="text-[9px] uppercase font-black opacity-60">पशुखाद्य ब्रँड</Label><Input value={formData.cattleFeedBrand} onChange={e => setFormData({...formData, cattleFeedBrand: e.target.value})} className="h-9 text-[11px] rounded-lg bg-muted/20 border-none font-black" /></div>
                     <div className="space-y-1"><Label className="text-[9px] uppercase font-black opacity-60">बर्फ लाद्या</Label><Input type="number" value={formData.iceBlocks} onChange={e => setFormData({...formData, iceBlocks: e.target.value})} className="h-9 text-[11px] rounded-lg bg-muted/20 border-none font-black" /></div>
                   </div>
-                  {/* Avg Milk Metrics */}
                   <div className="p-3 border rounded-xl bg-blue-50/20 space-y-2">
                     <p className="text-[9px] font-black text-blue-700 uppercase tracking-widest flex items-center gap-1.5"><Milk className="h-3 w-3" /> गाय दूध (AVG COW)</p>
                     <div className="grid grid-cols-3 gap-2">
