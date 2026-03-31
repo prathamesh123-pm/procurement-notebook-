@@ -1,6 +1,7 @@
+
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, Suspense } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { 
@@ -18,21 +19,40 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { useToast } from "@/hooks/use-toast"
-import { useUser, useFirestore, addDocumentNonBlocking } from "@/firebase"
-import { collection } from "firebase/firestore"
-import { useRouter } from "next/navigation"
+import { useUser, useFirestore, addDocumentNonBlocking, updateDocumentNonBlocking, useDoc, useMemoFirebase } from "@/firebase"
+import { collection, doc } from "firebase/firestore"
+import { useRouter, useSearchParams } from "next/navigation"
 
-export default function WordEditorPage() {
+function EditorContent() {
+  const { user } = useUser()
+  const db = useFirestore()
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const editId = searchParams.get('edit')
+  const { toast } = useToast()
+
   const [mounted, setMounted] = useState(false)
   const [docTitle, setDocTitle] = useState("नवीन डॉक्युमेंट")
   const [zoom, setZoom] = useState(100)
   const editorRef = useRef<HTMLDivElement>(null)
-  const { toast } = useToast()
-  const { user } = useUser()
-  const db = useFirestore()
-  const router = useRouter()
 
-  useEffect(() => setMounted(true), [])
+  const reportRef = useMemoFirebase(() => {
+    if (!db || !user || !editId) return null
+    return doc(db, 'users', user.uid, 'dailyWorkReports', editId)
+  }, [db, user, editId])
+
+  const { data: existingReport, isLoading: isReportLoading } = useDoc(reportRef)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (existingReport && existingReport.fullData && existingReport.fullData.isWordDoc && editorRef.current) {
+      setDocTitle(existingReport.fullData.title || "नवीन डॉक्युमेंट")
+      editorRef.current.innerHTML = existingReport.fullData.content || ""
+    }
+  }, [existingReport])
 
   const execCommand = (command: string, value?: string) => {
     document.execCommand(command, false, value)
@@ -126,17 +146,26 @@ export default function WordEditorPage() {
         content: content,
         isWordDoc: true
       },
-      createdAt: new Date().toISOString()
+      updatedAt: new Date().toISOString()
     }
 
-    addDocumentNonBlocking(collection(db, 'users', user.uid, 'dailyWorkReports'), reportData)
-    toast({ title: "यशस्वी", description: "डॉक्युमेंट अहवालात जतन झाले." })
+    if (editId) {
+      const docRef = doc(db, 'users', user.uid, 'dailyWorkReports', editId)
+      updateDocumentNonBlocking(docRef, reportData)
+      toast({ title: "यशस्वी", description: "डॉक्युमेंट अहवाल अद्ययावत झाला." })
+    } else {
+      addDocumentNonBlocking(collection(db, 'users', user.uid, 'dailyWorkReports'), {
+        ...reportData,
+        createdAt: new Date().toISOString()
+      })
+      toast({ title: "यशस्वी", description: "डॉक्युमेंट अहवालात जतन झाले." })
+    }
     router.push('/reports')
   }
 
   const handlePrint = () => window.print()
 
-  if (!mounted) return null
+  if (!mounted || isReportLoading) return <div className="p-20 text-center italic font-black uppercase text-[10px] opacity-50">लोड होत आहे...</div>
 
   const RibbonGroup = ({ label, children }: { label: string, children: React.ReactNode }) => (
     <div className="flex flex-col items-center border-r border-slate-200 px-1 last:border-0 h-full shrink-0">
@@ -187,7 +216,6 @@ export default function WordEditorPage() {
 
   return (
     <div className="flex flex-col h-[calc(100vh-100px)] max-w-[900px] mx-auto w-full bg-slate-50 overflow-hidden rounded-xl border shadow-xl animate-in fade-in duration-500">
-      {/* Title Bar - Ultra Slim */}
       <div className="h-6 bg-primary text-white flex items-center justify-between px-3 shrink-0">
         <div className="flex items-center gap-2 min-w-0">
           <FileText className="h-3 w-3" />
@@ -199,11 +227,10 @@ export default function WordEditorPage() {
         </div>
         <div className="flex items-center gap-2 shrink-0">
           <span className="text-[7px] font-black opacity-70 uppercase tracking-widest">Enterprise Edition</span>
-          <Button variant="ghost" size="icon" className="h-4 w-4 text-white" onClick={() => window.location.reload()}><RefreshCw className="h-2.5 w-2.5" /></Button>
+          <Button variant="ghost" size="icon" className="h-4 w-4 text-white" onClick={() => router.push('/reports')}><X className="h-2.5 w-2.5" /></Button>
         </div>
       </div>
 
-      {/* Ribbon - Ultra Compact */}
       <Tabs defaultValue="home" className="w-full shrink-0 bg-white border-b shadow-sm">
         <ScrollArea className="w-full bg-slate-100 border-b">
           <TabsList className="h-6 bg-transparent justify-start px-1 gap-0 overflow-visible">
@@ -224,7 +251,7 @@ export default function WordEditorPage() {
           <div className="flex items-center gap-0.5 h-full px-1 min-w-max overflow-x-auto">
             <TabsContent value="file" className="m-0 h-full flex items-center gap-0.5">
               <RibbonGroup label="FILE">
-                <BigToolBtn icon={Plus} label="NEW" />
+                <BigToolBtn icon={Plus} label="NEW" onClick={() => { if(editorRef.current) editorRef.current.innerHTML = ""; setDocTitle("नवीन डॉक्युमेंट"); }} />
                 <BigToolBtn icon={Save} label="SAVE" onClick={handleSave} />
                 <BigToolBtn icon={Printer} label="PRINT" onClick={handlePrint} />
                 <BigToolBtn icon={Download} label="EXPORT" />
@@ -341,13 +368,12 @@ export default function WordEditorPage() {
         </div>
       </Tabs>
 
-      {/* Editor Area */}
       <ScrollArea className="flex-1 bg-slate-200 shadow-inner p-1 sm:p-4">
         <div 
           className="bg-white mx-auto shadow-2xl min-h-[1100px] p-6 sm:p-12 focus:outline-none transition-all duration-300 origin-top"
           style={{ 
             width: '100%',
-            maxWidth: '210mm', // A4 Width
+            maxWidth: '210mm',
             transform: zoom !== 100 ? `scale(${zoom/100})` : 'none'
           }}
         >
@@ -367,7 +393,6 @@ export default function WordEditorPage() {
         <ScrollBar orientation="horizontal" />
       </ScrollArea>
 
-      {/* Status Bar */}
       <div className="h-4 bg-slate-100 border-t flex items-center justify-between px-3 text-[7px] font-black text-slate-500 uppercase shrink-0">
         <div className="flex items-center gap-3">
           <span className="bg-primary/10 text-primary px-1.5 rounded">PAGE 1 OF 1</span>
@@ -403,5 +428,13 @@ export default function WordEditorPage() {
         }
       `}</style>
     </div>
+  )
+}
+
+export default function WordEditorPage() {
+  return (
+    <Suspense fallback={<div className="p-20 text-center italic font-black uppercase text-[10px] opacity-50">लोड होत आहे...</div>}>
+      <EditorContent />
+    </Suspense>
   )
 }

@@ -1,7 +1,8 @@
+
 "use client"
 
-import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
+import { useState, useEffect, Suspense } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -9,19 +10,21 @@ import { Card } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { 
-  ArrowLeft, Save, ClipboardList, Warehouse, Milk, Info, MapPin, ShieldCheck
+  ArrowLeft, Save, ClipboardList, Warehouse, Milk, Info, MapPin, ShieldCheck, RefreshCw
 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
-import { useUser, useFirestore, addDocumentNonBlocking } from "@/firebase"
-import { collection } from "firebase/firestore"
+import { useUser, useFirestore, addDocumentNonBlocking, useDoc, useMemoFirebase, updateDocumentNonBlocking } from "@/firebase"
+import { collection, doc } from "firebase/firestore"
 
-export default function SurveyReportPage() {
+function SurveyForm() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const editId = searchParams.get('edit')
   const { user } = useUser()
   const db = useFirestore()
   const { toast } = useToast()
+  
   const [mounted, setMounted] = useState(false)
-
   const [formData, setFormData] = useState({
     date: new Date().toISOString().split('T')[0],
     centerName: "", ownerName: "", address: "", email: "", mobile: "", fssaiNo: "", validDate: "",
@@ -37,13 +40,29 @@ export default function SurveyReportPage() {
     totalMilk: "", paymentCycle: "", otherInfo: ""
   })
 
-  useEffect(() => setMounted(true), [])
+  const reportRef = useMemoFirebase(() => {
+    if (!db || !user || !editId) return null
+    return doc(db, 'users', user.uid, 'dailyWorkReports', editId)
+  }, [db, user, editId])
+
+  const { data: existingReport, isLoading } = useDoc(reportRef)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (existingReport && existingReport.fullData) {
+      setFormData(prev => ({ ...prev, ...existingReport.fullData }))
+    }
+  }, [existingReport])
 
   const handleSave = () => {
     if (!db || !user || !formData.centerName) {
       toast({ title: "त्रुटी", description: "नाव आवश्यक आहे.", variant: "destructive" })
       return
     }
+    
     const report = {
       type: 'Milk Procurement Survey',
       date: formData.date,
@@ -52,14 +71,24 @@ export default function SurveyReportPage() {
       summary: `सर्व्हे: ${formData.centerName}. प्रकार: ${formData.type}. दूध: ${formData.totalMilk}L.`,
       overallSummary: `केंद्राचे नाव: ${formData.centerName}, प्रकार: ${formData.type}`,
       fullData: { ...formData, officer: user.displayName || "Officer" },
-      createdAt: new Date().toISOString()
+      updatedAt: new Date().toISOString()
     }
-    addDocumentNonBlocking(collection(db, 'users', user.uid, 'dailyWorkReports'), report)
-    toast({ title: "यशस्वी", description: "सर्वे जतन झाला." })
+
+    if (editId) {
+      const docRef = doc(db, 'users', user.uid, 'dailyWorkReports', editId)
+      updateDocumentNonBlocking(docRef, report)
+      toast({ title: "यशस्वी", description: "सर्व्हे अहवाल अद्ययावत झाला." })
+    } else {
+      addDocumentNonBlocking(collection(db, 'users', user.uid, 'dailyWorkReports'), {
+        ...report,
+        createdAt: new Date().toISOString()
+      })
+      toast({ title: "यशस्वी", description: "सर्वे जतन झाला." })
+    }
     router.push('/reports')
   }
 
-  if (!mounted) return null
+  if (!mounted || isLoading) return <div className="p-20 text-center font-black uppercase text-[10px] opacity-50">लोड होत आहे...</div>
 
   const SectionTitle = ({ icon: Icon, title }: any) => (
     <div className="flex items-center gap-1 border-b border-primary/10 pb-0.5 mb-1.5">
@@ -71,9 +100,9 @@ export default function SurveyReportPage() {
   return (
     <div className="compact-form-container">
       <div className="flex items-center gap-2 border-b pb-1 mb-2">
-        <Button variant="ghost" size="icon" onClick={() => router.back()} className="h-7 w-7"><ArrowLeft className="h-3.5 w-3.5" /></Button>
+        <Button variant="ghost" size="icon" onClick={() => router.push('/reports')} className="h-7 w-7"><ArrowLeft className="h-3.5 w-3.5" /></Button>
         <div className="min-w-0">
-          <h2 className="text-[11px] font-black uppercase truncate flex items-center gap-1"><ClipboardList className="h-3 w-3 text-primary" /> दूध सर्व्हे (SURVEY)</h2>
+          <h2 className="text-[11px] font-black uppercase truncate flex items-center gap-1"><ClipboardList className="h-3 w-3 text-primary" /> {editId ? 'सर्व्हे अपडेट' : 'दूध सर्व्हे (SURVEY)'}</h2>
           <p className="text-[8px] font-bold text-muted-foreground uppercase">{formData.date}</p>
         </div>
       </div>
@@ -166,9 +195,18 @@ export default function SurveyReportPage() {
         </Card>
 
         <Button onClick={handleSave} className="compact-button w-full bg-primary text-white shadow-lg mb-10 h-10 uppercase font-black tracking-widest">
-          सर्वे जतन करा (SUBMIT)
+          {editId ? <RefreshCw className="h-4 w-4 mr-1.5" /> : <Save className="h-4 w-4 mr-1.5" />}
+          {editId ? 'सर्व्हे अपडेट करा' : 'सर्वे जतन करा (SUBMIT)'}
         </Button>
       </div>
     </div>
+  )
+}
+
+export default function SurveyReportPage() {
+  return (
+    <Suspense fallback={<div className="p-20 text-center font-black uppercase text-[10px] opacity-50">लोड होत आहे...</div>}>
+      <SurveyForm />
+    </Suspense>
   )
 }
