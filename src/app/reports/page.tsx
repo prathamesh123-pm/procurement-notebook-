@@ -170,7 +170,6 @@ export default function ReportsPage() {
     computerAvailable: "POP सिस्टम"
   };
 
-  // User requested sequence: Supplier Name -> ID -> Title -> Remark
   const orderedKeys = [
     "supplierName", 
     "supplierId", 
@@ -515,8 +514,8 @@ export default function ReportsPage() {
           <DialogHeader className="p-3 bg-slate-50 border-b flex flex-row items-center justify-between space-y-0">
             <DialogTitle className="text-[10px] font-black uppercase text-slate-500 tracking-[0.2em] px-3 truncate">अहवाल तपशील (REPORT DETAILS)</DialogTitle>
             <div className="flex gap-2 shrink-0 pr-2">
-              <Button size="icon" variant="outline" onClick={() => window.print()} className="h-8 w-8 text-slate-700 border-slate-200 hover:bg-slate-100 rounded-xl shadow-sm"><Printer className="h-4 w-4" /></Button>
-              <Button size="icon" variant="ghost" onClick={() => setIsViewOpen(false)} className="h-8 w-8 text-slate-400 hover:bg-slate-100 rounded-xl"><X className="h-5 w-5" /></Button>
+              <Button size="icon" variant="outline" onClick={() => window.print()} className="h-8 w-8 text-slate-700 border-slate-200 hover:bg-slate-100 rounded-xl shadow-sm no-print"><Printer className="h-4 w-4" /></Button>
+              <Button size="icon" variant="ghost" onClick={() => setIsViewOpen(false)} className="h-8 w-8 text-slate-400 hover:bg-slate-100 rounded-xl no-print"><X className="h-5 w-5" /></Button>
             </div>
           </DialogHeader>
           <ScrollArea className="max-h-[85vh] p-4 bg-white">
@@ -537,24 +536,39 @@ export default function ReportsPage() {
 
       <style jsx global>{`
         @media print {
-          body * { visibility: hidden; }
-          #printable-area, #printable-area * { visibility: visible; }
+          @page {
+            size: A4;
+            margin: 10mm;
+          }
+          /* Hide all UI elements except the printable area */
+          body * { 
+            visibility: hidden; 
+          }
+          #printable-area, #printable-area * { 
+            visibility: visible; 
+          }
           #printable-area { 
-            position: fixed; 
+            position: absolute; 
             left: 0; 
             top: 0; 
             width: 100% !important; 
-            padding: 20px !important; 
+            padding: 0 !important; 
             margin: 0 !important;
             border: 2px solid black !important;
             box-shadow: none !important;
             background: white !important;
             z-index: 9999;
           }
-          .dialog-content, .scroll-area { overflow: visible !important; height: auto !important; max-height: none !important; }
-          .fixed, .sticky, button, .tabs, header, nav, .sidebar { display: none !important; }
-          table { width: 100% !important; border-collapse: collapse !important; }
-          th, td { border: 1px solid black !important; }
+          /* Ensure Dialog components don't interfere with full-page visibility */
+          .fixed, .sticky, button, .no-print, header, nav, .sidebar, [role="dialog"] > button { 
+            display: none !important; 
+          }
+          /* Layout adjustments for table printing */
+          table { width: 100% !important; border-collapse: collapse !important; table-layout: fixed; }
+          th, td { border: 1px solid black !important; word-wrap: break-word; overflow-wrap: break-word; }
+          
+          /* Prevent page breaks inside rows */
+          tr { page-break-inside: avoid; page-break-after: auto; }
         }
       `}</style>
     </div>
