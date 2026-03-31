@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
@@ -53,7 +52,7 @@ export default function RouteDetailsPage() {
   const [editingId, setEditingId] = useState<string | null>(null)
 
   const [formData, setFormData] = useState({
-    name: "", id: "", address: "", mobile: "", competition: "", additionalInfo: "",
+    name: "", supplierId: "", address: "", mobile: "", competition: "", additionalInfo: "",
     supplierType: "Gavali" as SupplierType,
     cowQty: "0", cowFat: "0", cowSnf: "0", bufQty: "0", bufFat: "0", bufSnf: "0",
     iceBlocks: "0", collectionType: "Route", cattleFeedBrand: "",
@@ -69,7 +68,7 @@ export default function RouteDetailsPage() {
     setDialogMode('add')
     setEditingId(null)
     setFormData({
-      name: "", id: "", address: "", mobile: "", competition: "", additionalInfo: "",
+      name: "", supplierId: "", address: "", mobile: "", competition: "", additionalInfo: "",
       supplierType: "Gavali",
       cowQty: "0", cowFat: "0", cowSnf: "0", bufQty: "0", bufFat: "0", bufSnf: "0",
       iceBlocks: "0", collectionType: "Route", cattleFeedBrand: "",
@@ -85,7 +84,7 @@ export default function RouteDetailsPage() {
     setDialogMode('edit')
     setEditingId(supplier.id)
     setFormData({
-      name: supplier.name || "", id: supplier.id || "", address: supplier.address || "",
+      name: supplier.name || "", supplierId: supplier.supplierId || "", address: supplier.address || "",
       mobile: supplier.mobile || "", competition: supplier.competition || "", additionalInfo: supplier.additionalInfo || "",
       supplierType: supplier.supplierType || "Gavali",
       cowQty: String(supplier.cowMilk?.quantity ?? 0), cowFat: String(supplier.cowMilk?.fat ?? 0), cowSnf: String(supplier.cowMilk?.snf ?? 0),
@@ -103,13 +102,13 @@ export default function RouteDetailsPage() {
   }
 
   const handleSaveSupplier = () => {
-    if (!formData.name || !formData.id || !db || !user) {
+    if (!formData.name || !formData.supplierId || !db || !user) {
       toast({ title: "त्रुटी", description: "नाव आणि आयडी आवश्यक आहे.", variant: "destructive" })
       return
     }
 
     const supplierData = {
-      id: formData.id, name: formData.name, address: formData.address, mobile: formData.mobile,
+      supplierId: formData.supplierId, name: formData.name, address: formData.address, mobile: formData.mobile,
       routeId: routeId, competition: formData.competition, additionalInfo: formData.additionalInfo,
       supplierType: formData.supplierType,
       cowMilk: { quantity: Number(formData.cowQty), fat: Number(formData.cowFat), snf: Number(formData.cowSnf) },
@@ -132,8 +131,8 @@ export default function RouteDetailsPage() {
       if (formData.supplierType === 'Center') {
         const centerColRef = collection(db, 'users', user.uid, 'centers')
         addDocumentNonBlocking(centerColRef, {
-          name: formData.name, code: formData.id, village: formData.address, mobile: formData.mobile,
-          operatorName: formData.name, routeId: routeId, isLinkedToSupplier: true, supplierId: formData.id,
+          name: formData.name, code: formData.supplierId, village: formData.address, mobile: formData.mobile,
+          operatorName: formData.name, routeId: routeId, isLinkedToSupplier: true, supplierId: formData.supplierId,
           cowMilk: supplierData.cowMilk, buffaloMilk: supplierData.buffaloMilk,
           material: {
             weighingScaleBrand: formData.scaleBrand, fatMachineBrand: formData.fatMachineBrand,
@@ -197,13 +196,13 @@ export default function RouteDetailsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-2">
         <Card className={`lg:col-span-4 border shadow-none bg-white overflow-hidden flex flex-col border-muted-foreground/10 ${selectedSupplier ? 'hidden lg:flex' : 'flex'}`}>
           <div className="p-2 border-b bg-muted/5"><div className="relative"><Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3 w-3 text-muted-foreground opacity-50" /><input placeholder="शोधा..." className="w-full pl-7 h-8 text-[11px] bg-white border border-muted-foreground/10 rounded-md font-black uppercase" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} /></div></div>
-          <ScrollArea className="h-[650px]"><div className="divide-y">{filteredSuppliers.map(s => (<div key={s.id} onClick={() => setSelectedSupplier(s)} className={`p-2.5 cursor-pointer hover:bg-muted/50 flex justify-between items-center ${selectedSupplier?.id === s.id ? 'bg-primary/5 border-l-2 border-primary' : ''}`}><div className="min-w-0"><div className="flex items-center gap-1.5"><h4 className="font-black text-[11px] truncate uppercase">{s.name}</h4>{s.supplierType === 'Center' && <Badge className="bg-emerald-500 h-3 px-1 text-[6px] font-black border-none uppercase">Center</Badge>}</div><p className="text-[9px] text-muted-foreground truncate font-bold">ID: {s.id?.slice(-6)} | {s.address}</p></div><div className="flex items-center gap-1"><Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:bg-destructive/5" onClick={(e) => handleDeleteSupplier(s.id, e)}><Trash2 className="h-3.5 w-3.5" /></Button><ChevronRight className="h-3.5 w-3.5 text-muted-foreground opacity-50" /></div></div>))}</div></ScrollArea>
+          <ScrollArea className="h-[650px]"><div className="divide-y">{filteredSuppliers.map(s => (<div key={s.id} onClick={() => setSelectedSupplier(s)} className={`p-2.5 cursor-pointer hover:bg-muted/50 flex justify-between items-center ${selectedSupplier?.id === s.id ? 'bg-primary/5 border-l-2 border-primary' : ''}`}><div className="min-w-0"><div className="flex items-center gap-1.5"><h4 className="font-black text-[11px] truncate uppercase">{s.name}</h4>{s.supplierType === 'Center' && <Badge className="bg-emerald-500 h-3 px-1 text-[6px] font-black border-none uppercase">Center</Badge>}</div><p className="text-[9px] text-muted-foreground truncate font-bold">ID: {s.supplierId || s.id?.slice(-6)} | {s.address}</p></div><div className="flex items-center gap-1"><Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:bg-destructive/5" onClick={(e) => handleDeleteSupplier(s.id, e)}><Trash2 className="h-3.5 w-3.5" /></Button><ChevronRight className="h-3.5 w-3.5 text-muted-foreground opacity-50" /></div></div>))}</div></ScrollArea>
         </Card>
 
         <Card className={`lg:col-span-8 border shadow-none bg-white rounded-xl min-h-[450px] border-muted-foreground/10 ${!selectedSupplier ? 'hidden lg:flex' : 'block'}`}>
           {selectedSupplier ? (
             <div className="flex flex-col h-full">
-              <div className="p-3 border-b flex items-center justify-between bg-primary/5 sticky top-0 z-10"><Button type="button" variant="ghost" size="icon" className="lg:hidden" onClick={() => setSelectedSupplier(null)}><ArrowLeft className="h-4 w-4" /></Button><div className="flex-1 px-2 min-w-0"><h3 className="text-xs sm:text-sm font-black truncate uppercase">{selectedSupplier.name}</h3><p className="text-[9px] font-black text-muted-foreground uppercase">ID: {selectedSupplier.id} | {selectedSupplier.supplierType || 'Gavali'}</p></div><div className="flex gap-1.5"><Button type="button" variant="outline" size="icon" className="h-7 w-7 text-primary hover:bg-primary/5 rounded-lg" onClick={() => openEditDialog(selectedSupplier)}><Edit className="h-3 w-3" /></Button><Button type="button" variant="outline" size="icon" className="h-7 w-7 text-destructive hover:bg-destructive/5 rounded-lg" onClick={(e) => handleDeleteSupplier(selectedSupplier.id, e)}><Trash2 className="h-3.5 w-3.5" /></Button></div></div>
+              <div className="p-3 border-b flex items-center justify-between bg-primary/5 sticky top-0 z-10"><Button type="button" variant="ghost" size="icon" className="lg:hidden" onClick={() => setSelectedSupplier(null)}><ArrowLeft className="h-4 w-4" /></Button><div className="flex-1 px-2 min-w-0"><h3 className="text-xs sm:text-sm font-black truncate uppercase">{selectedSupplier.name}</h3><p className="text-[9px] font-black text-muted-foreground uppercase">ID: {selectedSupplier.supplierId || selectedSupplier.id} | {selectedSupplier.supplierType || 'Gavali'}</p></div><div className="flex gap-1.5"><Button type="button" variant="outline" size="icon" className="h-7 w-7 text-primary hover:bg-primary/5 rounded-lg" onClick={() => openEditDialog(selectedSupplier)}><Edit className="h-3 w-3" /></Button><Button type="button" variant="outline" size="icon" className="h-7 w-7 text-destructive hover:bg-destructive/5 rounded-lg" onClick={(e) => handleDeleteSupplier(selectedSupplier.id, e)}><Trash2 className="h-3.5 w-3.5" /></Button></div></div>
               <ScrollArea className="flex-1 h-[650px]">
                 <div className="p-3 space-y-4">
                   <div className="grid grid-cols-2 gap-3"><div className="bg-muted/20 p-2.5 rounded-xl border border-muted-foreground/5 space-y-1.5"><h4 className="text-[9px] font-black uppercase text-primary tracking-widest">संपर्क व पत्ता</h4><p className="text-[10px] font-black">{selectedSupplier.mobile || "-"}</p><p className="text-[10px] font-medium leading-relaxed">{selectedSupplier.address || "-"}</p></div><div className="bg-muted/20 p-2.5 rounded-xl border border-muted-foreground/5 space-y-1.5"><h4 className="text-[9px] font-black uppercase text-primary tracking-widest">FSSAI परवाना</h4><p className="text-[10px] font-black">{selectedSupplier.fssaiNumber || "N/A"}</p><Badge className="text-[8px] h-4 px-1.5 font-black bg-primary/10 text-primary border-none">VALID: {selectedSupplier.fssaiExpiry || "-"}</Badge></div></div>
@@ -244,7 +243,7 @@ export default function RouteDetailsPage() {
                     </Select>
                   </div>
                   <div className="col-span-2 space-y-1"><Label className="text-[9px] uppercase font-black tracking-widest opacity-60">पूर्ण नाव</Label><Input value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="h-9 text-[11px] rounded-lg bg-muted/20 border-none font-black" /></div>
-                  <div className="space-y-1"><Label className="text-[9px] uppercase font-black tracking-widest opacity-60">आयडी (ID)</Label><Input value={formData.id} onChange={e => setFormData({...formData, id: e.target.value})} className="h-9 text-[11px] rounded-lg bg-muted/20 border-none font-black" /></div>
+                  <div className="space-y-1"><Label className="text-[9px] uppercase font-black tracking-widest opacity-60">आयडी (ID)</Label><Input value={formData.supplierId} onChange={e => setFormData({...formData, supplierId: e.target.value})} className="h-9 text-[11px] rounded-lg bg-muted/20 border-none font-black" /></div>
                   <div className="space-y-1"><Label className="text-[9px] uppercase font-black tracking-widest opacity-60">मोबाईल</Label><Input value={formData.mobile} onChange={e => setFormData({...formData, mobile: e.target.value})} className="h-9 text-[11px] rounded-lg bg-muted/20 border-none font-black" /></div>
                   <div className="col-span-2 space-y-1"><Label className="text-[9px] uppercase font-black tracking-widest opacity-60">पत्ता</Label><Input value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} className="h-9 text-[11px] rounded-lg bg-muted/20 border-none font-black" /></div>
                   <div className="space-y-1"><Label className="text-[9px] uppercase font-black tracking-widest opacity-60">FSSAI क्र.</Label><Input value={formData.fssaiNumber} onChange={e => setFormData({...formData, fssaiNumber: e.target.value})} className="h-9 text-[11px] rounded-lg bg-muted/20 border-none font-black" /></div>

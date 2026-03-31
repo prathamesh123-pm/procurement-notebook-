@@ -32,6 +32,7 @@ export type SupplierType = 'Gavali' | 'Gotha' | 'Center';
 
 export interface Supplier {
   id: string;
+  supplierId: string; // Manual Business ID
   name: string;
   address: string;
   mobile: string;
