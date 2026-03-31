@@ -261,7 +261,7 @@ export default function ReportsPage() {
     const totalIceUsed = logs.reduce((sum: number, l: any) => sum + (Number(l.iceUsed) || 0), 0);
 
     return (
-      <div className="bg-white p-4 font-sans text-slate-900 border-[2px] border-slate-900 rounded-sm shadow-none max-w-full mx-auto print:border-black" id="printable-area">
+      <div className="bg-white p-4 font-sans text-slate-900 border-[2px] border-slate-900 rounded-sm shadow-none w-full max-w-full mx-auto print:border-black" id="printable-area">
         <div className="flex justify-between items-center border-b-[2px] border-slate-900 pb-2 mb-4 print:border-black">
           <div className="space-y-0.5">
             <h1 className="font-black uppercase text-lg tracking-tighter flex items-center gap-2">
@@ -291,7 +291,7 @@ export default function ReportsPage() {
           </div>
         </div>
 
-        <div className="overflow-hidden border border-slate-900 rounded-lg mb-4 print:border-black">
+        <div className="overflow-x-auto border border-slate-900 rounded-lg mb-4 print:border-black">
           <table className="w-full border-collapse">
             <thead>
               <tr className="bg-slate-900 text-white font-black text-[9px] uppercase tracking-wider print:bg-black">
@@ -387,7 +387,7 @@ export default function ReportsPage() {
     const isDailyTask = report.type === 'Daily Task';
 
     return (
-      <div className={`bg-white font-sans text-slate-900 border-[2px] border-slate-900 rounded-sm shadow-none print:border-black mb-4 last:mb-0 break-inside-avoid ${isDailyTask ? 'p-4' : 'p-6'}`} id="printable-area">
+      <div className={`bg-white font-sans text-slate-900 border-[2px] border-slate-900 rounded-sm shadow-none print:border-black mb-4 last:mb-0 break-inside-avoid w-full max-w-full mx-auto ${isDailyTask ? 'p-4' : 'p-6'}`} id="printable-area">
         <div className={`border-b-[2px] border-slate-900 text-center print:border-black ${isDailyTask ? 'pb-2 mb-4' : 'pb-4 mb-6'}`}>
           <div className="flex justify-center mb-1">
             <div className="p-2 bg-primary text-white rounded-xl print:bg-black">
@@ -443,7 +443,7 @@ export default function ReportsPage() {
               <div className="flex items-center gap-1.5 text-[10px] font-black uppercase text-rose-700">
                 <AlertTriangle className="h-4 w-4" /> नुकसान तपशील:
               </div>
-              <div className="border border-rose-600 rounded-lg overflow-hidden shadow-sm print:border-black">
+              <div className="border border-rose-600 rounded-lg overflow-hidden shadow-sm print:border-black overflow-x-auto">
                 <table className="w-full border-collapse text-[9px]">
                   <thead className="bg-rose-600 text-white font-black uppercase tracking-wider print:bg-black">
                     <tr>
@@ -485,14 +485,14 @@ export default function ReportsPage() {
 
   return (
     <div className="compact-form-container pb-20 max-w-[650px] mx-auto px-2 animate-in fade-in duration-700">
-      <div className="flex items-center justify-between border-b-2 border-primary/20 pb-4 mb-6">
-        <div className="flex flex-col gap-1">
+      <div className="flex flex-col sm:flex-row items-center justify-between border-b-2 border-primary/20 pb-4 mb-6 gap-4">
+        <div className="flex flex-col gap-1 items-center sm:items-start text-center sm:text-left">
           <h2 className="text-xl font-black text-slate-900 flex items-center gap-2 uppercase tracking-tight">
             <Archive className="h-6 w-6 text-primary" /> अहवाल संग्रहालय
           </h2>
           <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] ml-1">Archive & Record Management</p>
         </div>
-        <Button asChild size="sm" className="h-10 px-6 font-black uppercase rounded-2xl shadow-xl shadow-primary/20 hover:scale-[1.02] transition-all active:scale-95">
+        <Button asChild size="sm" className="h-10 px-6 font-black uppercase rounded-2xl shadow-xl shadow-primary/20 hover:scale-[1.02] transition-all active:scale-95 w-full sm:w-auto">
           <Link href="/reports/entry/seizure"><Plus className="h-4 w-4 mr-2" /> जप्ती नोंद</Link>
         </Button>
       </div>
@@ -511,13 +511,13 @@ export default function ReportsPage() {
       </div>
 
       <Card className="p-3 mb-6 bg-white border-none shadow-2xl rounded-3xl ring-1 ring-slate-100">
-        <div className="flex flex-wrap gap-2">
-          <div className="relative flex-1 min-w-[180px]">
+        <div className="flex flex-wrap gap-2 justify-center">
+          <div className="relative flex-1 min-w-[180px] w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
             <Input className="h-11 pl-10 text-[12px] bg-slate-50 border-none rounded-2xl font-bold focus-visible:ring-primary shadow-inner" placeholder="नाव किंवा सारांश शोधा..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
           </div>
-          <div className="relative">
-            <Input type="date" className="h-11 text-[11px] bg-slate-50 border-none rounded-2xl font-black w-36 shadow-inner" value={filterDate} onChange={e => setFilterDate(e.target.value)} />
+          <div className="relative w-full sm:w-auto">
+            <Input type="date" className="h-11 text-[11px] bg-slate-50 border-none rounded-2xl font-black w-full sm:w-36 shadow-inner" value={filterDate} onChange={e => setFilterDate(e.target.value)} />
           </div>
           {typeFilter && (
             <Button variant="ghost" size="icon" onClick={() => setTypeFilter(null)} className="h-11 w-11 text-rose-500 bg-rose-50 rounded-2xl hover:bg-rose-100">
@@ -528,63 +528,65 @@ export default function ReportsPage() {
       </Card>
 
       <div className="bg-white rounded-3xl border border-slate-100 overflow-hidden shadow-2xl">
-        <table className="w-full text-left border-collapse">
-          <thead>
-            <tr className="bg-slate-50 border-b border-slate-100">
-              <th className="p-4 text-[10px] font-black uppercase text-slate-400 tracking-widest">तारीख आणि प्रकार</th>
-              <th className="p-4 text-[10px] font-black uppercase text-slate-400 tracking-widest text-right">क्रिया</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-50">
-            {filteredReports.map((report) => (
-              <tr key={report.id} className="hover:bg-primary/[0.02] transition-colors cursor-pointer group" onClick={() => { setSelectedReport(report); setIsViewOpen(true); setIsGroupView(false); }}>
-                <td className="p-4">
-                  <div className="flex flex-col gap-1.5 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="text-[11px] font-black uppercase text-slate-900 truncate max-w-[160px] group-hover:text-primary transition-colors">
-                        {report.type === 'Official Document' ? 'वर्ड दस्तऐवज' : report.type}
-                      </span>
-                      <Badge variant="outline" className="h-4 px-2 text-[8px] font-black bg-slate-50 text-slate-500 border-none rounded-md">{report.date}</Badge>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-1 h-4 bg-primary/20 rounded-full" />
-                      <p className="text-[10px] text-slate-500 line-clamp-1 italic font-bold opacity-80">{report.summary}</p>
-                    </div>
-                  </div>
-                </td>
-                <td className="p-4 text-right">
-                  <div className="flex justify-end gap-2 sm:opacity-0 group-hover:opacity-100 transition-all transform group-hover:translate-x-0 sm:translate-x-2">
-                    <Button variant="ghost" size="icon" className="h-9 w-9 text-primary hover:bg-primary/10 rounded-xl" onClick={(e) => handleEditReport(report, e)}>
-                      <FileEdit className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="icon" className="h-9 w-9 text-rose-500 hover:bg-rose-50 rounded-xl" onClick={(e) => handleDeleteReport(report.id, e)}>
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                    <div className="h-9 w-9 flex items-center justify-center text-slate-200">
-                      <ChevronRight className="h-5 w-5" />
-                    </div>
-                  </div>
-                </td>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-slate-50 border-b border-slate-100">
+                <th className="p-4 text-[10px] font-black uppercase text-slate-400 tracking-widest">तारीख आणि प्रकार</th>
+                <th className="p-4 text-[10px] font-black uppercase text-slate-400 tracking-widest text-right">क्रिया</th>
               </tr>
-            ))}
-            {filteredReports.length === 0 && (
-              <tr>
-                <td colSpan={2} className="py-32 text-center">
-                  <div className="flex flex-col items-center gap-4 opacity-20">
-                    <Archive className="h-16 w-16" />
-                    <p className="font-black uppercase text-[11px] tracking-[0.4em] italic">कोणतीही नोंद उपलब्ध नाही</p>
-                  </div>
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-slate-50">
+              {filteredReports.map((report) => (
+                <tr key={report.id} className="hover:bg-primary/[0.02] transition-colors cursor-pointer group" onClick={() => { setSelectedReport(report); setIsViewOpen(true); setIsGroupView(false); }}>
+                  <td className="p-4">
+                    <div className="flex flex-col gap-1.5 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[11px] font-black uppercase text-slate-900 truncate max-w-[160px] group-hover:text-primary transition-colors">
+                          {report.type === 'Official Document' ? 'वर्ड दस्तऐवज' : report.type}
+                        </span>
+                        <Badge variant="outline" className="h-4 px-2 text-[8px] font-black bg-slate-50 text-slate-500 border-none rounded-md">{report.date}</Badge>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-1 h-4 bg-primary/20 rounded-full" />
+                        <p className="text-[10px] text-slate-500 line-clamp-1 italic font-bold opacity-80">{report.summary}</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="p-4 text-right">
+                    <div className="flex justify-end gap-2 sm:opacity-0 group-hover:opacity-100 transition-all transform group-hover:translate-x-0 sm:translate-x-2">
+                      <Button variant="ghost" size="icon" className="h-9 w-9 text-primary hover:bg-primary/10 rounded-xl" onClick={(e) => handleEditReport(report, e)}>
+                        <FileEdit className="h-4 w-4" />
+                      </Button>
+                      <Button variant="ghost" size="icon" className="h-9 w-9 text-rose-500 hover:bg-rose-50 rounded-xl" onClick={(e) => handleDeleteReport(report.id, e)}>
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                      <div className="h-9 w-9 flex items-center justify-center text-slate-200 hidden sm:flex">
+                        <ChevronRight className="h-5 w-5" />
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              {filteredReports.length === 0 && (
+                <tr>
+                  <td colSpan={2} className="py-32 text-center">
+                    <div className="flex flex-col items-center gap-4 opacity-20">
+                      <Archive className="h-16 w-16" />
+                      <p className="font-black uppercase text-[11px] tracking-[0.4em] italic">कोणतीही नोंद उपलब्ध नाही</p>
+                    </div>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <Dialog open={isViewOpen} onOpenChange={setIsViewOpen}>
-        <DialogContent className="max-w-[800px] p-0 rounded-[2rem] overflow-hidden border-none shadow-2xl bg-slate-100">
-          <DialogHeader className="p-4 bg-white border-b flex flex-row items-center justify-between space-y-0 no-print">
-            <div className="flex items-center gap-3 px-4">
+        <DialogContent className="max-w-[800px] w-[95vw] p-0 rounded-[2rem] overflow-hidden border-none shadow-2xl bg-slate-100 sm:w-full">
+          <DialogHeader className="p-4 bg-white border-b flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0 no-print">
+            <div className="flex items-center gap-3 px-2 sm:px-4">
               <div className="p-2 bg-primary/10 text-primary rounded-xl">
                 {isGroupView ? <FileStack className="h-5 w-5" /> : <FileText className="h-5 w-5" />}
               </div>
@@ -593,30 +595,30 @@ export default function ReportsPage() {
                 <DialogDescription className="text-[9px] font-bold uppercase text-slate-400">{isGroupView ? 'All Daily Tasks' : 'Official Report Preview'}</DialogDescription>
               </div>
             </div>
-            <div className="flex gap-2 pr-4">
+            <div className="flex flex-wrap gap-2 pr-2 sm:pr-4 justify-center">
               {selectedReport?.type === 'Daily Task' && (
                 <Button 
                   variant={isGroupView ? "secondary" : "outline"} 
                   size="sm" 
                   onClick={() => setIsGroupView(!isGroupView)} 
-                  className="h-10 px-4 font-black uppercase rounded-xl border-primary/20"
+                  className="h-9 sm:h-10 px-3 sm:px-4 font-black uppercase rounded-xl border-primary/20 text-[9px] sm:text-[10px]"
                 >
                   {isGroupView ? <Layers className="h-4 w-4 mr-2" /> : <FileStack className="h-4 w-4 mr-2" />}
                   {isGroupView ? 'सिंगल टास्क' : 'पूर्ण दिवसाचे टास्क'}
                 </Button>
               )}
-              <Button size="sm" onClick={() => window.print()} className="h-10 px-6 font-black uppercase rounded-xl shadow-lg shadow-primary/20"><Printer className="h-4 w-4 mr-2" /> प्रिंट करा</Button>
-              <Button size="icon" variant="ghost" onClick={() => setIsViewOpen(false)} className="h-10 w-10 text-slate-400 hover:bg-slate-100 rounded-xl"><X className="h-6 w-6" /></Button>
+              <Button size="sm" onClick={() => window.print()} className="h-9 sm:h-10 px-4 sm:px-6 font-black uppercase rounded-xl shadow-lg shadow-primary/20 text-[9px] sm:text-[10px]"><Printer className="h-4 w-4 mr-2" /> प्रिंट करा</Button>
+              <Button size="icon" variant="ghost" onClick={() => setIsViewOpen(false)} className="h-9 sm:h-10 w-9 sm:w-10 text-slate-400 hover:bg-slate-100 rounded-xl"><X className="h-6 w-6" /></Button>
             </div>
           </DialogHeader>
-          <ScrollArea className="max-h-[85vh] p-6 bg-slate-100">
-            <div className="max-w-[210mm] mx-auto transition-all animate-in zoom-in-95 duration-300 space-y-4">
+          <ScrollArea className="max-h-[80vh] sm:max-h-[85vh] p-3 sm:p-6 bg-slate-100">
+            <div className="max-w-full sm:max-w-[210mm] mx-auto transition-all animate-in zoom-in-95 duration-300 space-y-4">
               {reportsToRender.map((report, idx) => (
                 <div key={report.id} className={idx > 0 ? "print:page-break-before-always" : ""}>
                   {report.type === 'Route Visit' ? (
                     <RouteSlipLayout report={report} />
                   ) : report.fullData?.isWordDoc ? (
-                    <div className="prose prose-sm max-w-none px-12 py-10 bg-white border-[2px] border-slate-900 rounded-sm shadow-2xl min-h-[600px] print:shadow-none print:border-black" id="printable-area" dangerouslySetInnerHTML={{ __html: report.fullData.content }} />
+                    <div className="prose prose-sm max-w-none px-6 sm:px-12 py-6 sm:py-10 bg-white border-[2px] border-slate-900 rounded-sm shadow-2xl min-h-[400px] sm:min-h-[600px] print:shadow-none print:border-black overflow-hidden" id="printable-area" dangerouslySetInnerHTML={{ __html: report.fullData.content }} />
                   ) : (
                     <GenericTableLayout report={report} />
                   )}
