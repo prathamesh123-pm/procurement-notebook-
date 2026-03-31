@@ -1,17 +1,23 @@
+
 "use client"
 
 import { Card, CardContent } from "@/components/ui/card"
-import { ListTodo, MapPin, TrendingUp, Warehouse, Calendar, Milk, ArrowUpRight, ShieldAlert } from "lucide-react"
+import { ListTodo, MapPin, TrendingUp, Warehouse, Calendar, Milk, ArrowUpRight, ShieldAlert, UserCheck } from "lucide-react"
 import { useEffect, useState, useMemo } from "react"
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
-import { useUser, useFirestore, useCollection, useMemoFirebase } from "@/firebase"
-import { collection } from "firebase/firestore"
+import { useUser, useFirestore, useCollection, useMemoFirebase, useDoc } from "@/firebase"
+import { collection, doc } from "firebase/firestore"
 
 export default function DashboardOverview() {
   const { user } = useUser()
   const db = useFirestore()
   const [mounted, setMounted] = useState(false)
+
+  const userDocRef = useMemoFirebase(() => {
+    if (!db || !user) return null
+    return doc(db, 'users', user.uid)
+  }, [db, user])
 
   const centersQuery = useMemoFirebase(() => {
     if (!db || !user) return null
@@ -33,6 +39,7 @@ export default function DashboardOverview() {
     return collection(db, 'suppliers')
   }, [db, user])
 
+  const { data: userData } = useDoc(userDocRef)
   const { data: centers } = useCollection(centersQuery)
   const { data: tasks } = useCollection(tasksQuery)
   const { data: routes } = useCollection(routesQuery)
@@ -116,7 +123,9 @@ export default function DashboardOverview() {
             </div>
             डॅशबोर्ड
           </h2>
-          <p className="text-muted-foreground font-bold text-xs uppercase tracking-widest ml-1 opacity-70">तुमच्या दैनंदिन कार्याचा सारांश</p>
+          <p className="text-muted-foreground font-bold text-xs uppercase tracking-widest ml-1 opacity-70">
+            {userData?.displayName ? `स्वागत आहे, ${userData.displayName}` : "तुमच्या दैनंदिन कार्याचा सारांश"}
+          </p>
         </div>
         <Badge variant="outline" className="w-fit px-4 py-2 rounded-2xl border-primary/20 bg-white shadow-sm text-primary font-black text-xs uppercase">
           <Calendar className="h-4 w-4 mr-2" /> {new Date().toLocaleDateString('mr-IN', { day: 'numeric', month: 'long', year: 'numeric' })}

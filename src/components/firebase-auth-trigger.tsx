@@ -2,23 +2,25 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useAuth, useUser, initiateAnonymousSignIn } from '@/firebase';
+import { useAuth, useUser } from '@/firebase';
+import { useRouter, usePathname } from 'next/navigation';
 
 /**
- * A simple component that ensures the user is at least signed in anonymously
- * so they have a UID for Firestore data ownership.
+ * Ensures the user is authenticated for protected routes.
+ * Redirects to /login if not signed in.
  */
 export function AuthTrigger() {
-  const auth = useAuth();
   const { user, isUserLoading } = useUser();
+  const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
-    // If auth is initialized, and we're not currently loading user state,
-    // and there is no user signed in, then initiate anonymous sign-in.
-    if (auth && !isUserLoading && !user) {
-      initiateAnonymousSignIn(auth);
+    // If auth state is determined and no user is found, redirect to login
+    // except if we are already on the login page.
+    if (!isUserLoading && !user && pathname !== '/login') {
+      router.push('/login');
     }
-  }, [auth, user, isUserLoading]);
+  }, [user, isUserLoading, pathname, router]);
 
   return null;
 }
