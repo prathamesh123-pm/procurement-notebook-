@@ -36,7 +36,7 @@ export default function ReportsPage() {
   const [typeFilter, setTypeFilter] = useState<string | null>(null)
   const [selectedReport, setSelectedReport] = useState<any | null>(null)
   const [isViewOpen, setIsViewOpen] = useState(false)
-  const [isGroupView, setIsGroupView] = useState(false) // State for bulk task view
+  const [isGroupView, setIsGroupView] = useState(false)
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => setMounted(true), [])
@@ -277,14 +277,14 @@ export default function ReportsPage() {
 
         <div className="grid grid-cols-2 gap-8 mb-6 font-black text-[11px] uppercase">
           <div className="space-y-2 p-3 bg-slate-50 border border-slate-200 rounded-lg print:bg-white print:border-black">
-            <p className="flex justify-between border-b border-slate-200 pb-1"><span>रूट नाव:</span> <span className="text-primary print:text-black">{d.routeName || '---'}</span></p>
-            <p className="flex justify-between border-b border-slate-200 pb-1"><span>ड्रायव्हर:</span> <span>{d.driverName || '---'}</span></p>
-            <p className="flex justify-between"><span>वेळ (IN/OUT):</span> <span>{d.routeInTime || '--:--'} / {d.routeOutTime || '--:--'}</span></p>
+            <div className="flex justify-between border-b border-slate-200 pb-1"><span>रूट नाव:</span> <span className="text-primary print:text-black">{d.routeName || '---'}</span></div>
+            <div className="flex justify-between border-b border-slate-200 pb-1"><span>ड्रायव्हर:</span> <span>{d.driverName || '---'}</span></div>
+            <div className="flex justify-between"><span>वेळ (IN/OUT):</span> <span>{d.routeInTime || '--:--'} / {d.routeOutTime || '--:--'}</span></div>
           </div>
           <div className="space-y-2 p-3 bg-slate-50 border border-slate-200 rounded-lg print:bg-white print:border-black">
-            <p className="flex justify-between border-b border-slate-200 pb-1"><span>वाहन क्रमांक:</span> <span>{d.vehicleNumber || '---'}</span></p>
-            <p className="flex justify-between border-b border-slate-200 pb-1"><span>स्लिप नंबर:</span> <span>#{d.slipNo || '---'}</span></p>
-            <p className="flex justify-between"><span>शिफ्ट:</span> <Badge className="h-4 text-[8px] uppercase font-black">{d.shift || 'सकाळ'}</Badge></p>
+            <div className="flex justify-between border-b border-slate-200 pb-1"><span>वाहन क्रमांक:</span> <span>{d.vehicleNumber || '---'}</span></div>
+            <div className="flex justify-between border-b border-slate-200 pb-1"><span>स्लिप नंबर:</span> <span>#{d.slipNo || '---'}</span></div>
+            <div className="flex justify-between"><span>शिफ्ट:</span> <Badge className="h-4 text-[8px] uppercase font-black">{d.shift || 'सकाळ'}</Badge></div>
           </div>
         </div>
 
@@ -330,12 +330,12 @@ export default function ReportsPage() {
 
         <div className="grid grid-cols-2 gap-4 mb-6 font-black text-[11px] uppercase p-4 border-2 border-dashed border-slate-300 rounded-xl">
           <div className="space-y-1">
-            <p className="flex items-center gap-2 text-slate-500"><div className="w-2 h-2 rounded-full bg-slate-300" /> सुरवात रीडिंग: <span className="text-slate-900">{d.startReading || '0'}</span></p>
-            <p className="flex items-center gap-2 text-slate-500"><div className="w-2 h-2 rounded-full bg-slate-300" /> शेवट रीडिंग: <span className="text-slate-900">{d.endReading || '0'}</span></p>
+            <div className="flex items-center gap-2 text-slate-500"><div className="w-2 h-2 rounded-full bg-slate-300" /> सुरवात रीडिंग: <span className="text-slate-900">{d.startReading || '0'}</span></div>
+            <div className="flex items-center gap-2 text-slate-500"><div className="w-2 h-2 rounded-full bg-slate-300" /> शेवट रीडिंग: <span className="text-slate-900">{d.endReading || '0'}</span></div>
           </div>
           <div className="text-right space-y-1">
-            <p className="text-lg">एकूण किलोमीटर: <span className="text-primary print:text-black">{d.totalKm || '0'} KM</span></p>
-            <p className="text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md inline-block print:bg-white print:border print:border-black">दूध तूट (Shortage): {d.shortageLiters || '0'} L</p>
+            <div className="text-lg">एकूण किलोमीटर: <span className="text-primary print:text-black">{d.totalKm || '0'} KM</span></div>
+            <div className="text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md inline-block print:bg-white print:border print:border-black">दूध तूट (Shortage): {d.shortageLiters || '0'} L</div>
           </div>
         </div>
 
