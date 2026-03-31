@@ -99,15 +99,12 @@ export default function ReportsPage() {
   }
 
   const labelMap: Record<string, string> = {
-    // Top Priority Fields
     supplierName: "पुरवठादार / गवळी नाव",
     supplierId: "आयडी / कोड",
     title: "टास्क शीर्षक",
     remark: "शेरा / कार्यवाही",
     actionTaken: "केलेली कार्यवाही",
     actionsTaken: "केलेली कार्यवाही",
-
-    // 1. Vehicle & Route Info
     routeName: "रूटचे नाव",
     vehicleNumber: "वाहन क्रमांक",
     vehicleNo: "वाहन क्रमांक",
@@ -115,46 +112,32 @@ export default function ReportsPage() {
     driverName: "ड्रायव्हरचे नाव",
     driverMobile: "ड्रायव्हर मोबाईल",
     mobile: "संपर्क क्रमांक",
-    
-    // 2. Representative Info
     repName: "प्रतिनिधी नाव",
     repId: "आयडी",
     shift: "शिफ्ट",
-    
-    // 3. Breakdown Details
     breakdownTime: "बिघाड वेळ",
     location: "बिघाड ठिकाण",
     reason: "बिघाडाचे मुख्य कारण",
     severity: "बिघाडाचे स्वरूप",
-    faultResponsibility: "बिघाडास जबाबदार / कोणाची चूक",
+    faultResponsibility: "बिघाडास जबाबदार",
     detailedReason: "सविस्तर माहिती",
     detailedDescription: "सविस्तर वर्णन",
-    
-    // 4. Repair & Assistance
     estimatedRepairTime: "दुरुस्ती वेळ (तास)",
     estimatedRepairCost: "दुरुस्ती खर्च (₹)",
     recoveryVehicleNo: "पर्यायी गाडी क्र.",
     recoveryArrivalTime: "पर्यायी गाडी वेळ",
-    
-    // 5. Milk Condition
     milkHot: "दूध गरम झाले का?",
     milkSour: "दूध आंबट झाले का?",
     alternateArrangement: "पर्यायी सोय केली का?",
-    
-    // 6. Work & Summary
     workType: "कामाचा प्रकार",
     summary: "कामाचा सारांश",
     problems: "महत्त्वाच्या समस्या",
     achievements: "आजची मोठी कामगिरी",
     supervisorName: "सुपरवायझर",
-    
-    // 7. Losses & Penalties
     lossAmount: "नुकसान रक्कम (₹)",
     totalLossAmount: "एकूण नुकसान (₹)",
     fineAmount: "दंड रक्कम (₹)",
     seizureQty: "जप्ती प्रमाण (L)",
-    
-    // 8. Quality & Audit
     centerName: "केंद्राचे नाव",
     centerCode: "केंद्र कोड",
     auditDate: "ऑडिट तारीख",
@@ -163,8 +146,6 @@ export default function ReportsPage() {
     fat: "फॅट (%)",
     snf: "SNF (%)",
     result: "अंतिम निकाल",
-    
-    // 9. Inspection (FSSAI/Chilling)
     ownerName: "मालकाचे नाव",
     capacity: "क्षमता (L)",
     licenseStatus: "परवाना स्थिती",
@@ -179,8 +160,6 @@ export default function ReportsPage() {
     fssaiDisplay: "FSSAI डिस्प्ले",
     iceBankStatus: "आईस बँक स्थिती",
     observations: "विशेष निरीक्षणे",
-    
-    // 10. Survey
     type: "प्रकार (Type)",
     facility: "सुविधा (Facility)",
     plantHygiene: "स्वच्छता (Hygiene)",
@@ -191,7 +170,6 @@ export default function ReportsPage() {
     computerAvailable: "POP सिस्टम"
   };
 
-  // Reordered sequence as requested: Supplier Name, ID, Task Title, Remark
   const orderedKeys = [
     "supplierName", 
     "supplierId", 
@@ -378,15 +356,13 @@ export default function ReportsPage() {
 
   const GenericTableLayout = ({ report }: { report: any }) => {
     const d = report.fullData || {};
-    
-    // Sort keys based on predefined orderedKeys to ensure requested priority
     const filteredEntries = orderedKeys
       .filter(key => d[key] !== undefined && d[key] !== "" && d[key] !== null)
       .map(key => [key, d[key]]);
 
     const formatVal = (key: string, val: any): string => {
       if (typeof val === 'boolean') return val ? "हो" : "नाही";
-      if (typeof val === 'object' && val !== null) return JSON.stringify(val);
+      if (Array.isArray(val)) return val.join(' | ');
       return String(val || "-");
     }
 
@@ -416,32 +392,24 @@ export default function ReportsPage() {
                 <td className="border border-black p-1.5 whitespace-pre-wrap">{formatVal(key, val)}</td>
               </tr>
             ))}
-            {d.infrastructure && Object.entries(d.infrastructure).map(([k, v]) => (
-              <tr key={k} className="font-bold text-[9px] border-b border-black/10">
-                <td className="border border-black p-1.5 bg-slate-50 uppercase text-[8px]">{labelMap[k] || `INFRA: ${k.toUpperCase()}`}</td>
-                <td className="border border-black p-1.5">{String(v || "-")}</td>
-              </tr>
-            ))}
           </tbody>
         </table>
 
-        {(d.losses && d.losses.length > 0) || (d.centerLosses && d.centerLosses.length > 0) ? (
+        {d.centerLosses && d.centerLosses.length > 0 && (
           <div className="mt-3">
             <p className="font-black text-[8px] uppercase mb-1 border-b border-black w-fit">नुकसान तपशील (LOSS LOG):</p>
             <table className="w-full border-collapse border border-black text-[8px]">
               <thead className="bg-slate-50 font-black uppercase">
                 <tr>
-                  <th className="border border-black p-1 text-left">ID/नाव</th>
-                  <th className="border border-black p-1 text-center">प्रकार</th>
-                  <th className="border border-black p-1 text-center">लिटर (L)</th>
+                  <th className="border border-black p-1 text-left">केंद्राचे नाव</th>
+                  <th className="border border-black p-1 text-center">Ltr</th>
                   <th className="border border-black p-1 text-right">रक्कम (₹)</th>
                 </tr>
               </thead>
               <tbody>
-                {(d.losses || d.centerLosses).map((l: any, i: number) => (
+                {d.centerLosses.map((l: any, i: number) => (
                   <tr key={i} className="text-center font-bold border-b border-black/10">
-                    <td className="border border-black p-1 text-left truncate">{l.supplierCode || l.centerCode} {l.supplierName || l.centerName}</td>
-                    <td className="border border-black p-1">{l.milkType || '-'}</td>
+                    <td className="border border-black p-1 text-left truncate">{l.centerName}</td>
                     <td className="border border-black p-1">{l.qtyLiters}</td>
                     <td className="border border-black p-1 text-right text-rose-600">₹{l.lossAmount}</td>
                   </tr>
@@ -449,7 +417,7 @@ export default function ReportsPage() {
               </tbody>
             </table>
           </div>
-        ) : null}
+        )}
 
         <div className="mt-12 grid grid-cols-2 gap-12 text-center uppercase font-black text-[8px] opacity-70">
           <div className="border-t border-black/60 pt-1.5">अधिकारी सही</div>

@@ -85,9 +85,9 @@ export default function WorkLogPage() {
     const task = firestoreTasks?.find(t => t.id === taskId)
     if (!task) return
     
-    // Format points into a numbered string for the report
-    const formattedRemark = remarkPoints
-      .filter(p => p.trim())
+    // Format points into a list for the report
+    const nonAtEmptyPoints = remarkPoints.filter(p => p.trim())
+    const formattedRemark = nonAtEmptyPoints
       .map((p, i) => `${i + 1}. ${p}`)
       .join(' | ')
     
@@ -101,6 +101,7 @@ export default function WorkLogPage() {
       fullData: { 
         ...task, 
         remark: formattedRemark, 
+        remarkPoints: nonAtEmptyPoints,
         status: 'completed',
         name: user.displayName || "Procurement Officer"
       },
@@ -177,7 +178,7 @@ export default function WorkLogPage() {
           ) : pendingTasks.length > 0 ? pendingTasks.map(task => (
             <Card key={task.id} className="border shadow-none bg-white hover:bg-primary/5 cursor-pointer border-l-4 border-l-primary rounded-xl overflow-hidden relative group transition-all" onClick={() => { 
               setSelectedTask(task); 
-              setRemarkPoints([""]); // Reset points when opening new task
+              setRemarkPoints([""]); 
               setIsDetailOpen(true); 
             }}>
               <div className="p-3 flex items-center justify-between gap-2">

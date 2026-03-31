@@ -48,10 +48,10 @@ export default function DashboardOverview() {
   useEffect(() => setMounted(true), [])
 
   const stats = useMemo(() => {
-    const routeTotalCow = (suppliers || [])?.reduce((acc, s) => acc + (s.cowMilk?.quantity || 0), 0) || 0
-    const routeTotalBuf = (suppliers || [])?.reduce((acc, s) => acc + (s.buffaloMilk?.quantity || 0), 0) || 0
-    const centerTotalCow = (centers || [])?.reduce((acc, c) => acc + (c.cowMilk?.quantity || 0), 0) || 0
-    const centerTotalBuf = (centers || [])?.reduce((acc, c) => acc + (c.buffaloMilk?.quantity || 0), 0) || 0
+    const routeTotalCow = (suppliers || [])?.reduce((acc, s) => acc + (Number(s.cowMilk?.quantity) || 0), 0) || 0
+    const routeTotalBuf = (suppliers || [])?.reduce((acc, s) => acc + (Number(s.buffaloMilk?.quantity) || 0), 0) || 0
+    const centerTotalCow = (centers || [])?.reduce((acc, c) => acc + (Number(c.cowMilk?.quantity) || 0), 0) || 0
+    const centerTotalBuf = (centers || [])?.reduce((acc, c) => acc + (Number(c.buffaloMilk?.quantity) || 0), 0) || 0
     
     return {
       cowMilk: routeTotalCow + centerTotalCow,
