@@ -8,7 +8,7 @@ import {
   Settings2, X, FileEdit
 } from "lucide-react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 
 import {
   Sidebar,
@@ -26,6 +26,8 @@ import {
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
+import { useAuth } from "@/firebase"
+import { signOut } from "firebase/auth"
 
 const items = [
   {
@@ -80,6 +82,8 @@ const items = [
 
 export function DashboardSidebar() {
   const pathname = usePathname()
+  const router = useRouter()
+  const auth = useAuth()
   const [mounted, setMounted] = React.useState(false)
   const { setOpenMobile, isMobile } = useSidebar()
 
@@ -90,6 +94,17 @@ export function DashboardSidebar() {
   const handleLinkClick = () => {
     if (isMobile) {
       setOpenMobile(false)
+    }
+  }
+
+  const handleLogout = async () => {
+    if (confirm("तुम्हाला खात्री आहे की तुम्ही बाहेर पडू इच्छिता?")) {
+      try {
+        await signOut(auth)
+        router.push('/login')
+      } catch (error) {
+        console.error("Logout failed:", error)
+      }
     }
   }
 
@@ -167,16 +182,14 @@ export function DashboardSidebar() {
             <LogOut className="h-12 w-12" />
           </div>
           <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Logout Session</p>
-          <SidebarMenuButton 
-            asChild 
-            onClick={handleLinkClick}
-            className="text-rose-600 hover:text-rose-700 hover:bg-rose-50 h-11 rounded-xl px-4 font-black uppercase text-[11px] tracking-widest bg-white shadow-sm transition-all active:scale-95"
+          <Button 
+            variant="ghost" 
+            onClick={handleLogout}
+            className="w-full text-rose-600 hover:text-rose-700 hover:bg-rose-50 h-11 rounded-xl px-4 font-black uppercase text-[11px] tracking-widest bg-white shadow-sm transition-all active:scale-95 flex items-center justify-center gap-2"
           >
-            <Link href="/" className="flex items-center justify-center gap-2">
-              <LogOut className="h-4 w-4" />
-              <span>बाहेर पडा</span>
-            </Link>
-          </SidebarMenuButton>
+            <LogOut className="h-4 w-4" />
+            <span>बाहेर पडा</span>
+          </Button>
         </Card>
       </div>
       <SidebarRail />
