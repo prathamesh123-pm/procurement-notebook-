@@ -415,6 +415,20 @@ export default function ReportsPage() {
           </div>
         )}
 
+        {d.fieldVisitPoints && d.fieldVisitPoints.length > 0 && (
+          <div className="mt-6">
+            <p className="font-black text-[11px] uppercase mb-2 border-b-2 border-black w-fit">क्षेत्र भेट मुद्दे (VISIT POINTS):</p>
+            <ul className="space-y-1 list-none pl-0">
+              {d.fieldVisitPoints.map((p: any, i: number) => (
+                <li key={i} className="font-bold text-[11px] pl-4 relative border-l-4 border-slate-200">
+                  <span className="absolute -left-1.5 top-0 text-slate-400">•</span>
+                  {p.text}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
         <div className="mt-16 grid grid-cols-2 gap-12 text-center uppercase font-black text-[10px] opacity-80">
           <div className="border-t-2 border-black pt-3">अधिकारी स्वाक्षरी</div>
           <div className="border-t-2 border-black pt-3">सुपरवायझर स्वाक्षरी</div>
@@ -540,53 +554,83 @@ export default function ReportsPage() {
             size: A4;
             margin: 10mm;
           }
-          /* Target only the elements outside the portal we want to hide */
+          
+          /* Hide EVERYTHING on the page except the printable area */
           body > *:not([role="dialog"]), 
-          header, nav, aside, .sidebar, .no-print {
+          header, nav, aside, footer, .sidebar, .no-print, button {
             display: none !important;
           }
-          /* Ensure the dialog/portal itself doesn't hide everything */
+
+          /* Ensure the dialog portal itself is positioned at the top-left */
           body {
             background: white !important;
             padding: 0 !important;
             margin: 0 !important;
+            overflow: visible !important;
           }
-          /* Force the printable area to be visible and correctly positioned */
-          #printable-area, #printable-area * {
-            visibility: visible !important;
-          }
-          #printable-area {
-            display: block !important;
+
+          /* Reset dialog positioning for print */
+          [role="dialog"] {
             position: absolute !important;
             left: 0 !important;
             top: 0 !important;
             width: 100% !important;
-            border: 2px solid black !important;
-            padding: 10mm !important;
-            margin: 0 !important;
-            box-shadow: none !important;
-            z-index: 99999 !important;
-          }
-          /* Hide dialog UI elements */
-          [role="dialog"] {
-            background: transparent !important;
+            max-width: none !important;
+            transform: none !important;
             box-shadow: none !important;
             border: none !important;
             padding: 0 !important;
-            width: 100% !important;
-            max-width: none !important;
-            transform: none !important;
-            left: 0 !important;
-            top: 0 !important;
+            background: white !important;
+            overflow: visible !important;
           }
-          [role="dialog"] button, 
+
+          /* Hide dialog header/footer/overlay */
           [role="dialog"] header,
+          [role="dialog"] button,
           [data-state="open"] > div:first-child {
             display: none !important;
           }
-          table { width: 100% !important; border-collapse: collapse !important; table-layout: fixed; }
-          th, td { border: 1px solid black !important; word-wrap: break-word; overflow-wrap: break-word; padding: 4px !important; }
-          tr { page-break-inside: avoid; page-break-after: auto; }
+
+          /* Force the printable container to be visible and correctly structured */
+          #printable-area {
+            display: block !important;
+            visibility: visible !important;
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 5mm !important;
+            border: 2px solid black !important;
+            background: white !important;
+            box-shadow: none !important;
+          }
+
+          #printable-area * {
+            visibility: visible !important;
+            color: black !important;
+          }
+
+          table {
+            width: 100% !important;
+            border-collapse: collapse !important;
+            table-layout: fixed !important;
+            border: 2px solid black !important;
+          }
+
+          th, td {
+            border: 1px solid black !important;
+            word-wrap: break-word !important;
+            overflow-wrap: break-word !important;
+            padding: 6px !important;
+            font-size: 11px !important;
+          }
+
+          tr {
+            page-break-inside: avoid !important;
+          }
+
+          h1, h2, h3, h4 {
+            color: black !important;
+            text-transform: uppercase !important;
+          }
         }
       `}</style>
     </div>
