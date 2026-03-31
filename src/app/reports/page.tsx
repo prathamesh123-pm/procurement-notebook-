@@ -391,23 +391,28 @@ export default function ReportsPage() {
           </tbody>
         </table>
 
-        {d.centerLosses && d.centerLosses.length > 0 && (
+        {/* Breakdown Loss Table - Handles both 'losses' and 'centerLosses' */}
+        {((d.losses && d.losses.length > 0) || (d.centerLosses && d.centerLosses.length > 0)) && (
           <div className="mt-6">
             <p className="font-black text-[11px] uppercase mb-2 border-b-2 border-black w-fit">नुकसान तपशील (LOSS LOG):</p>
             <table className="w-full border-collapse border-2 border-black text-[10px]">
               <thead className="bg-slate-100 font-black uppercase">
                 <tr>
-                  <th className="border-2 border-black p-2 text-left">केंद्राचे नाव व कोड</th>
-                  <th className="border-2 border-black p-2 text-center w-24">दूध (Ltr)</th>
-                  <th className="border-2 border-black p-2 text-right w-32">नुकसान रक्कम (₹)</th>
+                  <th className="border-2 border-black p-2 text-left">कोड/गवळी नाव</th>
+                  <th className="border-2 border-black p-2 text-center w-16">प्रकार</th>
+                  <th className="border-2 border-black p-2 text-center w-16">Ltr</th>
+                  <th className="border-2 border-black p-2 text-right w-24">रक्कम (₹)</th>
                 </tr>
               </thead>
               <tbody>
-                {d.centerLosses.map((l: any, i: number) => (
+                {(d.losses || d.centerLosses).map((l: any, i: number) => (
                   <tr key={i} className="text-center font-bold border-b border-black">
-                    <td className="border-2 border-black p-2 text-left uppercase">{l.centerName} ({l.centerCode || '-'})</td>
-                    <td className="border-2 border-black p-2">{l.qtyLiters}</td>
-                    <td className="border-2 border-black p-2 text-right font-black">₹{l.lossAmount}</td>
+                    <td className="border-2 border-black p-2 text-left uppercase">
+                      {l.supplierName || l.centerName || '---'} ({l.supplierCode || l.centerCode || '-'})
+                    </td>
+                    <td className="border-2 border-black p-2">{l.milkType || '-'}</td>
+                    <td className="border-2 border-black p-2">{l.qtyLiters || '0'}</td>
+                    <td className="border-2 border-black p-2 text-right font-black">₹{l.lossAmount || '0'}</td>
                   </tr>
                 ))}
               </tbody>
@@ -555,13 +560,11 @@ export default function ReportsPage() {
             margin: 10mm;
           }
           
-          /* Hide EVERYTHING on the page except the printable area */
           body > *:not([role="dialog"]), 
           header, nav, aside, footer, .sidebar, .no-print, button {
             display: none !important;
           }
 
-          /* Ensure the dialog portal itself is positioned at the top-left */
           body {
             background: white !important;
             padding: 0 !important;
@@ -569,7 +572,6 @@ export default function ReportsPage() {
             overflow: visible !important;
           }
 
-          /* Reset dialog positioning for print */
           [role="dialog"] {
             position: absolute !important;
             left: 0 !important;
@@ -584,14 +586,12 @@ export default function ReportsPage() {
             overflow: visible !important;
           }
 
-          /* Hide dialog header/footer/overlay */
           [role="dialog"] header,
           [role="dialog"] button,
           [data-state="open"] > div:first-child {
             display: none !important;
           }
 
-          /* Force the printable container to be visible and correctly structured */
           #printable-area {
             display: block !important;
             visibility: visible !important;
