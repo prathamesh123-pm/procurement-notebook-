@@ -540,34 +540,52 @@ export default function ReportsPage() {
             size: A4;
             margin: 10mm;
           }
-          /* Hide all UI elements except the printable area */
-          body * { 
-            visibility: hidden; 
+          /* Target only the elements outside the portal we want to hide */
+          body > *:not([role="dialog"]), 
+          header, nav, aside, .sidebar, .no-print {
+            display: none !important;
           }
-          #printable-area, #printable-area * { 
-            visibility: visible; 
-          }
-          #printable-area { 
-            position: absolute; 
-            left: 0; 
-            top: 0; 
-            width: 100% !important; 
-            padding: 0 !important; 
-            margin: 0 !important;
-            border: 2px solid black !important;
-            box-shadow: none !important;
+          /* Ensure the dialog/portal itself doesn't hide everything */
+          body {
             background: white !important;
-            z-index: 9999;
+            padding: 0 !important;
+            margin: 0 !important;
           }
-          /* Ensure Dialog components don't interfere with full-page visibility */
-          .fixed, .sticky, button, .no-print, header, nav, .sidebar, [role="dialog"] > button { 
-            display: none !important; 
+          /* Force the printable area to be visible and correctly positioned */
+          #printable-area, #printable-area * {
+            visibility: visible !important;
           }
-          /* Layout adjustments for table printing */
+          #printable-area {
+            display: block !important;
+            position: absolute !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 100% !important;
+            border: 2px solid black !important;
+            padding: 10mm !important;
+            margin: 0 !important;
+            box-shadow: none !important;
+            z-index: 99999 !important;
+          }
+          /* Hide dialog UI elements */
+          [role="dialog"] {
+            background: transparent !important;
+            box-shadow: none !important;
+            border: none !important;
+            padding: 0 !important;
+            width: 100% !important;
+            max-width: none !important;
+            transform: none !important;
+            left: 0 !important;
+            top: 0 !important;
+          }
+          [role="dialog"] button, 
+          [role="dialog"] header,
+          [data-state="open"] > div:first-child {
+            display: none !important;
+          }
           table { width: 100% !important; border-collapse: collapse !important; table-layout: fixed; }
-          th, td { border: 1px solid black !important; word-wrap: break-word; overflow-wrap: break-word; }
-          
-          /* Prevent page breaks inside rows */
+          th, td { border: 1px solid black !important; word-wrap: break-word; overflow-wrap: break-word; padding: 4px !important; }
           tr { page-break-inside: avoid; page-break-after: auto; }
         }
       `}</style>
