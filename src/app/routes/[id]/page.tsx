@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
@@ -112,6 +111,8 @@ export default function RouteDetailsPage() {
       supplierId: formData.supplierId, name: formData.name, address: formData.address, mobile: formData.mobile,
       routeId: routeId, competition: formData.competition, additionalInfo: formData.additionalInfo,
       supplierType: formData.supplierType,
+      operatorName: formData.supplierType === 'Center' ? formData.name : undefined,
+      village: formData.supplierType === 'Center' ? formData.address : undefined,
       cowMilk: { quantity: Number(formData.cowQty), fat: Number(formData.cowFat), snf: Number(formData.cowSnf) },
       buffaloMilk: { quantity: Number(formData.bufQty), fat: Number(formData.bufFat), snf: Number(formData.bufSnf) },
       iceBlocks: Number(formData.iceBlocks), collectionType: formData.collectionType,
@@ -127,22 +128,6 @@ export default function RouteDetailsPage() {
     if (dialogMode === 'add') {
       const colRef = collection(db, 'suppliers')
       addDocumentNonBlocking(colRef, supplierData)
-      
-      if (formData.supplierType === 'Center') {
-        const centerColRef = collection(db, 'users', user.uid, 'centers')
-        addDocumentNonBlocking(centerColRef, {
-          name: formData.name, code: formData.supplierId, village: formData.address, mobile: formData.mobile,
-          operatorName: formData.name, routeId: routeId, isLinkedToSupplier: true, supplierId: formData.supplierId,
-          cowMilk: supplierData.cowMilk, buffaloMilk: supplierData.buffaloMilk,
-          material: {
-            weighingScaleBrand: formData.scaleBrand, fatMachineBrand: formData.fatMachineBrand,
-            milkCansCount: Number(formData.milkCansCount), computerAvailable: formData.computerAvailable,
-            upsInverterAvailable: formData.upsInverterAvailable, solarAvailable: formData.solarAvailable,
-            equipment: formData.equipment
-          },
-          updatedAt: new Date().toISOString()
-        })
-      }
       toast({ title: "यशस्वी", description: "पुरवठादार प्रोफाइल जतन झाले." })
     } else if (editingId) {
       const docRef = doc(db, 'suppliers', editingId)
@@ -174,7 +159,7 @@ export default function RouteDetailsPage() {
   }
 
   const updateEquipmentRow = (id: string, updates: Partial<EquipmentItem>) => {
-    setFormData({ ...formData, equipment: formData.equipment.map(e => e.id === id ? { ...e, ...updates } : e) })
+    setFormData({ ...formData, equipment: formData.equipment.map(e => i.id === id ? { ...e, ...updates } : e) })
   }
 
   const filteredSuppliers = useMemo(() => {
@@ -243,7 +228,7 @@ export default function RouteDetailsPage() {
                     </Select>
                   </div>
                   <div className="col-span-2 space-y-1"><Label className="text-[9px] uppercase font-black tracking-widest opacity-60">पूर्ण नाव</Label><Input value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="h-9 text-[11px] rounded-lg bg-muted/20 border-none font-black" /></div>
-                  <div className="space-y-1"><Label className="text-[9px] uppercase font-black tracking-widest opacity-60">आयडी (ID)</Label><Input value={formData.supplierId} onChange={e => setFormData({...formData, supplierId: e.target.value})} className="h-9 text-[11px] rounded-lg bg-muted/20 border-none font-black" /></div>
+                  <div className="space-y-1"><Label className="text-[9px] uppercase font-black tracking-widest opacity-60">आयडी (ID) *</Label><Input value={formData.supplierId} onChange={e => setFormData({...formData, supplierId: e.target.value})} className="h-9 text-[11px] rounded-lg bg-muted/20 border-none font-black" /></div>
                   <div className="space-y-1"><Label className="text-[9px] uppercase font-black tracking-widest opacity-60">मोबाईल</Label><Input value={formData.mobile} onChange={e => setFormData({...formData, mobile: e.target.value})} className="h-9 text-[11px] rounded-lg bg-muted/20 border-none font-black" /></div>
                   <div className="col-span-2 space-y-1"><Label className="text-[9px] uppercase font-black tracking-widest opacity-60">पत्ता</Label><Input value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} className="h-9 text-[11px] rounded-lg bg-muted/20 border-none font-black" /></div>
                   <div className="space-y-1"><Label className="text-[9px] uppercase font-black tracking-widest opacity-60">FSSAI क्र.</Label><Input value={formData.fssaiNumber} onChange={e => setFormData({...formData, fssaiNumber: e.target.value})} className="h-9 text-[11px] rounded-lg bg-muted/20 border-none font-black" /></div>

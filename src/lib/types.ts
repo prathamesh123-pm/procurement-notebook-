@@ -51,11 +51,20 @@ export interface Supplier {
   cattleFeedBrand?: string;
   fssaiNumber?: string;
   fssaiExpiry?: string;
-  // Material tracking for Supplier/Point
+  // Center specific fields (Unified)
+  operatorName?: string;
+  village?: string;
+  paymentCycle?: string;
+  spaceOwnership?: 'Self' | 'Rented';
+  hygieneGrade?: string;
+  additionalNotes?: string;
+  // Material tracking
   milkCansCount?: number;
   computerAvailable?: boolean;
   upsInverterAvailable?: boolean;
   solarAvailable?: boolean;
+  chemicalsStock?: string;
+  batteryCondition?: string;
   equipment?: EquipmentItem[];
   updatedAt: string;
 }
@@ -72,30 +81,8 @@ export interface CenterMaterial {
   equipment?: EquipmentItem[];
 }
 
-export interface CollectionCenter {
-  id: string;
-  name: string;
-  code: string;
-  operatorName: string;
-  mobile: string;
-  village: string;
-  routeId?: string;
-  fssaiNumber?: string;
-  fssaiExpiry?: string;
-  isLinkedToSupplier?: boolean;
-  supplierId?: string;
-  // Expanded metrics and logistics
-  cowMilk?: MilkMetrics;
-  buffaloMilk?: MilkMetrics;
-  iceBlocks?: number;
-  cattleFeedBrand?: string;
-  competition?: string;
-  paymentCycle?: string;
-  spaceOwnership?: 'Self' | 'Rented';
-  hygieneGrade?: string;
-  additionalNotes?: string;
-  material: CenterMaterial;
-  updatedAt: string;
+export interface CollectionCenter extends Supplier {
+  // Inherits from Supplier
 }
 
 export interface Route {

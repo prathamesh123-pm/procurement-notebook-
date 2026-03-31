@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
@@ -12,12 +11,12 @@ import {
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
-import { CollectionCenter, EquipmentItem } from "@/lib/types"
+import { Supplier, EquipmentItem } from "@/lib/types"
 import { useToast } from "@/hooks/use-toast"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Checkbox } from "@/components/ui/checkbox"
 import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking } from "@/firebase"
-import { collection, doc } from "firebase/firestore"
+import { collection, doc, query, where } from "firebase/firestore"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 
@@ -26,29 +25,30 @@ export default function CentersPage() {
   const db = useFirestore()
   const { toast } = useToast()
 
+  // Query global suppliers that are of type 'Center'
   const centersQuery = useMemoFirebase(() => {
     if (!db || !user) return null
-    return collection(db, 'users', user.uid, 'centers')
+    return query(collection(db, 'suppliers'), where('supplierType', '==', 'Center'))
   }, [db, user])
 
-  const { data: centers, isLoading } = useCollection<CollectionCenter>(centersQuery)
+  const { data: centers, isLoading } = useCollection<Supplier>(centersQuery)
 
   const [searchQuery, setSearchQuery] = useState("")
   const [mounted, setMounted] = useState(false)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [dialogMode, setDialogMode] = useState<'add' | 'edit'>('add')
   const [editingId, setEditingId] = useState<string | null>(null)
-  const [selectedCenter, setSelectedCenter] = useState<CollectionCenter | null>(null)
+  const [selectedCenter, setSelectedCenter] = useState<Supplier | null>(null)
   
   const [formData, setFormData] = useState({
-    name: "", code: "", operatorName: "", mobile: "", village: "", routeId: "",
+    name: "", supplierId: "", operatorName: "", mobile: "", village: "", routeId: "",
     fssaiNumber: "", fssaiExpiry: "",
     cowQty: "0", cowFat: "0", cowSnf: "0",
     bufQty: "0", bufFat: "0", bufSnf: "0",
     iceBlocks: "0", cattleFeedBrand: "", competition: "", paymentCycle: "7 Days",
     spaceOwnership: "Self" as 'Self' | 'Rented', hygieneGrade: "A",
     additionalNotes: "",
-    weighingScaleBrand: "", fatMachineBrand: "", chemicalsStock: "",
+    scaleBrand: "", fatMachineBrand: "", chemicalsStock: "",
     batteryCondition: "", milkCansCount: "0",
     computerAvailable: false, upsInverterAvailable: false, solarAvailable: false,
     equipment: [] as EquipmentItem[]
@@ -60,11 +60,11 @@ export default function CentersPage() {
     setDialogMode('add')
     setEditingId(null)
     setFormData({
-      name: "", code: "", operatorName: "", mobile: "", village: "", routeId: "",
+      name: "", supplierId: "", operatorName: "", mobile: "", village: "", routeId: "",
       fssaiNumber: "", fssaiExpiry: "", cowQty: "0", cowFat: "0", cowSnf: "0",
       bufQty: "0", bufFat: "0", bufSnf: "0", iceBlocks: "0", cattleFeedBrand: "",
       competition: "", paymentCycle: "7 Days", spaceOwnership: "Self", hygieneGrade: "A",
-      additionalNotes: "", weighingScaleBrand: "", fatMachineBrand: "",
+      additionalNotes: "", scaleBrand: "", fatMachineBrand: "",
       chemicalsStock: "", batteryCondition: "", milkCansCount: "0",
       computerAvailable: false, upsInverterAvailable: false, solarAvailable: false,
       equipment: []
@@ -72,12 +72,12 @@ export default function CentersPage() {
     setIsDialogOpen(true)
   }
 
-  const handleOpenEdit = (center: CollectionCenter) => {
+  const handleOpenEdit = (center: Supplier) => {
     setDialogMode('edit')
     setEditingId(center.id)
     setFormData({
-      name: center.name || "", code: center.code || "", operatorName: center.operatorName || "",
-      mobile: center.mobile || "", village: center.village || "", routeId: center.routeId || "",
+      name: center.name || "", supplierId: center.supplierId || "", operatorName: center.operatorName || "",
+      mobile: center.mobile || "", village: center.village || center.address || "", routeId: center.routeId || "",
       fssaiNumber: center.fssaiNumber || "", fssaiExpiry: center.fssaiExpiry || "",
       cowQty: String(center.cowMilk?.quantity || 0),
       cowFat: String(center.cowMilk?.fat || 0),
@@ -92,51 +92,49 @@ export default function CentersPage() {
       spaceOwnership: center.spaceOwnership || "Self",
       hygieneGrade: center.hygieneGrade || "A",
       additionalNotes: center.additionalNotes || "",
-      weighingScaleBrand: center.material?.weighingScaleBrand || "",
-      fatMachineBrand: center.material?.fatMachineBrand || "",
-      chemicalsStock: center.material?.chemicalsStock || "",
-      batteryCondition: center.material?.batteryCondition || "",
-      milkCansCount: String(center.material?.milkCansCount || 0),
-      computerAvailable: center.material?.computerAvailable || false,
-      upsInverterAvailable: center.material?.upsInverterAvailable || false,
-      solarAvailable: center.material?.solarAvailable || false,
-      equipment: center.material?.equipment || []
+      scaleBrand: center.scaleBrand || "",
+      fatMachineBrand: center.fatMachineBrand || "",
+      chemicalsStock: center.chemicalsStock || "",
+      batteryCondition: center.batteryCondition || "",
+      milkCansCount: String(center.milkCansCount || 0),
+      computerAvailable: center.computerAvailable || false,
+      upsInverterAvailable: center.upsInverterAvailable || false,
+      solarAvailable: center.solarAvailable || false,
+      equipment: center.equipment || []
     })
     setIsDialogOpen(true)
   }
 
   const handleSaveCenter = () => {
-    if (!formData.name || !formData.code || !db || !user) {
-      toast({ title: "त्रुटी", description: "नाव आणि कोड आवश्यक आहे.", variant: "destructive" })
+    if (!formData.name || !formData.supplierId || !db || !user) {
+      toast({ title: "त्रुटी", description: "नाव आणि आयडी आवश्यक आहे.", variant: "destructive" })
       return
     }
 
     const centerData = {
-      name: formData.name, code: formData.code, operatorName: formData.operatorName,
-      mobile: formData.mobile, village: formData.village, fssaiNumber: formData.fssaiNumber,
-      fssaiExpiry: formData.fssaiExpiry, routeId: formData.routeId,
+      name: formData.name, supplierId: formData.supplierId, operatorName: formData.operatorName,
+      mobile: formData.mobile, village: formData.village, address: formData.village, fssaiNumber: formData.fssaiNumber,
+      fssaiExpiry: formData.fssaiExpiry, routeId: formData.routeId, supplierType: 'Center',
       cowMilk: { quantity: Number(formData.cowQty), fat: Number(formData.cowFat), snf: Number(formData.cowSnf) },
       buffaloMilk: { quantity: Number(formData.bufQty), fat: Number(formData.bufFat), snf: Number(formData.bufSnf) },
       iceBlocks: Number(formData.iceBlocks), cattleFeedBrand: formData.cattleFeedBrand,
       competition: formData.competition, paymentCycle: formData.paymentCycle,
       spaceOwnership: formData.spaceOwnership, hygieneGrade: formData.hygieneGrade,
       additionalNotes: formData.additionalNotes,
-      material: {
-        weighingScaleBrand: formData.weighingScaleBrand, fatMachineBrand: formData.fatMachineBrand,
-        chemicalsStock: formData.chemicalsStock, batteryCondition: formData.batteryCondition,
-        milkCansCount: Number(formData.milkCansCount), computerAvailable: formData.computerAvailable,
-        upsInverterAvailable: formData.upsInverterAvailable, solarAvailable: formData.solarAvailable,
-        equipment: formData.equipment
-      },
+      scaleBrand: formData.scaleBrand, fatMachineBrand: formData.fatMachineBrand,
+      chemicalsStock: formData.chemicalsStock, batteryCondition: formData.batteryCondition,
+      milkCansCount: Number(formData.milkCansCount), computerAvailable: formData.computerAvailable,
+      upsInverterAvailable: formData.upsInverterAvailable, solarAvailable: formData.solarAvailable,
+      equipment: formData.equipment,
       updatedAt: new Date().toISOString()
     }
 
     if (dialogMode === 'add') {
-      const colRef = collection(db, 'users', user.uid, 'centers')
+      const colRef = collection(db, 'suppliers')
       addDocumentNonBlocking(colRef, centerData)
       toast({ title: "यशस्वी", description: "नवीन केंद्र जोडण्यात आले." })
     } else if (editingId) {
-      const docRef = doc(db, 'users', user.uid, 'centers', editingId)
+      const docRef = doc(db, 'suppliers', editingId)
       updateDocumentNonBlocking(docRef, centerData)
       toast({ title: "यशस्वी", description: "केंद्राची माहिती अपडेट झाली." })
       if (selectedCenter?.id === editingId) {
@@ -149,9 +147,9 @@ export default function CentersPage() {
   const handleDeleteCenter = (id: string, e: React.MouseEvent) => {
     e.stopPropagation()
     e.preventDefault()
-    if (!db || !user) return
+    if (!db) return
     if (confirm("तुम्हाला खात्री आहे की हे केंद्र हटवायचे आहे?")) {
-      const docRef = doc(db, 'users', user.uid, 'centers', id)
+      const docRef = doc(db, 'suppliers', id)
       deleteDocumentNonBlocking(docRef)
       if (selectedCenter?.id === id) setSelectedCenter(null)
       toast({ title: "यशस्वी", description: "केंद्र हटवण्यात आले." })
@@ -161,7 +159,7 @@ export default function CentersPage() {
   const filteredCenters = useMemo(() => {
     return (centers || []).filter(center => {
       const name = center.name?.toLowerCase() || ""
-      const code = center.code?.toString().toLowerCase() || ""
+      const code = center.supplierId?.toString().toLowerCase() || ""
       const q = searchQuery.toLowerCase()
       return name.includes(q) || code.includes(q)
     })
@@ -198,7 +196,7 @@ export default function CentersPage() {
                   <div className="min-w-0 flex-1">
                     <h4 className="font-black text-[12px] text-slate-900 truncate uppercase">{center.name}</h4>
                     <div className="flex items-center gap-2 mt-1">
-                      <Badge variant="secondary" className="text-[8px] font-black h-4 px-1.5 rounded-md bg-muted/50 border-none">{center.code}</Badge>
+                      <Badge variant="secondary" className="text-[8px] font-black h-4 px-1.5 rounded-md bg-muted/50 border-none">{center.supplierId}</Badge>
                       <span className="text-[10px] text-muted-foreground truncate flex items-center gap-1 font-bold">
                         <MapPin className="h-3 w-3" /> {center.village || center.address || "पत्ता नाही"}
                       </span>
@@ -243,7 +241,7 @@ export default function CentersPage() {
                       <User className="h-3 w-3" /> ऑपरेटर माहिती
                     </h4>
                     <div className="space-y-1">
-                      <div><p className="text-[8px] text-muted-foreground uppercase font-black">नाव</p><p className="text-[10px] font-black">{selectedCenter.operatorName || "-"}</p></div>
+                      <div><p className="text-[8px] text-muted-foreground uppercase font-black">नाव</p><p className="text-[10px] font-black">{selectedCenter.operatorName || selectedCenter.name || "-"}</p></div>
                       <div><p className="text-[8px] text-muted-foreground uppercase font-black">मोबाईल</p><p className="text-[10px] font-black">{selectedCenter.mobile || "-"}</p></div>
                     </div>
                   </div>
@@ -280,16 +278,16 @@ export default function CentersPage() {
                 <div className="space-y-1.5">
                   <h4 className="text-[9px] font-black uppercase text-primary tracking-widest">सुविधा व ऊर्जा बॅकअप</h4>
                   <div className="grid grid-cols-3 gap-2">
-                    <div className={`p-2 rounded-xl border flex flex-col items-center gap-1 transition-all ${selectedCenter.material?.computerAvailable ? 'bg-emerald-50 border-emerald-100 shadow-sm' : 'bg-muted/20 opacity-40 border-muted-foreground/5'}`}>
-                      <Laptop className={`h-4 w-4 ${selectedCenter.material?.computerAvailable ? 'text-emerald-600' : 'text-slate-400'}`} />
+                    <div className={`p-2 rounded-xl border flex flex-col items-center gap-1 transition-all ${selectedCenter.computerAvailable ? 'bg-emerald-50 border-emerald-100 shadow-sm' : 'bg-muted/20 opacity-40 border-muted-foreground/5'}`}>
+                      <Laptop className={`h-4 w-4 ${selectedCenter.computerAvailable ? 'text-emerald-600' : 'text-slate-400'}`} />
                       <span className="text-[8px] font-black uppercase">POP सिस्टम</span>
                     </div>
-                    <div className={`p-2 rounded-xl border flex flex-col items-center gap-1 transition-all ${selectedCenter.material?.upsInverterAvailable ? 'bg-emerald-50 border-emerald-100 shadow-sm' : 'bg-muted/20 opacity-40 border-muted-foreground/5'}`}>
-                      <Zap className={`h-4 w-4 ${selectedCenter.material?.upsInverterAvailable ? 'text-emerald-600' : 'text-slate-400'}`} />
+                    <div className={`p-2 rounded-xl border flex flex-col items-center gap-1 transition-all ${selectedCenter.upsInverterAvailable ? 'bg-emerald-50 border-emerald-100 shadow-sm' : 'bg-muted/20 opacity-40 border-muted-foreground/5'}`}>
+                      <Zap className={`h-4 w-4 ${selectedCenter.upsInverterAvailable ? 'text-emerald-600' : 'text-slate-400'}`} />
                       <span className="text-[8px] font-black uppercase">UPS/INV</span>
                     </div>
-                    <div className={`p-2 rounded-xl border flex flex-col items-center gap-1 transition-all ${selectedCenter.material?.solarAvailable ? 'bg-emerald-50 border-emerald-100 shadow-sm' : 'bg-muted/20 opacity-40 border-muted-foreground/5'}`}>
-                      <Sun className={`h-4 w-4 ${selectedCenter.material?.solarAvailable ? 'text-emerald-600' : 'text-slate-400'}`} />
+                    <div className={`p-2 rounded-xl border flex flex-col items-center gap-1 transition-all ${selectedCenter.solarAvailable ? 'bg-emerald-50 border-emerald-100 shadow-sm' : 'bg-muted/20 opacity-40 border-muted-foreground/5'}`}>
+                      <Sun className={`h-4 w-4 ${selectedCenter.solarAvailable ? 'text-emerald-600' : 'text-slate-400'}`} />
                       <span className="text-[8px] font-black uppercase">सोलर</span>
                     </div>
                   </div>
@@ -314,17 +312,17 @@ export default function CentersPage() {
                 <div className="space-y-1.5">
                   <h4 className="text-[9px] font-black uppercase text-primary tracking-widest">तांत्रिक व साहित्य तपशील</h4>
                   <div className="bg-muted/10 p-2.5 rounded-xl border border-muted-foreground/5 grid grid-cols-2 gap-y-2 gap-x-4">
-                    <div className="space-y-0.5"><p className="text-[7px] text-muted-foreground uppercase font-black">काटा ब्रँड</p><p className="text-[9px] font-black uppercase">{selectedCenter.material?.weighingScaleBrand || "-"}</p></div>
-                    <div className="space-y-0.5"><p className="text-[7px] text-muted-foreground uppercase font-black">मशीन ब्रँड</p><p className="text-[9px] font-black uppercase">{selectedCenter.material?.fatMachineBrand || "-"}</p></div>
-                    <div className="space-y-0.5"><p className="text-[7px] text-muted-foreground uppercase font-black">रसायन स्टॉक</p><p className="text-[9px] font-black uppercase">{selectedCenter.material?.chemicalsStock || "-"}</p></div>
-                    <div className="space-y-0.5"><p className="text-[7px] text-muted-foreground uppercase font-black">बॅटरी स्थिती</p><p className="text-[9px] font-black uppercase">{selectedCenter.material?.batteryCondition || "-"}</p></div>
+                    <div className="space-y-0.5"><p className="text-[7px] text-muted-foreground uppercase font-black">काटा ब्रँड</p><p className="text-[9px] font-black uppercase">{selectedCenter.scaleBrand || "-"}</p></div>
+                    <div className="space-y-0.5"><p className="text-[7px] text-muted-foreground uppercase font-black">मशीन ब्रँड</p><p className="text-[9px] font-black uppercase">{selectedCenter.fatMachineBrand || "-"}</p></div>
+                    <div className="space-y-0.5"><p className="text-[7px] text-muted-foreground uppercase font-black">रसायन स्टॉक</p><p className="text-[9px] font-black uppercase">{selectedCenter.chemicalsStock || "-"}</p></div>
+                    <div className="space-y-0.5"><p className="text-[7px] text-muted-foreground uppercase font-black">बॅटरी स्थिती</p><p className="text-[9px] font-black uppercase">{selectedCenter.batteryCondition || "-"}</p></div>
                     <div className="space-y-0.5"><p className="text-[7px] text-muted-foreground uppercase font-black">पशुखाद्य ब्रँड</p><p className="text-[9px] font-black uppercase">{selectedCenter.cattleFeedBrand || "-"}</p></div>
                     <div className="space-y-0.5"><p className="text-[7px] text-muted-foreground uppercase font-black">बर्फ लाद्या</p><p className="text-[9px] font-black uppercase">{selectedCenter.iceBlocks || 0}</p></div>
-                    <div className="space-y-0.5 col-span-2"><p className="text-[7px] text-muted-foreground uppercase font-black">एकूण कॅन</p><p className="text-[9px] font-black uppercase">{selectedCenter.material?.milkCansCount || 0}</p></div>
+                    <div className="space-y-0.5 col-span-2"><p className="text-[7px] text-muted-foreground uppercase font-black">एकूण कॅन</p><p className="text-[9px] font-black uppercase">{selectedCenter.milkCansCount || 0}</p></div>
                   </div>
                 </div>
 
-                {selectedCenter.material?.equipment && selectedCenter.material.equipment.length > 0 && (
+                {selectedCenter.equipment && selectedCenter.equipment.length > 0 && (
                   <div className="space-y-1.5">
                     <h4 className="text-[9px] font-black uppercase text-primary tracking-widest flex items-center gap-1.5">
                       <Box className="h-3 w-3" /> साहित्याची यादी (INVENTORY)
@@ -339,7 +337,7 @@ export default function CentersPage() {
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-muted-foreground/5">
-                          {selectedCenter.material.equipment.map((item) => (
+                          {selectedCenter.equipment.map((item) => (
                             <tr key={item.id} className="bg-white">
                               <td className="p-2 text-[9px] font-black uppercase text-slate-700">{item.name}</td>
                               <td className="p-2 text-[9px] font-black text-center text-slate-900">{item.quantity}</td>
@@ -386,7 +384,7 @@ export default function CentersPage() {
                 </h4>
                 <div className="grid grid-cols-2 gap-2.5">
                   <div className="col-span-2 space-y-1"><Label className="text-[9px] uppercase font-black opacity-60">केंद्राचे नाव *</Label><Input value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="h-9 text-[11px] rounded-lg bg-muted/20 border-none font-black" /></div>
-                  <div className="space-y-1"><Label className="text-[9px] uppercase font-black opacity-60">कोड *</Label><Input value={formData.code} onChange={e => setFormData({...formData, code: e.target.value})} className="h-9 text-[11px] rounded-lg bg-muted/20 border-none font-black" /></div>
+                  <div className="space-y-1"><Label className="text-[9px] uppercase font-black opacity-60">कोड (ID) *</Label><Input value={formData.supplierId} onChange={e => setFormData({...formData, supplierId: e.target.value})} className="h-9 text-[11px] rounded-lg bg-muted/20 border-none font-black" /></div>
                   <div className="space-y-1"><Label className="text-[9px] uppercase font-black opacity-60">ऑपरेटरचे नाव</Label><Input value={formData.operatorName} onChange={e => setFormData({...formData, operatorName: e.target.value})} className="h-9 text-[11px] rounded-lg bg-muted/20 border-none font-black" /></div>
                   <div className="space-y-1"><Label className="text-[9px] uppercase font-black opacity-60">गाव (Village)</Label><Input value={formData.village} onChange={e => setFormData({...formData, village: e.target.value})} className="h-9 text-[11px] rounded-lg bg-muted/20 border-none font-black" /></div>
                   <div className="space-y-1"><Label className="text-[9px] uppercase font-black opacity-60">मोबाईल</Label><Input value={formData.mobile} onChange={e => setFormData({...formData, mobile: e.target.value})} className="h-9 text-[11px] rounded-lg bg-muted/20 border-none font-black" /></div>
@@ -400,7 +398,7 @@ export default function CentersPage() {
                   <Truck className="h-3 w-3" /> २) तांत्रिक व रसायने
                 </h4>
                 <div className="grid grid-cols-2 gap-2.5">
-                  <div className="space-y-1"><Label className="text-[9px] uppercase font-black opacity-60">काटा ब्रँड</Label><Input value={formData.weighingScaleBrand} onChange={e => setFormData({...formData, weighingScaleBrand: e.target.value})} className="h-9 text-[11px] rounded-lg bg-muted/20 border-none font-black" /></div>
+                  <div className="space-y-1"><Label className="text-[9px] uppercase font-black opacity-60">काटा ब्रँड</Label><Input value={formData.scaleBrand} onChange={e => setFormData({...formData, scaleBrand: e.target.value})} className="h-9 text-[11px] rounded-lg bg-muted/20 border-none font-black" /></div>
                   <div className="space-y-1"><Label className="text-[9px] uppercase font-black opacity-60">मशीन ब्रँड</Label><Input value={formData.fatMachineBrand} onChange={e => setFormData({...formData, fatMachineBrand: e.target.value})} className="h-9 text-[11px] rounded-lg bg-muted/20 border-none font-black" /></div>
                   <div className="space-y-1"><Label className="text-[9px] uppercase font-black opacity-60">रसायन स्टॉक</Label><Input value={formData.chemicalsStock} onChange={e => setFormData({...formData, chemicalsStock: e.target.value})} className="h-9 text-[11px] rounded-lg bg-muted/20 border-none font-black" placeholder="उदा. 5 L" /></div>
                   <div className="space-y-1"><Label className="text-[9px] uppercase font-black opacity-60">बॅटरी स्थिती</Label><Input value={formData.batteryCondition} onChange={e => setFormData({...formData, batteryCondition: e.target.value})} className="h-9 text-[11px] rounded-lg bg-muted/20 border-none font-black" placeholder="Good / Poor" /></div>

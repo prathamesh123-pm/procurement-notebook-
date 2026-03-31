@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect, useMemo, Suspense } from "react"
@@ -71,43 +70,20 @@ function SuppliersContent() {
   }
 
   const handleAddSupplier = () => {
-    if (!formData.name || !formData.supplierId || !db || !user) return
+    if (!formData.name || !formData.supplierId || !db || !user) {
+      toast({ title: "त्रुटी", description: "नाव आणि आयडी आवश्यक आहे.", variant: "destructive" })
+      return
+    }
     const newSupp = {
       ...formData,
+      // If it's a center, sync these fields
+      operatorName: formData.supplierType === 'Center' ? formData.name : undefined,
+      village: formData.supplierType === 'Center' ? formData.address : undefined,
       updatedAt: new Date().toISOString()
     }
     const colRef = collection(db, 'suppliers')
     addDocumentNonBlocking(colRef, newSupp)
-
-    if (formData.supplierType === 'Center') {
-      const centerColRef = collection(db, 'users', user.uid, 'centers')
-      const centerData = {
-        name: formData.name,
-        code: formData.supplierId,
-        village: formData.address || "",
-        mobile: formData.mobile || "",
-        operatorName: formData.name,
-        routeId: formData.routeId || "",
-        isLinkedToSupplier: true,
-        supplierId: formData.supplierId,
-        cowMilk: formData.cowMilk || { quantity: 0, fat: 0, snf: 0 },
-        buffaloMilk: formData.buffaloMilk || { quantity: 0, fat: 0, snf: 0 },
-        material: {
-          weighingScaleBrand: formData.scaleBrand || "",
-          fatMachineBrand: formData.fatMachineBrand || "",
-          milkCansCount: formData.milkCansCount || 0,
-          computerAvailable: formData.computerAvailable || false,
-          upsInverterAvailable: formData.upsInverterAvailable || false,
-          solarAvailable: formData.solarAvailable || false,
-          equipment: formData.equipment || []
-        },
-        updatedAt: new Date().toISOString()
-      }
-      addDocumentNonBlocking(centerColRef, centerData)
-      toast({ title: "यशस्वी", description: "सप्लायर आणि केंद्र दोन्ही जतन झाले." })
-    } else {
-      toast({ title: "यशस्वी", description: "सप्लायर प्रोफाइल जतन झाले." })
-    }
+    toast({ title: "यशस्वी", description: "सप्लायर प्रोफाइल जतन झाले." })
 
     setIsAdding(false)
     resetFormData()
@@ -116,7 +92,16 @@ function SuppliersContent() {
   const handleUpdateSupplier = () => {
     if (!selectedSupplier || !db) return
     const docRef = doc(db, 'suppliers', selectedSupplier.id)
-    updateDocumentNonBlocking(docRef, { ...formData, updatedAt: new Date().toISOString() })
+    
+    // Create update data without the internal ID
+    const { id, ...updateData } = formData
+    
+    updateDocumentNonBlocking(docRef, { 
+      ...updateData, 
+      operatorName: formData.supplierType === 'Center' ? formData.name : undefined,
+      village: formData.supplierType === 'Center' ? formData.address : undefined,
+      updatedAt: new Date().toISOString() 
+    })
     setIsEditing(false)
     setSelectedSupplier(null)
     toast({ title: "यशस्वी", description: "माहिती अद्ययावत झाली." })
@@ -199,7 +184,7 @@ function SuppliersContent() {
                       </Select>
                     </div>
                     <div className="space-y-1 col-span-2"><Label className="text-[9px] font-black uppercase text-muted-foreground opacity-60">नाव</Label><Input value={formData.name ?? ""} onChange={e => setFormData({...formData, name: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-bold rounded-lg p-3" placeholder="..." /></div>
-                    <div className="space-y-1"><Label className="text-[9px] font-black uppercase text-muted-foreground opacity-60">आयडी (ID)</Label><Input value={formData.supplierId ?? ""} onChange={e => setFormData({...formData, supplierId: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-bold rounded-lg p-3" placeholder="..." /></div>
+                    <div className="space-y-1"><Label className="text-[9px] font-black uppercase text-muted-foreground opacity-60">आयडी (ID) *</Label><Input value={formData.supplierId ?? ""} onChange={e => setFormData({...formData, supplierId: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-bold rounded-lg p-3" placeholder="..." /></div>
                     <div className="space-y-1"><Label className="text-[9px] font-black uppercase text-muted-foreground opacity-60">मोबाईल</Label><Input value={formData.mobile ?? ""} onChange={e => setFormData({...formData, mobile: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-bold rounded-lg p-3" placeholder="..." /></div>
                     <div className="space-y-1 col-span-2">
                       <Label className="text-[9px] font-black uppercase text-muted-foreground opacity-60">रूट</Label>

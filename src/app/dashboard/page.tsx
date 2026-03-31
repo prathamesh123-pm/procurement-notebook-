@@ -1,4 +1,3 @@
-
 "use client"
 
 import { Card, CardContent } from "@/components/ui/card"
@@ -19,11 +18,6 @@ export default function DashboardOverview() {
     return doc(db, 'users', user.uid)
   }, [db, user])
 
-  const centersQuery = useMemoFirebase(() => {
-    if (!db || !user) return null
-    return collection(db, 'users', user.uid, 'centers')
-  }, [db, user])
-
   const tasksQuery = useMemoFirebase(() => {
     if (!db || !user) return null
     return collection(db, 'users', user.uid, 'tasks')
@@ -40,7 +34,6 @@ export default function DashboardOverview() {
   }, [db, user])
 
   const { data: userData } = useDoc(userDocRef)
-  const { data: centers } = useCollection(centersQuery)
   const { data: tasks } = useCollection(tasksQuery)
   const { data: routes } = useCollection(routesQuery)
   const { data: suppliers } = useCollection(suppliersQuery)
@@ -48,20 +41,21 @@ export default function DashboardOverview() {
   useEffect(() => setMounted(true), [])
 
   const stats = useMemo(() => {
-    const routeTotalCow = (suppliers || [])?.reduce((acc, s) => acc + (Number(s.cowMilk?.quantity) || 0), 0) || 0
-    const routeTotalBuf = (suppliers || [])?.reduce((acc, s) => acc + (Number(s.buffaloMilk?.quantity) || 0), 0) || 0
-    const centerTotalCow = (centers || [])?.reduce((acc, c) => acc + (Number(c.cowMilk?.quantity) || 0), 0) || 0
-    const centerTotalBuf = (centers || [])?.reduce((acc, c) => acc + (Number(c.buffaloMilk?.quantity) || 0), 0) || 0
+    // Unique list of all procurement points from the unified suppliers collection
+    const allSupps = suppliers || []
+    
+    const totalCow = allSupps.reduce((acc, s) => acc + (Number(s.cowMilk?.quantity) || 0), 0)
+    const totalBuf = allSupps.reduce((acc, s) => acc + (Number(s.buffaloMilk?.quantity) || 0), 0)
     
     return {
-      cowMilk: routeTotalCow + centerTotalCow,
-      bufMilk: routeTotalBuf + centerTotalBuf,
-      totalMilk: routeTotalCow + routeTotalBuf + centerTotalCow + centerTotalBuf,
+      cowMilk: totalCow,
+      bufMilk: totalBuf,
+      totalMilk: totalCow + totalBuf,
       activeRoutes: routes?.length || 0,
-      totalPoints: (suppliers?.length || 0) + (centers?.length || 0),
+      totalPoints: allSupps.length,
       pendingTasks: (tasks || [])?.filter(t => t.status === 'pending').length || 0
     }
-  }, [centers, tasks, routes, suppliers])
+  }, [tasks, routes, suppliers])
 
   if (!mounted) {
     return <div className="flex items-center justify-center h-[80vh] text-muted-foreground animate-pulse font-black uppercase text-xs">लोड होत आहे...</div>
