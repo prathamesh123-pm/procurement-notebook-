@@ -111,31 +111,20 @@ export default function ReportsPage() {
     vehicleNo: "वाहन क्रमांक",
     vehicleType: "गाडीचा प्रकार",
     driverName: "ड्रायव्हरचे नाव",
-    driverMobile: "ड्रायव्हर मोबाईल",
     mobile: "संपर्क क्रमांक",
     repName: "प्रतिनिधी नाव",
-    repId: "प्रतिनिधी आयडी",
-    shift: "शिफ्ट",
     breakdownTime: "बिघाड वेळ",
     location: "बिघाड ठिकाण",
     reason: "बिघाडाचे मुख्य कारण",
     severity: "बिघाडाचे स्वरूप",
-    faultResponsibility: "बिघाडास जबाबदार",
     detailedReason: "सविस्तर माहिती",
-    detailedDescription: "सविस्तर वर्णन",
     estimatedRepairTime: "दुरुस्ती वेळ (तास)",
     estimatedRepairCost: "दुरुस्ती खर्च (₹)",
     recoveryVehicleNo: "पर्यायी गाडी क्र.",
     recoveryArrivalTime: "पर्यायी गाडी वेळ",
     milkHot: "दूध गरम झाले का?",
     milkSour: "दूध आंबट झाले का?",
-    alternateArrangement: "पर्यायी सोय केली का?",
-    workType: "कामाचा प्रकार",
     summary: "कामाचा सारांश",
-    problems: "महत्त्वाच्या समस्या",
-    achievements: "आजची मोठी कामगिरी",
-    supervisorName: "सुपरवायझर",
-    lossAmount: "नुकसान रक्कम (₹)",
     totalLossAmount: "एकूण नुकसान (₹)",
     fineAmount: "दंड रक्कम (₹)",
     seizureQty: "जप्ती प्रमाण (L)",
@@ -150,8 +139,6 @@ export default function ReportsPage() {
     ownerName: "मालकाचे नाव",
     capacity: "क्षमता (L)",
     licenseStatus: "परवाना स्थिती",
-    district: "जिल्हा",
-    taluka: "तालुका",
     tempAtArrival: "आगमनाचे तापमान (°C)",
     tempAfterChilling: "चिलिंग नंतर तापमान (°C)",
     waterSupply: "पाणी पुरवठा",
@@ -163,12 +150,8 @@ export default function ReportsPage() {
     observations: "विशेष निरीक्षणे",
     type: "प्रकार (Type)",
     facility: "सुविधा (Facility)",
-    plantHygiene: "स्वच्छता (Hygiene)",
-    milkSource: "दूध स्रोत",
     totalMilk: "एकूण दूध (L)",
-    paymentCycle: "पेमेंट सायकल",
-    otherInfo: "इतर माहिती",
-    computerAvailable: "POP सिस्टम"
+    paymentCycle: "पेमेंट सायकल"
   };
 
   const orderedKeys = [
@@ -179,34 +162,24 @@ export default function ReportsPage() {
     "actionTaken", 
     "actionsTaken",
     "repName", 
-    "repId", 
-    "shift", 
     "routeName", 
     "vehicleNumber", 
     "vehicleNo", 
     "vehicleType", 
     "driverName", 
-    "driverMobile", 
     "mobile", 
     "breakdownTime", 
     "location", 
     "reason", 
     "severity", 
-    "faultResponsibility", 
     "detailedReason", 
-    "detailedDescription", 
     "estimatedRepairTime", 
     "estimatedRepairCost", 
     "recoveryVehicleNo", 
     "recoveryArrivalTime", 
     "milkHot", 
     "milkSour", 
-    "alternateArrangement", 
-    "workType", 
     "summary", 
-    "achievements", 
-    "problems", 
-    "lossAmount", 
     "totalLossAmount", 
     "fineAmount", 
     "seizureQty", 
@@ -221,8 +194,6 @@ export default function ReportsPage() {
     "ownerName", 
     "capacity", 
     "licenseStatus", 
-    "district", 
-    "taluka", 
     "tempAtArrival", 
     "tempAfterChilling", 
     "waterSupply", 
@@ -234,13 +205,8 @@ export default function ReportsPage() {
     "observations", 
     "type", 
     "facility", 
-    "plantHygiene", 
-    "milkSource", 
     "totalMilk", 
-    "paymentCycle", 
-    "otherInfo", 
-    "computerAvailable",
-    "supervisorName"
+    "paymentCycle"
   ];
 
   const reportsToRender = useMemo(() => {
@@ -286,7 +252,7 @@ export default function ReportsPage() {
             <div className="flex justify-between border-b border-slate-200 pb-0.5"><span>स्लिप नंबर:</span> <span>#{d.slipNo || '---'}</span></div>
             <div className="flex justify-between items-center">
               <span>शिफ्ट:</span> 
-              <Badge className="h-3 text-[7px] uppercase font-black px-1.5">{d.shift || 'सकाळ'}</Badge>
+              <div className="h-4 inline-flex items-center rounded-full border px-2.5 py-0.5 text-[7px] uppercase font-black">{d.shift || 'सकाळ'}</div>
             </div>
           </div>
         </div>
@@ -342,27 +308,6 @@ export default function ReportsPage() {
           </div>
         </div>
 
-        {(d.achievements || d.problems || d.actionsTaken) && (
-          <div className="mt-4 space-y-2 border-t border-slate-900 pt-4 print:border-black">
-            {d.achievements && (
-              <div className="space-y-0.5">
-                <div className="flex items-center gap-1.5 text-[9px] font-black uppercase text-emerald-700">
-                  <FileCheck className="h-3 w-3" /> आजची कामगिरी:
-                </div>
-                <p className="text-[9px] font-bold bg-emerald-50/50 p-2 rounded-lg border-l-2 border-emerald-500 italic print:bg-white print:border print:border-black">{d.achievements}</p>
-              </div>
-            )}
-            {d.problems && (
-              <div className="space-y-0.5">
-                <div className="flex items-center gap-1.5 text-[9px] font-black uppercase text-rose-700">
-                  <AlertTriangle className="h-3 w-3" /> समस्या:
-                </div>
-                <p className="text-[9px] font-bold bg-rose-50/50 p-2 rounded-lg border-l-2 border-rose-500 italic print:bg-white print:border print:border-black">{d.problems}</p>
-              </div>
-            )}
-          </div>
-        )}
-
         <div className="mt-12 grid grid-cols-2 gap-10 text-center uppercase font-black text-[8px] tracking-widest text-slate-400">
           <div className="border-t border-slate-900 pt-2 print:border-black print:text-black">अधिकारी स्वाक्षरी</div>
           <div className="border-t border-slate-900 pt-2 print:border-black print:text-black">सुपरवायझर स्वाक्षरी</div>
@@ -383,7 +328,6 @@ export default function ReportsPage() {
       return String(val || "-");
     }
 
-    const isBreakdown = report.type === 'Transport Breakdown Report';
     const isDailyTask = report.type === 'Daily Task';
 
     return (
@@ -394,14 +338,14 @@ export default function ReportsPage() {
               {isDailyTask ? <ListTodo className="h-5 w-5" /> : <ClipboardCheck className="h-6 w-6" />}
             </div>
           </div>
-          <h1 className={`${isDailyTask ? 'text-lg' : 'text-xl'} font-black uppercase tracking-tight`}>संकलन नोंदवही (DAILY REPORT)</h1>
-          <Badge className={`mt-2 px-4 py-0.5 text-[8px] font-black uppercase tracking-widest ${isBreakdown ? 'bg-rose-600' : 'bg-slate-900'} print:bg-black`}>
+          <h1 className={`${isDailyTask ? 'text-lg' : 'text-xl'} font-black uppercase tracking-tight`}>संकलन नोंदवही (OFFICIAL REPORT)</h1>
+          <div className={`mt-2 px-4 py-0.5 text-[8px] font-black uppercase tracking-widest bg-slate-900 text-white inline-block print:bg-black`}>
             {report.type}
-          </Badge>
+          </div>
         </div>
 
         <div className="grid grid-cols-2 gap-4 mb-4 font-black text-[9px] uppercase border-b border-dashed border-slate-300 pb-2">
-          <div className="flex flex-col">
+          <div className="flex flex-col text-left">
             <span className="text-slate-400">तारीख:</span>
             <span className="text-base">{report.date}</span>
           </div>
@@ -443,9 +387,9 @@ export default function ReportsPage() {
               <div className="flex items-center gap-1.5 text-[10px] font-black uppercase text-rose-700">
                 <AlertTriangle className="h-4 w-4" /> नुकसान तपशील:
               </div>
-              <div className="border border-rose-600 rounded-lg overflow-hidden shadow-sm print:border-black overflow-x-auto">
+              <div className="border border-slate-900 rounded-lg overflow-hidden shadow-sm print:border-black overflow-x-auto">
                 <table className="w-full border-collapse text-[9px]">
-                  <thead className="bg-rose-600 text-white font-black uppercase tracking-wider print:bg-black">
+                  <thead className="bg-slate-900 text-white font-black uppercase tracking-wider print:bg-black">
                     <tr>
                       <th className="p-2 text-left border-r border-white/20">सप्लायर नाव</th>
                       <th className="p-2 text-center w-16 border-r border-white/20">प्रकार</th>
@@ -453,20 +397,20 @@ export default function ReportsPage() {
                       <th className="p-2 text-right w-24">रक्कम (₹)</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-rose-100 print:divide-black">
+                  <tbody className="divide-y divide-slate-200 print:divide-black">
                     {(d.losses || d.centerLosses).map((l: any, i: number) => (
-                      <tr key={i} className="text-center font-bold hover:bg-rose-50 transition-colors">
-                        <td className="p-2 text-left uppercase border-r border-rose-100 font-black print:border-black">
+                      <tr key={i} className="text-center font-bold hover:bg-slate-50 transition-colors">
+                        <td className="p-2 text-left uppercase border-r border-slate-200 font-black print:border-black">
                           {l.supplierName || l.centerName || '---'}
                         </td>
-                        <td className="p-2 border-r border-rose-100 print:border-black">{l.milkType || '-'}</td>
-                        <td className="p-2 border-r border-rose-100 font-black print:border-black">{l.qtyLiters || '0'}</td>
-                        <td className="p-2 text-right font-black text-rose-600 print:text-black">₹{l.lossAmount || '0'}</td>
+                        <td className="p-2 border-r border-slate-200 print:border-black">{l.milkType || '-'}</td>
+                        <td className="p-2 border-r border-slate-200 font-black print:border-black">{l.qtyLiters || '0'}</td>
+                        <td className="p-2 text-right font-black print:text-black">₹{l.lossAmount || '0'}</td>
                       </tr>
                     ))}
-                    <tr className="bg-rose-50 font-black text-[10px] print:bg-white print:border-t-2 print:border-black">
-                      <td className="p-2 text-right uppercase border-r border-rose-100 print:border-black" colSpan={3}>एकूण नुकसान:</td>
-                      <td className="p-2 text-right text-rose-700 text-base print:text-black">₹{d.totalLossAmount || d.lossAmount || '0'}</td>
+                    <tr className="bg-slate-50 font-black text-[10px] print:bg-white print:border-t-2 print:border-black">
+                      <td className="p-2 text-right uppercase border-r border-slate-200 print:border-black" colSpan={3}>एकूण नुकसान:</td>
+                      <td className="p-2 text-right text-base print:text-black">₹{d.totalLossAmount || d.lossAmount || '0'}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -539,7 +483,7 @@ export default function ReportsPage() {
             <tbody className="divide-y divide-slate-50">
               {filteredReports.map((report) => (
                 <tr key={report.id} className="hover:bg-primary/[0.02] transition-colors cursor-pointer group" onClick={() => { setSelectedReport(report); setIsViewOpen(true); setIsGroupView(false); }}>
-                  <td className="p-4">
+                  <td className="p-4 text-left">
                     <div className="flex flex-col gap-1.5 min-w-0">
                       <div className="flex items-center gap-2">
                         <span className="text-[11px] font-black uppercase text-slate-900 truncate max-w-[160px] group-hover:text-primary transition-colors">
@@ -590,7 +534,7 @@ export default function ReportsPage() {
               <div className="p-2 bg-primary/10 text-primary rounded-xl">
                 {isGroupView ? <FileStack className="h-5 w-5" /> : <FileText className="h-5 w-5" />}
               </div>
-              <div>
+              <div className="text-left">
                 <DialogTitle className="text-[11px] font-black uppercase text-slate-900 tracking-[0.2em]">{isGroupView ? 'एकत्रित कार्य अहवाल' : 'अहवाल तपशील'}</DialogTitle>
                 <DialogDescription className="text-[9px] font-bold uppercase text-slate-400">{isGroupView ? 'All Daily Tasks' : 'Official Report Preview'}</DialogDescription>
               </div>
@@ -633,7 +577,7 @@ export default function ReportsPage() {
         @media print {
           @page {
             size: A4;
-            margin: 10mm;
+            margin: 5mm;
           }
           
           body > *:not([role="dialog"]), 
@@ -673,11 +617,12 @@ export default function ReportsPage() {
             visibility: visible !important;
             width: 100% !important;
             margin: 0 !important;
-            padding: 15px !important;
+            padding: 10px !important;
             border: 2px solid black !important;
             background: white !important;
             box-shadow: none !important;
             min-height: auto !important;
+            color: black !important;
           }
 
           #printable-area * {
@@ -698,12 +643,8 @@ export default function ReportsPage() {
             border: 1px solid black !important;
             word-wrap: break-word !important;
             overflow-wrap: break-word !important;
-            padding: 6px !important;
+            padding: 4px !important;
             font-size: 10px !important;
-          }
-
-          tr {
-            page-break-inside: avoid !important;
           }
 
           h1, h2, h3, h4 {
@@ -712,8 +653,9 @@ export default function ReportsPage() {
           }
 
           .bg-primary, .bg-slate-900, .bg-rose-600 {
-            background-color: black !important;
-            color: white !important;
+            background-color: transparent !important;
+            color: black !important;
+            border: 1px solid black !important;
           }
 
           .text-primary, .text-rose-600, .text-emerald-700 {

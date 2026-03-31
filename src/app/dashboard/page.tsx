@@ -2,7 +2,7 @@
 "use client"
 
 import { Card, CardContent } from "@/components/ui/card"
-import { ListTodo, MapPin, TrendingUp, Warehouse, Calendar, Milk, ArrowUpRight, ShieldAlert, UserCheck } from "lucide-react"
+import { ListTodo, MapPin, TrendingUp, Warehouse, Calendar, Milk, ArrowUpRight, ShieldAlert } from "lucide-react"
 import { useEffect, useState, useMemo } from "react"
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
@@ -75,7 +75,6 @@ export default function DashboardOverview() {
       icon: Milk,
       color: "text-blue-600",
       bg: "bg-blue-50",
-      accent: "bg-blue-600",
     },
     {
       title: "सक्रिय रूट (Routes)",
@@ -84,7 +83,6 @@ export default function DashboardOverview() {
       icon: MapPin,
       color: "text-emerald-600",
       bg: "bg-emerald-50",
-      accent: "bg-emerald-600",
     },
     {
       title: "संकलन पॉइंट (Points)",
@@ -93,7 +91,6 @@ export default function DashboardOverview() {
       icon: Warehouse,
       color: "text-purple-600",
       bg: "bg-purple-50",
-      accent: "bg-purple-600",
     },
     {
       title: "प्रलंबित कामे (Tasks)",
@@ -102,7 +99,6 @@ export default function DashboardOverview() {
       icon: ListTodo,
       color: "text-rose-600",
       bg: "bg-rose-50",
-      accent: "bg-rose-600",
     },
   ]
 
@@ -116,7 +112,7 @@ export default function DashboardOverview() {
   return (
     <div className="space-y-8 max-w-6xl mx-auto w-full pb-10 px-2 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center justify-between">
-        <div className="space-y-1">
+        <div className="space-y-1 text-left">
           <h2 className="text-2xl sm:text-3xl font-black text-foreground flex items-center gap-3">
             <div className="p-2 bg-primary rounded-xl text-white shadow-lg shadow-primary/20">
               <TrendingUp className="h-6 w-6" />
@@ -136,7 +132,7 @@ export default function DashboardOverview() {
         {statCards.map((stat) => (
           <Card key={stat.title} className="border-none shadow-sm hover:shadow-xl transition-all duration-300 bg-white overflow-hidden group rounded-3xl relative">
             <div className={`absolute top-0 right-0 w-24 h-24 ${stat.bg} rounded-bl-full -mr-10 -mt-10 transition-transform group-hover:scale-110`} />
-            <CardContent className="p-6 flex flex-col gap-4 relative z-10">
+            <CardContent className="p-6 flex flex-col gap-4 relative z-10 text-left">
               <div className="flex items-center justify-between">
                 <div className={`p-3 rounded-2xl ${stat.bg} ${stat.color}`}>
                   <stat.icon className="h-6 w-6" />
