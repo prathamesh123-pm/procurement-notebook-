@@ -34,6 +34,11 @@ export default function LoginPage() {
       return
     }
 
+    if (password.length < 6) {
+      toast({ title: "त्रुटी", description: "पासवर्ड किमान ६ अंकी असावा.", variant: "destructive" })
+      return
+    }
+
     setLoading(true)
     try {
       if (isLogin) {
@@ -41,9 +46,9 @@ export default function LoginPage() {
       } else {
         initiateEmailSignUp(auth, email, password)
       }
-      // The actual redirect is handled by the useEffect above when user state changes
+      // Success redirection is handled by useEffect
     } catch (error: any) {
-      toast({ title: "त्रुटी", description: error.message, variant: "destructive" })
+      toast({ title: "त्रुटी", description: "प्रवेश नाकारला. कृपया पुन्हा तपासा.", variant: "destructive" })
       setLoading(false)
     }
   }
@@ -52,27 +57,27 @@ export default function LoginPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 gap-4">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">तपासणी होत आहे...</p>
+        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 italic">तपासणी होत आहे...</p>
       </div>
     )
   }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4 animate-in fade-in duration-700">
-      <Card className="w-full max-w-[400px] border-none shadow-2xl rounded-3xl overflow-hidden bg-white">
-        <CardHeader className="bg-primary text-white p-8 text-center space-y-4">
-          <div className="mx-auto w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-md shadow-inner">
-            <Milk className="h-10 w-10 text-white" />
+      <Card className="w-full max-w-[400px] border-none shadow-2xl rounded-[2rem] overflow-hidden bg-white">
+        <CardHeader className="bg-primary text-white p-10 text-center space-y-4">
+          <div className="mx-auto w-20 h-20 bg-white/20 rounded-3xl flex items-center justify-center backdrop-blur-md shadow-inner transform transition-transform hover:rotate-6">
+            <Milk className="h-12 w-12 text-white" />
           </div>
           <div className="space-y-1">
-            <CardTitle className="text-2xl font-black uppercase tracking-tight">संकलन नोंदवही</CardTitle>
+            <CardTitle className="text-3xl font-black uppercase tracking-tighter">संकलन नोंदवही</CardTitle>
             <CardDescription className="text-white/70 text-[10px] font-bold uppercase tracking-[0.2em]">Management Dashboard</CardDescription>
           </div>
         </CardHeader>
         <CardContent className="p-8 space-y-6">
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-1.5">
-              <Label className="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1">ईमेल (Email)</Label>
+              <Label className="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1">ईमेल (Email ID)</Label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                 <Input 
@@ -80,7 +85,8 @@ export default function LoginPage() {
                   value={email} 
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="name@example.com" 
-                  className="h-12 pl-10 rounded-xl bg-slate-50 border-none font-bold text-sm shadow-inner focus-visible:ring-primary"
+                  className="h-12 pl-10 rounded-2xl bg-slate-50 border-none font-bold text-sm shadow-inner focus-visible:ring-primary"
+                  required
                 />
               </div>
             </div>
@@ -93,12 +99,13 @@ export default function LoginPage() {
                   value={password} 
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••" 
-                  className="h-12 pl-10 rounded-xl bg-slate-50 border-none font-bold text-sm shadow-inner focus-visible:ring-primary"
+                  className="h-12 pl-10 rounded-2xl bg-slate-50 border-none font-bold text-sm shadow-inner focus-visible:ring-primary"
+                  required
                 />
               </div>
             </div>
             
-            <Button type="submit" disabled={loading} className="w-full h-12 rounded-xl font-black uppercase text-xs tracking-widest shadow-xl shadow-primary/20 mt-4">
+            <Button type="submit" disabled={loading} className="w-full h-12 rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl shadow-primary/30 mt-4 transition-all active:scale-95">
               {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : (isLogin ? <LogIn className="h-4 w-4 mr-2" /> : <UserPlus className="h-4 w-4 mr-2" />)}
               {isLogin ? 'प्रवेश करा (LOGIN)' : 'नोंदणी करा (REGISTER)'}
             </Button>
@@ -106,21 +113,21 @@ export default function LoginPage() {
 
           <div className="relative flex items-center gap-2 py-2">
             <div className="h-[1px] flex-1 bg-slate-100" />
-            <span className="text-[8px] font-black text-slate-300 uppercase">किंवा</span>
+            <span className="text-[8px] font-black text-slate-300 uppercase">किंवा / OR</span>
             <div className="h-[1px] flex-1 bg-slate-100" />
           </div>
 
           <Button 
             variant="ghost" 
             onClick={() => setIsLogin(!isLogin)} 
-            className="w-full text-[10px] font-black text-primary hover:bg-primary/5 uppercase tracking-widest h-10 rounded-xl"
+            className="w-full text-[10px] font-black text-primary hover:bg-primary/5 uppercase tracking-widest h-11 rounded-2xl border border-primary/10"
           >
-            {isLogin ? 'नवीन खाते तयार करा' : 'माझे आधीच खाते आहे'}
+            {isLogin ? 'नवीन खाते तयार करा (Sign Up)' : 'माझे आधीच खाते आहे (Login)'}
           </Button>
 
-          <div className="text-center">
-            <p className="text-[8px] font-black text-slate-400 uppercase tracking-tight flex items-center justify-center gap-1">
-              <ShieldCheck className="h-2.5 w-2.5" /> सुरक्षित संकलन व्यवस्थापन प्रणाली
+          <div className="text-center pt-2">
+            <p className="text-[8px] font-black text-slate-400 uppercase tracking-tight flex items-center justify-center gap-1.5 opacity-60">
+              <ShieldCheck className="h-3 w-3" /> सुरक्षित संकलन व्यवस्थापन प्रणाली v2.0
             </p>
           </div>
         </CardContent>

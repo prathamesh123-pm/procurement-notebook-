@@ -98,7 +98,7 @@ export function DashboardSidebar() {
   }
 
   const handleLogout = async () => {
-    if (confirm("तुम्हाला खात्री आहे की तुम्ही बाहेर पडू इच्छिता?")) {
+    if (confirm("बाहेर पडायचे आहे का?")) {
       try {
         await signOut(auth)
         router.push('/login')
