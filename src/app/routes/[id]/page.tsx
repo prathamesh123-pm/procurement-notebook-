@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
@@ -127,7 +128,6 @@ export default function RouteDetailsPage() {
       const colRef = collection(db, 'suppliers')
       addDocumentNonBlocking(colRef, supplierData)
       
-      // Automatic Sync for 'Center' type
       if (formData.supplierType === 'Center') {
         const centerColRef = collection(db, 'users', user.uid, 'centers')
         addDocumentNonBlocking(centerColRef, {

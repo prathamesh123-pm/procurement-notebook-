@@ -200,7 +200,7 @@ export default function CentersPage() {
                     <div className="flex items-center gap-2 mt-1">
                       <Badge variant="secondary" className="text-[8px] font-black h-4 px-1.5 rounded-md bg-muted/50 border-none">{center.code}</Badge>
                       <span className="text-[10px] text-muted-foreground truncate flex items-center gap-1 font-bold">
-                        <MapPin className="h-3 w-3" /> {center.village || "पत्ता नाही"}
+                        <MapPin className="h-3 w-3" /> {center.village || center.address || "पत्ता नाही"}
                       </span>
                     </div>
                   </div>

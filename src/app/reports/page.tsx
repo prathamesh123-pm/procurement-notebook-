@@ -57,7 +57,7 @@ export default function ReportsPage() {
     return list.filter(r => {
       const matchesDate = filterDate === "" || r.date === filterDate
       const q = searchQuery.toLowerCase()
-      const matchesSearch = r.type?.toLowerCase().includes(q) || r.summary?.toLowerCase().includes(q)
+      const matchesSearch = r.type?.toLowerCase().includes(q) || r.summary?.toLowerCase().includes(q) || r.overallSummary?.toLowerCase().includes(q)
       const matchesType = !typeFilter || r.type === typeFilter
       return matchesDate && matchesSearch && matchesType
     }).sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime())
@@ -161,64 +161,20 @@ export default function ReportsPage() {
   };
 
   const orderedKeys = [
-    "displayName",
-    "name",
-    "employeeId",
-    "idNumber",
-    "supplierName", 
-    "supplierId", 
-    "title", 
-    "remark", 
-    "achievements",
-    "problems",
-    "actionTaken", 
-    "actionsTaken",
-    "repName", 
-    "routeName", 
-    "vehicleNumber", 
-    "vehicleNo", 
-    "vehicleType", 
-    "driverName", 
-    "mobile", 
-    "breakdownTime", 
-    "location", 
-    "reason", 
-    "severity", 
-    "detailedReason", 
-    "estimatedRepairTime", 
-    "estimatedRepairCost", 
-    "recoveryVehicleNo", 
-    "recoveryArrivalTime", 
-    "milkHot", 
-    "milkSour", 
-    "summary", 
-    "totalLossAmount", 
-    "fineAmount", 
-    "seizureQty", 
-    "centerName", 
-    "centerCode", 
-    "auditDate", 
-    "morningQty", 
-    "eveningQty", 
-    "fat", 
-    "snf", 
-    "result", 
-    "ownerName", 
-    "capacity", 
-    "licenseStatus", 
-    "tempAtArrival", 
-    "tempAfterChilling", 
-    "waterSupply", 
-    "powerBackup", 
-    "hygieneStandard", 
-    "staffUniform", 
-    "fssaiDisplay", 
-    "iceBankStatus", 
-    "observations", 
-    "type", 
-    "facility", 
-    "totalMilk", 
-    "paymentCycle"
+    "displayName", "name", "employeeId", "idNumber",
+    "supplierName", "centerName",
+    "supplierId", "centerCode",
+    "title",
+    "remark", "actionTaken", "actionsTaken", "achievements", "problems",
+    "summary",
+    "routeName", "vehicleNumber", "vehicleNo", "vehicleType", "driverName", "mobile",
+    "breakdownTime", "location", "reason", "severity", "detailedReason",
+    "estimatedRepairTime", "estimatedRepairCost", "recoveryVehicleNo", "recoveryArrivalTime",
+    "milkHot", "milkSour", "totalLossAmount", "fineAmount", "seizureQty",
+    "auditDate", "morningQty", "eveningQty", "fat", "snf", "result",
+    "ownerName", "capacity", "licenseStatus", "tempAtArrival", "tempAfterChilling",
+    "waterSupply", "powerBackup", "hygieneStandard", "staffUniform", "fssaiDisplay", "iceBankStatus",
+    "observations", "type", "facility", "totalMilk", "paymentCycle"
   ];
 
   const reportsToRender = useMemo(() => {
@@ -369,15 +325,16 @@ export default function ReportsPage() {
               </thead>
               <tbody className="divide-y divide-slate-900 print:divide-black">
                 {filteredEntries.map(([key, val]) => {
-                  const isCrucial = ["supplierName", "supplierId", "title", "remark", "displayName", "name", "employeeId", "idNumber"].includes(key);
-                  const isAlert = ["achievements", "problems", "actionsTaken", "actionTaken"].includes(key);
+                  const isReporter = ["displayName", "name", "employeeId", "idNumber"].includes(key);
+                  const isCrucial = ["supplierName", "centerName", "supplierId", "centerCode", "title"].includes(key);
+                  const isAlert = ["achievements", "problems", "actionsTaken", "actionTaken", "remark"].includes(key);
                   
                   return (
-                    <tr key={key} className={`font-bold text-[10px] hover:bg-slate-50 transition-colors ${isCrucial ? 'bg-primary/5 print:bg-white' : ''} ${isAlert ? 'bg-amber-50/30' : ''}`}>
+                    <tr key={key} className={`font-bold text-[10px] hover:bg-slate-50 transition-colors ${isReporter ? 'bg-slate-100 print:bg-white' : ''} ${isCrucial ? 'bg-primary/5 print:bg-white' : ''} ${isAlert ? 'bg-amber-50/30' : ''}`}>
                       <td className="p-2 bg-slate-50 uppercase text-[9px] font-black border-r border-slate-900 print:bg-white print:border-black">
                         {labelMap[key] || key.toUpperCase()}
                       </td>
-                      <td className={`p-2 whitespace-pre-wrap ${isCrucial ? 'text-primary font-black print:text-black' : ''} ${isAlert ? 'text-slate-900 font-bold' : ''}`}>
+                      <td className={`p-2 whitespace-pre-wrap ${isReporter ? 'font-black' : ''} ${isCrucial ? 'text-primary font-black print:text-black' : ''} ${isAlert ? 'text-slate-900 font-bold' : ''}`}>
                         {formatVal(key, val)}
                       </td>
                     </tr>
