@@ -7,9 +7,10 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Milk, LogIn, UserPlus, ShieldCheck, Mail, Lock, Loader2 } from "lucide-react"
-import { useAuth, useUser, initiateEmailSignIn, initiateEmailSignUp } from "@/firebase"
+import { useAuth, useUser } from "@/firebase"
 import { useRouter } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth"
 
 export default function LoginPage() {
   const [isLogin, setIsLogin] = useState(true)
@@ -42,13 +43,28 @@ export default function LoginPage() {
     setLoading(true)
     try {
       if (isLogin) {
-        initiateEmailSignIn(auth, email, password)
+        await signInWithEmailAndPassword(auth, email, password)
+        toast({ title: "स्वागत आहे", description: "तुम्ही यशस्वीरित्या लॉगिन झाले आहात." })
       } else {
-        initiateEmailSignUp(auth, email, password)
+        await createUserWithEmailAndPassword(auth, email, password)
+        toast({ title: "नोंदणी यशस्वी", description: "तुमचे नवीन खाते तयार झाले आहे." })
       }
-      // Success redirection is handled by useEffect
+      // Redirection logic is handled by useEffect when user state changes
     } catch (error: any) {
-      toast({ title: "त्रुटी", description: "प्रवेश नाकारला. कृपया पुन्हा तपासा.", variant: "destructive" })
+      console.error("Auth error:", error)
+      let message = "प्रवेश नाकारला. कृपया पुन्हा तपासा."
+      
+      if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+        message = "ईमेल किंवा पासवर्ड चुकीचा आहे."
+      } else if (error.code === 'auth/email-already-in-use') {
+        message = "हा ईमेल आयडी आधीच वापरला गेला आहे."
+      } else if (error.code === 'auth/network-request-failed') {
+        message = "नेटवर्कची समस्या आहे. कृपया इंटरनेट कनेक्शन तपासा."
+      } else if (error.code === 'auth/too-many-requests') {
+        message = "खूप वेळा चुकीचे प्रयत्न केले गेले आहेत. कृपया थोड्या वेळाने प्रयत्न करा."
+      }
+      
+      toast({ title: "त्रुटी", description: message, variant: "destructive" })
       setLoading(false)
     }
   }
@@ -119,7 +135,7 @@ export default function LoginPage() {
 
           <Button 
             variant="ghost" 
-            onClick={() => setIsLogin(!isLogin)} 
+            onClick={() => { setIsLogin(!isLogin); setLoading(false); }} 
             className="w-full text-[10px] font-black text-primary hover:bg-primary/5 uppercase tracking-widest h-11 rounded-2xl border border-primary/10"
           >
             {isLogin ? 'नवीन खाते तयार करा (Sign Up)' : 'माझे आधीच खाते आहे (Login)'}
