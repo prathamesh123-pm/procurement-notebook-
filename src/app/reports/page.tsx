@@ -98,8 +98,15 @@ export default function ReportsPage() {
     router.push(`${path}?edit=${report.id}`)
   }
 
-  // Label Mapping with Logical Sequence
   const labelMap: Record<string, string> = {
+    // Top Priority Fields
+    supplierName: "पुरवठादार / गवळी नाव",
+    supplierId: "आयडी / कोड",
+    title: "टास्क शीर्षक",
+    remark: "शेरा / कार्यवाही",
+    actionTaken: "केलेली कार्यवाही",
+    actionsTaken: "केलेली कार्यवाही",
+
     // 1. Vehicle & Route Info
     routeName: "रूटचे नाव",
     vehicleNumber: "वाहन क्रमांक",
@@ -136,13 +143,9 @@ export default function ReportsPage() {
     
     // 6. Work & Summary
     workType: "कामाचा प्रकार",
-    title: "टास्क शीर्षक",
     summary: "कामाचा सारांश",
     problems: "महत्त्वाच्या समस्या",
-    actionTaken: "केलेली कार्यवाही",
-    actionsTaken: "केलेली कार्यवाही",
     achievements: "आजची मोठी कामगिरी",
-    remark: "शेरा / कार्यवाही",
     supervisorName: "सुपरवायझर",
     
     // 7. Losses & Penalties
@@ -150,8 +153,6 @@ export default function ReportsPage() {
     totalLossAmount: "एकूण नुकसान (₹)",
     fineAmount: "दंड रक्कम (₹)",
     seizureQty: "जप्ती प्रमाण (L)",
-    supplierName: "पुरवठादार / गवळी नाव",
-    supplierId: "आयडी / कोड",
     
     // 8. Quality & Audit
     centerName: "केंद्राचे नाव",
@@ -189,19 +190,75 @@ export default function ReportsPage() {
     otherInfo: "इतर माहिती"
   };
 
-  // The sequence keys order
+  // Reordered sequence as requested: Supplier Name, ID, Task Title, Remark
   const orderedKeys = [
-    "repName", "repId", "shift", "routeName", "vehicleNumber", "vehicleNo", "vehicleType", 
-    "driverName", "driverMobile", "mobile", "breakdownTime", "location", "reason", "severity", 
-    "faultResponsibility", "detailedReason", "detailedDescription", "estimatedRepairTime", 
-    "estimatedRepairCost", "recoveryVehicleNo", "recoveryArrivalTime", "milkHot", "milkSour", 
-    "alternateArrangement", "workType", "title", "summary", "achievements", "problems", 
-    "actionTaken", "actionsTaken", "remark", "lossAmount", "totalLossAmount", "fineAmount", 
-    "seizureQty", "supplierName", "supplierId", "centerName", "centerCode", "auditDate", 
-    "morningQty", "eveningQty", "fat", "snf", "result", "ownerName", "capacity", "licenseStatus", 
-    "district", "taluka", "tempAtArrival", "tempAfterChilling", "waterSupply", "powerBackup", 
-    "hygieneStandard", "staffUniform", "fssaiDisplay", "iceBankStatus", "observations", 
-    "type", "facility", "plantHygiene", "milkSource", "totalMilk", "paymentCycle", "otherInfo", 
+    "supplierName", 
+    "supplierId", 
+    "title", 
+    "remark", 
+    "actionTaken", 
+    "actionsTaken",
+    "repName", 
+    "repId", 
+    "shift", 
+    "routeName", 
+    "vehicleNumber", 
+    "vehicleNo", 
+    "vehicleType", 
+    "driverName", 
+    "driverMobile", 
+    "mobile", 
+    "breakdownTime", 
+    "location", 
+    "reason", 
+    "severity", 
+    "faultResponsibility", 
+    "detailedReason", 
+    "detailedDescription", 
+    "estimatedRepairTime", 
+    "estimatedRepairCost", 
+    "recoveryVehicleNo", 
+    "recoveryArrivalTime", 
+    "milkHot", 
+    "milkSour", 
+    "alternateArrangement", 
+    "workType", 
+    "summary", 
+    "achievements", 
+    "problems", 
+    "lossAmount", 
+    "totalLossAmount", 
+    "fineAmount", 
+    "seizureQty", 
+    "centerName", 
+    "centerCode", 
+    "auditDate", 
+    "morningQty", 
+    "eveningQty", 
+    "fat", 
+    "snf", 
+    "result", 
+    "ownerName", 
+    "capacity", 
+    "licenseStatus", 
+    "district", 
+    "taluka", 
+    "tempAtArrival", 
+    "tempAfterChilling", 
+    "waterSupply", 
+    "powerBackup", 
+    "hygieneStandard", 
+    "staffUniform", 
+    "fssaiDisplay", 
+    "iceBankStatus", 
+    "observations", 
+    "type", 
+    "facility", 
+    "plantHygiene", 
+    "milkSource", 
+    "totalMilk", 
+    "paymentCycle", 
+    "otherInfo", 
     "supervisorName"
   ];
 
@@ -320,7 +377,7 @@ export default function ReportsPage() {
   const GenericTableLayout = ({ report }: { report: any }) => {
     const d = report.fullData || {};
     
-    // Sort keys based on predefined orderedKeys
+    // Sort keys based on predefined orderedKeys to ensure requested priority
     const filteredEntries = orderedKeys
       .filter(key => d[key] !== undefined && d[key] !== "" && d[key] !== null)
       .map(key => [key, d[key]]);
