@@ -225,7 +225,7 @@ export default function ReportsPage() {
     if (isGroupView && selectedReport?.type === 'Daily Task') {
       return (firestoreReports || []).filter(r => 
         r.type === 'Daily Task' && r.date === selectedReport.date
-      ).sort((a, b) => new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime());
+      ).sort((a, b) => new Date(a.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
     }
     return selectedReport ? [selectedReport] : [];
   }, [isGroupView, selectedReport, firestoreReports]);
@@ -309,17 +309,6 @@ export default function ReportsPage() {
               </tr>
             </tbody>
           </table>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4 mb-4 font-black text-[10px] uppercase p-3 border border-dashed border-slate-300 rounded-lg">
-          <div className="space-y-0.5">
-            <div className="flex items-center gap-2 text-slate-500"><div className="w-1.5 h-1.5 rounded-full bg-slate-300" /> सुरवात रीडिंग: <span className="text-slate-900">{d.startReading || '0'}</span></div>
-            <div className="flex items-center gap-2 text-slate-500"><div className="w-1.5 h-1.5 rounded-full bg-slate-300" /> शेवट रीडिंग: <span className="text-slate-900">{d.endReading || '0'}</span></div>
-          </div>
-          <div className="text-right space-y-0.5">
-            <div className="text-sm">एकूण किलोमीटर: <span className="text-primary print:text-black">{d.totalKm || '0'} KM</span></div>
-            <div className="text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded-md inline-block print:bg-white print:border print:border-black text-[9px]">दूध तूट: {d.shortageLiters || '0'} L</div>
-          </div>
         </div>
 
         <div className="mt-12 grid grid-cols-2 gap-10 text-center uppercase font-black text-[8px] tracking-widest text-slate-400">
