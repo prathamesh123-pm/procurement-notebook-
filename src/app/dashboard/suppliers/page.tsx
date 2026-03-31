@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect, useMemo, Suspense } from "react"
@@ -222,7 +223,7 @@ function SuppliersContent() {
                   <div className="grid grid-cols-1 gap-2 mt-1">
                     <div className="flex items-center space-x-2 bg-muted/10 p-2.5 rounded-xl border border-muted-foreground/5 shadow-sm active:bg-primary/5 transition-colors cursor-pointer" onClick={() => setFormData({...formData, computerAvailable: !formData.computerAvailable})}>
                       <Checkbox id="comp-s" checked={formData.computerAvailable} onCheckedChange={(v) => setFormData({...formData, computerAvailable: !!v})} />
-                      <Label htmlFor="comp-s" className="text-[10px] font-black uppercase cursor-pointer tracking-wider">कॉम्प्युटर उपलब्ध?</Label>
+                      <Label htmlFor="comp-s" className="text-[10px] font-black uppercase cursor-pointer tracking-wider">POP सिस्टम आहे का?</Label>
                     </div>
                     <div className="flex items-center space-x-2 bg-muted/10 p-2.5 rounded-xl border border-muted-foreground/5 shadow-sm active:bg-primary/5 transition-colors cursor-pointer" onClick={() => setFormData({...formData, upsInverterAvailable: !formData.upsInverterAvailable})}>
                       <Checkbox id="ups-s" checked={formData.upsInverterAvailable} onCheckedChange={(v) => setFormData({...formData, upsInverterAvailable: !!v})} />
@@ -387,7 +388,7 @@ function SuppliersContent() {
                  <div className="grid grid-cols-1 gap-2">
                     <div className="flex items-center space-x-2 bg-muted/10 p-2.5 rounded-xl border border-muted-foreground/5">
                       <Checkbox id="edit-comp" checked={formData.computerAvailable} onCheckedChange={(v) => setFormData({...formData, computerAvailable: !!v})} />
-                      <Label htmlFor="edit-comp" className="text-[10px] font-black uppercase cursor-pointer">कॉम्प्युटर उपलब्ध?</Label>
+                      <Label htmlFor="edit-comp" className="text-[10px] font-black uppercase cursor-pointer">POP सिस्टम आहे का?</Label>
                     </div>
                     <div className="flex items-center space-x-2 bg-muted/10 p-2.5 rounded-xl border border-muted-foreground/5">
                       <Checkbox id="edit-ups" checked={formData.upsInverterAvailable} onCheckedChange={(v) => setFormData({...formData, upsInverterAvailable: !!v})} />

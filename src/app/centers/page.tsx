@@ -281,7 +281,7 @@ export default function CentersPage() {
                   <div className="grid grid-cols-3 gap-2">
                     <div className={`p-2 rounded-xl border flex flex-col items-center gap-1 transition-all ${selectedCenter.material?.computerAvailable ? 'bg-emerald-50 border-emerald-100 shadow-sm' : 'bg-muted/20 opacity-40 border-muted-foreground/5'}`}>
                       <Laptop className={`h-4 w-4 ${selectedCenter.material?.computerAvailable ? 'text-emerald-600' : 'text-slate-400'}`} />
-                      <span className="text-[8px] font-black uppercase">कॉम्प्युटर</span>
+                      <span className="text-[8px] font-black uppercase">POP सिस्टम</span>
                     </div>
                     <div className={`p-2 rounded-xl border flex flex-col items-center gap-1 transition-all ${selectedCenter.material?.upsInverterAvailable ? 'bg-emerald-50 border-emerald-100 shadow-sm' : 'bg-muted/20 opacity-40 border-muted-foreground/5'}`}>
                       <Zap className={`h-4 w-4 ${selectedCenter.material?.upsInverterAvailable ? 'text-emerald-600' : 'text-slate-400'}`} />
@@ -412,7 +412,7 @@ export default function CentersPage() {
                 <div className="grid grid-cols-1 gap-2 pt-1">
                   <div className="flex items-center space-x-2 bg-muted/10 p-2 rounded-xl border border-muted-foreground/5 shadow-sm cursor-pointer" onClick={() => setFormData({...formData, computerAvailable: !formData.computerAvailable})}>
                     <Checkbox id="comp-c" checked={formData.computerAvailable} onCheckedChange={(v) => setFormData({...formData, computerAvailable: !!v})} />
-                    <Label htmlFor="comp-c" className="text-[10px] font-black uppercase cursor-pointer tracking-wider">कॉम्प्युटर आहे का?</Label>
+                    <Label htmlFor="comp-c" className="text-[10px] font-black uppercase cursor-pointer tracking-wider">POP सिस्टम आहे का?</Label>
                   </div>
                   <div className="flex items-center space-x-2 bg-muted/10 p-2 rounded-xl border border-muted-foreground/5 shadow-sm cursor-pointer" onClick={() => setFormData({...formData, upsInverterAvailable: !formData.upsInverterAvailable})}>
                     <Checkbox id="ups-c" checked={formData.upsInverterAvailable} onCheckedChange={(v) => setFormData({...formData, upsInverterAvailable: !!v})} />

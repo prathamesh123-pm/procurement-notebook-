@@ -187,7 +187,8 @@ export default function ReportsPage() {
     milkSource: "दूध स्रोत",
     totalMilk: "एकूण दूध (L)",
     paymentCycle: "पेमेंट सायकल",
-    otherInfo: "इतर माहिती"
+    otherInfo: "इतर माहिती",
+    computerAvailable: "POP सिस्टम"
   };
 
   // Reordered sequence as requested: Supplier Name, ID, Task Title, Remark
@@ -259,6 +260,7 @@ export default function ReportsPage() {
     "totalMilk", 
     "paymentCycle", 
     "otherInfo", 
+    "computerAvailable",
     "supervisorName"
   ];
 
@@ -383,6 +385,7 @@ export default function ReportsPage() {
       .map(key => [key, d[key]]);
 
     const formatVal = (key: string, val: any): string => {
+      if (typeof val === 'boolean') return val ? "हो" : "नाही";
       if (typeof val === 'object' && val !== null) return JSON.stringify(val);
       return String(val || "-");
     }
