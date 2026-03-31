@@ -28,7 +28,6 @@ export default function WorkLogPage() {
   const { data: firestoreTasks, isLoading } = useCollection<Task>(tasksQuery)
   
   const [newTaskTitle, setNewTaskTitle] = useState("")
-  const [newTaskDesc, setNewTaskDesc] = useState("")
   const [newTaskSupplierName, setNewTaskSupplierName] = useState("")
   const [newTaskSupplierId, setNewTaskSupplierId] = useState("")
   const [searchQuery, setSearchQuery] = useState("")
@@ -49,7 +48,7 @@ export default function WorkLogPage() {
     
     const newTask = { 
       title: newTaskTitle, 
-      description: newTaskDesc, 
+      description: "", 
       remark: "", 
       supplierName: newTaskSupplierName, 
       supplierId: newTaskSupplierId, 
@@ -62,7 +61,7 @@ export default function WorkLogPage() {
     const colRef = collection(db, 'users', user.uid, 'tasks');
     addDocumentNonBlocking(colRef, newTask);
     
-    setNewTaskTitle(""); setNewTaskDesc(""); setNewTaskSupplierName(""); setNewTaskSupplierId("")
+    setNewTaskTitle(""); setNewTaskSupplierName(""); setNewTaskSupplierId("")
     toast({ title: "यशस्वी", description: "टास्क जतन झाला." })
   }
 
@@ -138,9 +137,8 @@ export default function WorkLogPage() {
             <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase text-primary/60 tracking-widest">कोड (CODE)</Label><Input value={newTaskSupplierId} onChange={e => setNewTaskSupplierId(e.target.value)} className="h-9 text-[11px] bg-muted/20 border-none rounded-lg p-3 font-black" placeholder="123" /></div>
           </div>
           <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase text-primary/60 tracking-widest">टास्क / कामाचे नाव</Label><Input value={newTaskTitle} onChange={e => setNewTaskTitle(e.target.value)} className="h-9 text-[11px] bg-muted/20 border-none rounded-lg font-black p-3" placeholder="उदा. थकीत बाकी वसुली" /></div>
-          <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase text-primary/60 tracking-widest">माहिती (DETAILS)</Label><Textarea value={newTaskDesc} onChange={e => setNewTaskDesc(e.target.value)} className="min-h-[60px] text-[11px] bg-muted/20 border-none rounded-lg p-3 font-medium" placeholder="..." /></div>
           
-          <AIGuidanceCard context={newTaskDesc} formType="task" />
+          <AIGuidanceCard context={newTaskTitle} formType="task" />
           
           <Button type="button" onClick={addTask} className="w-full font-black h-10 rounded-xl text-xs shadow-lg shadow-primary/20 mt-2"><Plus className="h-4 w-4 mr-1.5" /> जतन करा (SAVE TASK)</Button>
         </CardContent>
@@ -191,9 +189,6 @@ export default function WorkLogPage() {
           <div className="p-5 space-y-5 bg-white">
             <div className="p-4 rounded-2xl bg-primary/5 border border-primary/10 shadow-inner">
               <h3 className="text-xs font-black text-slate-900 mb-1 uppercase tracking-widest">{selectedTask?.title}</h3>
-              <p className="text-[10px] font-bold text-slate-600 leading-relaxed italic border-l-2 border-primary/20 pl-3">
-                {selectedTask?.description || "तपशील उपलब्ध नाही."}
-              </p>
             </div>
             
             <div className="space-y-1.5">
