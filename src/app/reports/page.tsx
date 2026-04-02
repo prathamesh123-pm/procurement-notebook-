@@ -310,7 +310,9 @@ export default function ReportsPage() {
           </div>
           {(d.points && d.points.length > 0) && (
             <div className="mt-4 space-y-2 text-left">
-              <div className="flex items-center gap-1.5 text-[10px] font-black uppercase text-primary"><AlertCircle className="h-4 w-4" /> विशेष निरीक्षणे:</div>
+              <div className="flex items-center gap-1.5 text-[10px] font-black uppercase text-primary">
+                <AlertCircle className="h-4 w-4 no-print" /> विशेष निरीक्षणे:
+              </div>
               <div className="border border-slate-900 rounded-lg p-3 print:border-black">
                 <ul className="space-y-1.5">{d.points.map((p: string, i: number) => (<li key={i} className="text-[10px] font-bold flex gap-2"><span className="text-primary font-black shrink-0">{i + 1}.</span><span>{p}</span></li>))}</ul>
               </div>
@@ -318,7 +320,9 @@ export default function ReportsPage() {
           )}
           {((d.losses && d.losses.length > 0) || (d.centerLosses && d.centerLosses.length > 0)) && (
             <div className="mt-4 space-y-2 text-left">
-              <div className="flex items-center gap-1.5 text-[10px] font-black uppercase text-rose-700"><AlertTriangle className="h-4 w-4" /> नुकसानीचा सविस्तर तक्ता:</div>
+              <div className="flex items-center gap-1.5 text-[10px] font-black uppercase text-rose-700">
+                <AlertTriangle className="h-4 w-4 no-print" /> नुकसानीचा सविस्तर तक्ता:
+              </div>
               <div className="border border-slate-900 rounded-lg overflow-hidden shadow-sm print:border-black overflow-x-auto">
                 <table className="w-full border-collapse text-[9px]">
                   <thead className="bg-slate-900 text-white font-black uppercase tracking-wider print:bg-black">
@@ -440,7 +444,7 @@ export default function ReportsPage() {
             </div>
           </DialogHeader>
           <ScrollArea className="max-h-[85vh] p-3 sm:p-6 bg-slate-100">
-            <div className="max-w-full sm:max-w-[210mm] mx-auto space-y-4">
+            <div className="max-w-full sm:max-w-[210mm] mx-auto space-y-4 print:overflow-visible">
               {reportsToRender.map((report, idx) => (
                 <div key={report.id} className={idx > 0 ? "print:page-break-before-always" : ""}>
                   {report.type === 'Route Visit' ? <RouteSlipLayout report={report} /> : (report.fullData?.isWordDoc ? <div className="prose prose-sm max-w-none px-6 sm:px-12 py-10 bg-white border-[2px] border-slate-900 rounded-sm shadow-2xl min-h-[600px] print:shadow-none print:border-black printable-report" dangerouslySetInnerHTML={{ __html: report.fullData.content }} /> : <GenericTableLayout report={report} />)}
@@ -454,49 +458,57 @@ export default function ReportsPage() {
       <style jsx global>{`
         @media print {
           @page { size: A4; margin: 10mm; }
-          body > *:not([role="dialog"]), header, nav, aside, footer, .sidebar, .no-print, button { display: none !important; }
-          body { background: white !important; padding: 0 !important; margin: 0 !important; overflow: visible !important; }
           
-          /* Target the dialog content since it's in a portal */
-          [role="dialog"] { 
-            position: absolute !important; 
-            left: 0 !important; 
-            top: 0 !important; 
-            width: 100% !important; 
-            max-width: none !important; 
-            transform: none !important; 
-            box-shadow: none !important; 
-            border: none !important; 
-            padding: 0 !important; 
-            background: white !important; 
-            overflow: visible !important; 
-            display: block !important; 
-            visibility: visible !important; 
+          /* Force standard layout logic for print */
+          html, body, main, [data-sidebar-inset] {
+            visibility: visible !important;
+            background: white !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            height: auto !important;
+            overflow: visible !important;
+            display: block !important;
+          }
+
+          /* Hide UI */
+          body * { visibility: hidden; }
+
+          /* Only show the dialog content or target cards */
+          [role="dialog"], [role="dialog"] *, .printable-report, .printable-report * {
+            visibility: visible !important;
+          }
+
+          [role="dialog"] {
+            position: absolute !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 100% !important;
+            max-width: none !important;
+            box-shadow: none !important;
+            border: none !important;
+            padding: 0 !important;
+            background: white !important;
+            overflow: visible !important;
+            display: block !important;
+          }
+
+          header, nav, aside, footer, .sidebar, .no-print, button, .sidebar-trigger {
+            display: none !important;
           }
 
           .printable-report { 
             display: block !important; 
-            visibility: visible !important; 
             width: 100% !important; 
             margin: 0 !important; 
             padding: 15px !important; 
             border: 2px solid black !important; 
             background: white !important; 
-            box-shadow: none !important; 
             color: black !important; 
-          }
-
-          .printable-report * { 
-            visibility: visible !important; 
-            color: black !important; 
-            print-color-adjust: exact; 
-            -webkit-print-color-adjust: exact; 
           }
 
           table { 
             width: 100% !important; 
             border-collapse: collapse !important; 
-            table-layout: fixed !important; 
             border: 2px solid black !important; 
           }
 
@@ -504,9 +516,10 @@ export default function ReportsPage() {
             border: 1px solid black !important; 
             padding: 6px !important; 
             font-size: 11px !important; 
+            color: black !important;
           }
 
-          h1 { font-size: 24px !important; font-weight: 900 !important; }
+          h1 { font-size: 24px !important; font-weight: 900 !important; color: black !important; }
           .bg-primary, .bg-slate-900, .bg-rose-600 { background-color: transparent !important; color: black !important; border: 1px solid black !important; }
           .text-primary, .text-rose-600 { color: black !important; font-weight: 900 !important; }
         }

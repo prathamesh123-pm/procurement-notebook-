@@ -242,11 +242,11 @@ export default function RouteDetailsPage() {
                   <Button type="button" variant="outline" size="icon" className="h-9 w-9 text-primary border-primary/20 hover:bg-primary/5 rounded-xl" onClick={() => openEditDialog(selectedSupplier)}><Edit className="h-4 w-4" /></Button>
                 </div>
               </div>
-              <ScrollArea className="flex-1 h-[600px] print:h-auto">
+              <ScrollArea className="flex-1 h-[600px] print:h-auto print:overflow-visible">
                 <div className="p-4 space-y-5 print:p-0 print:space-y-6">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div className="bg-muted/20 p-3 rounded-2xl border border-muted-foreground/5 space-y-1.5 print:bg-white print:border-black print:border-2">
-                      <h4 className="text-[9px] font-black uppercase text-primary tracking-widest border-b border-primary/10 pb-1 print:border-black">१) प्राथमिक माहिती</h4>
+                      <h4 className="text-[9px] font-black uppercase text-primary tracking-widest border-b border-primary/10 pb-1 print:text-black print:border-black">१) प्राथमिक माहिती</h4>
                       <div className="grid grid-cols-2 gap-x-2 gap-y-1">
                         <div><p className="text-[8px] text-muted-foreground uppercase font-black print:text-slate-500">नाव</p><p className="text-[10px] font-black uppercase truncate">{selectedSupplier.name}</p></div>
                         <div><p className="text-[8px] text-muted-foreground uppercase font-black print:text-slate-500">कोड</p><p className="text-[10px] font-black uppercase">{selectedSupplier.supplierId}</p></div>
@@ -256,7 +256,7 @@ export default function RouteDetailsPage() {
                       </div>
                     </div>
                     <div className="bg-muted/20 p-3 rounded-2xl border border-muted-foreground/5 space-y-1.5 print:bg-white print:border-black print:border-2">
-                      <h4 className="text-[9px] font-black uppercase text-primary tracking-widest border-b border-primary/10 pb-1 print:border-black">२) परवाना व तांत्रिक</h4>
+                      <h4 className="text-[9px] font-black uppercase text-primary tracking-widest border-b border-primary/10 pb-1 print:text-black print:border-black">२) परवाना व तांत्रिक</h4>
                       <div className="grid grid-cols-2 gap-x-2 gap-y-1">
                         <div><p className="text-[8px] text-muted-foreground uppercase font-black print:text-slate-500">FSSAI</p><p className="text-[10px] font-black uppercase">{selectedSupplier.fssaiNumber || "-"}</p></div>
                         <div><p className="text-[8px] text-muted-foreground uppercase font-black print:text-slate-500">मुदत</p><p className="text-[10px] font-black">{selectedSupplier.fssaiExpiry || "-"}</p></div>
@@ -270,7 +270,7 @@ export default function RouteDetailsPage() {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div className="bg-muted/20 p-3 rounded-2xl border border-muted-foreground/5 space-y-1.5 print:bg-white print:border-black print:border-2">
-                      <h4 className="text-[9px] font-black uppercase text-primary tracking-widest border-b border-primary/10 pb-1 print:border-black">३) व्यावसायिक माहिती</h4>
+                      <h4 className="text-[9px] font-black uppercase text-primary tracking-widest border-b border-primary/10 pb-1 print:text-black print:border-black">३) व्यावसायिक माहिती</h4>
                       <div className="grid grid-cols-2 gap-x-2 gap-y-1">
                         <div><p className="text-[8px] text-muted-foreground uppercase font-black print:text-slate-500">पेमेंट सायकल</p><p className="text-[10px] font-black">{selectedSupplier.paymentCycle || "7 Days"}</p></div>
                         <div><p className="text-[8px] text-muted-foreground uppercase font-black print:text-slate-500">जागा</p><p className="text-[10px] font-black">{selectedSupplier.spaceOwnership === 'Self' ? 'स्वतःची' : 'भाड्याची'}</p></div>
@@ -285,7 +285,7 @@ export default function RouteDetailsPage() {
                       </div>
                     </div>
                     <div className="bg-blue-50/30 p-3 rounded-2xl border border-blue-100 space-y-1.5 print:bg-white print:border-black print:border-2">
-                      <h4 className="text-[9px] font-black uppercase text-blue-700 tracking-widest border-b border-blue-200 pb-1 print:border-black">४) दूध संकलन सारांश</h4>
+                      <h4 className="text-[9px] font-black uppercase text-blue-700 tracking-widest border-b border-blue-200 pb-1 print:text-black print:border-black">४) दूध संकलन सारांश</h4>
                       <div className="grid grid-cols-2 gap-2">
                         <div className="text-center p-2 bg-white rounded-lg border border-blue-50 print:border-slate-300">
                           <p className="text-[7px] font-black text-blue-500 uppercase print:text-slate-500">गाय</p>
@@ -377,18 +377,26 @@ export default function RouteDetailsPage() {
             margin: 10mm;
           }
           
-          body > *:not(#printable-area), 
-          header, nav, aside, footer, .sidebar, .no-print, button, [role="dialog"] {
-            display: none !important;
-          }
-
-          body {
+          /* Reset containers for print */
+          html, body, main, [data-sidebar-inset] {
+            visibility: visible !important;
             background: white !important;
-            padding: 0 !important;
             margin: 0 !important;
+            padding: 0 !important;
+            height: auto !important;
             overflow: visible !important;
+            display: block !important;
           }
 
+          /* Hide all UI elements */
+          body * { visibility: hidden; }
+
+          /* Specifically show our target area and all its descendants */
+          #printable-area, #printable-area * {
+            visibility: visible !important;
+          }
+
+          /* Position it at the top left of the page */
           #printable-area {
             position: absolute !important;
             left: 0 !important;
@@ -402,11 +410,21 @@ export default function RouteDetailsPage() {
             background: white !important;
             overflow: visible !important;
             display: block !important;
-            visibility: visible !important;
+          }
+
+          /* Hide interface elements explicitly */
+          header, nav, aside, footer, .sidebar, .no-print, button, [role="dialog"], .sidebar-trigger {
+            display: none !important;
+          }
+
+          /* Force scroll area to show full content */
+          [data-radix-scroll-area-viewport] {
+            display: block !important;
+            height: auto !important;
+            overflow: visible !important;
           }
 
           #printable-area * {
-            visibility: visible !important;
             color: black !important;
             print-color-adjust: exact;
             -webkit-print-color-adjust: exact;
@@ -423,8 +441,8 @@ export default function RouteDetailsPage() {
             padding: 8px !important;
             font-size: 11px !important;
           }
-          h3 { font-size: 24px !important; font-weight: 900 !important; }
-          h4 { border-bottom: 2px solid black !important; margin-top: 15px !important; }
+          h3 { font-size: 24px !important; font-weight: 900 !important; color: black !important; }
+          h4 { border-bottom: 2px solid black !important; margin-top: 15px !important; color: black !important; }
         }
       `}</style>
     </div>

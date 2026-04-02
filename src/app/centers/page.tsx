@@ -63,7 +63,6 @@ export default function CentersPage() {
 
   useEffect(() => setMounted(true), [])
 
-  // Keep selected center in sync with collection updates
   useEffect(() => {
     if (selectedCenter && centers) {
       const updated = centers.find(c => c.id === selectedCenter.id)
@@ -254,7 +253,7 @@ export default function CentersPage() {
                 </Button>
               </div>
             </div>
-            <ScrollArea className="max-h-[700px] print:max-h-none">
+            <ScrollArea className="max-h-[700px] print:max-h-none print:overflow-visible">
               <div className="p-4 space-y-5 pb-10 print:p-0 print:space-y-6">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="bg-muted/20 p-3 rounded-2xl border border-muted-foreground/5 space-y-1.5 print:bg-white print:border-black print:border-2">
@@ -565,19 +564,26 @@ export default function CentersPage() {
             margin: 10mm;
           }
           
-          /* Hide everything except printable area */
-          body > *:not(#printable-area), 
-          header, nav, aside, footer, .sidebar, .no-print, button, [role="dialog"] {
-            display: none !important;
-          }
-
-          body {
+          /* Force containers to be visible and unstyled */
+          html, body, main, [data-sidebar-inset] {
+            visibility: visible !important;
             background: white !important;
-            padding: 0 !important;
             margin: 0 !important;
+            padding: 0 !important;
+            height: auto !important;
             overflow: visible !important;
+            display: block !important;
           }
 
+          /* Hide all UI elements by default */
+          body * { visibility: hidden; }
+
+          /* Specifically show our target area and all its descendants */
+          #printable-area, #printable-area * {
+            visibility: visible !important;
+          }
+
+          /* Position it at the top left of the page */
           #printable-area {
             position: absolute !important;
             left: 0 !important;
@@ -591,11 +597,21 @@ export default function CentersPage() {
             background: white !important;
             overflow: visible !important;
             display: block !important;
-            visibility: visible !important;
+          }
+
+          /* Hide specific UI sub-elements */
+          header, nav, aside, footer, .sidebar, .no-print, button, [role="dialog"], .sidebar-trigger {
+            display: none !important;
+          }
+
+          /* Force scroll area to show full content */
+          [data-radix-scroll-area-viewport] {
+            display: block !important;
+            height: auto !important;
+            overflow: visible !important;
           }
 
           #printable-area * {
-            visibility: visible !important;
             color: black !important;
             print-color-adjust: exact;
             -webkit-print-color-adjust: exact;
@@ -614,8 +630,8 @@ export default function CentersPage() {
             font-size: 11px !important;
           }
 
-          h3 { font-size: 24px !important; font-weight: 900 !important; margin-bottom: 5px !important; }
-          h4 { border-bottom: 2px solid black !important; margin-top: 15px !important; }
+          h3 { font-size: 24px !important; font-weight: 900 !important; margin-bottom: 5px !important; color: black !important; }
+          h4 { border-bottom: 2px solid black !important; margin-top: 15px !important; color: black !important; }
         }
       `}</style>
     </div>
