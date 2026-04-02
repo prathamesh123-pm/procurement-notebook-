@@ -321,8 +321,8 @@ export default function CentersPage() {
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-muted-foreground/5 print:divide-black">
-                        {(selectedCenter.equipment || []).map((item) => (
-                          <tr key={item.id} className="bg-white">
+                        {(selectedCenter.equipment || []).map((item, idx) => (
+                          <tr key={item.id || idx} className="bg-white">
                             <td className="p-2 text-[10px] font-black uppercase text-slate-700 print:text-black">{item.name}</td>
                             <td className="p-2 text-[10px] font-black text-center text-slate-900 print:text-black">{item.quantity}</td>
                             <td className="p-2 text-right">

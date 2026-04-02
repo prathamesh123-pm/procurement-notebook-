@@ -296,8 +296,8 @@ export default function RouteDetailsPage() {
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-muted-foreground/5 print:divide-black">
-                          {(selectedSupplier.equipment || []).map(e => (
-                            <tr key={e.id} className="bg-white">
+                          {(selectedSupplier.equipment || []).map((e, idx) => (
+                            <tr key={e.id || idx} className="bg-white">
                               <td className="p-2 font-black uppercase text-[10px] print:text-black">{e.name}</td>
                               <td className="p-2 text-center font-black text-[10px] print:text-black">{e.quantity}</td>
                               <td className="p-2 text-right">
@@ -341,111 +341,6 @@ export default function RouteDetailsPage() {
           )}
         </Card>
       </div>
-
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-[550px] p-0 overflow-hidden bg-white rounded-3xl border-none shadow-2xl">
-          <DialogHeader className="p-4 bg-primary text-white sticky top-0 z-10">
-            <DialogTitle className="text-base font-black uppercase tracking-widest">{dialogMode === 'add' ? 'नवीन सप्लायर' : 'माहिती बदला'}</DialogTitle>
-            <DialogDescription className="text-[9px] text-white/70 uppercase">संपूर्ण तांत्रिक व व्यावसायिक तपशील भरा.</DialogDescription>
-          </DialogHeader>
-          <ScrollArea className="max-h-[80vh] p-6 bg-white">
-            <div className="space-y-6 pb-10">
-              <div className="space-y-3">
-                <h4 className="text-[11px] font-black uppercase text-primary border-b pb-1 tracking-widest">१) प्राथमिक व परवाना माहिती</h4>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="col-span-2 space-y-1.5">
-                    <Label className="text-[10px] font-black uppercase opacity-60">सप्लायर प्रकार</Label>
-                    <Select value={formData.supplierType} onValueChange={(val: SupplierType) => setFormData({...formData, supplierType: val})}>
-                      <SelectTrigger className="h-10 text-[12px] bg-muted/20 border-none font-black rounded-xl">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Gavali" className="text-[11px] font-black">गवळी</SelectItem>
-                        <SelectItem value="Gotha" className="text-[11px] font-black">गोठा</SelectItem>
-                        <SelectItem value="Center" className="text-[11px] font-black">उत्पादक केंद्र</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="col-span-2 space-y-1.5"><Label className="text-[10px] uppercase font-black opacity-60">पूर्ण नाव *</Label><Input value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="h-10 text-[12px] rounded-xl bg-muted/20 border-none font-black shadow-inner" /></div>
-                  <div className="space-y-1.5"><Label className="text-[10px] uppercase font-black opacity-60">कोड (ID) *</Label><Input value={formData.supplierId} onChange={e => setFormData({...formData, supplierId: e.target.value})} className="h-10 text-[12px] rounded-xl bg-muted/20 border-none font-black shadow-inner" /></div>
-                  <div className="space-y-1.5"><Label className="text-[10px] uppercase font-black opacity-60">मोबाईल</Label><Input value={formData.mobile} onChange={e => setFormData({...formData, mobile: e.target.value})} className="h-10 text-[12px] rounded-xl bg-muted/20 border-none font-black shadow-inner" /></div>
-                  <div className="col-span-2 space-y-1.5"><Label className="text-[10px] uppercase font-black opacity-60">पत्ता / गाव</Label><Input value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} className="h-10 text-[12px] rounded-xl bg-muted/20 border-none font-black shadow-inner" /></div>
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                <h4 className="text-[11px] font-black uppercase text-primary border-b pb-1 tracking-widest flex items-center gap-2">
-                  <Truck className="h-4 w-4" /> २) तांत्रिक व रसायने
-                </h4>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-1.5"><Label className="text-[10px] uppercase font-black opacity-60">काटा ब्रँड</Label><Input value={formData.scaleBrand} onChange={e => setFormData({...formData, scaleBrand: e.target.value})} className="h-10 text-[12px] rounded-xl bg-muted/20 border-none font-black shadow-inner" /></div>
-                  <div className="space-y-1.5"><Label className="text-[10px] uppercase font-black opacity-60">मशीन ब्रँड</Label><Input value={formData.fatMachineBrand} onChange={e => setFormData({...formData, fatMachineBrand: e.target.value})} className="h-10 text-[12px] rounded-xl bg-muted/20 border-none font-black shadow-inner" /></div>
-                </div>
-                <div className="grid grid-cols-1 gap-2.5 pt-1">
-                  <div className="flex items-center space-x-2.5 bg-muted/10 p-3 rounded-xl border border-muted-foreground/5 shadow-sm cursor-pointer" onClick={() => setFormData({...formData, computerAvailable: !formData.computerAvailable})}>
-                    <Checkbox checked={formData.computerAvailable} />
-                    <Label className="text-[11px] font-black uppercase cursor-pointer">POP सिस्टम आहे का?</Label>
-                  </div>
-                  <div className="flex items-center space-x-2.5 bg-muted/10 p-3 rounded-xl border border-muted-foreground/5 shadow-sm cursor-pointer" onClick={() => setFormData({...formData, upsInverterAvailable: !formData.upsInverterAvailable})}>
-                    <Checkbox checked={formData.upsInverterAvailable} />
-                    <Label className="text-[11px] font-black uppercase cursor-pointer">UPS / इनव्हर्टर आहे का?</Label>
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                <div className="flex items-center justify-between border-b pb-1">
-                  <h4 className="text-[11px] font-black uppercase text-primary tracking-widest flex items-center gap-2">
-                    <Box className="h-4 w-4" /> ३) साहित्याची यादी (INVENTORY)
-                  </h4>
-                  <Button type="button" variant="outline" size="sm" onClick={() => setFormData({ ...formData, equipment: [...formData.equipment, { id: crypto.randomUUID(), name: "", quantity: 1, ownership: 'Self' }] })} className="h-7 text-[9px] font-black px-3 rounded-xl border-primary/20 bg-primary/5 text-primary">
-                    जोडा
-                  </Button>
-                </div>
-                <div className="space-y-2">
-                  {formData.equipment.map((item) => (
-                    <div key={item.id} className="grid grid-cols-12 gap-2 items-center bg-muted/10 p-2 rounded-xl border border-muted-foreground/5 shadow-inner">
-                      <div className="col-span-6">
-                        <Input value={item.name} onChange={e => setFormData({ ...formData, equipment: formData.equipment.map(eq => eq.id === item.id ? { ...eq, name: e.target.value } : eq) })} className="h-8 text-[11px] px-3 bg-white border-none rounded-lg font-bold" />
-                      </div>
-                      <div className="col-span-2">
-                        <Input type="number" value={item.quantity} onChange={e => setFormData({ ...formData, equipment: formData.equipment.map(eq => eq.id === item.id ? { ...eq, quantity: Number(e.target.value) } : eq) })} className="h-8 text-[11px] px-0 text-center bg-white border-none rounded-lg" />
-                      </div>
-                      <div className="col-span-3">
-                        <Select value={item.ownership} onValueChange={v => setFormData({ ...formData, equipment: formData.equipment.map(eq => eq.id === item.id ? { ...eq, ownership: v as any } : eq) })}>
-                          <SelectTrigger className="h-8 text-[9px] px-2 bg-white border-none rounded-lg">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="Self" className="text-[11px] font-black">स्वतः</SelectItem>
-                            <SelectItem value="Company" className="text-[11px] font-black">डेअरी</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div className="col-span-1 flex justify-end">
-                        <Button variant="ghost" size="icon" onClick={() => setFormData({ ...formData, equipment: formData.equipment.filter(eq => eq.id !== item.id) })} className="h-7 w-7 text-destructive hover:bg-destructive/10">
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                <h4 className="text-[11px] font-black uppercase text-primary border-b pb-1 tracking-widest">४) अतिरिक्त माहिती (NOTES)</h4>
-                <Textarea value={formData.additionalNotes} onChange={e => setFormData({...formData, additionalNotes: e.target.value})} className="min-h-[100px] text-[12px] rounded-2xl bg-muted/20 border-none font-bold p-4 shadow-inner" placeholder="..." />
-              </div>
-            </div>
-          </ScrollArea>
-          <DialogFooter className="p-4 border-t bg-muted/10 gap-3 flex justify-end">
-            <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)} className="rounded-2xl h-11 text-[11px] font-black uppercase border-primary/20 flex-1 sm:flex-none">रद्द</Button>
-            <Button type="button" onClick={handleSaveSupplier} className="rounded-2xl h-11 text-[11px] font-black uppercase shadow-xl shadow-primary/20 flex-1 sm:flex-none">
-              <CheckCircle2 className="h-4 w-4 mr-2" /> जतन करा
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
 
       <style jsx global>{`
         @media print {
