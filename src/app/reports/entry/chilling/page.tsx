@@ -26,6 +26,7 @@ function ChillingForm() {
   
   const [mounted, setMounted] = useState(false)
   const [formData, setFormData] = useState({
+    reportHeading: "चिलिंग सेंटर तपासणी अहवाल",
     date: new Date().toISOString().split('T')[0],
     centerName: "", tempAtArrival: "", tempAfterChilling: "",
     waterSupply: "OK", powerBackup: "AVAILABLE",
@@ -62,9 +63,9 @@ function ChillingForm() {
       date: formData.date,
       reportDate: formData.date,
       generatedByUserId: user.uid,
-      summary: `चिलिंग सेंटर: ${formData.centerName}. तापमान: ${formData.tempAfterChilling}°C. स्वच्छता: ${formData.hygieneStandard}.`,
-      overallSummary: `चिलिंग सेंटर: ${formData.centerName}. तापमान: ${formData.tempAfterChilling}°C. स्वच्छता: ${formData.hygieneStandard}.`,
-      fullData: { ...formData, name: user.displayName || "Procurement Officer" },
+      summary: `चिलिंग: ${formData.centerName}. तापमान: ${formData.tempAfterChilling}°C.`,
+      overallSummary: `चिलिंग: ${formData.centerName}. तापमान: ${formData.tempAfterChilling}°C.`,
+      fullData: { ...formData },
       updatedAt: new Date().toISOString()
     }
 
@@ -77,7 +78,7 @@ function ChillingForm() {
         ...report,
         createdAt: new Date().toISOString()
       })
-      toast({ title: "यशस्वी", description: "चिलिंग अहवाल जतन करण्यात आला." })
+      toast({ title: "यशस्वी", description: "चिलिंग अहवाल जतन झाला." })
     }
     router.push('/reports')
   }
@@ -98,25 +99,32 @@ function ChillingForm() {
         </div>
       </div>
 
+      <Card className="compact-card p-3 border-primary/20 bg-primary/5 mb-3">
+        <div className="space-y-1">
+          <Label className="compact-label text-primary">अहवालाचे शीर्षक (Report Heading) *</Label>
+          <Input className="compact-input h-10 border-primary/20 font-black text-primary text-base" value={formData.reportHeading} onChange={e => setFormData({...formData, reportHeading: e.target.value})} />
+        </div>
+      </Card>
+
       <Card className="compact-card">
         <div className="space-y-3">
           <div className="flex items-center gap-1.5 border-b pb-1">
             <ShieldCheck className="h-3.5 w-3.5 text-primary" />
-            <h3 className="text-[10px] font-black uppercase text-primary tracking-widest">१) प्राथमिक व तांत्रिक माहिती</h3>
+            <h3 className="text-[10px] font-black uppercase text-primary tracking-widest">१) केंद्राची प्राथमिक माहिती</h3>
           </div>
           <div className="space-y-2">
             <div className="space-y-1">
-              <Label className="compact-label">केंद्राचे नाव *</Label>
+              <Label className="compact-label">चिलिंग केंद्राचे पूर्ण नाव *</Label>
               <Input className="compact-input" value={formData.centerName} onChange={e => setFormData({...formData, centerName: e.target.value})} placeholder="..." />
             </div>
             <div className="grid grid-cols-2 gap-2">
               <div className="space-y-1">
-                <Label className="compact-label">आगमनाचे तापमान (°C)</Label>
-                <Input className="compact-input" type="number" value={formData.tempAtArrival} onChange={e => setFormData({...formData, tempAtArrival: e.target.value})} placeholder="0.0" />
+                <Label className="compact-label">सुरुवातीचे तापमान (°C)</Label>
+                <Input className="compact-input" type="number" value={formData.tempAtArrival} onChange={e => setFormData({...formData, tempAtArrival: e.target.value})} />
               </div>
               <div className="space-y-1">
-                <Label className="compact-label">चिलिंग नंतर तापमान</Label>
-                <Input className="compact-input" type="number" value={formData.tempAfterChilling} onChange={e => setFormData({...formData, tempAfterChilling: e.target.value})} placeholder="0.0" />
+                <Label className="compact-label">चिलिंग नंतरचे तापमान (°C)</Label>
+                <Input className="compact-input" type="number" value={formData.tempAfterChilling} onChange={e => setFormData({...formData, tempAfterChilling: e.target.value})} />
               </div>
             </div>
           </div>
@@ -132,12 +140,12 @@ function ChillingForm() {
           
           <div className="space-y-3">
             {[
-              { label: 'पाणी पुरवठा (Water)', key: 'waterSupply', options: ['OK', 'NOT-OK'] },
-              { label: 'पॉवर बॅकअप (Power)', key: 'powerBackup', options: ['AVAILABLE', 'NONE'] },
-              { label: 'स्वच्छता निकष', key: 'hygieneStandard', options: ['HIGH', 'MEDIUM', 'LOW'] },
-              { label: 'स्टाफ गणवेश (Uniform)', key: 'staffUniform', options: ['YES', 'NO'] },
-              { label: 'FSSAI डिस्प्ले', key: 'fssaiDisplay', options: ['YES', 'NO'] },
-              { label: 'आईस बँक स्थिती', key: 'iceBankStatus', options: ['NORMAL', 'CRITICAL'] },
+              { label: 'पाणी पुरवठ्याची स्थिती', key: 'waterSupply', options: ['OK', 'NOT-OK'] },
+              { label: 'पॉवर बॅकअप सुविधा उपलब्ध आहे का?', key: 'powerBackup', options: ['AVAILABLE', 'NONE'] },
+              { label: 'स्वच्छतेचा दर्जा', key: 'hygieneStandard', options: ['HIGH', 'MEDIUM', 'LOW'] },
+              { label: 'स्टाफने गणवेश घातला होता का?', key: 'staffUniform', options: ['YES', 'NO'] },
+              { label: 'FSSAI परवाना लावला आहे का?', key: 'fssaiDisplay', options: ['YES', 'NO'] },
+              { label: 'आईस बँकची सद्यस्थिती', key: 'iceBankStatus', options: ['NORMAL', 'CRITICAL'] },
             ].map((item) => (
               <div key={item.key} className="space-y-1">
                 <Label className="compact-label">{item.label}</Label>

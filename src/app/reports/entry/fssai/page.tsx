@@ -25,6 +25,7 @@ function FSSAIForm() {
   
   const [mounted, setMounted] = useState(false)
   const [formData, setFormData] = useState({
+    reportHeading: "FSSAI केंद्र तपासणी अहवाल",
     date: new Date().toISOString().split('T')[0],
     centerName: "", ownerName: "", mobile: "", address: "", district: "", taluka: "",
     capacity: "", licenseStatus: "VALID",
@@ -59,9 +60,9 @@ function FSSAIForm() {
       date: formData.date,
       reportDate: formData.date,
       generatedByUserId: user.uid,
-      summary: `FSSAI: ${formData.centerName}. स्थिती: ${formData.licenseStatus}. क्षमता: ${formData.capacity}L.`,
-      overallSummary: `केंद्र: ${formData.centerName}, जिल्हा: ${formData.district}, निकाल: ${formData.licenseStatus}`,
-      fullData: { ...formData, inspector: user.displayName || "Quality Inspector" },
+      summary: `FSSAI: ${formData.centerName}. स्थिती: ${formData.licenseStatus}.`,
+      overallSummary: `FSSAI: ${formData.centerName}. स्थिती: ${formData.licenseStatus}.`,
+      fullData: { ...formData },
       updatedAt: new Date().toISOString()
     }
 
@@ -92,23 +93,30 @@ function FSSAIForm() {
       </div>
 
       <div className="space-y-3 pb-20">
+        <Card className="compact-card p-3 border-primary/20 bg-primary/5">
+          <div className="space-y-1">
+            <Label className="compact-label text-primary">अहवालाचे शीर्षक (Report Heading) *</Label>
+            <Input className="compact-input h-10 border-primary/20 font-black text-primary text-base" value={formData.reportHeading} onChange={e => setFormData({...formData, reportHeading: e.target.value})} />
+          </div>
+        </Card>
+
         <Card className="compact-card p-3">
           <div className="flex items-center gap-1.5 border-b border-primary/10 pb-1 mb-2">
             <ClipboardCheck className="h-3 w-3 text-primary" />
-            <h3 className="text-[9px] font-black uppercase text-primary tracking-widest">मूलभूत माहिती</h3>
+            <h3 className="text-[9px] font-black uppercase text-primary tracking-widest">केंद्राची मूलभूत माहिती</h3>
           </div>
           <div className="grid grid-cols-1 gap-2">
-            <div className="space-y-0.5"><Label className="compact-label">केंद्राचे नाव *</Label><Input className="compact-input" value={formData.centerName} onChange={e => setFormData({...formData, centerName: e.target.value})} /></div>
+            <div className="space-y-0.5"><Label className="compact-label">केंद्राचे पूर्ण नाव *</Label><Input className="compact-input" value={formData.centerName} onChange={e => setFormData({...formData, centerName: e.target.value})} /></div>
             <div className="grid grid-cols-2 gap-2">
-              <div className="space-y-0.5"><Label className="compact-label">मालक</Label><Input className="compact-input" value={formData.ownerName} onChange={e => setFormData({...formData, ownerName: e.target.value})} /></div>
-              <div className="space-y-0.5"><Label className="compact-label">मोबाईल</Label><Input className="compact-input" value={formData.mobile} onChange={e => setFormData({...formData, mobile: e.target.value})} /></div>
+              <div className="space-y-0.5"><Label className="compact-label">मालकाचे नाव</Label><Input className="compact-input" value={formData.ownerName} onChange={e => setFormData({...formData, ownerName: e.target.value})} /></div>
+              <div className="space-y-0.5"><Label className="compact-label">मोबाईल नंबर</Label><Input className="compact-input" value={formData.mobile} onChange={e => setFormData({...formData, mobile: e.target.value})} /></div>
             </div>
-            <div className="space-y-0.5"><Label className="compact-label">पत्ता</Label><Input className="compact-input" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} /></div>
+            <div className="space-y-0.5"><Label className="compact-label">केंद्राचा पत्ता</Label><Input className="compact-input" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} /></div>
             <div className="grid grid-cols-2 gap-2">
               <div className="space-y-0.5"><Label className="compact-label">जिल्हा</Label><Input className="compact-input" value={formData.district} onChange={e => setFormData({...formData, district: e.target.value})} /></div>
               <div className="space-y-0.5"><Label className="compact-label">तालुका</Label><Input className="compact-input" value={formData.taluka} onChange={e => setFormData({...formData, taluka: e.target.value})} /></div>
             </div>
-            <div className="space-y-0.5"><Label className="compact-label">दूध प्रक्रिया क्षमता (L/Day)</Label><Input className="compact-input" value={formData.capacity} onChange={e => setFormData({...formData, capacity: e.target.value})} /></div>
+            <div className="space-y-0.5"><Label className="compact-label">दूध प्रक्रिया करण्याची क्षमता (L/Day)</Label><Input className="compact-input" value={formData.capacity} onChange={e => setFormData({...formData, capacity: e.target.value})} /></div>
           </div>
         </Card>
 
@@ -125,15 +133,15 @@ function FSSAIForm() {
         <Card className="compact-card p-3 bg-primary/5">
           <div className="flex items-center gap-1.5 border-b border-primary/10 pb-1 mb-2">
             <Zap className="h-3 w-3 text-primary" />
-            <h3 className="text-[9px] font-black uppercase text-primary tracking-widest">उपकरणे व सुविधा</h3>
+            <h3 className="text-[9px] font-black uppercase text-primary tracking-widest">उपलब्ध सुविधा व उपकरणे</h3>
           </div>
           <div className="space-y-2">
-            {[ {l: 'E.T.P.', k: 'etp'}, {l: 'Generator', k: 'generator'}, {l: 'RO Water', k: 'ro'} ].map(it => (
+            {[ {l: 'E.T.P. सुविधा आहे का?', k: 'etp'}, {l: 'जनरेटर (Generator) आहे का?', k: 'generator'}, {l: 'RO पाण्याचे फिल्टर आहे का?', k: 'ro'} ].map(it => (
               <div key={it.k} className="flex justify-between items-center bg-white p-1.5 rounded-lg border border-primary/10">
-                <span className="text-[8px] font-black uppercase">{it.l} सुविधा?</span>
+                <span className="text-[8px] font-black uppercase">{it.l}</span>
                 <RadioGroup value={(formData.facilities as any)[it.k]} onValueChange={v => setFormData({...formData, facilities: {...formData.facilities, [it.k]: v}})} className="flex gap-2">
-                  <div className="flex items-center gap-1"><RadioGroupItem value="YES" id={`${it.k}-y`} className="h-2 w-2"/><Label htmlFor={`${it.k}-y`} className="text-[7px]">YES</Label></div>
-                  <div className="flex items-center gap-1"><RadioGroupItem value="NO" id={`${it.k}-n`} className="h-2 w-2"/><Label htmlFor={`${it.k}-n`} className="text-[7px]">NO</Label></div>
+                  <div className="flex items-center gap-1"><RadioGroupItem value="YES" id={`${it.k}-y`} className="h-2 w-2"/><Label htmlFor={`${it.k}-y`} className="text-[7px]">हो</Label></div>
+                  <div className="flex items-center gap-1"><RadioGroupItem value="NO" id={`${it.k}-n`} className="h-2 w-2"/><Label htmlFor={`${it.k}-n`} className="text-[7px]">नाही</Label></div>
                 </RadioGroup>
               </div>
             ))}
@@ -142,7 +150,7 @@ function FSSAIForm() {
 
         <Button onClick={handleSave} className="compact-button w-full bg-primary text-white shadow-lg mb-10 h-11 uppercase font-black">
           {editId ? <RefreshCw className="h-4 w-4 mr-1.5" /> : <Save className="h-4 w-4 mr-1.5" />}
-          {editId ? 'तपासणी अपडेट करा' : 'तपासणी जतन करा (SUBMIT)'}
+          {editId ? 'तपासणी अपडेट करा' : 'तपासणी जतन करा'}
         </Button>
       </div>
     </div>

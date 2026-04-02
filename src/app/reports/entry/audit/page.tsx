@@ -25,6 +25,7 @@ function AuditForm() {
   
   const [mounted, setMounted] = useState(false)
   const [formData, setFormData] = useState({
+    reportHeading: "संकलन केंद्र ऑडिट अहवाल",
     date: new Date().toISOString().split('T')[0],
     centerName: "", centerCode: "", auditDate: new Date().toISOString().split('T')[0],
     morningQty: "", eveningQty: "",
@@ -60,8 +61,8 @@ function AuditForm() {
       date: formData.date,
       reportDate: formData.date,
       generatedByUserId: user.uid,
-      summary: `ऑडिट: ${formData.centerName}. निकाल: ${formData.result}. दूध: ${Number(formData.morningQty) + Number(formData.eveningQty)}L.`,
-      overallSummary: `केंद्र: ${formData.centerName}, कोड: ${formData.centerCode}, निकाल: ${formData.result}`,
+      summary: `ऑडिट: ${formData.centerName}. निकाल: ${formData.result}.`,
+      overallSummary: `ऑडिट: ${formData.centerName}. निकाल: ${formData.result}.`,
       fullData: { ...formData },
       updatedAt: new Date().toISOString()
     }
@@ -93,47 +94,42 @@ function AuditForm() {
       </div>
 
       <div className="space-y-3 pb-20">
-        <Card className="compact-card p-3">
-          <div className="flex items-center gap-1.5 border-b border-primary/10 pb-1 mb-2">
-            <Warehouse className="h-3 w-3 text-primary" />
-            <h3 className="text-[9px] font-black uppercase text-primary tracking-widest">केंद्राची माहिती</h3>
+        <Card className="compact-card p-3 border-primary/20 bg-primary/5">
+          <div className="space-y-1">
+            <Label className="compact-label text-primary">अहवालाचे शीर्षक (Report Heading) *</Label>
+            <Input className="compact-input h-10 border-primary/20 font-black text-primary text-base" value={formData.reportHeading} onChange={e => setFormData({...formData, reportHeading: e.target.value})} />
           </div>
+        </Card>
+
+        <Card className="compact-card p-3">
+          <SectionTitle icon={Warehouse} title="केंद्राची माहिती" />
           <div className="grid grid-cols-1 gap-2">
-            <div className="space-y-0.5"><Label className="compact-label">केंद्राचे नाव *</Label><Input className="compact-input" value={formData.centerName} onChange={e => setFormData({...formData, centerName: e.target.value})} /></div>
+            <div className="space-y-0.5"><Label className="compact-label">केंद्राचे पूर्ण नाव *</Label><Input className="compact-input" value={formData.centerName} onChange={e => setFormData({...formData, centerName: e.target.value})} /></div>
             <div className="grid grid-cols-2 gap-2">
-              <div className="space-y-0.5"><Label className="compact-label">केंद्र कोड</Label><Input className="compact-input" value={formData.centerCode} onChange={e => setFormData({...formData, centerCode: e.target.value})} /></div>
-              <div className="space-y-0.5"><Label className="compact-label">ऑडिट तारीख</Label><Input type="date" className="compact-input" value={formData.auditDate} onChange={e => setFormData({...formData, auditDate: e.target.value})} /></div>
+              <div className="space-y-0.5"><Label className="compact-label">केंद्राचा कोड (ID)</Label><Input className="compact-input" value={formData.centerCode} onChange={e => setFormData({...formData, centerCode: e.target.value})} /></div>
+              <div className="space-y-0.5"><Label className="compact-label">तपासणी केल्याची तारीख</Label><Input type="date" className="compact-input" value={formData.auditDate} onChange={e => setFormData({...formData, auditDate: e.target.value})} /></div>
             </div>
           </div>
         </Card>
 
         <Card className="compact-card p-3 bg-blue-50/20 border-blue-100">
-          <div className="flex items-center gap-1.5 border-b border-blue-200 pb-1 mb-2">
-            <Milk className="h-3 w-3 text-blue-600" />
-            <h3 className="text-[9px] font-black uppercase text-blue-600 tracking-widest">दूध संकलन (MILK)</h3>
-          </div>
+          <SectionTitle icon={Milk} title="दूध संकलन तपशील" color="text-blue-600" />
           <div className="grid grid-cols-2 gap-2">
-            <div className="space-y-0.5"><Label className="compact-label text-[8px]">सकाळचे संकलन (L)</Label><Input className="compact-input h-8" value={formData.morningQty} onChange={e => setFormData({...formData, morningQty: e.target.value})} /></div>
-            <div className="space-y-0.5"><Label className="compact-label text-[8px]">संध्याकाळचे संकलन (L)</Label><Input className="compact-input h-8" value={formData.eveningQty} onChange={e => setFormData({...formData, eveningQty: e.target.value})} /></div>
+            <div className="space-y-0.5"><Label className="compact-label text-[8px]">सकाळचे दूध संकलन (Liters)</Label><Input className="compact-input h-8" value={formData.morningQty} onChange={e => setFormData({...formData, morningQty: e.target.value})} /></div>
+            <div className="space-y-0.5"><Label className="compact-label text-[8px]">संध्याकाळचे दूध संकलन (Liters)</Label><Input className="compact-input h-8" value={formData.eveningQty} onChange={e => setFormData({...formData, eveningQty: e.target.value})} /></div>
           </div>
         </Card>
 
         <Card className="compact-card p-3">
-          <div className="flex items-center gap-1.5 border-b border-primary/10 pb-1 mb-2">
-            <Microscope className="h-3 w-3 text-primary" />
-            <h3 className="text-[9px] font-black uppercase text-primary tracking-widest">गुणवत्ता तपासणी (QUALITY)</h3>
-          </div>
+          <SectionTitle icon={Microscope} title="गुणवत्ता तपासणी (QUALITY)" />
           <div className="grid grid-cols-2 gap-2">
-            <div className="space-y-0.5"><Label className="compact-label">फॅट (%)</Label><Input className="compact-input h-8" value={formData.fat} onChange={e => setFormData({...formData, fat: e.target.value})} /></div>
-            <div className="space-y-0.5"><Label className="compact-label">SNF (%)</Label><Input className="compact-input h-8" value={formData.snf} onChange={e => setFormData({...formData, snf: e.target.value})} /></div>
+            <div className="space-y-0.5"><Label className="compact-label">दूध फॅट प्रमाण (%)</Label><Input className="compact-input h-8" value={formData.fat} onChange={e => setFormData({...formData, fat: e.target.value})} /></div>
+            <div className="space-y-0.5"><Label className="compact-label">दूध SNF प्रमाण (%)</Label><Input className="compact-input h-8" value={formData.snf} onChange={e => setFormData({...formData, snf: e.target.value})} /></div>
           </div>
         </Card>
 
         <Card className="compact-card p-3 bg-emerald-50/20 border-emerald-100">
-          <div className="flex items-center gap-1.5 border-b border-emerald-200 pb-1 mb-2">
-            <CheckCircle2 className="h-3 w-3 text-emerald-600" />
-            <h3 className="text-[9px] font-black uppercase text-emerald-600 tracking-widest">अंतिम निकाल (RESULT)</h3>
-          </div>
+          <SectionTitle icon={CheckCircle2} title="अंतिम निकाल (RESULT)" color="text-emerald-600" />
           <RadioGroup value={formData.result} onValueChange={v => setFormData({...formData, result: v})} className="flex flex-wrap gap-2">
             {['GOOD', 'IMPROVE', 'BAD'].map(o => <div key={o} className="compact-radio-item p-1.5 border-emerald-100 bg-white"><RadioGroupItem value={o} id={`r-${o}`} className="h-2.5 w-2.5"/><Label htmlFor={`r-${o}`} className="compact-radio-label">{o}</Label></div>)}
           </RadioGroup>
@@ -141,9 +137,18 @@ function AuditForm() {
 
         <Button onClick={handleSave} className="compact-button w-full bg-primary text-white shadow-lg mb-10 h-11 uppercase font-black">
           {editId ? <RefreshCw className="h-4 w-4 mr-1.5" /> : <Save className="h-4 w-4 mr-1.5" />}
-          {editId ? 'ऑडिट अपडेट करा' : 'ऑडिट जतन करा (SUBMIT)'}
+          {editId ? 'ऑडिट अपडेट करा' : 'ऑडिट जतन करा'}
         </Button>
       </div>
+    </div>
+  )
+}
+
+function SectionTitle({ icon: Icon, title, color = "text-primary" }: any) {
+  return (
+    <div className={`flex items-center gap-1.5 border-b pb-1 mb-2 ${color === 'text-primary' ? 'border-primary/10' : 'border-current/10'}`}>
+      <Icon className={`h-3 w-3 ${color}`} />
+      <h3 className={`text-[9px] font-black uppercase ${color} tracking-widest`}>{title}</h3>
     </div>
   )
 }

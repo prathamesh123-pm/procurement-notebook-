@@ -111,16 +111,16 @@ export default function ReportsPage() {
   }
 
   const labelMap: Record<string, string> = {
-    // Seizure (जप्ती)
+    // Seizure
     supplierName: "पुरवठादार किंवा केंद्राचे पूर्ण नाव",
-    supplierId: "पुरवठादार किंवा केंद्राचा कोड",
-    route: "संकलन रूटचे नाव",
-    seizureQty: "जप्त केलेल्या दुधाचे प्रमाण (Liters)",
+    supplierId: "पुरवठादार किंवा केंद्राचा आयडी कोड",
+    route: "संबंधित संकलन रूटचे नाव",
+    seizureQty: "जप्त केलेल्या दुधाचे एकूण प्रमाण (Liters)",
     reason: "दूध जप्त करण्याचे कारण",
-    fineAmount: "आकारलेली दंडाची रक्कम (₹)",
+    fineAmount: "आकारलेली एकूण दंडाची रक्कम (₹)",
     actionTaken: "जप्त केलेल्या दुधावर केलेली कारवाई",
     
-    // Breakdown (गाडी बिघाड)
+    // Breakdown
     routeName: "दुध संकलन रूटचे नाव",
     vehicleNo: "गाडीचा नंबर (MH...)",
     vehicleNumber: "गाडीचा नंबर (MH...)",
@@ -139,7 +139,7 @@ export default function ReportsPage() {
     milkHot: "दूध गरम झाले होते का?",
     milkSour: "दूध पूर्णपणे खराब झाले का?",
     
-    // Daily Work / Task (दैनिक काम)
+    // Daily Work / Task
     title: "आजच्या कामाचा विषय किंवा टास्क",
     remark: "केलेल्या कामाबद्दल सविस्तर शेरा/नोंद",
     achievements: "आजची मोठी कामगिरी",
@@ -147,7 +147,7 @@ export default function ReportsPage() {
     actionsTaken: "केलेली कार्यवाही",
     supervisorName: "सुपरवायझरचे नाव",
     
-    // Chilling (चिलिंग)
+    // Chilling
     centerName: "चिलिंग केंद्राचे नाव",
     tempAtArrival: "सुरुवातीचे तापमान (°C)",
     tempAfterChilling: "चिलिंग नंतरचे तापमान (°C)",
@@ -160,7 +160,7 @@ export default function ReportsPage() {
     
     // Generic
     summary: "कामाचा संक्षिप्त सारांश",
-    totalLossAmount: "झालेले एकूण आर्थिक नुकसान (₹)"
+    totalLossAmount: "या घटनेमुळे झालेले एकूण आर्थिक नुकसान (₹)"
   };
 
   const orderedKeys = [
@@ -196,32 +196,24 @@ export default function ReportsPage() {
       <div className="bg-white p-4 font-sans text-slate-900 border-[2px] border-slate-900 rounded-sm shadow-none w-full max-w-full mx-auto print:border-black printable-report">
         <div className="flex justify-between items-center border-b-[2px] border-slate-900 pb-2 mb-4 print:border-black">
           <div className="space-y-0.5">
-            <h1 className="font-black uppercase text-lg tracking-tighter flex items-center gap-2">
-              <Milk className="h-5 w-5 text-primary print:text-black" /> संकलन नोंदवही
+            <h1 className="font-black uppercase text-lg tracking-tighter">
+              {d.reportHeading || 'रूट व्हिजिट रिपोर्ट'}
             </h1>
-            <p className="text-[8px] font-black uppercase text-slate-500 tracking-[0.2em]">अहवाल: रूट व्हिजिट स्लिप</p>
+            <p className="text-[8px] font-black uppercase text-slate-500 tracking-[0.2em]">प्रोफाईल: {profileName} (ID: {profileId})</p>
           </div>
           <div className="text-right font-black uppercase text-[9px] leading-tight">
-            <div className="bg-slate-900 text-white px-2 py-0.5 mb-1 print:bg-black">OFFICIAL RECORD</div>
             <p>तारीख: {d.reportDate || '---'}</p>
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-4 mb-4 font-black text-[10px] uppercase">
           <div className="space-y-1 p-2 bg-slate-50 border border-slate-200 rounded-lg print:bg-white print:border-black">
-            <div className="flex justify-between border-b border-slate-200 pb-0.5"><span>सादरकर्ता:</span> <span className="text-primary print:text-black">{profileName}</span></div>
             <div className="flex justify-between border-b border-slate-200 pb-0.5"><span>रूट नाव:</span> <span>{d.routeName || '---'}</span></div>
-            <div className="flex justify-between border-b border-slate-200 pb-0.5"><span>ड्रायव्हर:</span> <span>{d.driverName || '---'}</span></div>
-            <div className="flex justify-between"><span>वेळ (IN/OUT):</span> <span>{d.routeInTime || '--:--'} / {d.routeOutTime || '--:--'}</span></div>
+            <div className="flex justify-between"><span>ड्रायव्हर:</span> <span>{d.driverName || '---'}</span></div>
           </div>
           <div className="space-y-1 p-2 bg-slate-50 border border-slate-200 rounded-lg print:bg-white print:border-black">
-            <div className="flex justify-between border-b border-slate-200 pb-0.5"><span>आयडी:</span> <span>{profileId}</span></div>
             <div className="flex justify-between border-b border-slate-200 pb-0.5"><span>वाहन क्रमांक:</span> <span>{d.vehicleNumber || '---'}</span></div>
             <div className="flex justify-between border-b border-slate-200 pb-0.5"><span>स्लिप नंबर:</span> <span>#{d.slipNo || '---'}</span></div>
-            <div className="flex justify-between items-center">
-              <span>शिफ्ट:</span> 
-              <div className="h-4 inline-flex items-center rounded-full border px-2.5 py-0.5 text-[7px] uppercase font-black">{d.shift || 'सकाळ'}</div>
-            </div>
           </div>
         </div>
 
@@ -231,7 +223,6 @@ export default function ReportsPage() {
               <tr className="bg-slate-900 text-white font-black text-[9px] uppercase tracking-wider print:bg-black">
                 <th className="p-2 text-center w-8 border-r border-white/20">क्र.</th>
                 <th className="p-2 text-left border-r border-white/20">केंद्र व कोड</th>
-                <th className="p-2 text-center border-r border-white/20">बर्फ</th>
                 <th className="p-2 text-center border-r border-white/20">आगमन</th>
                 <th className="p-2 text-center border-r border-white/20">रिकामे</th>
                 <th className="p-2 text-center border-r border-white/20">निर्गमन</th>
@@ -246,7 +237,6 @@ export default function ReportsPage() {
                     {log.supplierName || '---'} <br/>
                     <span className="text-[7px] text-slate-400">ID: {log.centerCode || '---'}</span>
                   </td>
-                  <td className="p-2 text-center border-r border-slate-900 print:border-black">{log.iceUsed || '0'}</td>
                   <td className="p-2 text-center border-r border-slate-900 print:border-black">{log.arrivalTime || '--:--'}</td>
                   <td className="p-2 text-center border-r border-slate-900 font-black print:border-black">{log.emptyCans || '0'}</td>
                   <td className="p-2 text-center border-r border-slate-900 print:border-black">{log.departureTime || '--:--'}</td>
@@ -254,9 +244,7 @@ export default function ReportsPage() {
                 </tr>
               ))}
               <tr className="bg-slate-900 text-white font-black text-[10px] uppercase print:bg-black">
-                <td className="p-2 text-center border-r border-white/20" colSpan={2}>एकूण सारांश</td>
-                <td className="p-2 text-center border-r border-white/20">{totalIceUsed}</td>
-                <td className="p-2 text-center border-r border-white/20">-</td>
+                <td className="p-2 text-center border-r border-white/20" colSpan={3}>एकूण सारांश</td>
                 <td className="p-2 text-center border-r border-white/20">{totalEmpty}</td>
                 <td className="p-2 text-center border-r border-white/20">-</td>
                 <td className="p-2 text-center">{totalFull}</td>
@@ -276,6 +264,9 @@ export default function ReportsPage() {
   const GenericTableLayout = ({ report }: { report: any }) => {
     const d = report.fullData || {};
     
+    // Find heading: custom heading input, or docTitle, or fallback to type
+    const mainHeading = d.reportHeading || d.title || report.type;
+
     const filteredEntries = orderedKeys
       .filter(key => {
         const val = d[key];
@@ -292,24 +283,9 @@ export default function ReportsPage() {
     return (
       <div className="bg-white font-sans text-slate-900 border-[2px] border-slate-900 rounded-sm shadow-none print:border-black mb-4 last:mb-0 break-inside-avoid w-full max-w-full mx-auto p-6 printable-report">
         <div className="border-b-[2px] border-slate-900 text-center pb-4 mb-4 print:border-black">
-          <div className="flex justify-center mb-1">
-            <div className="p-2 bg-primary text-white rounded-xl print:bg-black">
-              <ClipboardCheck className="h-6 w-6" />
-            </div>
-          </div>
-          <h1 className="text-xl font-black uppercase tracking-tight">संकलन नोंदवही (OFFICIAL REPORT)</h1>
-          <div className="mt-2 px-4 py-0.5 text-[8px] font-black uppercase tracking-widest bg-slate-900 text-white inline-block print:bg-black">
-            {report.type}
-          </div>
-        </div>
-
-        <div className="flex justify-between items-center mb-4 text-[9px] font-black uppercase text-slate-500 border-b border-dashed pb-2">
-          <div className="flex items-center gap-2">
-            <span className="bg-slate-100 px-2 py-0.5 rounded print:border print:border-black">सादरकर्ता: {profileName}</span>
-            <span className="bg-slate-100 px-2 py-0.5 rounded print:border print:border-black">आयडी: {profileId}</span>
-          </div>
-          <div className="text-right">
-            <span>तारीख: {report.date}</span>
+          <h1 className="text-xl font-black uppercase tracking-tight">{mainHeading}</h1>
+          <div className="mt-2 text-[9px] font-black uppercase tracking-widest text-slate-500">
+            सादरकर्ता: {profileName} (ID: {profileId}) | तारीख: {report.date}
           </div>
         </div>
 
@@ -318,7 +294,7 @@ export default function ReportsPage() {
             <table className="w-full border-collapse">
               <thead>
                 <tr className="bg-slate-900 text-white font-black text-[10px] uppercase tracking-widest print:bg-black">
-                  <th className="p-2 text-left w-1/3 border-r border-white/20">तपशील (FIELD / QUESTION)</th>
+                  <th className="p-2 text-left w-1/3 border-r border-white/20">तपशील (FIELD)</th>
                   <th className="p-2 text-left">माहिती (DETAILS)</th>
                 </tr>
               </thead>
@@ -340,7 +316,7 @@ export default function ReportsPage() {
           {(d.points && d.points.length > 0) && (
             <div className="mt-4 space-y-2">
               <div className="flex items-center gap-1.5 text-[10px] font-black uppercase text-primary">
-                <AlertCircle className="h-4 w-4" /> विशेष निरीक्षणे किंवा नमूद केलेले मुद्दे:
+                <AlertCircle className="h-4 w-4" /> विशेष निरीक्षणे:
               </div>
               <div className="border border-slate-900 rounded-lg p-3 print:border-black">
                 <ul className="space-y-1.5">
@@ -450,7 +426,7 @@ export default function ReportsPage() {
             <thead>
               <tr className="bg-slate-50 border-b border-slate-100">
                 <th className="p-4 text-[10px] font-black uppercase text-slate-400 tracking-widest w-32">तारीख</th>
-                <th className="p-4 text-[10px] font-black uppercase text-slate-400 tracking-widest">अहवाल प्रकार व सारांश</th>
+                <th className="p-4 text-[10px] font-black uppercase text-slate-400 tracking-widest">अहवाल शीर्षक व सारांश</th>
                 <th className="p-4 text-[10px] font-black uppercase text-slate-400 tracking-widest text-right w-32">क्रिया</th>
               </tr>
             </thead>
@@ -461,7 +437,7 @@ export default function ReportsPage() {
                   <td className="p-4 text-left">
                     <div className="flex flex-col gap-1 min-w-0">
                       <span className="text-[11px] font-black uppercase text-primary group-hover:underline">
-                        {report.type}
+                        {report.fullData?.reportHeading || report.type}
                       </span>
                       <p className="text-[10px] text-slate-500 line-clamp-1 italic font-bold opacity-80">{report.summary}</p>
                     </div>
@@ -502,7 +478,7 @@ export default function ReportsPage() {
               </div>
               <div className="text-left">
                 <DialogTitle className="text-[11px] font-black uppercase text-slate-900 tracking-[0.2em]">{isGroupView ? 'एकत्रित कार्य अहवाल' : 'अहवाल तपशील'}</DialogTitle>
-                <DialogDescription className="text-[9px] font-bold uppercase text-slate-400">{isGroupView ? 'All Daily Tasks' : 'Official Report Preview'}</DialogDescription>
+                <DialogDescription className="text-[9px] font-bold uppercase text-slate-400">{isGroupView ? 'All Daily Tasks' : 'Preview'}</DialogDescription>
               </div>
             </div>
             <div className="flex flex-wrap gap-2 pr-2 sm:pr-4 justify-center">

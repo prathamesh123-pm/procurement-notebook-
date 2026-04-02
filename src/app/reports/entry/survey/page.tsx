@@ -26,6 +26,7 @@ function SurveyForm() {
   
   const [mounted, setMounted] = useState(false)
   const [formData, setFormData] = useState({
+    reportHeading: "दूध संकलन सर्व्हे अहवाल",
     date: new Date().toISOString().split('T')[0],
     centerName: "", ownerName: "", address: "", email: "", mobile: "", fssaiNo: "", validDate: "",
     type: "UTPADAK", facility: "BMC", plantHygiene: "YES", milkSource: "FARMERS",
@@ -68,9 +69,9 @@ function SurveyForm() {
       date: formData.date,
       reportDate: formData.date,
       generatedByUserId: user.uid,
-      summary: `सर्व्हे: ${formData.centerName}. प्रकार: ${formData.type}. दूध: ${formData.totalMilk}L.`,
-      overallSummary: `केंद्राचे नाव: ${formData.centerName}, प्रकार: ${formData.type}`,
-      fullData: { ...formData, officer: user.displayName || "Officer" },
+      summary: `सर्व्हे: ${formData.centerName}.`,
+      overallSummary: `सर्व्हे: ${formData.centerName}.`,
+      fullData: { ...formData },
       updatedAt: new Date().toISOString()
     }
 
@@ -108,33 +109,40 @@ function SurveyForm() {
       </div>
 
       <div className="space-y-2 pb-10">
+        <Card className="compact-card p-3 border-primary/20 bg-primary/5">
+          <div className="space-y-1">
+            <Label className="compact-label text-primary">अहवालाचे शीर्षक (Report Heading) *</Label>
+            <Input className="compact-input h-10 border-primary/20 font-black text-primary text-base" value={formData.reportHeading} onChange={e => setFormData({...formData, reportHeading: e.target.value})} />
+          </div>
+        </Card>
+
         <Card className="compact-card">
-          <SectionTitle icon={Warehouse} title="१) सामान्य माहिती" />
+          <SectionTitle icon={Warehouse} title="१) केंद्राची प्राथमिक माहिती" />
           <div className="grid grid-cols-1 gap-1.5">
-            <div className="space-y-0.5"><Label className="compact-label">केंद्राचे नाव *</Label><Input className="compact-input" value={formData.centerName} onChange={e => setFormData({...formData, centerName: e.target.value})} /></div>
+            <div className="space-y-0.5"><Label className="compact-label">केंद्राचे पूर्ण नाव *</Label><Input className="compact-input" value={formData.centerName} onChange={e => setFormData({...formData, centerName: e.target.value})} /></div>
             <div className="grid grid-cols-2 gap-1.5">
-              <div className="space-y-0.5"><Label className="compact-label">मालक</Label><Input className="compact-input" value={formData.ownerName} onChange={e => setFormData({...formData, ownerName: e.target.value})} /></div>
-              <div className="space-y-0.5"><Label className="compact-label">मोबाईल</Label><Input className="compact-input" value={formData.mobile} onChange={e => setFormData({...formData, mobile: e.target.value})} /></div>
+              <div className="space-y-0.5"><Label className="compact-label">मालकाचे नाव</Label><Input className="compact-input" value={formData.ownerName} onChange={e => setFormData({...formData, ownerName: e.target.value})} /></div>
+              <div className="space-y-0.5"><Label className="compact-label">मोबाईल नंबर</Label><Input className="compact-input" value={formData.mobile} onChange={e => setFormData({...formData, mobile: e.target.value})} /></div>
             </div>
-            <div className="space-y-0.5"><Label className="compact-label">पत्ता</Label><Input className="compact-input" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} /></div>
+            <div className="space-y-0.5"><Label className="compact-label">केंद्राचा पूर्ण पत्ता</Label><Input className="compact-input" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} /></div>
             <div className="grid grid-cols-2 gap-1.5">
-              <div className="space-y-0.5"><Label className="compact-label">FSSAI क्र.</Label><Input className="compact-input" value={formData.fssaiNo} onChange={e => setFormData({...formData, fssaiNo: e.target.value})} /></div>
-              <div className="space-y-0.5"><Label className="compact-label">वैधता</Label><Input type="date" className="compact-input" value={formData.validDate} onChange={e => setFormData({...formData, validDate: e.target.value})} /></div>
+              <div className="space-y-0.5"><Label className="compact-label">FSSAI परवाना क्र.</Label><Input className="compact-input" value={formData.fssaiNo} onChange={e => setFormData({...formData, fssaiNo: e.target.value})} /></div>
+              <div className="space-y-0.5"><Label className="compact-label">वैधता संपण्याची तारीख</Label><Input type="date" className="compact-input" value={formData.validDate} onChange={e => setFormData({...formData, validDate: e.target.value})} /></div>
             </div>
           </div>
         </Card>
 
         <Card className="compact-card">
-          <SectionTitle icon={Info} title="२) प्रकार व स्रोत" />
+          <SectionTitle icon={Info} title="२) केंद्राचा प्रकार व दूध स्रोत" />
           <div className="space-y-2">
             <div className="space-y-0.5">
-              <Label className="compact-label">प्रकार (TYPE)</Label>
+              <Label className="compact-label">केंद्राचा प्रकार (TYPE)</Label>
               <RadioGroup value={formData.type} onValueChange={v => setFormData({...formData, type: v})} className="compact-radio-group">
                 {['UTPADAK', 'ONEMAN', 'GAVALI', 'GOTHA'].map(o => <div key={o} className="compact-radio-item"><RadioGroupItem value={o} id={`t-${o}`} className="h-2 w-2"/><Label htmlFor={`t-${o}`} className="compact-radio-label">{o}</Label></div>)}
               </RadioGroup>
             </div>
             <div className="space-y-0.5">
-              <Label className="compact-label">सुविधा (FACILITY)</Label>
+              <Label className="compact-label">उपलब्ध सुविधा (FACILITY)</Label>
               <RadioGroup value={formData.facility} onValueChange={v => setFormData({...formData, facility: v})} className="compact-radio-group">
                 {['BMC', 'PHE', 'BOTH', 'CAN'].map(o => <div key={o} className="compact-radio-item"><RadioGroupItem value={o} id={`f-${o}`} className="h-2 w-2"/><Label htmlFor={`f-${o}`} className="compact-radio-label">{o}</Label></div>)}
               </RadioGroup>
@@ -143,31 +151,12 @@ function SurveyForm() {
         </Card>
 
         <Card className="compact-card">
-          <SectionTitle icon={MapPin} title="३) पायाभूत सुविधा" />
-          <div className="grid grid-cols-2 gap-1.5">
-            {[
-              { l: 'Building', k: 'building' }, { l: 'Floor', k: 'floor' },
-              { l: 'Condition', k: 'floorCondition' }, { l: 'Drainage', k: 'drainage' },
-              { l: 'ETP', k: 'etp' }, { l: 'Electric', k: 'electric' },
-              { l: 'Lab', k: 'lab' }, { l: 'SOP', k: 'washingSop' },
-              { l: 'Vehicle', k: 'selfVehicle' }, { l: 'Filter', k: 'filter' },
-              { l: 'Use Ice', k: 'useIce' }
-            ].map(it => (
-              <div key={it.k} className="space-y-0.5">
-                <Label className="compact-label">{it.l}</Label>
-                <Input className="compact-input h-7" value={(formData.infrastructure as any)[it.k]} onChange={e => setFormData({...formData, infrastructure: {...formData.infrastructure, [it.k]: e.target.value}})} />
-              </div>
-            ))}
-          </div>
-        </Card>
-
-        <Card className="compact-card">
-          <SectionTitle icon={Milk} title="४) दूध संकलन" />
+          <SectionTitle icon={Milk} title="४) दूध संकलन सारांश" />
           <div className="responsive-table-wrapper">
             <table className="w-full text-[8px]">
               <thead className="bg-slate-50">
                 <tr className="font-black uppercase">
-                  <th className="p-1 text-left">TYPE</th><th className="p-1 text-center">QTY</th><th className="p-1 text-center">F%</th><th className="p-1 text-center">S%</th><th className="p-1 text-right">TIME</th>
+                  <th className="p-1 text-left">प्रकार</th><th className="p-1 text-center">प्रमाण</th><th className="p-1 text-center">F%</th><th className="p-1 text-center">S%</th><th className="p-1 text-right">वेळ</th>
                 </tr>
               </thead>
               <tbody className="divide-y">
@@ -186,17 +175,17 @@ function SurveyForm() {
         </Card>
 
         <Card className="compact-card bg-amber-50/20 border-amber-100">
-          <SectionTitle icon={ShieldCheck} title="५) सारांश" />
+          <SectionTitle icon={ShieldCheck} title="५) अहवाल सारांश" />
           <div className="grid grid-cols-2 gap-1.5">
-            <div className="space-y-0.5"><Label className="compact-label">एकूण दूध (LTR)</Label><Input className="compact-input font-black" value={formData.totalMilk} onChange={e => setFormData({...formData, totalMilk: e.target.value})} /></div>
-            <div className="space-y-0.5"><Label className="compact-label">पेमेंट सायकल</Label><Input className="compact-input" value={formData.paymentCycle} onChange={e => setFormData({...formData, paymentCycle: e.target.value})} /></div>
-            <div className="space-y-0.5 col-span-2"><Label className="compact-label">इतर</Label><Textarea className="compact-input h-10 p-1 text-[9px]" value={formData.otherInfo} onChange={e => setFormData({...formData, otherInfo: e.target.value})} /></div>
+            <div className="space-y-0.5"><Label className="compact-label">एकूण दूध (Liters)</Label><Input className="compact-input font-black" value={formData.totalMilk} onChange={e => setFormData({...formData, totalMilk: e.target.value})} /></div>
+            <div className="space-y-0.5"><Label className="compact-label">पेमेंट सायकल दिवस</Label><Input className="compact-input" value={formData.paymentCycle} onChange={e => setFormData({...formData, paymentCycle: e.target.value})} /></div>
+            <div className="space-y-0.5 col-span-2"><Label className="compact-label">इतर विशेष माहिती</Label><Textarea className="compact-input h-10 p-1 text-[9px]" value={formData.otherInfo} onChange={e => setFormData({...formData, otherInfo: e.target.value})} /></div>
           </div>
         </Card>
 
         <Button onClick={handleSave} className="compact-button w-full bg-primary text-white shadow-lg mb-10 h-10 uppercase font-black tracking-widest">
           {editId ? <RefreshCw className="h-4 w-4 mr-1.5" /> : <Save className="h-4 w-4 mr-1.5" />}
-          {editId ? 'सर्व्हे अपडेट करा' : 'सर्वे जतन करा (SUBMIT)'}
+          {editId ? 'सर्व्हे अपडेट करा' : 'सर्वे जतन करा'}
         </Button>
       </div>
     </div>
