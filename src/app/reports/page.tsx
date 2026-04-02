@@ -37,7 +37,7 @@ export default function ReportsPage() {
   const { data: firestoreReports, isLoading } = useCollection(reportsQuery)
   const { data: userData } = useDoc(userDocRef)
 
-  const profileName = userData?.displayName || user?.displayName || "संकलन सुपरवायझर";
+  const profileName = userData?.displayName || user?.displayName || "सुपरवायझर";
   const profileId = userData?.employeeId || "---";
 
   const [filterDate, setFilterDate] = useState<string>("")
@@ -246,8 +246,8 @@ export default function ReportsPage() {
           </table>
         </div>
         <div className="mt-12 grid grid-cols-2 gap-10 text-center uppercase font-black text-[8px] tracking-widest text-slate-400">
-          <div className="border-t border-slate-900 pt-2 print:border-black print:text-black">अधिकारी स्वाक्षरी</div>
-          <div className="border-t border-slate-900 pt-2 print:border-black print:text-black">सुपरवायझर स्वाक्षरी</div>
+          <div className="border-t-2 border-slate-900 pt-2 print:border-black print:text-black">अधिकारी स्वाक्षरी</div>
+          <div className="border-t-2 border-slate-900 pt-2 print:border-black print:text-black">सुपरवायझर स्वाक्षरी</div>
         </div>
       </div>
     );
@@ -344,8 +344,8 @@ export default function ReportsPage() {
           )}
         </div>
         <div className="mt-20 grid grid-cols-2 gap-10 text-center uppercase font-black text-[8px] tracking-widest text-slate-400">
-          <div className="border-t border-slate-900 pt-2 print:border-black print:text-black">अधिकारी स्वाक्षरी</div>
-          <div className="border-t border-slate-900 pt-2 print:border-black print:text-black">सुपरवायझर स्वाक्षरी</div>
+          <div className="border-t-2 border-slate-900 pt-2 print:border-black print:text-black">अधिकारी स्वाक्षरी</div>
+          <div className="border-t-2 border-slate-900 pt-2 print:border-black print:text-black">सुपरवायझर स्वाक्षरी</div>
         </div>
       </div>
     );
@@ -453,15 +453,60 @@ export default function ReportsPage() {
 
       <style jsx global>{`
         @media print {
-          @page { size: A4; margin: 5mm; }
+          @page { size: A4; margin: 10mm; }
           body > *:not([role="dialog"]), header, nav, aside, footer, .sidebar, .no-print, button { display: none !important; }
           body { background: white !important; padding: 0 !important; margin: 0 !important; overflow: visible !important; }
-          [role="dialog"] { position: absolute !important; left: 0 !important; top: 0 !important; width: 100% !important; max-width: none !important; transform: none !important; box-shadow: none !important; border: none !important; padding: 0 !important; background: white !important; overflow: visible !important; display: block !important; visibility: visible !important; }
-          .printable-report { display: block !important; visibility: visible !important; width: 100% !important; margin: 0 !important; padding: 10px !important; border: 2px solid black !important; background: white !important; box-shadow: none !important; color: black !important; }
-          .printable-report * { visibility: visible !important; color: black !important; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
-          table { width: 100% !important; border-collapse: collapse !important; table-layout: fixed !important; border: 1.5px solid black !important; }
-          th, td { border: 1px solid black !important; padding: 4px !important; font-size: 10px !important; }
-          h1, h2, h3, h4 { color: black !important; text-transform: uppercase !important; }
+          
+          /* Target the dialog content since it's in a portal */
+          [role="dialog"] { 
+            position: absolute !important; 
+            left: 0 !important; 
+            top: 0 !important; 
+            width: 100% !important; 
+            max-width: none !important; 
+            transform: none !important; 
+            box-shadow: none !important; 
+            border: none !important; 
+            padding: 0 !important; 
+            background: white !important; 
+            overflow: visible !important; 
+            display: block !important; 
+            visibility: visible !important; 
+          }
+
+          .printable-report { 
+            display: block !important; 
+            visibility: visible !important; 
+            width: 100% !important; 
+            margin: 0 !important; 
+            padding: 15px !important; 
+            border: 2px solid black !important; 
+            background: white !important; 
+            box-shadow: none !important; 
+            color: black !important; 
+          }
+
+          .printable-report * { 
+            visibility: visible !important; 
+            color: black !important; 
+            print-color-adjust: exact; 
+            -webkit-print-color-adjust: exact; 
+          }
+
+          table { 
+            width: 100% !important; 
+            border-collapse: collapse !important; 
+            table-layout: fixed !important; 
+            border: 2px solid black !important; 
+          }
+
+          th, td { 
+            border: 1px solid black !important; 
+            padding: 6px !important; 
+            font-size: 11px !important; 
+          }
+
+          h1 { font-size: 24px !important; font-weight: 900 !important; }
           .bg-primary, .bg-slate-900, .bg-rose-600 { background-color: transparent !important; color: black !important; border: 1px solid black !important; }
           .text-primary, .text-rose-600 { color: black !important; font-weight: 900 !important; }
         }
