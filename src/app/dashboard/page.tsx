@@ -41,9 +41,7 @@ export default function DashboardOverview() {
   useEffect(() => setMounted(true), [])
 
   const stats = useMemo(() => {
-    // Unique list of all procurement points from the unified suppliers collection
     const allSupps = suppliers || []
-    
     const totalCow = allSupps.reduce((acc, s) => acc + (Number(s.cowMilk?.quantity) || 0), 0)
     const totalBuf = allSupps.reduce((acc, s) => acc + (Number(s.buffaloMilk?.quantity) || 0), 0)
     
@@ -79,7 +77,7 @@ export default function DashboardOverview() {
       bg: "bg-emerald-50",
     },
     {
-      title: "संकलन पॉइंट (Points)",
+      title: "सप्लायर्स (Suppliers)",
       value: stats.totalPoints,
       subValue: "गवळी व सेंटर्स",
       icon: Warehouse,
@@ -97,65 +95,64 @@ export default function DashboardOverview() {
   ]
 
   const actions = [
-    { title: "दैनिक अहवाल", sub: "Daily Report", href: "/daily-report", color: "bg-blue-600", icon: Calendar },
+    { title: "दैनिक अहवाल", sub: "Report", href: "/daily-report", color: "bg-blue-600", icon: Calendar },
     { title: "कामकाज नोंद", sub: "Work Log", href: "/work-log", color: "bg-orange-600", icon: ListTodo },
     { title: "जप्ती व दंड", sub: "Seizure", href: "/reports/entry/seizure", color: "bg-amber-600", icon: ShieldAlert },
     { title: "रूट माहिती", sub: "Routes", href: "/routes", color: "bg-emerald-600", icon: MapPin },
   ]
 
   return (
-    <div className="space-y-8 max-w-6xl mx-auto w-full pb-10 px-2 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center justify-between">
-        <div className="space-y-1 text-left">
-          <h2 className="text-2xl sm:text-3xl font-black text-foreground flex items-center gap-3">
-            <div className="p-2 bg-primary rounded-xl text-white shadow-lg shadow-primary/20">
-              <TrendingUp className="h-6 w-6" />
+    <div className="space-y-6 max-w-6xl mx-auto w-full pb-10 px-2 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center justify-between border-b pb-4">
+        <div className="space-y-0.5 text-left">
+          <h2 className="text-xl sm:text-2xl font-black text-foreground flex items-center gap-2">
+            <div className="p-1.5 bg-primary rounded-lg text-white shadow-md">
+              <TrendingUp className="h-5 w-5" />
             </div>
             डॅशबोर्ड
           </h2>
-          <p className="text-muted-foreground font-bold text-xs uppercase tracking-widest ml-1 opacity-70">
-            {userData?.displayName ? `स्वागत आहे, ${userData.displayName}` : "तुमच्या दैनंदिन कार्याचा सारांश"}
+          <p className="text-muted-foreground font-bold text-[10px] uppercase tracking-widest ml-1 opacity-70">
+            {userData?.displayName ? `स्वागत आहे, ${userData.displayName}` : "तुमच्या कार्याचा सारांश"}
           </p>
         </div>
-        <Badge variant="outline" className="w-fit px-4 py-2 rounded-2xl border-primary/20 bg-white shadow-sm text-primary font-black text-xs uppercase">
-          <Calendar className="h-4 w-4 mr-2" /> {new Date().toLocaleDateString('mr-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
+        <Badge variant="outline" className="w-fit px-3 py-1.5 rounded-xl border-primary/20 bg-white shadow-sm text-primary font-black text-[10px] uppercase">
+          <Calendar className="h-3.5 w-3.5 mr-1.5" /> {new Date().toLocaleDateString('mr-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
         </Badge>
       </div>
 
-      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
         {statCards.map((stat) => (
-          <Card key={stat.title} className="border-none shadow-sm hover:shadow-xl transition-all duration-300 bg-white overflow-hidden group rounded-3xl relative">
-            <div className={`absolute top-0 right-0 w-24 h-24 ${stat.bg} rounded-bl-full -mr-10 -mt-10 transition-transform group-hover:scale-110`} />
-            <CardContent className="p-6 flex flex-col gap-4 relative z-10 text-left">
+          <Card key={stat.title} className="border shadow-sm hover:shadow-xl transition-all duration-300 bg-white overflow-hidden group rounded-2xl relative border-muted-foreground/5">
+            <CardContent className="p-4 flex flex-col gap-2 relative z-10 text-left">
               <div className="flex items-center justify-between">
-                <div className={`p-3 rounded-2xl ${stat.bg} ${stat.color}`}>
-                  <stat.icon className="h-6 w-6" />
+                <div className={`p-2 rounded-xl ${stat.bg} ${stat.color}`}>
+                  <stat.icon className="h-5 w-5" />
                 </div>
-                <ArrowUpRight className={`h-5 w-5 ${stat.color} opacity-0 group-hover:opacity-100 transition-all transform group-hover:translate-x-1 group-hover:-translate-y-1`} />
+                <ArrowUpRight className={`h-4 w-4 ${stat.color} opacity-0 group-hover:opacity-100 transition-all transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5`} />
               </div>
-              <div className="space-y-1">
-                <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">{stat.title}</p>
-                <div className="text-3xl font-black tracking-tighter text-slate-900">{stat.value}</div>
-                <p className="text-[10px] text-muted-foreground font-bold uppercase opacity-60">{stat.subValue}</p>
+              <div className="space-y-0.5">
+                <p className="text-[8px] font-black uppercase text-muted-foreground tracking-widest">{stat.title}</p>
+                <div className="text-xl font-black tracking-tighter text-slate-900">{stat.value}</div>
+                <p className="text-[8px] text-muted-foreground font-bold uppercase opacity-60 truncate">{stat.subValue}</p>
               </div>
             </CardContent>
           </Card>
         ))}
       </div>
 
-      <div className="space-y-6">
-        <h3 className="text-xs font-black flex items-center gap-2 uppercase tracking-[0.2em] text-slate-400 ml-1">
-          <div className="w-8 h-[2px] bg-slate-200" /> झटपट पर्याय
+      <div className="space-y-4">
+        <h3 className="text-[10px] font-black flex items-center gap-2 uppercase tracking-[0.2em] text-slate-400 ml-1">
+          <div className="w-6 h-[1.5px] bg-slate-200" /> झटपट पर्याय
         </h3>
-        <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
           {actions.map((action) => (
             <Link key={action.title} href={action.href} className="group">
-              <Card className="border-none shadow-sm hover:shadow-2xl transition-all duration-300 cursor-pointer bg-white overflow-hidden rounded-3xl h-full flex flex-col items-center justify-center p-6 text-center group-hover:-translate-y-1">
-                <div className={`p-4 rounded-2xl ${action.color} text-white shadow-xl shadow-current/20 mb-4 group-hover:scale-110 transition-transform`}>
-                  <action.icon className="h-6 w-6" />
+              <Card className="border shadow-sm hover:shadow-2xl transition-all duration-300 cursor-pointer bg-white overflow-hidden rounded-2xl h-full flex flex-col items-center justify-center p-4 text-center group-hover:-translate-y-0.5 border-muted-foreground/5">
+                <div className={`p-3 rounded-xl ${action.color} text-white shadow-lg shadow-current/20 mb-3 group-hover:scale-110 transition-transform`}>
+                  <action.icon className="h-5 w-5" />
                 </div>
-                <h4 className="font-black text-sm text-slate-900 uppercase tracking-tight">{action.title}</h4>
-                <p className="text-[9px] text-muted-foreground font-bold uppercase mt-1 opacity-50">{action.sub}</p>
+                <h4 className="font-black text-[11px] text-slate-900 uppercase tracking-tight">{action.title}</h4>
+                <p className="text-[8px] text-muted-foreground font-bold uppercase mt-0.5 opacity-50">{action.sub}</p>
               </Card>
             </Link>
           ))}
