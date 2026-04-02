@@ -252,8 +252,20 @@ export default function ReportsPage() {
 
   const GenericTableLayout = ({ report }: { report: any }) => {
     const d = report.fullData || {};
+    
+    // Deduplicate labels to avoid double display of Reporter Name/ID
+    const seenLabels = new Set<string>();
     const filteredEntries = orderedKeys
-      .filter(key => d[key] !== undefined && d[key] !== "" && d[key] !== null)
+      .filter(key => {
+        const val = d[key];
+        if (val === undefined || val === "" || val === null) return false;
+        
+        const label = labelMap[key] || key.toUpperCase();
+        if (seenLabels.has(label)) return false;
+        
+        seenLabels.add(label);
+        return true;
+      })
       .map(key => [key, d[key]]);
 
     const formatVal = (key: string, val: any): string => {
