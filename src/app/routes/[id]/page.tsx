@@ -44,7 +44,7 @@ export default function RouteDetailsPage() {
   const { data: allSuppliers, isLoading } = useCollection<Supplier>(suppliersQuery)
 
   const route = useMemo(() => allRoutes?.find(r => r.id === routeId), [allRoutes, routeId])
-  const suppliers = useMemo(() => allSuppliers?.filter(s => s.routeId === routeId) || [], [allSuppliers, routeId])
+  const suppliersList = useMemo(() => allSuppliers?.filter(s => s.routeId === routeId) || [], [allSuppliers, routeId])
 
   const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(null)
   const [searchQuery, setSearchQuery] = useState("")
@@ -66,6 +66,13 @@ export default function RouteDetailsPage() {
   })
 
   useEffect(() => setMounted(true), [])
+
+  useEffect(() => {
+    if (selectedSupplier && allSuppliers) {
+      const updated = allSuppliers.find(s => s.id === selectedSupplier.id)
+      if (updated) setSelectedSupplier(updated)
+    }
+  }, [allSuppliers])
 
   const openAddDialog = () => {
     setDialogMode('add')
@@ -144,7 +151,6 @@ export default function RouteDetailsPage() {
     } else if (editingId) {
       updateDocumentNonBlocking(doc(db, 'suppliers', editingId), supplierData)
       toast({ title: "यशस्वी", description: "माहिती अद्ययावत केली गेली." })
-      if (selectedSupplier?.id === editingId) setSelectedSupplier({ ...supplierData, id: editingId } as any)
     }
     setIsDialogOpen(false)
   }
@@ -161,8 +167,8 @@ export default function RouteDetailsPage() {
   }
 
   const filteredSuppliers = useMemo(() => {
-    return suppliers.filter(s => (s.name?.toLowerCase() || "").includes(searchQuery.toLowerCase()))
-  }, [suppliers, searchQuery])
+    return suppliersList.filter(s => (s.name?.toLowerCase() || "").includes(searchQuery.toLowerCase()))
+  }, [suppliersList, searchQuery])
 
   if (!mounted || isLoading) return <div className="p-10 text-center italic text-muted-foreground uppercase text-[10px] opacity-50">लोड होत आहे...</div>
 
@@ -242,8 +248,10 @@ export default function RouteDetailsPage() {
                       <div className="grid grid-cols-2 gap-x-2 gap-y-1">
                         <div><p className="text-[8px] text-muted-foreground uppercase font-black">FSSAI</p><p className="text-[10px] font-black uppercase">{selectedSupplier.fssaiNumber || "-"}</p></div>
                         <div><p className="text-[8px] text-muted-foreground uppercase font-black">मुदत</p><p className="text-[10px] font-black">{selectedSupplier.fssaiExpiry || "-"}</p></div>
-                        <div><p className="text-[8px] text-muted-foreground uppercase font-black">काटा</p><p className="text-[10px] font-black uppercase truncate">{selectedSupplier.scaleBrand || "-"}</p></div>
-                        <div><p className="text-[8px] text-muted-foreground uppercase font-black">मशीन</p><p className="text-[10px] font-black uppercase truncate">{selectedSupplier.fatMachineBrand || "-"}</p></div>
+                        <div><p className="text-[8px] text-muted-foreground uppercase font-black">काटा ब्रँड</p><p className="text-[10px] font-black uppercase truncate">{selectedSupplier.scaleBrand || "-"}</p></div>
+                        <div><p className="text-[8px] text-muted-foreground uppercase font-black">मशीन ब्रँड</p><p className="text-[10px] font-black uppercase truncate">{selectedSupplier.fatMachineBrand || "-"}</p></div>
+                        <div><p className="text-[8px] text-muted-foreground uppercase font-black">रसायन स्टॉक</p><p className="text-[10px] font-black uppercase truncate">{selectedSupplier.chemicalsStock || "-"}</p></div>
+                        <div><p className="text-[8px] text-muted-foreground uppercase font-black">बॅटरी स्थिती</p><p className="text-[10px] font-black uppercase truncate">{selectedSupplier.batteryCondition || "-"}</p></div>
                       </div>
                     </div>
                   </div>
@@ -255,19 +263,27 @@ export default function RouteDetailsPage() {
                         <div><p className="text-[8px] text-muted-foreground uppercase font-black">पेमेंट सायकल</p><p className="text-[10px] font-black">{selectedSupplier.paymentCycle || "7 Days"}</p></div>
                         <div><p className="text-[8px] text-muted-foreground uppercase font-black">जागा</p><p className="text-[10px] font-black">{selectedSupplier.spaceOwnership === 'Self' ? 'स्वतःची' : 'भाड्याची'}</p></div>
                         <div><p className="text-[8px] text-muted-foreground uppercase font-black">स्पर्धा</p><p className="text-[10px] font-black uppercase truncate">{selectedSupplier.competition || "-"}</p></div>
-                        <div><p className="text-[8px] text-muted-foreground uppercase font-black">ग्रेड</p><Badge className="h-4 px-1.5 text-[8px] font-black border-none text-white bg-emerald-500">{selectedSupplier.hygieneGrade || "A"}</Badge></div>
+                        <div><p className="text-[8px] text-muted-foreground uppercase font-black">ग्रेड</p>
+                          <Badge className={`h-4 px-1.5 text-[8px] font-black border-none text-white ${selectedSupplier.hygieneGrade === 'A' ? 'bg-emerald-500' : selectedSupplier.hygieneGrade === 'B' ? 'bg-blue-500' : 'bg-rose-500'}`}>
+                            {selectedSupplier.hygieneGrade || "A"}
+                          </Badge>
+                        </div>
+                        <div><p className="text-[8px] text-muted-foreground uppercase font-black">पशुखाद्य</p><p className="text-[10px] font-black uppercase truncate">{selectedSupplier.cattleFeedBrand || "-"}</p></div>
+                        <div><p className="text-[8px] text-muted-foreground uppercase font-black">बर्फ लाद्या</p><p className="text-[10px] font-black uppercase truncate">{selectedSupplier.iceBlocks || 0}</p></div>
                       </div>
                     </div>
                     <div className="bg-blue-50/30 p-3 rounded-2xl border border-blue-100 space-y-1.5 print:bg-white print:border-black">
                       <h4 className="text-[9px] font-black uppercase text-blue-700 tracking-widest border-b border-blue-200 pb-1">४) दूध संकलन सारांश</h4>
                       <div className="grid grid-cols-2 gap-2">
-                        <div className="text-center p-1 bg-white rounded-lg border border-blue-50">
+                        <div className="text-center p-2 bg-white rounded-lg border border-blue-50">
                           <p className="text-[7px] font-black text-blue-500 uppercase">गाय</p>
                           <p className="text-[11px] font-black">{selectedSupplier.cowMilk?.quantity || 0} L</p>
+                          <p className="text-[7px] text-muted-foreground">F: {selectedSupplier.cowMilk?.fat}% | S: {selectedSupplier.cowMilk?.snf}%</p>
                         </div>
-                        <div className="text-center p-1 bg-white rounded-lg border border-blue-50">
+                        <div className="text-center p-2 bg-white rounded-lg border border-blue-50">
                           <p className="text-[7px] font-black text-blue-500 uppercase">म्हेस</p>
                           <p className="text-[11px] font-black">{selectedSupplier.buffaloMilk?.quantity || 0} L</p>
+                          <p className="text-[7px] text-muted-foreground">F: {selectedSupplier.buffaloMilk?.fat}% | S: {selectedSupplier.buffaloMilk?.snf}%</p>
                         </div>
                       </div>
                     </div>
@@ -322,7 +338,7 @@ export default function RouteDetailsPage() {
                     </div>
                     <div className="space-y-1">
                       <h4 className="text-[9px] font-black uppercase text-primary tracking-widest border-b pb-1">विशेष शेरा</h4>
-                      <div className="p-2 bg-muted/10 rounded-xl italic text-[9px] text-slate-600">{selectedSupplier.additionalNotes || "-"}</div>
+                      <div className="p-2 bg-muted/10 rounded-xl italic text-[9px] text-slate-600">{selectedSupplier.additionalNotes || selectedSupplier.additionalInfo || "-"}</div>
                     </div>
                   </div>
                   

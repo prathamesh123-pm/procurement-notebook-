@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { 
   Warehouse, Plus, Search, MapPin, Edit, Truck, X, ChevronRight, Trash2, 
-  Laptop, Zap, Sun, Box, CheckCircle2, Milk, ShieldCheck, Info, Wallet, User, ClipboardList, Printer
+  Laptop, Zap, Sun, Box, CheckCircle2, Milk, ShieldCheck, Info, Wallet, User, ClipboardList, Printer, Battery, Droplets, Thermometer
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
@@ -56,6 +56,14 @@ export default function CentersPage() {
   })
 
   useEffect(() => setMounted(true), [])
+
+  // Keep selected center in sync with collection updates
+  useEffect(() => {
+    if (selectedCenter && centers) {
+      const updated = centers.find(c => c.id === selectedCenter.id)
+      if (updated) setSelectedCenter(updated)
+    }
+  }, [centers])
 
   const handleOpenAdd = () => {
     setDialogMode('add')
@@ -139,7 +147,6 @@ export default function CentersPage() {
     } else if (editingId) {
       updateDocumentNonBlocking(doc(db, 'suppliers', editingId), centerData)
       toast({ title: "यशस्वी", description: "केंद्राची माहिती अपडेट झाली." })
-      if (selectedCenter?.id === editingId) setSelectedCenter({ ...centerData, id: editingId } as any)
     }
     setIsDialogOpen(false)
   }
@@ -167,7 +174,7 @@ export default function CentersPage() {
   if (!mounted || isLoading) return <div className="p-10 text-center italic font-black uppercase text-[10px] opacity-50">लोड होत आहे...</div>
 
   return (
-    <div className="space-y-4 max-w-[800px] mx-auto w-full pb-10 px-2 animate-in fade-in duration-500">
+    <div className="space-y-4 max-w-[850px] mx-auto w-full pb-10 px-2 animate-in fade-in duration-500">
       <div className="flex flex-col sm:flex-row items-center justify-between gap-3 border-b pb-4 no-print text-center sm:text-left">
         <div className="min-w-0">
           <h2 className="text-xl font-black text-foreground flex items-center justify-center sm:justify-start gap-2 uppercase tracking-tight">
@@ -188,7 +195,7 @@ export default function CentersPage() {
               <input placeholder="केंद्राचे नाव किंवा कोड शोधा..." className="w-full pl-9 h-10 text-[12px] bg-white border border-muted-foreground/10 rounded-xl font-black uppercase outline-none focus:ring-2 focus:ring-primary shadow-inner" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
             </div>
           </div>
-          <ScrollArea className="h-[250px]">
+          <ScrollArea className="h-[200px]">
             <div className="divide-y divide-muted-foreground/5">
               {filteredCenters.map(center => (
                 <div key={center.id} className={`p-3 cursor-pointer hover:bg-muted/50 flex justify-between items-center transition-colors ${selectedCenter?.id === center.id ? 'bg-primary/5 border-l-4 border-primary' : ''}`} onClick={() => setSelectedCenter(center)}>
@@ -217,7 +224,7 @@ export default function CentersPage() {
         </Card>
 
         {selectedCenter && (
-          <Card className="border shadow-2xl bg-white rounded-3xl overflow-hidden border-muted-foreground/10 animate-in slide-in-from-bottom-2 duration-300 print:border-none print:shadow-none max-w-[750px] mx-auto w-full" id="printable-area">
+          <Card className="border shadow-2xl bg-white rounded-3xl overflow-hidden border-muted-foreground/10 animate-in slide-in-from-bottom-2 duration-300 print:border-none print:shadow-none max-w-full mx-auto w-full" id="printable-area">
             <div className="p-3 border-b flex items-center justify-between bg-primary/5 print:bg-white print:border-b-2 print:border-black">
               <div className="min-w-0">
                 <h3 className="text-[13px] font-black truncate uppercase text-slate-900 print:text-xl">{selectedCenter.name}</h3>
@@ -235,7 +242,7 @@ export default function CentersPage() {
                 </Button>
               </div>
             </div>
-            <ScrollArea className="max-h-[600px] print:max-h-none">
+            <ScrollArea className="max-h-[700px] print:max-h-none">
               <div className="p-4 space-y-5 pb-10 print:p-0 print:space-y-8">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="bg-muted/20 p-3 rounded-2xl border border-muted-foreground/5 space-y-1.5 print:bg-white print:border-black">
@@ -257,8 +264,10 @@ export default function CentersPage() {
                     <div className="grid grid-cols-2 gap-x-2 gap-y-1">
                       <div><p className="text-[8px] text-muted-foreground uppercase font-black">FSSAI</p><p className="text-[10px] font-black uppercase">{selectedCenter.fssaiNumber || "-"}</p></div>
                       <div><p className="text-[8px] text-muted-foreground uppercase font-black">मुदत</p><p className="text-[10px] font-black">{selectedCenter.fssaiExpiry || "-"}</p></div>
-                      <div><p className="text-[8px] text-muted-foreground uppercase font-black">काटा</p><p className="text-[10px] font-black uppercase truncate">{selectedCenter.scaleBrand || "-"}</p></div>
-                      <div><p className="text-[8px] text-muted-foreground uppercase font-black">मशीन</p><p className="text-[10px] font-black uppercase truncate">{selectedCenter.fatMachineBrand || "-"}</p></div>
+                      <div><p className="text-[8px] text-muted-foreground uppercase font-black">काटा ब्रँड</p><p className="text-[10px] font-black uppercase truncate">{selectedCenter.scaleBrand || "-"}</p></div>
+                      <div><p className="text-[8px] text-muted-foreground uppercase font-black">मशीन ब्रँड</p><p className="text-[10px] font-black uppercase truncate">{selectedCenter.fatMachineBrand || "-"}</p></div>
+                      <div><p className="text-[8px] text-muted-foreground uppercase font-black">रसायन स्टॉक</p><p className="text-[10px] font-black uppercase truncate">{selectedCenter.chemicalsStock || "-"}</p></div>
+                      <div><p className="text-[8px] text-muted-foreground uppercase font-black">बॅटरी स्थिती</p><p className="text-[10px] font-black uppercase truncate">{selectedCenter.batteryCondition || "-"}</p></div>
                     </div>
                   </div>
                 </div>
@@ -271,8 +280,14 @@ export default function CentersPage() {
                     <div className="grid grid-cols-2 gap-x-2 gap-y-1">
                       <div><p className="text-[8px] text-muted-foreground uppercase font-black">पेमेंट सायकल</p><p className="text-[10px] font-black">{selectedCenter.paymentCycle || "7 Days"}</p></div>
                       <div><p className="text-[8px] text-muted-foreground uppercase font-black">जागा</p><p className="text-[10px] font-black">{selectedCenter.spaceOwnership === 'Self' ? 'स्वतःची' : 'भाड्याची'}</p></div>
-                      <div><p className="text-[8px] text-muted-foreground uppercase font-black">स्पर्धा</p><p className="text-[10px] font-black uppercase truncate">{selectedCenter.competition || "-"}</p></div>
-                      <div><p className="text-[8px] text-muted-foreground uppercase font-black">स्वच्छता</p><Badge className="h-4 px-1.5 text-[8px] font-black border-none text-white bg-emerald-500">{selectedCenter.hygieneGrade || "A"}</Badge></div>
+                      <div><p className="text-[8px] text-muted-foreground uppercase font-black">स्थानिक स्पर्धा</p><p className="text-[10px] font-black uppercase truncate">{selectedCenter.competition || "-"}</p></div>
+                      <div><p className="text-[8px] text-muted-foreground uppercase font-black">स्वच्छता ग्रेड</p>
+                        <Badge className={`h-4 px-1.5 text-[8px] font-black border-none text-white ${selectedCenter.hygieneGrade === 'A' ? 'bg-emerald-500' : selectedCenter.hygieneGrade === 'B' ? 'bg-blue-500' : 'bg-rose-500'}`}>
+                          {selectedCenter.hygieneGrade || "A"}
+                        </Badge>
+                      </div>
+                      <div><p className="text-[8px] text-muted-foreground uppercase font-black">पशुखाद्य</p><p className="text-[10px] font-black uppercase truncate">{selectedCenter.cattleFeedBrand || "-"}</p></div>
+                      <div><p className="text-[8px] text-muted-foreground uppercase font-black">बर्फ लाद्या</p><p className="text-[10px] font-black uppercase truncate">{selectedCenter.iceBlocks || 0}</p></div>
                     </div>
                   </div>
                   <div className="bg-blue-50/30 p-3 rounded-2xl border border-blue-100 space-y-1.5 print:bg-white print:border-black">
@@ -280,13 +295,15 @@ export default function CentersPage() {
                       <Milk className="h-3.5 w-3.5 print:hidden" /> ४) दूध संकलन सारांश
                     </h4>
                     <div className="grid grid-cols-2 gap-2">
-                      <div className="text-center p-1 bg-white rounded-lg border border-blue-50">
-                        <p className="text-[7px] font-black text-blue-500 uppercase">गाय</p>
+                      <div className="text-center p-2 bg-white rounded-lg border border-blue-50">
+                        <p className="text-[7px] font-black text-blue-500 uppercase">गाय दूध</p>
                         <p className="text-[11px] font-black">{selectedCenter.cowMilk?.quantity || 0} L</p>
+                        <p className="text-[7px] text-muted-foreground">F: {selectedCenter.cowMilk?.fat}% | S: {selectedCenter.cowMilk?.snf}%</p>
                       </div>
-                      <div className="text-center p-1 bg-white rounded-lg border border-blue-50">
-                        <p className="text-[7px] font-black text-blue-500 uppercase">म्हेस</p>
+                      <div className="text-center p-2 bg-white rounded-lg border border-blue-50">
+                        <p className="text-[7px] font-black text-blue-500 uppercase">म्हेस दूध</p>
                         <p className="text-[11px] font-black">{selectedCenter.buffaloMilk?.quantity || 0} L</p>
+                        <p className="text-[7px] text-muted-foreground">F: {selectedCenter.buffaloMilk?.fat}% | S: {selectedCenter.buffaloMilk?.snf}%</p>
                       </div>
                     </div>
                   </div>
@@ -354,7 +371,7 @@ export default function CentersPage() {
                       <ClipboardList className="h-3.5 w-3.5 print:hidden" /> विशेष शेरा
                     </h4>
                     <div className="p-2 bg-muted/10 rounded-xl border border-muted-foreground/5 italic text-[9px] text-slate-600 print:bg-white print:border-black print:text-black">
-                      {selectedCenter.additionalNotes || "-"}
+                      {selectedCenter.additionalNotes || selectedCenter.additionalInfo || "-"}
                     </div>
                   </div>
                 </div>
@@ -447,7 +464,7 @@ export default function CentersPage() {
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1.5"><Label className="text-[10px] uppercase font-black opacity-60">पशुखाद्य ब्रँड</Label><Input value={formData.cattleFeedBrand} onChange={e => setFormData({...formData, cattleFeedBrand: e.target.value})} className="h-10 text-[12px] rounded-xl bg-muted/20 border-none font-black shadow-inner" /></div>
-                    <div className="space-y-1.5"><Label className="text-[10px] uppercase font-black opacity-60">बर्फ लाद्या</Label><Input type="number" value={formData.iceBlocks} onChange={e => setFormData({...formData, iceBlocks: e.target.value})} className="h-10 text-[12px] rounded-xl bg-muted/20 border-none font-black shadow-inner" /></div>
+                    <div className="space-y-1.5"><Label className="text-[10px] uppercase font-black opacity-60">बर्फ लाद्या</Label><Input type="number" step="0.1" value={formData.iceBlocks} onChange={e => setFormData({...formData, iceBlocks: e.target.value})} className="h-10 text-[12px] rounded-xl bg-muted/20 border-none font-black shadow-inner" /></div>
                   </div>
                   <div className="p-4 border rounded-2xl bg-blue-50/30 space-y-3 shadow-inner">
                     <p className="text-[10px] font-black text-blue-700 uppercase tracking-widest flex items-center gap-2"><Milk className="h-4 w-4" /> गाय दूध (AVERAGE COW)</p>

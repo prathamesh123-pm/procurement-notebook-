@@ -5,9 +5,8 @@ import { useState, useMemo, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { 
-  Archive, Eye, Search, X, Printer, Trash2, FileEdit, Truck, ListTodo, 
-  ShieldAlert, ChevronRight, Filter, FileText, Milk, MapPin, Briefcase, 
-  ClipboardCheck, FileSignature, Plus, Info, AlertTriangle, FileCheck, User, Layers, FileStack, ClipboardList, Thermometer, ShieldCheck
+  Archive, Search, X, Printer, Trash2, FileEdit, Truck, ListTodo, 
+  ShieldAlert, ClipboardCheck, FileSignature, Plus, Info, AlertTriangle, FileCheck, User, Layers, FileStack, ClipboardList, Thermometer, ShieldCheck, Briefcase, Milk, MapPin
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
@@ -41,7 +40,6 @@ export default function ReportsPage() {
 
   useEffect(() => setMounted(true), [])
 
-  // Optimized list of 8 essential report types
   const reportTypes = [
     { title: "रूट व्हिजिट", type: "Route Visit", icon: Truck, color: "text-blue-600", bg: "bg-blue-50" },
     { title: "क्षेत्र भेट", type: "Field Visit", icon: MapPin, color: "text-emerald-600", bg: "bg-emerald-50" },
@@ -61,7 +59,6 @@ export default function ReportsPage() {
       const matchesSearch = r.type?.toLowerCase().includes(q) || r.summary?.toLowerCase().includes(q) || r.overallSummary?.toLowerCase().includes(q)
       
       let matchesType = !typeFilter || r.type === typeFilter;
-      // Handle breakdown naming variations
       if (typeFilter === "Transport Breakdown Report" && (r.type === "Breakdown" || r.type === "Transport Breakdown Report")) {
         matchesType = true;
       }
@@ -186,7 +183,7 @@ export default function ReportsPage() {
 
         <div className="grid grid-cols-2 gap-4 mb-4 font-black text-[10px] uppercase">
           <div className="space-y-1 p-2 bg-slate-50 border border-slate-200 rounded-lg print:bg-white print:border-black">
-            <div className="flex justify-between border-b border-slate-200 pb-0.5"><span>सादरकर्ता:</span> <span className="text-primary print:text-black">{d.name || d.displayName || '---'}</span></div>
+            <div className="flex justify-between border-b border-slate-200 pb-0.5"><span>सादरकर्ता:</span> <span className="text-primary print:text-black">{d.name || d.displayName || 'संकलन सुपरवायझर'}</span></div>
             <div className="flex justify-between border-b border-slate-200 pb-0.5"><span>रूट नाव:</span> <span>{d.routeName || '---'}</span></div>
             <div className="flex justify-between border-b border-slate-200 pb-0.5"><span>ड्रायव्हर:</span> <span>{d.driverName || '---'}</span></div>
             <div className="flex justify-between"><span>वेळ (IN/OUT):</span> <span>{d.routeInTime || '--:--'} / {d.routeOutTime || '--:--'}</span></div>
@@ -253,7 +250,6 @@ export default function ReportsPage() {
   const GenericTableLayout = ({ report }: { report: any }) => {
     const d = report.fullData || {};
     
-    // Improved deduplication logic for display
     const seenLabels = new Set<string>();
     const filteredEntries = orderedKeys
       .filter(key => {
@@ -269,6 +265,9 @@ export default function ReportsPage() {
       .map(key => [key, d[key]]);
 
     const formatVal = (key: string, val: any): string => {
+      if ((key === 'name' || key === 'displayName') && (!val || val === 'Quality Inspector' || val === 'Procurement Officer')) {
+        return "संकलन सुपरवायझर";
+      }
       if (typeof val === 'boolean') return val ? "हो (YES)" : "नाही (NO)";
       if (Array.isArray(val)) return val.join(' | ');
       return String(val || "-");
@@ -392,7 +391,6 @@ export default function ReportsPage() {
         </Button>
       </div>
 
-      {/* Grid of essential categories */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-8">
         {reportTypes.map((rt) => (
           <button 
