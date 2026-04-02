@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
@@ -231,8 +232,8 @@ export default function CentersPage() {
         </Card>
 
         {selectedCenter && (
-          <Card className="border shadow-2xl bg-white rounded-3xl overflow-hidden border-muted-foreground/10 animate-in slide-in-from-bottom-2 duration-300 print:border-none print:shadow-none w-full" id="printable-area">
-            <div className="p-3 border-b flex items-center justify-between bg-primary/5 sticky top-0 z-10 print:bg-white print:border-black print:border-b-[3px]">
+          <Card className="border shadow-2xl bg-white rounded-3xl overflow-hidden border-muted-foreground/10 animate-in slide-in-from-bottom-2 duration-300 print:border-none print:shadow-none w-full mx-auto" id="printable-area">
+            <div className="p-3 border-b flex items-center justify-between bg-primary/5 sticky top-0 z-10 print:bg-white print:border-black print:border-b-[3px] w-full">
               <div className="min-w-0">
                 <h3 className="text-[13px] font-black truncate uppercase text-slate-900 print:text-[18pt]">{selectedCenter.name}</h3>
                 <div className="flex items-center gap-2 mt-0.5">
@@ -252,8 +253,8 @@ export default function CentersPage() {
                 </Button>
               </div>
             </div>
-            <ScrollArea className="max-h-[700px] print:max-h-none print:overflow-visible">
-              <div className="p-4 space-y-5 pb-10 print:p-8 print:space-y-8 flex flex-col items-center">
+            <ScrollArea className="max-h-[700px] print:max-h-none print:overflow-visible w-full">
+              <div className="p-4 space-y-5 pb-10 print:p-8 print:space-y-8 flex flex-col items-center max-w-full">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 print:grid-cols-2 w-full">
                   <div className="bg-muted/20 p-3 rounded-2xl border border-muted-foreground/5 space-y-1.5 print:bg-white print:border-black print:border-2">
                     <h4 className="text-[9px] font-black uppercase text-primary tracking-widest flex items-center gap-2 border-b border-primary/10 pb-1 print:text-black print:border-black print:text-[12pt]">

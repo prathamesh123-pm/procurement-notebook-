@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
@@ -148,7 +149,7 @@ export default function ReportsPage() {
     remark: "सविस्तर शेरा/नोंद",
     actionsTaken: "केलेली कार्यवाही",
     achievements: "आजची मोठी कामगिरी",
-    problems: "कामात आलेले अडथळे/समस्या",
+    problems: "महत्त्वाच्या समस्या",
     centerName: "चिलिंग केंद्राचे नाव",
     tempAtArrival: "सुरुवातीचे तापमान (°C)",
     tempAfterChilling: "चिलिंग नंतरचे तापमान (°C)",
