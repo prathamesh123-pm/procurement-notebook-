@@ -147,9 +147,9 @@ export default function ReportsPage() {
     pendingOfficeWork: "प्रलंबित कामे (उद्यासाठी)",
     title: "कामाचा विषय किंवा टास्क",
     remark: "सविस्तर शेरा/नोंद",
+    actionsTaken: "केलेली कार्यवाही",
     achievements: "आजची मोठी कामगिरी",
     problems: "कामात आलेले अडथळे/समस्या",
-    actionsTaken: "केलेली कार्यवाही",
     centerName: "चिलिंग केंद्राचे नाव",
     tempAtArrival: "सुरुवातीचे तापमान (°C)",
     tempAfterChilling: "चिलिंग नंतरचे तापमान (°C)",
@@ -257,10 +257,12 @@ export default function ReportsPage() {
     const d = report.fullData || {};
     const mainHeading = d.reportHeading || d.title || report.type;
     const kmKeys = ["travelStartKm", "travelEndKm", "travelTotalKm"];
-    const filteredEntries = orderedKeys.filter(key => {
+    
+    // Improved data extraction: ensure all fields in fullData are checked against labelMap
+    const entriesToShow = orderedKeys.filter(key => {
       const val = d[key];
       return val !== undefined && val !== "" && val !== null && !kmKeys.includes(key);
-    }).map(key => [key, d[key]]);
+    });
 
     return (
       <div className="bg-white font-sans text-slate-900 border-[2px] border-slate-900 rounded-sm shadow-none print:border-black mb-6 last:mb-0 break-inside-avoid w-full mx-auto p-8 printable-report">
@@ -278,12 +280,17 @@ export default function ReportsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-900 print:divide-black">
-                {filteredEntries.map(([key, val]) => (
-                  <tr key={key} className="font-bold text-[10pt] text-left">
-                    <td className="p-3 bg-slate-50 uppercase text-[9pt] font-black border-r border-slate-900 print:bg-white print:border-black">{labelMap[key] || key.toUpperCase()}</td>
-                    <td className="p-3 whitespace-pre-wrap">{typeof val === 'boolean' ? (val ? "हो (YES)" : "नाही (NO)") : (Array.isArray(val) ? val.join(' | ') : String(val || "-"))}</td>
-                  </tr>
-                ))}
+                {entriesToShow.map((key) => {
+                  const val = d[key];
+                  return (
+                    <tr key={key} className="font-bold text-[10pt] text-left">
+                      <td className="p-3 bg-slate-50 uppercase text-[9pt] font-black border-r border-slate-900 print:bg-white print:border-black">{labelMap[key] || key.toUpperCase()}</td>
+                      <td className="p-3 whitespace-pre-wrap">{typeof val === 'boolean' ? (val ? "हो (YES)" : "नाही (NO)") : (Array.isArray(val) ? val.join(' | ') : String(val || "-"))}</td>
+                    </tr>
+                  );
+                })}
+                
+                {/* Logistics Row: Shows KM data in one line if available */}
                 {(d.travelStartKm || d.travelEndKm || d.travelTotalKm) && (
                   <tr className="font-bold text-[10pt] text-left">
                     <td className="p-3 bg-slate-50 uppercase text-[9pt] font-black border-r border-slate-900 print:bg-white print:border-black">प्रवासाचे किलोमीटर (START/END/TOTAL)</td>
@@ -308,16 +315,27 @@ export default function ReportsPage() {
               </tbody>
             </table>
           </div>
+
+          {/* Points/Observations Section */}
           {(d.points && d.points.length > 0) && (
             <div className="mt-6 space-y-3 text-left">
               <div className="flex items-center gap-2 text-[11pt] font-black uppercase text-primary">
                 <AlertCircle className="h-5 w-5 no-print" /> विशेष निरीक्षणे:
               </div>
               <div className="border border-slate-900 rounded-xl p-4 print:border-black">
-                <ul className="space-y-2">{d.points.map((p: string, i: number) => (<li key={i} className="text-[10pt] font-bold flex gap-3"><span className="text-primary font-black shrink-0">{i + 1}.</span><span>{p}</span></li>))}</ul>
+                <ul className="space-y-2">
+                  {d.points.map((p: string, i: number) => (
+                    <li key={i} className="text-[10pt] font-bold flex gap-3">
+                      <span className="text-primary font-black shrink-0">{i + 1}.</span>
+                      <span>{p}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
             </div>
           )}
+
+          {/* Losses Table if applicable */}
           {((d.losses && d.losses.length > 0) || (d.centerLosses && d.centerLosses.length > 0)) && (
             <div className="mt-6 space-y-3 text-left">
               <div className="flex items-center gap-2 text-[11pt] font-black uppercase text-rose-700">
@@ -326,7 +344,12 @@ export default function ReportsPage() {
               <div className="border border-slate-900 rounded-xl overflow-hidden shadow-sm print:border-black overflow-x-auto">
                 <table className="w-full border-collapse text-[10pt]">
                   <thead className="bg-slate-900 text-white font-black uppercase tracking-wider print:bg-black">
-                    <tr><th className="p-3 text-left border-r border-white/20">नाव</th><th className="p-3 text-center w-20 border-r border-white/20">प्रकार</th><th className="p-3 text-center w-20 border-r border-white/20">Ltr</th><th className="p-3 text-right w-32">रक्कम (₹)</th></tr>
+                    <tr>
+                      <th className="p-3 text-left border-r border-white/20">नाव</th>
+                      <th className="p-3 text-center w-20 border-r border-white/20">प्रकार</th>
+                      <th className="p-3 text-center w-20 border-r border-white/20">Ltr</th>
+                      <th className="p-3 text-right w-32">रक्कम (₹)</th>
+                    </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-200 print:divide-black">
                     {(d.losses || d.centerLosses).map((l: any, i: number) => (
@@ -347,6 +370,8 @@ export default function ReportsPage() {
             </div>
           )}
         </div>
+        
+        {/* Signature Area */}
         <div className="mt-20 grid grid-cols-2 gap-12 text-center uppercase font-black text-[9pt] tracking-widest text-slate-400">
           <div className="border-t-2 border-slate-900 pt-3 print:border-black print:text-black">अधिकारी स्वाक्षरी</div>
           <div className="border-t-2 border-slate-900 pt-3 print:border-black print:text-black">सुपरवायझर स्वाक्षरी</div>
@@ -444,10 +469,16 @@ export default function ReportsPage() {
             </div>
           </DialogHeader>
           <ScrollArea className="max-h-[85vh] p-3 sm:p-6 bg-slate-100">
-            <div className="max-w-full sm:max-w-[210mm] mx-auto space-y-4 print:overflow-visible">
+            <div className="max-w-full sm:max-w-[210mm] mx-auto space-y-4 print:overflow-visible flex flex-col items-center">
               {reportsToRender.map((report, idx) => (
-                <div key={report.id} className={idx > 0 ? "print:page-break-before-always" : ""}>
-                  {report.type === 'Route Visit' ? <RouteSlipLayout report={report} /> : (report.fullData?.isWordDoc ? <div className="prose prose-sm max-w-none px-6 sm:px-12 py-10 bg-white border-[2px] border-slate-900 rounded-sm shadow-2xl min-h-[600px] print:shadow-none print:border-black printable-report" dangerouslySetInnerHTML={{ __html: report.fullData.content }} /> : <GenericTableLayout report={report} />)}
+                <div key={report.id} className={`${idx > 0 ? "print:page-break-before-always" : ""} w-full flex justify-center`}>
+                  {report.type === 'Route Visit' ? (
+                    <RouteSlipLayout report={report} />
+                  ) : (report.fullData?.isWordDoc ? (
+                    <div className="prose prose-sm max-w-none px-6 sm:px-12 py-10 bg-white border-[2px] border-slate-900 rounded-sm shadow-2xl min-h-[600px] print:shadow-none print:border-black printable-report w-full" dangerouslySetInnerHTML={{ __html: report.fullData.content }} />
+                  ) : (
+                    <GenericTableLayout report={report} />
+                  ))}
                 </div>
               ))}
             </div>
@@ -457,7 +488,10 @@ export default function ReportsPage() {
 
       <style jsx global>{`
         @media print {
-          @page { size: A4; margin: 10mm; }
+          @page {
+            size: A4;
+            margin: 15mm;
+          }
           
           html, body {
             visibility: hidden !important;
@@ -465,6 +499,7 @@ export default function ReportsPage() {
             margin: 0 !important;
             padding: 0 !important;
             height: auto !important;
+            width: 100% !important;
           }
 
           body * { visibility: hidden !important; }
@@ -474,18 +509,16 @@ export default function ReportsPage() {
           }
 
           .printable-report {
-            position: absolute !important;
-            left: 0 !important;
-            right: 0 !important;
-            top: 0 !important;
-            margin: 0 auto !important;
+            position: relative !important;
+            display: block !important;
             width: 100% !important;
             max-width: 210mm !important;
-            padding: 20mm !important;
+            margin: 0 auto !important;
+            padding: 10mm !important;
             box-shadow: none !important;
             border: 2px solid black !important;
             background: white !important;
-            display: block !important;
+            color: black !important;
           }
 
           .no-print, button, header, nav, footer, .sidebar, .sidebar-trigger, [role="dialog"] > button {
@@ -502,21 +535,21 @@ export default function ReportsPage() {
             width: 100% !important; 
             border-collapse: collapse !important; 
             border: 2px solid black !important;
-            margin: 10pt 0 !important;
+            margin: 15pt 0 !important;
           }
 
           th, td { 
             border: 1px solid black !important; 
-            padding: 8pt !important; 
-            font-size: 10pt !important; 
+            padding: 10pt !important; 
+            font-size: 11pt !important; 
             color: black !important;
             text-align: left !important;
           }
 
           th { background-color: #f0f0f0 !important; font-weight: 900 !important; }
 
-          h1 { font-size: 18pt !important; font-weight: 900 !important; color: black !important; margin-bottom: 10pt !important; text-align: center !important; }
-          h3, h4 { font-size: 12pt !important; font-weight: 900 !important; color: black !important; }
+          h1 { font-size: 20pt !important; font-weight: 900 !important; color: black !important; margin-bottom: 15pt !important; text-align: center !important; border-bottom: 3px solid black; padding-bottom: 10pt; }
+          h3, h4 { font-size: 13pt !important; font-weight: 900 !important; color: black !important; }
           
           .text-primary, .text-rose-600, .text-blue-600 { color: black !important; font-weight: 900 !important; }
           .bg-slate-50, .bg-muted, .bg-primary\/5 { background-color: white !important; border: 1px solid black !important; }

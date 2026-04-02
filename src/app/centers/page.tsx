@@ -254,8 +254,8 @@ export default function CentersPage() {
               </div>
             </div>
             <ScrollArea className="max-h-[700px] print:max-h-none print:overflow-visible">
-              <div className="p-4 space-y-5 pb-10 print:p-8 print:space-y-8">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 print:grid-cols-2">
+              <div className="p-4 space-y-5 pb-10 print:p-8 print:space-y-8 flex flex-col items-center">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 print:grid-cols-2 w-full">
                   <div className="bg-muted/20 p-3 rounded-2xl border border-muted-foreground/5 space-y-1.5 print:bg-white print:border-black print:border-2">
                     <h4 className="text-[9px] font-black uppercase text-primary tracking-widest flex items-center gap-2 border-b border-primary/10 pb-1 print:text-black print:border-black print:text-[12pt]">
                       <User className="h-3.5 w-3.5 print:hidden" /> १) प्राथमिक माहिती
@@ -283,7 +283,7 @@ export default function CentersPage() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 print:grid-cols-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 print:grid-cols-2 w-full">
                   <div className="bg-muted/20 p-3 rounded-2xl border border-muted-foreground/5 space-y-1.5 print:bg-white print:border-black print:border-2">
                     <h4 className="text-[9px] font-black uppercase text-primary tracking-widest flex items-center gap-2 border-b border-primary/10 pb-1 print:text-black print:border-black print:text-[12pt]">
                       <Wallet className="h-3.5 w-3.5 print:hidden" /> ३) व्यावसायिक माहिती
@@ -320,7 +320,7 @@ export default function CentersPage() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-3 gap-2 print:grid-cols-3">
+                <div className="grid grid-cols-3 gap-2 print:grid-cols-3 w-full">
                   <div className={`p-2 rounded-xl border flex flex-col items-center gap-1 transition-all ${selectedCenter.computerAvailable ? 'bg-emerald-50 border-emerald-100' : 'bg-muted/20 opacity-40'} print:opacity-100 print:border-2 print:border-black print:bg-white`}>
                     <Laptop className="h-4 w-4" />
                     <span className="text-[8px] font-black uppercase text-center print:text-[9pt]">POP: {selectedCenter.computerAvailable ? 'हो' : 'नाही'}</span>
@@ -335,7 +335,7 @@ export default function CentersPage() {
                   </div>
                 </div>
 
-                <div className="space-y-1.5">
+                <div className="space-y-1.5 w-full">
                   <h4 className="text-[9px] font-black uppercase text-primary tracking-widest flex items-center gap-2 border-b pb-1 print:text-black print:border-black print:text-[12pt]">
                     <Box className="h-3.5 w-3.5 print:hidden" /> साहित्याची यादी (INVENTORY)
                   </h4>
@@ -368,7 +368,7 @@ export default function CentersPage() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 print:grid-cols-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 print:grid-cols-2 w-full">
                   <div className="space-y-1">
                     <h4 className="text-[9px] font-black uppercase text-primary tracking-widest flex items-center gap-2 border-b pb-1 print:text-black print:border-black print:text-[12pt]">
                       <ShieldCheck className="h-3.5 w-3.5 print:hidden" /> भेळस तपासणी किट
@@ -387,7 +387,7 @@ export default function CentersPage() {
                   </div>
                 </div>
 
-                <div className="hidden print:grid grid-cols-2 gap-12 text-center uppercase font-black text-[9pt] tracking-widest text-slate-400 mt-20">
+                <div className="hidden print:grid grid-cols-2 gap-12 text-center uppercase font-black text-[9pt] tracking-widest text-slate-400 mt-20 w-full">
                   <div className="border-t-2 border-black pt-3 text-black">अधिकारी स्वाक्षरी</div>
                   <div className="border-t-2 border-black pt-3 text-black">सुपरवायझर स्वाक्षरी</div>
                 </div>
@@ -401,7 +401,7 @@ export default function CentersPage() {
         @media print {
           @page {
             size: A4;
-            margin: 10mm;
+            margin: 15mm;
           }
           
           html, body {
@@ -410,6 +410,7 @@ export default function CentersPage() {
             margin: 0 !important;
             padding: 0 !important;
             height: auto !important;
+            width: 100% !important;
           }
 
           body * { visibility: hidden !important; }
@@ -419,19 +420,16 @@ export default function CentersPage() {
           }
 
           #printable-area {
-            position: absolute !important;
-            left: 0 !important;
-            right: 0 !important;
-            top: 0 !important;
+            position: relative !important;
+            display: block !important;
             margin: 0 auto !important;
             width: 100% !important;
             max-width: 210mm !important;
             transform: none !important;
             box-shadow: none !important;
             border: 2px solid black !important;
-            padding: 0 !important;
+            padding: 10mm !important;
             background: white !important;
-            display: block !important;
           }
 
           header, nav, aside, footer, .sidebar, .no-print, button, [role="dialog"], .sidebar-trigger {
@@ -454,17 +452,17 @@ export default function CentersPage() {
             width: 100% !important;
             border-collapse: collapse !important;
             border: 2px solid black !important;
-            margin: 10pt 0 !important;
+            margin: 15pt 0 !important;
           }
 
           th, td {
             border: 1px solid black !important;
-            padding: 8pt !important;
-            font-size: 10pt !important;
+            padding: 10pt !important;
+            font-size: 11pt !important;
           }
 
-          h3 { font-size: 18pt !important; font-weight: 900 !important; margin-bottom: 5pt !important; text-align: center !important; }
-          h4 { border-bottom: 2px solid black !important; margin-top: 15pt !important; font-size: 12pt !important; }
+          h3 { font-size: 20pt !important; font-weight: 900 !important; margin-bottom: 10pt !important; text-align: center !important; border-bottom: 3px solid black; padding-bottom: 5pt; }
+          h4 { border-bottom: 2px solid black !important; margin-top: 20pt !important; font-size: 13pt !important; }
         }
       `}</style>
     </div>

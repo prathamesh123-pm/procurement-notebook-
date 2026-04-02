@@ -227,8 +227,8 @@ export default function RouteDetailsPage() {
 
         <Card className={`lg:col-span-8 border shadow-2xl bg-white rounded-3xl min-h-[500px] border-muted-foreground/10 print:border-none print:shadow-none ${!selectedSupplier ? 'hidden lg:flex' : 'block'}`} id="printable-area">
           {selectedSupplier ? (
-            <div className="flex flex-col h-full">
-              <div className="p-3 border-b flex items-center justify-between bg-primary/5 sticky top-0 z-10 print:bg-white print:border-black print:border-b-[3px]">
+            <div className="flex flex-col h-full items-center">
+              <div className="p-3 border-b flex items-center justify-between bg-primary/5 sticky top-0 z-10 print:bg-white print:border-black print:border-b-[3px] w-full">
                 <Button type="button" variant="ghost" size="icon" className="lg:hidden no-print" onClick={() => setSelectedSupplier(null)}><ArrowLeft className="h-5 w-5" /></Button>
                 <div className="flex-1 px-3 min-w-0">
                   <h3 className="text-[13px] font-black truncate uppercase print:text-[18pt]">{selectedSupplier.name}</h3>
@@ -242,9 +242,9 @@ export default function RouteDetailsPage() {
                   <Button type="button" variant="outline" size="icon" className="h-9 w-9 text-primary border-primary/20 hover:bg-primary/5 rounded-xl" onClick={() => openEditDialog(selectedSupplier)}><Edit className="h-4 w-4" /></Button>
                 </div>
               </div>
-              <ScrollArea className="flex-1 h-[600px] print:h-auto print:overflow-visible">
-                <div className="p-4 space-y-5 print:p-8 print:space-y-8">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 print:grid-cols-2">
+              <ScrollArea className="flex-1 h-[600px] print:h-auto print:overflow-visible w-full">
+                <div className="p-4 space-y-5 print:p-8 print:space-y-8 flex flex-col items-center">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 print:grid-cols-2 w-full">
                     <div className="bg-muted/20 p-3 rounded-2xl border border-muted-foreground/5 space-y-1.5 print:bg-white print:border-black print:border-2">
                       <h4 className="text-[9px] font-black uppercase text-primary tracking-widest border-b border-primary/10 pb-1 print:text-black print:border-black print:text-[12pt]">१) प्राथमिक माहिती</h4>
                       <div className="grid grid-cols-2 gap-x-2 gap-y-1">
@@ -268,7 +268,7 @@ export default function RouteDetailsPage() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 print:grid-cols-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 print:grid-cols-2 w-full">
                     <div className="bg-muted/20 p-3 rounded-2xl border border-muted-foreground/5 space-y-1.5 print:bg-white print:border-black print:border-2">
                       <h4 className="text-[9px] font-black uppercase text-primary tracking-widest border-b border-primary/10 pb-1 print:text-black print:border-black print:text-[12pt]">३) व्यावसायिक माहिती</h4>
                       <div className="grid grid-cols-2 gap-x-2 gap-y-1">
@@ -301,7 +301,7 @@ export default function RouteDetailsPage() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-3 gap-2 print:grid-cols-3">
+                  <div className="grid grid-cols-3 gap-2 print:grid-cols-3 w-full">
                     {[{icon: Laptop, label: 'POP', val: selectedSupplier.computerAvailable}, {icon: Zap, label: 'UPS', val: selectedSupplier.upsInverterAvailable}, {icon: Sun, label: 'सोलर', val: selectedSupplier.solarAvailable}].map((it, i) => (
                       <div key={i} className={`p-2 rounded-xl border flex flex-col items-center gap-1 transition-all ${it.val ? 'bg-green-50 border-green-100 shadow-sm' : 'bg-muted/20 opacity-40 border-muted-foreground/5'} print:border-black print:border-2 print:opacity-100`}>
                         <it.icon className="h-4 w-4" />
@@ -310,7 +310,7 @@ export default function RouteDetailsPage() {
                     ))}
                   </div>
 
-                  <div className="space-y-1.5">
+                  <div className="space-y-1.5 w-full">
                     <h4 className="text-[9px] font-black uppercase text-primary tracking-widest flex items-center gap-2 border-b pb-1 print:text-black print:border-black print:text-[12pt]">
                       <Box className="h-3.5 w-3.5 print:hidden" /> साहित्याची यादी (INVENTORY)
                     </h4>
@@ -343,7 +343,7 @@ export default function RouteDetailsPage() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 print:grid-cols-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 print:grid-cols-2 w-full">
                     <div className="space-y-1">
                       <h4 className="text-[9px] font-black uppercase text-primary tracking-widest border-b pb-1 print:border-black print:text-[12pt]">भेळस तपासणी किट</h4>
                       <div className="p-2 bg-muted/10 rounded-xl text-[9px] font-bold print:bg-white print:border-2 print:border-black print:text-[10pt] print:p-3">{selectedSupplier.adulterationKitInfo || "-"}</div>
@@ -354,7 +354,7 @@ export default function RouteDetailsPage() {
                     </div>
                   </div>
                   
-                  <div className="hidden print:grid grid-cols-2 gap-12 text-center uppercase font-black text-[9pt] tracking-widest text-slate-400 mt-20">
+                  <div className="hidden print:grid grid-cols-2 gap-12 text-center uppercase font-black text-[9pt] tracking-widest text-slate-400 mt-20 w-full">
                     <div className="border-t-2 border-black pt-3 text-black">अधिकारी स्वाक्षरी</div>
                     <div className="border-t-2 border-black pt-3 text-black">सुपरवायझर स्वाक्षरी</div>
                   </div>
@@ -374,7 +374,7 @@ export default function RouteDetailsPage() {
         @media print {
           @page {
             size: A4;
-            margin: 10mm;
+            margin: 15mm;
           }
           
           html, body {
@@ -383,6 +383,7 @@ export default function RouteDetailsPage() {
             margin: 0 !important;
             padding: 0 !important;
             height: auto !important;
+            width: 100% !important;
           }
 
           body * { visibility: hidden !important; }
@@ -392,19 +393,16 @@ export default function RouteDetailsPage() {
           }
 
           #printable-area {
-            position: absolute !important;
-            left: 0 !important;
-            right: 0 !important;
-            top: 0 !important;
+            position: relative !important;
+            display: block !important;
             margin: 0 auto !important;
             width: 100% !important;
             max-width: 210mm !important;
             transform: none !important;
             box-shadow: none !important;
             border: 2px solid black !important;
-            padding: 0 !important;
+            padding: 10mm !important;
             background: white !important;
-            display: block !important;
           }
 
           header, nav, aside, footer, .sidebar, .no-print, button, [role="dialog"], .sidebar-trigger {
@@ -427,16 +425,16 @@ export default function RouteDetailsPage() {
             width: 100% !important;
             border-collapse: collapse !important;
             border: 2px solid black !important;
-            margin: 10pt 0 !important;
+            margin: 15pt 0 !important;
           }
 
           th, td {
             border: 1px solid black !important;
-            padding: 8pt !important;
-            font-size: 10pt !important;
+            padding: 10pt !important;
+            font-size: 11pt !important;
           }
-          h3 { font-size: 18pt !important; font-weight: 900 !important; color: black !important; text-align: center !important; }
-          h4 { border-bottom: 2px solid black !important; margin-top: 15pt !important; font-size: 12pt !important; }
+          h3 { font-size: 20pt !important; font-weight: 900 !important; color: black !important; text-align: center !important; border-bottom: 3px solid black; padding-bottom: 10pt; }
+          h4 { border-bottom: 2px solid black !important; margin-top: 20pt !important; font-size: 13pt !important; }
         }
       `}</style>
     </div>
