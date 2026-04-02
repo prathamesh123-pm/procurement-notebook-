@@ -131,7 +131,7 @@ export default function BreakdownPage() {
     e.stopPropagation()
     e.preventDefault()
     if (!db || !user) return
-    if (confirm("तुम्हाला खात्री आहे की ही नोंद हटवायची आहे?")) {
+    if (confirm("तुम्हाला खात्री आहे की ही नोंद हटवायचा आहे?")) {
       const docRef = doc(db, 'users', user.uid, 'breakdowns', id)
       deleteDocumentNonBlocking(docRef)
       if (editingId === id) resetForm()
@@ -178,15 +178,15 @@ export default function BreakdownPage() {
                 <User className="h-3 w-3" /> १) वाहन व ड्रायव्हर माहिती
               </h4>
               <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">रूट (ROUTE) *</Label><Input value={formData.routeName} onChange={e => setFormData({...formData, routeName: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" /></div>
-                <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">गाडी नंबर *</Label><Input value={formData.vehicleNo} onChange={e => setFormData({...formData, vehicleNo: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" placeholder="MH..." /></div>
+                <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">रूट (ROUTE) *</Label><Input value={formData.routeName || ""} onChange={e => setFormData({...formData, routeName: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" /></div>
+                <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">गाडी नंबर *</Label><Input value={formData.vehicleNo || ""} onChange={e => setFormData({...formData, vehicleNo: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" placeholder="MH..." /></div>
                 <div className="space-y-0.5">
                   <Label className="text-[9px] font-black uppercase opacity-60">गाडीचा प्रकार</Label>
-                  <Input value={formData.vehicleType} onChange={e => setFormData({...formData, vehicleType: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" placeholder="उदा. टेम्पो / पिकअप" />
+                  <Input value={formData.vehicleType || ""} onChange={e => setFormData({...formData, vehicleType: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" placeholder="उदा. टेम्पो / पिकअप" />
                 </div>
-                <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">गाडी क्षमता (L)</Label><Input value={formData.capacity} onChange={e => setFormData({...formData, capacity: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" /></div>
-                <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">ड्रायव्हरचे नाव</Label><Input value={formData.driverName} onChange={e => setFormData({...formData, driverName: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" /></div>
-                <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">ड्रायव्हर मोबाईल</Label><Input value={formData.mobile} onChange={e => setFormData({...formData, mobile: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" /></div>
+                <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">गाडी क्षमता (L)</Label><Input value={formData.capacity || ""} onChange={e => setFormData({...formData, capacity: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" /></div>
+                <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">ड्रायव्हरचे नाव</Label><Input value={formData.driverName || ""} onChange={e => setFormData({...formData, driverName: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" /></div>
+                <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">ड्रायव्हर मोबाईल</Label><Input value={formData.mobile || ""} onChange={e => setFormData({...formData, mobile: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" /></div>
               </div>
             </div>
 
@@ -195,18 +195,18 @@ export default function BreakdownPage() {
                 <Clock className="h-3 w-3" /> २) ब्रेकडाऊन तपशील
               </h4>
               <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">बिघाड वेळ</Label><Input type="time" value={formData.breakdownTime} onChange={e => setFormData({...formData, breakdownTime: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" /></div>
-                <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">लोकेशन (ठिकाण)</Label><Input value={formData.location} onChange={e => setFormData({...formData, location: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" placeholder="उदा. माण गाव" /></div>
+                <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">बिघाड वेळ</Label><Input type="time" value={formData.breakdownTime || ""} onChange={e => setFormData({...formData, breakdownTime: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" /></div>
+                <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">लोकेशन (ठिकाण)</Label><Input value={formData.location || ""} onChange={e => setFormData({...formData, location: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" placeholder="उदा. माण गाव" /></div>
                 <div className="col-span-2 space-y-0.5">
                   <Label className="text-[9px] font-black uppercase opacity-60">बिघाडाचे मुख्य कारण</Label>
-                  <Input value={formData.reason} onChange={e => setFormData({...formData, reason: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" placeholder="उदा. इंजिन ओव्हरहीट / टायर पंचर" />
+                  <Input value={formData.reason || ""} onChange={e => setFormData({...formData, reason: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" placeholder="उदा. इंजिन ओव्हरहीट / टायर पंचर" />
                 </div>
               </div>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <Label className="text-[9px] font-black uppercase opacity-60">बिघाडाचे स्वरूप (Severity)</Label>
-                  <RadioGroup value={formData.severity} onValueChange={v => setFormData({...formData, severity: v})} className="flex gap-2">
+                  <RadioGroup value={formData.severity || "MINOR"} onValueChange={v => setFormData({...formData, severity: v})} className="flex gap-2">
                     <div className="flex items-center gap-1.5 bg-muted/10 px-3 py-1.5 rounded-lg border border-muted-foreground/5 cursor-pointer">
                       <RadioGroupItem value="MINOR" id="sev-min" className="h-3 w-3" /><Label htmlFor="sev-min" className="text-[10px] font-black uppercase cursor-pointer">छोटा (Minor)</Label>
                     </div>
@@ -217,7 +217,7 @@ export default function BreakdownPage() {
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-[9px] font-black uppercase opacity-60">कारणाचे सविस्तर वर्णन</Label>
-                  <Textarea value={formData.detailedReason} onChange={e => setFormData({...formData, detailedReason: e.target.value})} className="min-h-[60px] text-[11px] bg-muted/20 border-none font-medium rounded-lg p-2" />
+                  <Textarea value={formData.detailedReason || ""} onChange={e => setFormData({...formData, detailedReason: e.target.value})} className="min-h-[60px] text-[11px] bg-muted/20 border-none font-medium rounded-lg p-2" />
                 </div>
               </div>
             </div>
@@ -227,10 +227,10 @@ export default function BreakdownPage() {
                 <Settings className="h-3 w-3" /> ३) दुरुस्ती व पर्यायी सोय
               </h4>
               <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">दुरुस्ती वेळ (तास)</Label><Input value={formData.estimatedRepairTime} onChange={e => setFormData({...formData, estimatedRepairTime: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" placeholder="उदा. 4 तास" /></div>
-                <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">अंदाजे खर्च (₹)</Label><Input type="number" value={formData.estimatedRepairCost} onChange={e => setFormData({...formData, estimatedRepairCost: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" /></div>
-                <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">पर्यायी गाडी क्र.</Label><Input value={formData.recoveryVehicleNo} onChange={e => setFormData({...formData, recoveryVehicleNo: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" placeholder="MH..." /></div>
-                <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">पर्यायी गाडी वेळ</Label><Input type="time" value={formData.recoveryArrivalTime} onChange={e => setFormData({...formData, recoveryArrivalTime: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" /></div>
+                <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">दुरुस्ती वेळ (तास)</Label><Input value={formData.estimatedRepairTime || ""} onChange={e => setFormData({...formData, estimatedRepairTime: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" placeholder="उदा. 4 तास" /></div>
+                <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">अंदाजे खर्च (₹)</Label><Input type="number" value={formData.estimatedRepairCost || "0"} onChange={e => setFormData({...formData, estimatedRepairCost: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" /></div>
+                <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">पर्यायी गाडी क्र.</Label><Input value={formData.recoveryVehicleNo || ""} onChange={e => setFormData({...formData, recoveryVehicleNo: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" placeholder="MH..." /></div>
+                <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">पर्यायी गाडी वेळ</Label><Input type="time" value={formData.recoveryArrivalTime || ""} onChange={e => setFormData({...formData, recoveryArrivalTime: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" /></div>
               </div>
             </div>
 
@@ -256,7 +256,7 @@ export default function BreakdownPage() {
               </div>
             </div>
             
-            <AIGuidanceCard context={formData.detailedReason || formData.reason} formType="breakdown" />
+            <AIGuidanceCard context={formData.detailedReason || formData.reason || ""} formType="breakdown" />
 
             <div className="space-y-2 pt-2">
               <div className="flex items-center justify-between">
@@ -278,12 +278,12 @@ export default function BreakdownPage() {
                     {(formData.centerLosses || []).map((loss) => (
                       <tr key={loss.id} className="border-b last:border-0 bg-white">
                         <td className="p-0 flex">
-                          <Input placeholder="ID" value={loss.centerCode} onChange={e => updateLossRow(loss.id, { centerCode: e.target.value })} className="h-8 w-12 text-[10px] border-none font-black border-r rounded-none bg-transparent" />
-                          <Input placeholder="NAME" value={loss.centerName} onChange={e => updateLossRow(loss.id, { centerName: e.target.value })} className="h-8 text-[10px] border-none font-black rounded-none flex-1 bg-transparent" />
+                          <Input placeholder="ID" value={loss.centerCode || ""} onChange={e => updateLossRow(loss.id, { centerCode: e.target.value })} className="h-8 w-12 text-[10px] border-none font-black border-r rounded-none bg-transparent" />
+                          <Input placeholder="NAME" value={loss.centerName || ""} onChange={e => updateLossRow(loss.id, { centerName: e.target.value })} className="h-8 text-[10px] border-none font-black rounded-none flex-1 bg-transparent" />
                         </td>
                         <td className="p-0 text-center">
                           <select 
-                            value={loss.milkType} 
+                            value={loss.milkType || "MIX"} 
                             onChange={e => updateLossRow(loss.id, { milkType: e.target.value as any })}
                             className="h-8 text-[9px] font-black bg-transparent border-none outline-none text-center"
                           >
@@ -292,10 +292,10 @@ export default function BreakdownPage() {
                           </select>
                         </td>
                         <td className="p-0">
-                          <Input type="number" placeholder="0" value={loss.qtyLiters} onChange={e => updateLossRow(loss.id, { qtyLiters: e.target.value })} className="h-8 text-[10px] border-none text-center font-black bg-transparent" />
+                          <Input type="number" placeholder="0" value={loss.qtyLiters || ""} onChange={e => updateLossRow(loss.id, { qtyLiters: e.target.value })} className="h-8 text-[10px] border-none text-center font-black bg-transparent" />
                         </td>
                         <td className="p-0">
-                          <Input type="number" value={loss.lossAmount} onChange={e => updateLossRow(loss.id, { lossAmount: e.target.value })} className="h-8 text-[10px] border-none text-right font-black bg-transparent text-rose-600" />
+                          <Input type="number" value={loss.lossAmount || ""} onChange={e => updateLossRow(loss.id, { lossAmount: e.target.value })} className="h-8 text-[10px] border-none text-right font-black bg-transparent text-rose-600" />
                         </td>
                         <td className="p-1">
                           <Button type="button" variant="ghost" size="icon" onClick={() => handleRemoveLossRow(loss.id)} className="h-7 w-7 text-rose-400 hover:bg-rose-50"><X className="h-3.5 w-3.5" /></Button>
@@ -334,13 +334,13 @@ export default function BreakdownPage() {
                 <Card key={record.id} className="p-3 flex items-start justify-between border shadow-none bg-muted/5 rounded-xl border-muted-foreground/5 hover:bg-rose-50/50 transition-all cursor-pointer group" onClick={() => { setEditingId(record.id); setFormData(record); window.scrollTo({top: 0, behavior: 'smooth'}); }}>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-1.5">
-                      <h4 className="font-black text-[11px] truncate uppercase tracking-tight text-slate-900">{record.routeName}</h4>
-                      <Badge className={`h-3 px-1 text-[6px] font-black uppercase border-none ${record.severity === 'MAJOR' ? 'bg-rose-500' : 'bg-amber-500'}`}>{record.severity}</Badge>
+                      <h4 className="font-black text-[11px] truncate uppercase tracking-tight text-slate-900">{record.routeName || "N/A"}</h4>
+                      <Badge className={`h-3 px-1 text-[6px] font-black uppercase border-none ${record.severity === 'MAJOR' ? 'bg-rose-500' : 'bg-amber-500'}`}>{record.severity || "MINOR"}</Badge>
                     </div>
-                    <p className="text-[9px] font-bold text-muted-foreground uppercase mt-0.5">{record.vehicleNo} | {record.vehicleType}</p>
+                    <p className="text-[9px] font-bold text-muted-foreground uppercase mt-0.5">{record.vehicleNo || "N/A"} | {record.vehicleType || "N/A"}</p>
                     <div className="flex items-center gap-2 mt-1">
-                      <span className="text-[8px] font-black text-rose-600 bg-rose-50 px-1 rounded">₹{record.totalLossAmount}</span>
-                      <span className="text-[8px] font-black text-muted-foreground opacity-50 uppercase">{record.date}</span>
+                      <span className="text-[8px] font-black text-rose-600 bg-rose-50 px-1 rounded">₹{record.totalLossAmount || 0}</span>
+                      <span className="text-[8px] font-black text-muted-foreground opacity-50 uppercase">{record.date || "N/A"}</span>
                     </div>
                   </div>
                   <Button type="button" size="icon" variant="ghost" className="h-8 w-8 text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => handleDeleteRecord(record.id, e)}>
