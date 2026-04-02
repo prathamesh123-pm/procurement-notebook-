@@ -4,7 +4,7 @@
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { 
@@ -12,7 +12,7 @@ import {
 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking } from "@/firebase"
+import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking, setDocumentNonBlocking } from "@/firebase"
 import { collection, doc } from "firebase/firestore"
 import { AIGuidanceCard } from "@/components/ai-guidance-card"
 import { Textarea } from "@/components/ui/textarea"
@@ -59,7 +59,8 @@ export default function BreakdownPage() {
     recoveryArrivalTime: "",
     milkHot: "NO",
     milkSour: "NO",
-    centerLosses: [] as DetailedBreakdownLoss[]
+    centerLosses: [] as DetailedBreakdownLoss[],
+    linkedReportId: ""
   })
 
   useEffect(() => setMounted(true), [])
@@ -91,36 +92,52 @@ export default function BreakdownPage() {
     }
 
     const totalLoss = (formData.centerLosses || []).reduce((acc, curr) => acc + (Number(curr.lossAmount) || 0), 0)
+    const reportDate = new Date().toISOString().split('T')[0];
+    
     const recordData = { 
       ...formData, 
-      date: new Date().toISOString().split('T')[0], 
+      date: reportDate, 
       totalLossAmount: totalLoss, 
       updatedAt: new Date().toISOString() 
     }
 
+    // Prepare report data
+    const reportData = {
+      type: 'Transport Breakdown Report',
+      date: reportDate,
+      reportDate: reportDate,
+      generatedByUserId: user.uid,
+      summary: `ब्रेकडाऊन: ${formData.vehicleNo}. रूट: ${formData.routeName}. नुकसान: ₹${totalLoss}. पर्यायी सोय: ${formData.recoveryVehicleNo || '-'}.`,
+      overallSummary: `वाहन: ${formData.vehicleNo}, ड्रायव्हर: ${formData.driverName}, नुकसान: ₹${totalLoss}`,
+      fullData: {
+        ...recordData,
+        name: user.displayName || "Procurement Officer",
+        status: "EMERGENCY"
+      },
+      updatedAt: new Date().toISOString()
+    };
+
     if (editingId) {
       const docRef = doc(db, 'users', user.uid, 'breakdowns', editingId)
       updateDocumentNonBlocking(docRef, recordData)
+      
+      // Update linked report
+      if (formData.linkedReportId) {
+        const reportRef = doc(db, 'users', user.uid, 'dailyWorkReports', formData.linkedReportId);
+        updateDocumentNonBlocking(reportRef, reportData);
+      }
+      
       toast({ title: "यशस्वी", description: "नोंद अद्ययावत केली." })
     } else {
-      const colRef = collection(db, 'users', user.uid, 'breakdowns')
-      addDocumentNonBlocking(colRef, { ...recordData, createdAt: new Date().toISOString() })
+      const breakdownId = crypto.randomUUID();
+      const reportId = `REP_BRK_${breakdownId}`;
       
-      const reportsRef = collection(db, 'users', user.uid, 'dailyWorkReports')
-      addDocumentNonBlocking(reportsRef, {
-        type: 'Transport Breakdown Report',
-        date: recordData.date,
-        reportDate: recordData.date,
-        generatedByUserId: user.uid,
-        summary: `ब्रेकडाऊन: ${formData.vehicleNo}. रूट: ${formData.routeName}. नुकसान: ₹${totalLoss}. पर्यायी सोय: ${formData.recoveryVehicleNo || '-'}.`,
-        overallSummary: `वाहन: ${formData.vehicleNo}, ड्रायव्हर: ${formData.driverName}, नुकसान: ₹${totalLoss}`,
-        fullData: {
-          ...recordData,
-          name: user.displayName || "Procurement Officer",
-          status: "EMERGENCY"
-        },
-        createdAt: new Date().toISOString()
-      })
+      const colRef = doc(db, 'users', user.uid, 'breakdowns', breakdownId);
+      setDocumentNonBlocking(colRef, { ...recordData, id: breakdownId, linkedReportId: reportId, createdAt: new Date().toISOString() }, { merge: true });
+      
+      const reportRef = doc(db, 'users', user.uid, 'dailyWorkReports', reportId);
+      setDocumentNonBlocking(reportRef, { ...reportData, id: reportId, createdAt: new Date().toISOString() }, { merge: true });
+      
       toast({ title: "यशस्वी", description: "नोंद जतन केली आणि अहवालात जोडली." })
     }
     
@@ -132,8 +149,15 @@ export default function BreakdownPage() {
     e.preventDefault()
     if (!db || !user) return
     if (confirm("तुम्हाला खात्री आहे की ही नोंद हटवायचा आहे?")) {
+      const breakdown = records?.find(r => r.id === id);
       const docRef = doc(db, 'users', user.uid, 'breakdowns', id)
       deleteDocumentNonBlocking(docRef)
+      
+      if (breakdown?.linkedReportId) {
+        const reportRef = doc(db, 'users', user.uid, 'dailyWorkReports', breakdown.linkedReportId);
+        deleteDocumentNonBlocking(reportRef);
+      }
+      
       if (editingId === id) resetForm()
       toast({ title: "यशस्वी", description: "नोंद हटवण्यात आली." })
     }
@@ -145,7 +169,8 @@ export default function BreakdownPage() {
       routeName: "", vehicleNo: "", vehicleType: "", capacity: "", driverName: "", mobile: "", 
       breakdownTime: "", location: "", reason: "", severity: "MINOR",
       detailedReason: "", estimatedRepairTime: "", estimatedRepairCost: "0",
-      recoveryVehicleNo: "", recoveryArrivalTime: "", milkHot: "NO", milkSour: "NO", centerLosses: [] 
+      recoveryVehicleNo: "", recoveryArrivalTime: "", milkHot: "NO", milkSour: "NO", centerLosses: [],
+      linkedReportId: ""
     }) 
   }
 
@@ -182,7 +207,7 @@ export default function BreakdownPage() {
                 <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">गाडी नंबर *</Label><Input value={formData.vehicleNo || ""} onChange={e => setFormData({...formData, vehicleNo: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" placeholder="MH..." /></div>
                 <div className="space-y-0.5">
                   <Label className="text-[9px] font-black uppercase opacity-60">गाडीचा प्रकार</Label>
-                  <Input value={formData.vehicleType || ""} onChange={e => setFormData({...formData, vehicleType: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" placeholder="उदा. टेम्पो / पिकअप" />
+                  <Input value={formData.vehicleType || ""} onChange={e => setFormData({...formData, vehicleType: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" placeholder="उदा. पिकअप" />
                 </div>
                 <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">गाडी क्षमता (L)</Label><Input value={formData.capacity || ""} onChange={e => setFormData({...formData, capacity: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" /></div>
                 <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">ड्रायव्हरचे नाव</Label><Input value={formData.driverName || ""} onChange={e => setFormData({...formData, driverName: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" /></div>
@@ -196,10 +221,10 @@ export default function BreakdownPage() {
               </h4>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">बिघाड वेळ</Label><Input type="time" value={formData.breakdownTime || ""} onChange={e => setFormData({...formData, breakdownTime: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" /></div>
-                <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">लोकेशन (ठिकाण)</Label><Input value={formData.location || ""} onChange={e => setFormData({...formData, location: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" placeholder="उदा. माण गाव" /></div>
+                <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">लोकेशन (ठिकाण)</Label><Input value={formData.location || ""} onChange={e => setFormData({...formData, location: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" /></div>
                 <div className="col-span-2 space-y-0.5">
                   <Label className="text-[9px] font-black uppercase opacity-60">बिघाडाचे मुख्य कारण</Label>
-                  <Input value={formData.reason || ""} onChange={e => setFormData({...formData, reason: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" placeholder="उदा. इंजिन ओव्हरहीट / टायर पंचर" />
+                  <Input value={formData.reason || ""} onChange={e => setFormData({...formData, reason: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" />
                 </div>
               </div>
               
@@ -227,9 +252,9 @@ export default function BreakdownPage() {
                 <Settings className="h-3 w-3" /> ३) दुरुस्ती व पर्यायी सोय
               </h4>
               <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">दुरुस्ती वेळ (तास)</Label><Input value={formData.estimatedRepairTime || ""} onChange={e => setFormData({...formData, estimatedRepairTime: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" placeholder="उदा. 4 तास" /></div>
+                <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">दुरुस्ती वेळ (तास)</Label><Input value={formData.estimatedRepairTime || ""} onChange={e => setFormData({...formData, estimatedRepairTime: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" /></div>
                 <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">अंदाजे खर्च (₹)</Label><Input type="number" value={formData.estimatedRepairCost || "0"} onChange={e => setFormData({...formData, estimatedRepairCost: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" /></div>
-                <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">पर्यायी गाडी क्र.</Label><Input value={formData.recoveryVehicleNo || ""} onChange={e => setFormData({...formData, recoveryVehicleNo: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" placeholder="MH..." /></div>
+                <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">पर्यायी गाडी क्र.</Label><Input value={formData.recoveryVehicleNo || ""} onChange={e => setFormData({...formData, recoveryVehicleNo: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" /></div>
                 <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">पर्यायी गाडी वेळ</Label><Input type="time" value={formData.recoveryArrivalTime || ""} onChange={e => setFormData({...formData, recoveryArrivalTime: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" /></div>
               </div>
             </div>

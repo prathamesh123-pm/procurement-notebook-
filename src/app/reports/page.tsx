@@ -7,7 +7,7 @@ import { Card } from "@/components/ui/card"
 import { 
   Archive, Eye, Search, X, Printer, Trash2, FileEdit, Truck, ListTodo, 
   ShieldAlert, ChevronRight, Filter, FileText, Milk, MapPin, Briefcase, 
-  ClipboardCheck, FileSignature, Plus, Info, AlertTriangle, FileCheck, User, Layers, FileStack
+  ClipboardCheck, FileSignature, Plus, Info, AlertTriangle, FileCheck, User, Layers, FileStack, ClipboardList, Thermometer, ShieldCheck
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
@@ -50,6 +50,11 @@ export default function ReportsPage() {
     { title: "जप्ती व दंड", type: "Seizure & Penalty", icon: ShieldAlert, color: "text-amber-600", bg: "bg-amber-50" },
     { title: "दैनिक कामकाज", type: "Daily Work Report", icon: ClipboardCheck, color: "text-indigo-600", bg: "bg-indigo-50" },
     { title: "वर्ड फॉर्म", type: "Official Document", icon: FileSignature, color: "text-slate-600", bg: "bg-slate-50" },
+    { title: "सर्वेक्षण", type: "Milk Procurement Survey", icon: ClipboardList, color: "text-cyan-600", bg: "bg-cyan-50" },
+    { title: "ऑडिट", type: "Collection Center Audit", icon: FileCheck, color: "text-emerald-700", bg: "bg-emerald-50" },
+    { title: "चिलिंग", type: "Chilling Report", icon: Thermometer, color: "text-blue-400", bg: "bg-blue-50" },
+    { title: "FSSAI तपासणी", type: "FSSAI Center Inspection", icon: ShieldCheck, color: "text-green-600", bg: "bg-green-50" },
+    { title: "कस्टम फॉर्म", type: "Custom Form", icon: Layers, color: "text-orange-400", bg: "bg-orange-50" },
   ]
 
   const filteredReports = useMemo(() => {
@@ -195,7 +200,7 @@ export default function ReportsPage() {
     const totalIceUsed = logs.reduce((sum: number, l: any) => sum + (Number(l.iceUsed) || 0), 0);
 
     return (
-      <div className="bg-white p-4 font-sans text-slate-900 border-[2px] border-slate-900 rounded-sm shadow-none w-full max-w-full mx-auto print:border-black" id="printable-area">
+      <div className="bg-white p-4 font-sans text-slate-900 border-[2px] border-slate-900 rounded-sm shadow-none w-full max-w-full mx-auto print:border-black printable-report">
         <div className="flex justify-between items-center border-b-[2px] border-slate-900 pb-2 mb-4 print:border-black">
           <div className="space-y-0.5">
             <h1 className="font-black uppercase text-lg tracking-tighter flex items-center gap-2">
@@ -290,7 +295,7 @@ export default function ReportsPage() {
     const isDailyTask = report.type === 'Daily Task';
 
     return (
-      <div className={`bg-white font-sans text-slate-900 border-[2px] border-slate-900 rounded-sm shadow-none print:border-black mb-4 last:mb-0 break-inside-avoid w-full max-w-full mx-auto ${isDailyTask ? 'p-4' : 'p-6'}`} id="printable-area">
+      <div className={`bg-white font-sans text-slate-900 border-[2px] border-slate-900 rounded-sm shadow-none print:border-black mb-4 last:mb-0 break-inside-avoid w-full max-w-full mx-auto printable-report ${isDailyTask ? 'p-4' : 'p-6'}`}>
         <div className={`border-b-[2px] border-slate-900 text-center print:border-black ${isDailyTask ? 'pb-2 mb-4' : 'pb-4 mb-6'}`}>
           <div className="flex justify-center mb-1">
             <div className="p-2 bg-primary text-white rounded-xl print:bg-black">
@@ -392,7 +397,7 @@ export default function ReportsPage() {
   if (!mounted) return null;
 
   return (
-    <div className="compact-form-container pb-20 max-w-[650px] mx-auto px-2 animate-in fade-in duration-700">
+    <div className="compact-form-container pb-20 max-w-[700px] mx-auto px-2 animate-in fade-in duration-700">
       <div className="flex flex-col sm:flex-row items-center justify-between border-b-2 border-primary/20 pb-4 mb-6 gap-4">
         <div className="flex flex-col gap-1 items-center sm:items-start text-center sm:text-left">
           <h2 className="text-xl font-black text-slate-900 flex items-center gap-2 uppercase tracking-tight">
@@ -405,15 +410,15 @@ export default function ReportsPage() {
         </Button>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
+      <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-2 mb-8">
         {reportTypes.map((rt) => (
           <button 
             key={rt.title} 
             onClick={() => setTypeFilter(typeFilter === rt.type ? null : rt.type)}
-            className={`h-20 flex flex-col items-center justify-center p-2 rounded-2xl border-2 transition-all hover:shadow-lg active:scale-95 ${typeFilter === rt.type ? 'bg-primary text-white border-primary shadow-primary/20 scale-105' : 'bg-white text-slate-900 border-slate-100 shadow-sm'}`}
+            className={`h-16 flex flex-col items-center justify-center p-1 rounded-xl border transition-all hover:shadow-md active:scale-95 ${typeFilter === rt.type ? 'bg-primary text-white border-primary shadow-primary/20' : 'bg-white text-slate-900 border-slate-100 shadow-sm'}`}
           >
-            <rt.icon className={`h-5 w-5 mb-2 ${typeFilter === rt.type ? 'text-white' : rt.color}`} />
-            <span className="text-[9px] font-black leading-tight text-center uppercase tracking-tighter">{rt.title}</span>
+            <rt.icon className={`h-4 w-4 mb-1 ${typeFilter === rt.type ? 'text-white' : rt.color}`} />
+            <span className="text-[8px] font-black leading-tight text-center uppercase tracking-tighter">{rt.title}</span>
           </button>
         ))}
       </div>
@@ -440,45 +445,38 @@ export default function ReportsPage() {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-100">
-                <th className="p-4 text-[10px] font-black uppercase text-slate-400 tracking-widest">तारीख आणि प्रकार</th>
-                <th className="p-4 text-[10px] font-black uppercase text-slate-400 tracking-widest text-right">क्रिया</th>
+                <th className="p-4 text-[10px] font-black uppercase text-slate-400 tracking-widest w-32">तारीख</th>
+                <th className="p-4 text-[10px] font-black uppercase text-slate-400 tracking-widest">अहवाल प्रकार व सारांश</th>
+                <th className="p-4 text-[10px] font-black uppercase text-slate-400 tracking-widest text-right w-32">क्रिया</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
               {filteredReports.map((report) => (
                 <tr key={report.id} className="hover:bg-primary/[0.02] transition-colors cursor-pointer group" onClick={() => { setSelectedReport(report); setIsViewOpen(true); setIsGroupView(false); }}>
+                  <td className="p-4 font-black text-[11px] text-slate-500 uppercase">{report.date}</td>
                   <td className="p-4 text-left">
-                    <div className="flex flex-col gap-1.5 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <span className="text-[11px] font-black uppercase text-slate-900 truncate max-w-[160px] group-hover:text-primary transition-colors">
-                          {report.type === 'Official Document' ? 'वर्ड दस्तऐवज' : report.type}
-                        </span>
-                        <Badge variant="outline" className="h-4 px-2 text-[8px] font-black bg-slate-50 text-slate-500 border-none rounded-md">{report.date}</Badge>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="w-1 h-4 bg-primary/20 rounded-full" />
-                        <p className="text-[10px] text-slate-500 line-clamp-1 italic font-bold opacity-80">{report.summary}</p>
-                      </div>
+                    <div className="flex flex-col gap-1 min-w-0">
+                      <span className="text-[11px] font-black uppercase text-primary group-hover:underline">
+                        {report.type}
+                      </span>
+                      <p className="text-[10px] text-slate-500 line-clamp-1 italic font-bold opacity-80">{report.summary}</p>
                     </div>
                   </td>
                   <td className="p-4 text-right">
-                    <div className="flex justify-end gap-2 sm:opacity-0 group-hover:opacity-100 transition-all transform group-hover:translate-x-0 sm:translate-x-2">
+                    <div className="flex justify-end gap-2 sm:opacity-0 group-hover:opacity-100 transition-all">
                       <Button variant="ghost" size="icon" className="h-9 w-9 text-primary hover:bg-primary/10 rounded-xl" onClick={(e) => handleEditReport(report, e)}>
                         <FileEdit className="h-4 w-4" />
                       </Button>
                       <Button variant="ghost" size="icon" className="h-9 w-9 text-rose-500 hover:bg-rose-50 rounded-xl" onClick={(e) => handleDeleteReport(report.id, e)}>
                         <Trash2 className="h-4 w-4" />
                       </Button>
-                      <div className="h-9 w-9 flex items-center justify-center text-slate-200 hidden sm:flex">
-                        <ChevronRight className="h-5 w-5" />
-                      </div>
                     </div>
                   </td>
                 </tr>
               ))}
               {filteredReports.length === 0 && (
                 <tr>
-                  <td colSpan={2} className="py-32 text-center">
+                  <td colSpan={3} className="py-32 text-center">
                     <div className="flex flex-col items-center gap-4 opacity-20">
                       <Archive className="h-16 w-16" />
                       <p className="font-black uppercase text-[11px] tracking-[0.4em] italic">कोणतीही नोंद उपलब्ध नाही</p>
@@ -492,7 +490,7 @@ export default function ReportsPage() {
       </div>
 
       <Dialog open={isViewOpen} onOpenChange={setIsViewOpen}>
-        <DialogContent className="max-w-[800px] w-[95vw] p-0 rounded-[2rem] overflow-hidden border-none shadow-2xl bg-slate-100 sm:w-full">
+        <DialogContent className="max-w-[850px] w-[95vw] p-0 rounded-[2rem] overflow-hidden border-none shadow-2xl bg-slate-100 sm:w-full">
           <DialogHeader className="p-4 bg-white border-b flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0 no-print">
             <div className="flex items-center gap-3 px-2 sm:px-4">
               <div className="p-2 bg-primary/10 text-primary rounded-xl">
@@ -526,7 +524,7 @@ export default function ReportsPage() {
                   {report.type === 'Route Visit' ? (
                     <RouteSlipLayout report={report} />
                   ) : report.fullData?.isWordDoc ? (
-                    <div className="prose prose-sm max-w-none px-6 sm:px-12 py-6 sm:py-10 bg-white border-[2px] border-slate-900 rounded-sm shadow-2xl min-h-[400px] sm:min-h-[600px] print:shadow-none print:border-black overflow-hidden" id="printable-area" dangerouslySetInnerHTML={{ __html: report.fullData.content }} />
+                    <div className="prose prose-sm max-w-none px-6 sm:px-12 py-6 sm:py-10 bg-white border-[2px] border-slate-900 rounded-sm shadow-2xl min-h-[400px] sm:min-h-[600px] print:shadow-none print:border-black overflow-hidden printable-report" dangerouslySetInnerHTML={{ __html: report.fullData.content }} />
                   ) : (
                     <GenericTableLayout report={report} />
                   )}
@@ -578,7 +576,7 @@ export default function ReportsPage() {
             display: none !important;
           }
 
-          #printable-area {
+          .printable-report {
             display: block !important;
             visibility: visible !important;
             width: 100% !important;
@@ -591,7 +589,7 @@ export default function ReportsPage() {
             color: black !important;
           }
 
-          #printable-area * {
+          .printable-report * {
             visibility: visible !important;
             color: black !important;
             print-color-adjust: exact;
