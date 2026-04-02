@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { 
   Archive, Search, X, Printer, Trash2, FileEdit, Truck, ListTodo, 
-  ShieldAlert, ClipboardCheck, FileSignature, Plus, Info, AlertTriangle, FileCheck, User, Layers, FileStack, ClipboardList, Thermometer, ShieldCheck as ShieldIcon, Briefcase, Milk, MapPin, FileText, AlertCircle
+  ShieldAlert, ClipboardCheck, FileSignature, Plus, Info, AlertTriangle, FileCheck, User, Layers, FileStack, ClipboardList, Thermometer, ShieldCheck as ShieldIcon, Briefcase, Milk, MapPin, FileText, AlertCircle, Car, Navigation
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
@@ -117,7 +117,7 @@ export default function ReportsPage() {
     route: "संबंधित संकलन रूटचे नाव",
     seizureQty: "जप्त केलेल्या दुधाचे एकूण प्रमाण (Liters)",
     reason: "दूध जप्त करण्याचे कारण",
-    fineAmount: "आकारलेली एकूण दंडाची रक्कम (₹)",
+    fineAmount: "आकारलेली दंडाची रक्कम (₹)",
     actionTaken: "जप्त केलेल्या दुधावर केलेली कारवाई",
     
     // Breakdown
@@ -139,9 +139,23 @@ export default function ReportsPage() {
     milkHot: "दूध गरम झाले होते का?",
     milkSour: "दूध पूर्णपणे खराब झाले का?",
     
-    // Daily Work / Task
-    title: "आजच्या कामाचा विषय किंवा टास्क",
-    remark: "केलेल्या कामाबद्दल सविस्तर शेरा/नोंद",
+    // Structured Field Visit
+    visitPerson: "कोणाची भेट घेतली? (नाव व पद)",
+    visitPurpose: "भेटीचा मुख्य उद्देश",
+    visitDiscussion: "झालेली सविस्तर चर्चा व मुद्दे",
+    travelVehicle: "वापरलेले वाहन (Travel Mode)",
+    travelStartKm: "प्रवास सुरुवात किलोमीटर (Start KM)",
+    travelEndKm: "प्रवास शेवट किलोमीटर (End KM)",
+    travelTotalKm: "प्रवास केलेले एकूण किलोमीटर",
+
+    // Structured Office Work
+    officeTaskSubject: "ऑफिस कामाचा मुख्य विषय",
+    officeTaskDetails: "केलेल्या कामाचा सविस्तर गोषवारा",
+    pendingOfficeWork: "प्रलंबित कामे (उद्यासाठी)",
+    
+    // Daily Work / Task Generic
+    title: "कामाचा विषय किंवा टास्क",
+    remark: "सविस्तर शेरा/नोंद",
     achievements: "आजची मोठी कामगिरी",
     problems: "कामात आलेले अडथळे/समस्या",
     actionsTaken: "केलेली कार्यवाही",
@@ -165,8 +179,9 @@ export default function ReportsPage() {
 
   const orderedKeys = [
     "supplierName", "supplierId", "route",
-    "title",
-    "remark", "actionTaken", "actionsTaken", "achievements", "problems",
+    "visitPerson", "visitPurpose", "visitDiscussion", "travelVehicle", "travelStartKm", "travelEndKm", "travelTotalKm",
+    "officeTaskSubject", "officeTaskDetails", "pendingOfficeWork",
+    "title", "remark", "actionTaken", "actionsTaken", "achievements", "problems",
     "summary",
     "routeName", "vehicleNumber", "vehicleNo", "vehicleType", "driverName", "mobile",
     "breakdownTime", "location", "reason", "severity", "detailedReason",
@@ -190,23 +205,22 @@ export default function ReportsPage() {
     
     const totalEmpty = logs.reduce((sum: number, l: any) => sum + (Number(l.emptyCans) || 0), 0);
     const totalFull = logs.reduce((sum: number, l: any) => sum + (Number(l.fullCans) || 0), 0);
-    const totalIceUsed = logs.reduce((sum: number, l: any) => sum + (Number(l.iceUsed) || 0), 0);
 
     return (
       <div className="bg-white p-4 font-sans text-slate-900 border-[2px] border-slate-900 rounded-sm shadow-none w-full max-w-full mx-auto print:border-black printable-report">
         <div className="flex justify-between items-center border-b-[2px] border-slate-900 pb-2 mb-4 print:border-black">
-          <div className="space-y-0.5">
+          <div className="space-y-0.5 text-left">
             <h1 className="font-black uppercase text-lg tracking-tighter">
               {d.reportHeading || 'रूट व्हिजिट रिपोर्ट'}
             </h1>
-            <p className="text-[8px] font-black uppercase text-slate-500 tracking-[0.2em]">प्रोफाईल: {profileName} (ID: {profileId})</p>
+            <p className="text-[8px] font-black uppercase text-slate-500 tracking-[0.2em]">सादरकर्ता: {profileName} (ID: {profileId})</p>
           </div>
           <div className="text-right font-black uppercase text-[9px] leading-tight">
             <p>तारीख: {d.reportDate || '---'}</p>
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 mb-4 font-black text-[10px] uppercase">
+        <div className="grid grid-cols-2 gap-4 mb-4 font-black text-[10px] uppercase text-left">
           <div className="space-y-1 p-2 bg-slate-50 border border-slate-200 rounded-lg print:bg-white print:border-black">
             <div className="flex justify-between border-b border-slate-200 pb-0.5"><span>रूट नाव:</span> <span>{d.routeName || '---'}</span></div>
             <div className="flex justify-between"><span>ड्रायव्हर:</span> <span>{d.driverName || '---'}</span></div>
@@ -233,7 +247,7 @@ export default function ReportsPage() {
               {logs.map((log: any, idx: number) => (
                 <tr key={idx} className="font-bold text-[9px] uppercase hover:bg-slate-50 transition-colors">
                   <td className="p-2 text-center border-r border-slate-900 bg-slate-50 print:border-black">{idx + 1}</td>
-                  <td className="p-2 border-r border-slate-900 font-black print:border-black">
+                  <td className="p-2 border-r border-slate-900 font-black print:border-black text-left">
                     {log.supplierName || '---'} <br/>
                     <span className="text-[7px] text-slate-400">ID: {log.centerCode || '---'}</span>
                   </td>
@@ -263,8 +277,6 @@ export default function ReportsPage() {
 
   const GenericTableLayout = ({ report }: { report: any }) => {
     const d = report.fullData || {};
-    
-    // Find heading: custom heading input, or docTitle, or fallback to type
     const mainHeading = d.reportHeading || d.title || report.type;
 
     const filteredEntries = orderedKeys
@@ -294,13 +306,13 @@ export default function ReportsPage() {
             <table className="w-full border-collapse">
               <thead>
                 <tr className="bg-slate-900 text-white font-black text-[10px] uppercase tracking-widest print:bg-black">
-                  <th className="p-2 text-left w-1/3 border-r border-white/20">तपशील (FIELD)</th>
+                  <th className="p-2 text-left w-1/3 border-r border-white/20">तपशील (QUESTION)</th>
                   <th className="p-2 text-left">माहिती (DETAILS)</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-900 print:divide-black">
                 {filteredEntries.map(([key, val]) => (
-                  <tr key={key} className="font-bold text-[10px] hover:bg-slate-50 transition-colors">
+                  <tr key={key} className="font-bold text-[10px] hover:bg-slate-50 transition-colors text-left">
                     <td className="p-2 bg-slate-50 uppercase text-[9px] font-black border-r border-slate-900 print:bg-white print:border-black">
                       {labelMap[key] || key.toUpperCase()}
                     </td>
@@ -314,7 +326,7 @@ export default function ReportsPage() {
           </div>
 
           {(d.points && d.points.length > 0) && (
-            <div className="mt-4 space-y-2">
+            <div className="mt-4 space-y-2 text-left">
               <div className="flex items-center gap-1.5 text-[10px] font-black uppercase text-primary">
                 <AlertCircle className="h-4 w-4" /> विशेष निरीक्षणे:
               </div>
@@ -332,7 +344,7 @@ export default function ReportsPage() {
           )}
 
           {((d.losses && d.losses.length > 0) || (d.centerLosses && d.centerLosses.length > 0)) && (
-            <div className="mt-4 space-y-2">
+            <div className="mt-4 space-y-2 text-left">
               <div className="flex items-center gap-1.5 text-[10px] font-black uppercase text-rose-700">
                 <AlertTriangle className="h-4 w-4" /> नुकसानीचा सविस्तर तक्ता:
               </div>

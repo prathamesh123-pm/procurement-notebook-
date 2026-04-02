@@ -12,7 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter, useSearchParams } from "next/navigation"
 import { 
-  ClipboardCheck, Truck, Plus, Trash2, MapPin, Briefcase, Save, ArrowLeft, ListPlus, Clock, Box, RefreshCw
+  ClipboardCheck, Truck, Plus, Trash2, MapPin, Briefcase, Save, ArrowLeft, ListPlus, Clock, Box, RefreshCw, User, Car, Navigation
 } from "lucide-react"
 import { useUser, useFirestore, useDoc, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking } from "@/firebase"
 import { collection, doc } from "firebase/firestore"
@@ -28,11 +28,6 @@ interface RouteVisitEntry {
   departureTime: string;
   emptyCans: string;
   fullCans: string;
-}
-
-interface ReportPoint {
-  id: string;
-  text: string;
 }
 
 function DailyReportForm() {
@@ -55,19 +50,27 @@ function DailyReportForm() {
     arrivalTime: "", departureTime: "", emptyCans: "", fullCans: ""
   });
 
-  const createEmptyPoint = (): ReportPoint => ({
-    id: createId(),
-    text: ""
-  });
-
   const [formData, setFormData] = useState({
     reportHeading: "दैनिक अहवाल",
     name: "", idNumber: "", reportDate: "", shift: "सकाळ", slipNo: "",
     driverName: "", vehicleNumber: "", routeName: "", routeOutTime: "", routeInTime: "",
     startReading: "", endReading: "", totalKm: "0", shortageLiters: "0",
     excessLiters: "0", routeVisitLogs: [] as RouteVisitEntry[],
-    fieldVisitPoints: [] as ReportPoint[],
-    officeWorkPoints: [] as ReportPoint[],
+    
+    // Structured Field Visit Data
+    visitPerson: "",
+    visitPurpose: "",
+    visitDiscussion: "",
+    travelVehicle: "स्वतःचे",
+    travelStartKm: "",
+    travelEndKm: "",
+    travelTotalKm: "",
+    
+    // Structured Office Work Data
+    officeTaskSubject: "",
+    officeTaskDetails: "",
+    pendingOfficeWork: "",
+    
     achievements: "", problems: "",
     actionsTaken: "", supervisorName: ""
   })
@@ -90,9 +93,7 @@ function DailyReportForm() {
     setFormData(prev => ({ 
       ...prev, 
       reportDate: new Date().toISOString().split('T')[0], 
-      routeVisitLogs: [createEmptyRouteEntry()],
-      fieldVisitPoints: [createEmptyPoint()],
-      officeWorkPoints: [createEmptyPoint()]
+      routeVisitLogs: [createEmptyRouteEntry()]
     }))
   }, [])
 
@@ -131,14 +132,6 @@ function DailyReportForm() {
     }
   }
   const updateRouteEntry = (id: string, updates: Partial<RouteVisitEntry>) => setFormData(prev => ({ ...prev, routeVisitLogs: prev.routeVisitLogs.map(e => e.id === id ? { ...e, ...updates } : e) }))
-
-  const addFieldPoint = () => setFormData(prev => ({ ...prev, fieldVisitPoints: [...prev.fieldVisitPoints, createEmptyPoint()] }))
-  const removeFieldPoint = (id: string) => { if (formData.fieldVisitPoints.length > 1) setFormData(prev => ({ ...prev, fieldVisitPoints: prev.fieldVisitPoints.filter(p => p.id !== id) })) }
-  const updateFieldPoint = (id: string, text: string) => setFormData(prev => ({ ...prev, fieldVisitPoints: prev.fieldVisitPoints.map(p => p.id === id ? { ...p, text } : p) }))
-
-  const addOfficePoint = () => setFormData(prev => ({ ...prev, officeWorkPoints: [...prev.officeWorkPoints, createEmptyPoint()] }))
-  const removeOfficePoint = (id: string) => { if (formData.officeWorkPoints.length > 1) setFormData(prev => ({ ...prev, officeWorkPoints: prev.officeWorkPoints.filter(p => p.id !== id) })) }
-  const updateOfficePoint = (id: string, text: string) => setFormData(prev => ({ ...prev, officeWorkPoints: prev.officeWorkPoints.map(p => p.id === id ? { ...p, text } : p) }))
 
   const handleSave = () => {
     if (!db || !user) return;
@@ -246,24 +239,75 @@ function DailyReportForm() {
         </TabsContent>
 
         <TabsContent value="field-visit" className="space-y-3">
-          <Card className="compact-card p-3">
-            <div className="p-2 bg-muted/5 border-b flex items-center justify-between mb-3"><span className="text-[9px] font-black uppercase text-muted-foreground tracking-widest flex items-center gap-1.5"><MapPin className="h-3 w-3 text-primary" /> क्षेत्र भेट मुद्दे</span><Button type="button" size="sm" onClick={addFieldPoint} className="h-7 rounded-lg font-black text-[9px]"><ListPlus className="h-3 w-3 mr-1" /> जोडा</Button></div>
-            <div className="space-y-2">
-              {formData.fieldVisitPoints.map((point, index) => (
-                <div key={point.id} className="flex gap-2 items-start"><div className="h-8 w-8 rounded-lg bg-muted/20 flex items-center justify-center font-black text-[10px] text-muted-foreground shrink-0">{index + 1}</div><Textarea value={point.text || ""} onChange={e => updateFieldPoint(point.id, e.target.value)} placeholder="..." className="min-h-[50px] text-[11px] rounded-lg bg-muted/10 border-none font-medium p-2" /><Button type="button" variant="ghost" size="icon" onClick={() => removeFieldPoint(point.id)} className="h-8 w-8 text-rose-400"><Trash2 className="h-3.5 w-3.5" /></Button></div>
-              ))}
-              <AIGuidanceCard context={formData.fieldVisitPoints.map(p => p.text).join(' ')} formType="daily-report" />
+          <Card className="compact-card p-3 space-y-4">
+            <div className="space-y-3">
+              <div className="flex items-center gap-1.5 border-b border-primary/10 pb-1 mb-2">
+                <User className="h-3 w-3 text-primary" />
+                <h3 className="text-[10px] font-black uppercase text-primary tracking-widest">१) भेटीचा तपशील</h3>
+              </div>
+              <div className="space-y-2">
+                <div className="space-y-0.5">
+                  <Label className="compact-label">कोणाची भेट घेतली? (नाव व पद)</Label>
+                  <Input value={formData.visitPerson || ""} onChange={e => setFormData({...formData, visitPerson: e.target.value})} className="compact-input h-9" placeholder="उदा. राहुल पाटील (चेअरमन)" />
+                </div>
+                <div className="space-y-0.5">
+                  <Label className="compact-label">भेटीचा मुख्य उद्देश</Label>
+                  <Input value={formData.visitPurpose || ""} onChange={e => setFormData({...formData, visitPurpose: e.target.value})} className="compact-input h-9" placeholder="उदा. दूध वाढवणे / गुणवत्ता तपासणी" />
+                </div>
+                <div className="space-y-0.5">
+                  <Label className="compact-label">झालेली सविस्तर चर्चा</Label>
+                  <Textarea value={formData.visitDiscussion || ""} onChange={e => setFormData({...formData, visitDiscussion: e.target.value})} className="min-h-[80px] text-[11px] bg-slate-50 border-none font-medium rounded-lg p-2" placeholder="येथे चर्चेचे मुद्दे लिहा..." />
+                </div>
+              </div>
             </div>
+
+            <div className="space-y-3">
+              <div className="flex items-center gap-1.5 border-b border-primary/10 pb-1 mb-2">
+                <Car className="h-3 w-3 text-primary" />
+                <h3 className="text-[10px] font-black uppercase text-primary tracking-widest">२) प्रवास व लॉजिस्टिक्स</h3>
+              </div>
+              <div className="space-y-3">
+                <div className="space-y-1.5">
+                  <Label className="compact-label">वापरलेले वाहन</Label>
+                  <RadioGroup value={formData.travelVehicle || "स्वतःचे"} onValueChange={v => setFormData({...formData, travelVehicle: v})} className="flex gap-2">
+                    <div className="compact-radio-item"><RadioGroupItem value="स्वतःचे" id="vh-self" className="h-3 w-3" /><Label htmlFor="vh-self" className="compact-radio-label">स्वतःचे</Label></div>
+                    <div className="compact-radio-item"><RadioGroupItem value="कंपनीचे" id="vh-comp" className="h-3 w-3" /><Label htmlFor="vh-comp" className="compact-radio-label">कंपनीचे</Label></div>
+                    <div className="compact-radio-item"><RadioGroupItem value="भाड्याचे/इतर" id="vh-rent" className="h-3 w-3" /><Label htmlFor="vh-rent" className="compact-radio-label">इतर</Label></div>
+                  </RadioGroup>
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  <div className="space-y-0.5"><Label className="compact-label">Start KM</Label><Input value={formData.travelStartKm || ""} onChange={e => setFormData({...formData, travelStartKm: e.target.value})} className="compact-input h-8 text-center" /></div>
+                  <div className="space-y-0.5"><Label className="compact-label">End KM</Label><Input value={formData.travelEndKm || ""} onChange={e => setFormData({...formData, travelEndKm: e.target.value})} className="compact-input h-8 text-center" /></div>
+                  <div className="space-y-0.5"><Label className="compact-label text-blue-600">Total KM</Label><Input value={formData.travelTotalKm || ""} onChange={e => setFormData({...formData, travelTotalKm: e.target.value})} className="compact-input h-8 text-center font-black text-blue-600" /></div>
+                </div>
+              </div>
+            </div>
+            
+            <AIGuidanceCard context={formData.visitDiscussion} formType="daily-report" />
           </Card>
         </TabsContent>
 
         <TabsContent value="office-work" className="space-y-3">
-          <Card className="compact-card p-3">
-            <div className="p-2 bg-muted/5 border-b flex items-center justify-between mb-3"><span className="text-[9px] font-black uppercase text-muted-foreground tracking-widest flex items-center gap-1.5"><Briefcase className="h-3 w-3 text-primary" /> ऑफिस काम मुद्दे</span><Button type="button" size="sm" onClick={addOfficePoint} className="h-7 rounded-lg font-black text-[9px]"><ListPlus className="h-3 w-3 mr-1" /> जोडा</Button></div>
-            <div className="space-y-2">
-              {formData.officeWorkPoints.map((point, index) => (
-                <div key={point.id} className="flex gap-2 items-start"><div className="h-8 w-8 rounded-lg bg-muted/20 flex items-center justify-center font-black text-[10px] text-muted-foreground shrink-0">{index + 1}</div><Textarea value={point.text || ""} onChange={e => updateOfficePoint(point.id, e.target.value)} placeholder="..." className="min-h-[50px] text-[11px] rounded-lg bg-muted/10 border-none font-medium p-2" /><Button type="button" variant="ghost" size="icon" onClick={() => removeOfficePoint(point.id)} className="h-8 w-8 text-rose-400"><Trash2 className="h-3.5 w-3.5" /></Button></div>
-              ))}
+          <Card className="compact-card p-3 space-y-4">
+            <div className="space-y-3">
+              <div className="flex items-center gap-1.5 border-b border-primary/10 pb-1 mb-2">
+                <Briefcase className="h-3 w-3 text-primary" />
+                <h3 className="text-[10px] font-black uppercase text-primary tracking-widest">ऑफिस कामाचा तपशील</h3>
+              </div>
+              <div className="space-y-3">
+                <div className="space-y-0.5">
+                  <Label className="compact-label">आजच्या कामाचा मुख्य विषय</Label>
+                  <Input value={formData.officeTaskSubject || ""} onChange={e => setFormData({...formData, officeTaskSubject: e.target.value})} className="compact-input h-9" placeholder="उदा. मासिक हिशोब जुळवणी" />
+                </div>
+                <div className="space-y-0.5">
+                  <Label className="compact-label">केलेल्या कामाचा सविस्तर गोषवारा</Label>
+                  <Textarea value={formData.officeTaskDetails || ""} onChange={e => setFormData({...formData, officeTaskDetails: e.target.value})} className="min-h-[100px] text-[11px] bg-slate-50 border-none font-medium rounded-lg p-2" placeholder="..." />
+                </div>
+                <div className="space-y-0.5">
+                  <Label className="compact-label text-rose-600">प्रलंबित कामे (उद्यासाठी)</Label>
+                  <Input value={formData.pendingOfficeWork || ""} onChange={e => setFormData({...formData, pendingOfficeWork: e.target.value})} className="compact-input h-9 border-rose-100" placeholder="..." />
+                </div>
+              </div>
             </div>
           </Card>
         </TabsContent>
