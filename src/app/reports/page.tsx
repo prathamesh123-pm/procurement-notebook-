@@ -40,6 +40,7 @@ export default function ReportsPage() {
 
   useEffect(() => setMounted(true), [])
 
+  // Only 8 essential categories
   const reportTypes = [
     { title: "रूट व्हिजिट", type: "Route Visit", icon: Truck, color: "text-blue-600", bg: "bg-blue-50" },
     { title: "क्षेत्र भेट", type: "Field Visit", icon: MapPin, color: "text-emerald-600", bg: "bg-emerald-50" },
@@ -250,6 +251,7 @@ export default function ReportsPage() {
   const GenericTableLayout = ({ report }: { report: any }) => {
     const d = report.fullData || {};
     
+    // Deduplication logic for Submitter and ID
     const seenLabels = new Set<string>();
     const filteredEntries = orderedKeys
       .filter(key => {
@@ -257,14 +259,19 @@ export default function ReportsPage() {
         if (val === undefined || val === "" || val === null) return false;
         
         const label = labelMap[key] || key.toUpperCase();
-        if (seenLabels.has(label)) return false;
         
+        // Skip duplicate submitter names or IDs
+        if (["displayName", "name"].includes(key) && seenLabels.has("अहवाल सादरकर्ता")) return false;
+        if (["employeeId", "idNumber"].includes(key) && seenLabels.has("अधिकारी आयडी (Emp ID)")) return false;
+        
+        if (seenLabels.has(label)) return false;
         seenLabels.add(label);
         return true;
       })
       .map(key => [key, d[key]]);
 
     const formatVal = (key: string, val: any): string => {
+      // Map Quality Inspector to संकलन सुपरवायझर
       if ((key === 'name' || key === 'displayName' || key === 'assignedTo') && (!val || val === 'Quality Inspector' || val === 'Procurement Officer' || val === 'संकलन सुपरवायझर')) {
         return "संकलन सुपरवायझर";
       }

@@ -174,6 +174,7 @@ export default function BreakdownPage() {
 
   if (!mounted || isLoading) return <div className="p-10 text-center italic font-black uppercase text-[10px] opacity-50">लोड होत आहे...</div>
 
+  // Added safeguard for reduce
   const currentTotalLoss = (formData.centerLosses || []).reduce((acc, curr) => acc + (Number(curr.lossAmount) || 0), 0);
 
   return (

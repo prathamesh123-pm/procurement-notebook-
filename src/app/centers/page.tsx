@@ -340,7 +340,7 @@ export default function CentersPage() {
                       <tbody className="divide-y divide-muted-foreground/5 print:divide-black">
                         {(selectedCenter.equipment || []).map((item, idx) => (
                           <tr key={item.id || idx} className="bg-white">
-                            <td className="p-2 text-[10px] font-black uppercase text-slate-700 print:text-black">{item.name}</td>
+                            <td className="p-2 text-10px] font-black uppercase text-slate-700 print:text-black">{item.name}</td>
                             <td className="p-2 text-[10px] font-black text-center text-slate-900 print:text-black">{item.quantity}</td>
                             <td className="p-2 text-right">
                               <Badge variant="outline" className="h-4 px-1.5 text-[7px] font-black uppercase border-none bg-muted/50 print:text-black print:border-black">
@@ -399,13 +399,13 @@ export default function CentersPage() {
                   <Warehouse className="h-4 w-4" /> १) प्राथमिक व परवाना माहिती
                 </h4>
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="col-span-2 space-y-1.5"><Label className="text-[10px] uppercase font-black opacity-60">केंद्राचे नाव *</Label><Input value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="h-10 text-[12px] rounded-xl bg-muted/20 border-none font-black shadow-inner" /></div>
-                  <div className="space-y-1.5"><Label className="text-[10px] uppercase font-black opacity-60">कोड (ID) *</Label><Input value={formData.supplierId} onChange={e => setFormData({...formData, supplierId: e.target.value})} className="h-10 text-[12px] rounded-xl bg-muted/20 border-none font-black shadow-inner" /></div>
-                  <div className="space-y-1.5"><Label className="text-[10px] uppercase font-black opacity-60">ऑपरेटरचे नाव</Label><Input value={formData.operatorName} onChange={e => setFormData({...formData, operatorName: e.target.value})} className="h-10 text-[12px] rounded-xl bg-muted/20 border-none font-black shadow-inner" /></div>
-                  <div className="col-span-2 space-y-1.5"><Label className="text-[10px] uppercase font-black opacity-60">पत्ता / गाव</Label><Input value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} className="h-10 text-[12px] rounded-xl bg-muted/20 border-none font-black shadow-inner" /></div>
-                  <div className="space-y-1.5"><Label className="text-[10px] uppercase font-black opacity-60">मोबाईल</Label><Input value={formData.mobile} onChange={e => setFormData({...formData, mobile: e.target.value})} className="h-10 text-[12px] rounded-xl bg-muted/20 border-none font-black shadow-inner" /></div>
-                  <div className="space-y-1.5"><Label className="text-[10px] uppercase font-black opacity-60">FSSAI क्र.</Label><Input value={formData.fssaiNumber} onChange={e => setFormData({...formData, fssaiNumber: e.target.value})} className="h-10 text-[12px] rounded-xl bg-muted/20 border-none font-black shadow-inner" /></div>
-                  <div className="space-y-1.5"><Label className="text-[10px] uppercase font-black opacity-60">मुदत (Expiry)</Label><Input value={formData.fssaiExpiry} onChange={e => setFormData({...formData, fssaiExpiry: e.target.value})} className="h-10 text-[12px] rounded-xl bg-muted/20 border-none font-black shadow-inner" placeholder="DD/MM/YYYY" /></div>
+                  <div className="col-span-2 space-y-1.5"><Label className="text-[10px] uppercase font-black opacity-60">केंद्राचे नाव *</Label><Input value={formData.name || ""} onChange={e => setFormData({...formData, name: e.target.value})} className="h-10 text-[12px] rounded-xl bg-muted/20 border-none font-black shadow-inner" /></div>
+                  <div className="space-y-1.5"><Label className="text-[10px] uppercase font-black opacity-60">कोड (ID) *</Label><Input value={formData.supplierId || ""} onChange={e => setFormData({...formData, supplierId: e.target.value})} className="h-10 text-[12px] rounded-xl bg-muted/20 border-none font-black shadow-inner" /></div>
+                  <div className="space-y-1.5"><Label className="text-[10px] uppercase font-black opacity-60">ऑपरेटरचे नाव</Label><Input value={formData.operatorName || ""} onChange={e => setFormData({...formData, operatorName: e.target.value})} className="h-10 text-[12px] rounded-xl bg-muted/20 border-none font-black shadow-inner" /></div>
+                  <div className="col-span-2 space-y-1.5"><Label className="text-[10px] uppercase font-black opacity-60">पत्ता / गाव</Label><Input value={formData.address || ""} onChange={e => setFormData({...formData, address: e.target.value})} className="h-10 text-[12px] rounded-xl bg-muted/20 border-none font-black shadow-inner" /></div>
+                  <div className="space-y-1.5"><Label className="text-[10px] uppercase font-black opacity-60">मोबाईल</Label><Input value={formData.mobile || ""} onChange={e => setFormData({...formData, mobile: e.target.value})} className="h-10 text-[12px] rounded-xl bg-muted/20 border-none font-black shadow-inner" /></div>
+                  <div className="space-y-1.5"><Label className="text-[10px] uppercase font-black opacity-60">FSSAI क्र.</Label><Input value={formData.fssaiNumber || ""} onChange={e => setFormData({...formData, fssaiNumber: e.target.value})} className="h-10 text-[12px] rounded-xl bg-muted/20 border-none font-black shadow-inner" /></div>
+                  <div className="space-y-1.5"><Label className="text-[10px] uppercase font-black opacity-60">मुदत (Expiry)</Label><Input value={formData.fssaiExpiry || ""} onChange={e => setFormData({...formData, fssaiExpiry: e.target.value})} className="h-10 text-[12px] rounded-xl bg-muted/20 border-none font-black shadow-inner" placeholder="DD/MM/YYYY" /></div>
                 </div>
               </div>
 
@@ -414,10 +414,10 @@ export default function CentersPage() {
                   <Truck className="h-4 w-4" /> २) तांत्रिक व रसायने
                 </h4>
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-1.5"><Label className="text-[10px] uppercase font-black opacity-60">काटा ब्रँड</Label><Input value={formData.scaleBrand} onChange={e => setFormData({...formData, scaleBrand: e.target.value})} className="h-10 text-[12px] rounded-xl bg-muted/20 border-none font-black shadow-inner" /></div>
-                  <div className="space-y-1.5"><Label className="text-[10px] uppercase font-black opacity-60">मशीन ब्रँड</Label><Input value={formData.fatMachineBrand} onChange={e => setFormData({...formData, fatMachineBrand: e.target.value})} className="h-10 text-[12px] rounded-xl bg-muted/20 border-none font-black shadow-inner" /></div>
-                  <div className="space-y-1.5"><Label className="text-[10px] uppercase font-black opacity-60">रसायन स्टॉक</Label><Input value={formData.chemicalsStock} onChange={e => setFormData({...formData, chemicalsStock: e.target.value})} className="h-10 text-[12px] rounded-xl bg-muted/20 border-none font-black shadow-inner" placeholder="उदा. 5 L" /></div>
-                  <div className="space-y-1.5"><Label className="text-[10px] uppercase font-black opacity-60">बॅटरी स्थिती</Label><Input value={formData.batteryCondition} onChange={e => setFormData({...formData, batteryCondition: e.target.value})} className="h-10 text-[12px] rounded-xl bg-muted/20 border-none font-black shadow-inner" placeholder="Good / Poor" /></div>
+                  <div className="space-y-1.5"><Label className="text-[10px] uppercase font-black opacity-60">काटा ब्रँड</Label><Input value={formData.scaleBrand || ""} onChange={e => setFormData({...formData, scaleBrand: e.target.value})} className="h-10 text-[12px] rounded-xl bg-muted/20 border-none font-black shadow-inner" /></div>
+                  <div className="space-y-1.5"><Label className="text-[10px] uppercase font-black opacity-60">मशीन ब्रँड</Label><Input value={formData.fatMachineBrand || ""} onChange={e => setFormData({...formData, fatMachineBrand: e.target.value})} className="h-10 text-[12px] rounded-xl bg-muted/20 border-none font-black shadow-inner" /></div>
+                  <div className="space-y-1.5"><Label className="text-[10px] uppercase font-black opacity-60">रसायन स्टॉक</Label><Input value={formData.chemicalsStock || ""} onChange={e => setFormData({...formData, chemicalsStock: e.target.value})} className="h-10 text-[12px] rounded-xl bg-muted/20 border-none font-black shadow-inner" placeholder="उदा. 5 L" /></div>
+                  <div className="space-y-1.5"><Label className="text-[10px] uppercase font-black opacity-60">बॅटरी स्थिती</Label><Input value={formData.batteryCondition || ""} onChange={e => setFormData({...formData, batteryCondition: e.target.value})} className="h-10 text-[12px] rounded-xl bg-muted/20 border-none font-black shadow-inner" placeholder="Good / Poor" /></div>
                 </div>
                 
                 <div className="grid grid-cols-1 gap-2.5 pt-1">
@@ -442,7 +442,7 @@ export default function CentersPage() {
                 </h4>
                 <div className="grid grid-cols-1 gap-4">
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="space-y-1.5"><Label className="text-[10px] uppercase font-black opacity-60">स्थानीय स्पर्धा (Competition)</Label><Input value={formData.competition} onChange={e => setFormData({...formData, competition: e.target.value})} className="h-10 text-[12px] rounded-xl bg-muted/20 border-none font-black shadow-inner" placeholder="उदा. अमूल" /></div>
+                    <div className="space-y-1.5"><Label className="text-[10px] uppercase font-black opacity-60">स्थानीय स्पर्धा (Competition)</Label><Input value={formData.competition || ""} onChange={e => setFormData({...formData, competition: e.target.value})} className="h-10 text-[12px] rounded-xl bg-muted/20 border-none font-black shadow-inner" placeholder="उदा. अमूल" /></div>
                     <div className="space-y-1.5"><Label className="text-[10px] uppercase font-black opacity-60">पेमेंट सायकल</Label>
                       <Select value={formData.paymentCycle} onValueChange={v => setFormData({...formData, paymentCycle: v})}>
                         <SelectTrigger className="h-10 text-[12px] bg-muted/20 border-none font-black rounded-xl"><SelectValue /></SelectTrigger>
@@ -463,23 +463,23 @@ export default function CentersPage() {
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="space-y-1.5"><Label className="text-[10px] uppercase font-black opacity-60">पशुखाद्य ब्रँड</Label><Input value={formData.cattleFeedBrand} onChange={e => setFormData({...formData, cattleFeedBrand: e.target.value})} className="h-10 text-[12px] rounded-xl bg-muted/20 border-none font-black shadow-inner" /></div>
-                    <div className="space-y-1.5"><Label className="text-[10px] uppercase font-black opacity-60">बर्फ लाद्या</Label><Input type="number" step="0.1" value={formData.iceBlocks} onChange={e => setFormData({...formData, iceBlocks: e.target.value})} className="h-10 text-[12px] rounded-xl bg-muted/20 border-none font-black shadow-inner" /></div>
+                    <div className="space-y-1.5"><Label className="text-[10px] uppercase font-black opacity-60">पशुखाद्य ब्रँड</Label><Input value={formData.cattleFeedBrand || ""} onChange={e => setFormData({...formData, cattleFeedBrand: e.target.value})} className="h-10 text-[12px] rounded-xl bg-muted/20 border-none font-black shadow-inner" /></div>
+                    <div className="space-y-1.5"><Label className="text-[10px] uppercase font-black opacity-60">बर्फ लाद्या</Label><Input type="number" step="0.1" value={formData.iceBlocks || "0"} onChange={e => setFormData({...formData, iceBlocks: e.target.value})} className="h-10 text-[12px] rounded-xl bg-muted/20 border-none font-black shadow-inner" /></div>
                   </div>
                   <div className="p-4 border rounded-2xl bg-blue-50/30 space-y-3 shadow-inner">
                     <p className="text-[10px] font-black text-blue-700 uppercase tracking-widest flex items-center gap-2"><Milk className="h-4 w-4" /> गाय दूध (AVERAGE COW)</p>
                     <div className="grid grid-cols-3 gap-3">
-                      <div className="space-y-1"><Label className="text-[9px] uppercase font-black opacity-60">Qty (L)</Label><Input type="number" step="0.1" value={formData.cowQty} onChange={e => setFormData({...formData, cowQty: e.target.value})} className="h-9 text-[11px] text-center border-none bg-white rounded-xl shadow-sm" /></div>
-                      <div className="space-y-1"><Label className="text-[9px] uppercase font-black opacity-60">Fat %</Label><Input type="number" step="0.1" value={formData.cowFat} onChange={e => setFormData({...formData, cowFat: e.target.value})} className="h-9 text-[11px] text-center border-none bg-white rounded-xl shadow-sm" /></div>
-                      <div className="space-y-1"><Label className="text-[9px] uppercase font-black opacity-60">SNF %</Label><Input type="number" step="0.1" value={formData.cowSnf} onChange={e => setFormData({...formData, cowSnf: e.target.value})} className="h-9 text-[11px] text-center border-none bg-white rounded-xl shadow-sm" /></div>
+                      <div className="space-y-1"><Label className="text-[9px] uppercase font-black opacity-60">Qty (L)</Label><Input type="number" step="0.1" value={formData.cowQty || "0"} onChange={e => setFormData({...formData, cowQty: e.target.value})} className="h-9 text-[11px] text-center border-none bg-white rounded-xl shadow-sm" /></div>
+                      <div className="space-y-1"><Label className="text-[9px] uppercase font-black opacity-60">Fat %</Label><Input type="number" step="0.1" value={formData.cowFat || "0"} onChange={e => setFormData({...formData, cowFat: e.target.value})} className="h-9 text-[11px] text-center border-none bg-white rounded-xl shadow-sm" /></div>
+                      <div className="space-y-1"><Label className="text-[9px] uppercase font-black opacity-60">SNF %</Label><Input type="number" step="0.1" value={formData.cowSnf || "0"} onChange={e => setFormData({...formData, cowSnf: e.target.value})} className="h-9 text-[11px] text-center border-none bg-white rounded-xl shadow-sm" /></div>
                     </div>
                   </div>
                   <div className="p-4 border rounded-2xl bg-amber-50/30 space-y-3 shadow-inner">
                     <p className="text-[10px] font-black text-amber-700 uppercase tracking-widest flex items-center gap-2"><Milk className="h-4 w-4" /> म्हैस दूध (AVERAGE BUF)</p>
                     <div className="grid grid-cols-3 gap-3">
-                      <div className="space-y-1"><Label className="text-[9px] uppercase font-black opacity-60">Qty (L)</Label><Input type="number" step="0.1" value={formData.bufQty} onChange={e => setFormData({...formData, bufQty: e.target.value})} className="h-9 text-[11px] text-center border-none bg-white rounded-xl shadow-sm" /></div>
-                      <div className="space-y-1"><Label className="text-[9px] uppercase font-black opacity-60">Fat %</Label><Input type="number" step="0.1" value={formData.bufFat} onChange={e => setFormData({...formData, bufFat: e.target.value})} className="h-9 text-[11px] text-center border-none bg-white rounded-xl shadow-sm" /></div>
-                      <div className="space-y-1"><Label className="text-[9px] uppercase font-black opacity-60">SNF %</Label><Input type="number" step="0.1" value={formData.bufSnf} onChange={e => setFormData({...formData, bufSnf: e.target.value})} className="h-9 text-[11px] text-center border-none bg-white rounded-xl shadow-sm" /></div>
+                      <div className="space-y-1"><Label className="text-[9px] uppercase font-black opacity-60">Qty (L)</Label><Input type="number" step="0.1" value={formData.bufQty || "0"} onChange={e => setFormData({...formData, bufQty: e.target.value})} className="h-9 text-[11px] text-center border-none bg-white rounded-xl shadow-sm" /></div>
+                      <div className="space-y-1"><Label className="text-[9px] uppercase font-black opacity-60">Fat %</Label><Input type="number" step="0.1" value={formData.bufFat || "0"} onChange={e => setFormData({...formData, bufFat: e.target.value})} className="h-9 text-[11px] text-center border-none bg-white rounded-xl shadow-sm" /></div>
+                      <div className="space-y-1"><Label className="text-[9px] uppercase font-black opacity-60">SNF %</Label><Input type="number" step="0.1" value={formData.bufSnf || "0"} onChange={e => setFormData({...formData, bufSnf: e.target.value})} className="h-9 text-[11px] text-center border-none bg-white rounded-xl shadow-sm" /></div>
                     </div>
                   </div>
                 </div>
