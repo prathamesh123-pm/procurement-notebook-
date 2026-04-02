@@ -64,7 +64,7 @@ function DailyReportForm() {
     travelVehicle: "स्वतःचे",
     travelStartKm: "",
     travelEndKm: "",
-    travelTotalKm: "",
+    travelTotalKm: "0",
     
     // Structured Office Work Data
     officeTaskSubject: "",
@@ -96,6 +96,16 @@ function DailyReportForm() {
       routeVisitLogs: [createEmptyRouteEntry()]
     }))
   }, [])
+
+  // Auto-calculate Total KM
+  useEffect(() => {
+    const start = parseFloat(formData.travelStartKm);
+    const end = parseFloat(formData.travelEndKm);
+    if (!isNaN(start) && !isNaN(end)) {
+      const total = end - start;
+      setFormData(prev => ({ ...prev, travelTotalKm: total >= 0 ? total.toString() : "0" }));
+    }
+  }, [formData.travelStartKm, formData.travelEndKm]);
 
   useEffect(() => {
     if (profileData && !editId) {
@@ -276,9 +286,9 @@ function DailyReportForm() {
                   </RadioGroup>
                 </div>
                 <div className="grid grid-cols-3 gap-2">
-                  <div className="space-y-0.5"><Label className="compact-label">Start KM</Label><Input value={formData.travelStartKm || ""} onChange={e => setFormData({...formData, travelStartKm: e.target.value})} className="compact-input h-8 text-center" /></div>
-                  <div className="space-y-0.5"><Label className="compact-label">End KM</Label><Input value={formData.travelEndKm || ""} onChange={e => setFormData({...formData, travelEndKm: e.target.value})} className="compact-input h-8 text-center" /></div>
-                  <div className="space-y-0.5"><Label className="compact-label text-blue-600">Total KM</Label><Input value={formData.travelTotalKm || ""} onChange={e => setFormData({...formData, travelTotalKm: e.target.value})} className="compact-input h-8 text-center font-black text-blue-600" /></div>
+                  <div className="space-y-0.5"><Label className="compact-label">Start KM</Label><Input value={formData.travelStartKm || ""} onChange={e => setFormData({...formData, travelStartKm: e.target.value})} className="compact-input h-8 text-center" placeholder="0" /></div>
+                  <div className="space-y-0.5"><Label className="compact-label">End KM</Label><Input value={formData.travelEndKm || ""} onChange={e => setFormData({...formData, travelEndKm: e.target.value})} className="compact-input h-8 text-center" placeholder="0" /></div>
+                  <div className="space-y-0.5"><Label className="compact-label text-blue-600">Total KM</Label><Input value={formData.travelTotalKm || "0"} readOnly className="compact-input h-8 text-center font-black text-blue-600 bg-blue-50/50" /></div>
                 </div>
               </div>
             </div>

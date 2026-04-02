@@ -279,10 +279,13 @@ export default function ReportsPage() {
     const d = report.fullData || {};
     const mainHeading = d.reportHeading || d.title || report.type;
 
+    // KM fields grouping logic
+    const kmKeys = ["travelStartKm", "travelEndKm", "travelTotalKm"];
+
     const filteredEntries = orderedKeys
       .filter(key => {
         const val = d[key];
-        return val !== undefined && val !== "" && val !== null;
+        return val !== undefined && val !== "" && val !== null && !kmKeys.includes(key);
       })
       .map(key => [key, d[key]]);
 
@@ -321,6 +324,31 @@ export default function ReportsPage() {
                     </td>
                   </tr>
                 ))}
+
+                {/* Grouped KM Metrics Row */}
+                {(d.travelStartKm || d.travelEndKm || d.travelTotalKm) && (
+                  <tr className="font-bold text-[10px] hover:bg-slate-50 transition-colors text-left">
+                    <td className="p-2 bg-slate-50 uppercase text-[9px] font-black border-r border-slate-900 print:bg-white print:border-black">
+                      प्रवासाचे किलोमीटर (START/END/TOTAL)
+                    </td>
+                    <td className="p-0">
+                      <div className="flex divide-x divide-slate-900 h-full print:divide-black">
+                        <div className="flex-1 p-2 flex flex-col items-center justify-center">
+                          <span className="text-[7px] text-slate-400 font-black">START</span>
+                          <span className="text-[10px]">{d.travelStartKm || '0'}</span>
+                        </div>
+                        <div className="flex-1 p-2 flex flex-col items-center justify-center">
+                          <span className="text-[7px] text-slate-400 font-black">END</span>
+                          <span className="text-[10px]">{d.travelEndKm || '0'}</span>
+                        </div>
+                        <div className="flex-1 p-2 flex flex-col items-center justify-center bg-blue-50/50 print:bg-white">
+                          <span className="text-[7px] text-primary font-black">TOTAL</span>
+                          <span className="text-[10px] font-black text-primary print:text-black">{d.travelTotalKm || '0'}</span>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
