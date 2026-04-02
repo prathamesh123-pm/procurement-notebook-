@@ -389,6 +389,8 @@ export default function ReportsPage() {
     );
   };
 
+  if (!mounted) return null;
+
   return (
     <div className="compact-form-container pb-20 max-w-[650px] mx-auto px-2 animate-in fade-in duration-700">
       <div className="flex flex-col sm:flex-row items-center justify-between border-b-2 border-primary/20 pb-4 mb-6 gap-4">
@@ -566,6 +568,8 @@ export default function ReportsPage() {
             padding: 0 !important;
             background: white !important;
             overflow: visible !important;
+            display: block !important;
+            visibility: visible !important;
           }
 
           [role="dialog"] header,
