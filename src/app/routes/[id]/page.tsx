@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Supplier, EquipmentItem, SupplierType } from "@/lib/types"
 import { 
   Plus, Search, MapPin, User, 
-  Truck, Edit, ChevronRight, ArrowLeft, X, Laptop, Zap, Sun, Trash2, Milk, Box, Info, Wallet, ShieldCheck, ClipboardList, CheckCircle2
+  Truck, Edit, ChevronRight, ArrowLeft, X, Laptop, Zap, Sun, Trash2, Milk, Box, Info, Wallet, ShieldCheck, ClipboardList, CheckCircle2, Printer
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
@@ -143,6 +143,7 @@ export default function RouteDetailsPage() {
     } else if (editingId) {
       updateDocumentNonBlocking(doc(db, 'suppliers', editingId), supplierData)
       toast({ title: "यशस्वी", description: "माहिती अद्ययावत केली गेली." })
+      if (selectedSupplier?.id === editingId) setSelectedSupplier({ ...supplierData, id: editingId } as any)
     }
     setIsDialogOpen(false)
   }
@@ -158,6 +159,10 @@ export default function RouteDetailsPage() {
     }
   }
 
+  const handlePrintProfile = () => {
+    window.print()
+  }
+
   const filteredSuppliers = useMemo(() => {
     return suppliers.filter(s => (s.name?.toLowerCase() || "").includes(searchQuery.toLowerCase()))
   }, [suppliers, searchQuery])
@@ -166,7 +171,7 @@ export default function RouteDetailsPage() {
 
   return (
     <div className="space-y-2 max-w-7xl mx-auto w-full pb-10 px-1 animate-in fade-in duration-500">
-      <div className="flex items-center justify-between border-b pb-2 px-1">
+      <div className="flex items-center justify-between border-b pb-2 px-1 no-print">
         <div className="flex items-center gap-2">
           <Button type="button" variant="ghost" size="icon" className="h-7 w-7 rounded-full" onClick={() => router.push('/routes')}><ArrowLeft className="h-4 w-4" /></Button>
           <div className="min-w-0"><h2 className="text-base font-black uppercase truncate tracking-tight">सप्लायर (Suppliers)</h2><p className="text-[9px] text-muted-foreground font-black uppercase truncate tracking-widest">RT: {route?.name || routeId}</p></div>
@@ -175,27 +180,77 @@ export default function RouteDetailsPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-2">
-        <Card className={`lg:col-span-4 border shadow-none bg-white overflow-hidden flex flex-col border-muted-foreground/10 ${selectedSupplier ? 'hidden lg:flex' : 'flex'}`}>
-          <div className="p-2 border-b bg-muted/5"><div className="relative"><Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3 w-3 text-muted-foreground opacity-50" /><input placeholder="शोधा..." className="w-full pl-7 h-8 text-[11px] bg-white border border-muted-foreground/10 rounded-md font-black uppercase" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} /></div></div>
+        <Card className={`lg:col-span-4 border shadow-none bg-white overflow-hidden flex flex-col border-muted-foreground/10 no-print ${selectedSupplier ? 'hidden lg:flex' : 'flex'}`}>
+          <div className="p-2 border-b bg-muted/5"><div className="relative"><Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground opacity-50" /><input placeholder="शोधा..." className="w-full pl-7 h-8 text-[11px] bg-white border border-muted-foreground/10 rounded-md font-black uppercase" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} /></div></div>
           <ScrollArea className="h-[650px]"><div className="divide-y">{filteredSuppliers.map(s => (<div key={s.id} onClick={() => setSelectedSupplier(s)} className={`p-2.5 cursor-pointer hover:bg-muted/50 flex justify-between items-center ${selectedSupplier?.id === s.id ? 'bg-primary/5 border-l-2 border-primary' : ''}`}><div className="min-w-0"><div className="flex items-center gap-1.5"><h4 className="font-black text-[11px] truncate uppercase">{s.name}</h4>{s.supplierType === 'Center' && <Badge className="bg-emerald-500 h-3 px-1 text-[6px] font-black border-none uppercase">Center</Badge>}</div><p className="text-[9px] text-muted-foreground truncate font-bold">ID: {s.supplierId || s.id?.slice(-6)} | {s.address}</p></div><div className="flex items-center gap-1"><Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:bg-destructive/5" onClick={(e) => handleDeleteSupplier(s.id, e)}><Trash2 className="h-3.5 w-3.5" /></Button><ChevronRight className="h-3.5 w-3.5 text-muted-foreground opacity-50" /></div></div>))}</div></ScrollArea>
         </Card>
 
-        <Card className={`lg:col-span-8 border shadow-none bg-white rounded-xl min-h-[450px] border-muted-foreground/10 ${!selectedSupplier ? 'hidden lg:flex' : 'block'}`}>
+        <Card className={`lg:col-span-8 border shadow-none bg-white rounded-xl min-h-[450px] border-muted-foreground/10 print:border-none print:shadow-none ${!selectedSupplier ? 'hidden lg:flex' : 'block'}`} id="printable-area">
           {selectedSupplier ? (
             <div className="flex flex-col h-full">
-              <div className="p-3 border-b flex items-center justify-between bg-primary/5 sticky top-0 z-10"><Button type="button" variant="ghost" size="icon" className="lg:hidden" onClick={() => setSelectedSupplier(null)}><ArrowLeft className="h-4 w-4" /></Button><div className="flex-1 px-2 min-w-0"><h3 className="text-xs sm:text-sm font-black truncate uppercase">{selectedSupplier.name}</h3><p className="text-[9px] font-black text-muted-foreground uppercase">ID: {selectedSupplier.supplierId || selectedSupplier.id} | {selectedSupplier.supplierType || 'Gavali'}</p></div><div className="flex gap-1.5"><Button type="button" variant="outline" size="icon" className="h-7 w-7 text-primary hover:bg-primary/5 rounded-lg" onClick={() => openEditDialog(selectedSupplier)}><Edit className="h-3 w-3" /></Button><Button type="button" variant="outline" size="icon" className="h-7 w-7 text-destructive hover:bg-destructive/5 rounded-lg" onClick={(e) => handleDeleteSupplier(selectedSupplier.id, e)}><Trash2 className="h-3.5 w-3.5" /></Button></div></div>
-              <ScrollArea className="flex-1 h-[650px]">
-                <div className="p-3 space-y-4">
-                  <div className="grid grid-cols-2 gap-3"><div className="bg-muted/20 p-2.5 rounded-xl border border-muted-foreground/5 space-y-1.5"><h4 className="text-[9px] font-black uppercase text-primary tracking-widest">संपर्क व पत्ता</h4><p className="text-[10px] font-black">{selectedSupplier.mobile || "-"}</p><p className="text-[10px] font-medium leading-relaxed">{selectedSupplier.address || "-"}</p></div><div className="bg-muted/20 p-2.5 rounded-xl border border-muted-foreground/5 space-y-1.5"><h4 className="text-[9px] font-black uppercase text-primary tracking-widest">FSSAI परवाना</h4><p className="text-[10px] font-black">{selectedSupplier.fssaiNumber || "N/A"}</p><Badge className="text-[8px] h-4 px-1.5 font-black bg-primary/10 text-primary border-none">VALID: {selectedSupplier.fssaiExpiry || "-"}</Badge></div></div>
-                  <div className="grid grid-cols-3 gap-2">{[{icon: Laptop, label: 'POP सिस्टम', val: selectedSupplier.computerAvailable}, {icon: Zap, label: 'UPS/Inv', val: selectedSupplier.upsInverterAvailable}, {icon: Sun, label: 'सोलर', val: selectedSupplier.solarAvailable}].map((it, i) => (<div key={i} className={`p-2 rounded-xl border flex flex-col items-center gap-1 ${it.val ? 'bg-green-50 border-green-100 shadow-sm' : 'bg-muted/20 opacity-50 border-muted-foreground/5'}`}><it.icon className={`h-4 w-4 ${it.val ? 'text-green-600' : 'text-muted-foreground'}`} /><span className="text-[8px] font-black uppercase">{it.label}</span></div>))}</div>
-                  <div className="space-y-1.5"><h4 className="text-[9px] font-black uppercase text-primary tracking-widest">दूध आकडेवारी (AVG)</h4><div className="grid grid-cols-2 gap-2"><div className="p-3 bg-blue-50/50 border border-blue-100 rounded-xl text-center"><p className="text-[8px] font-black text-blue-600 uppercase tracking-tighter">गाय दूध</p><p className="text-sm font-black text-blue-900">{selectedSupplier.cowMilk?.quantity || 0}L</p><p className="text-[8px] font-bold text-blue-400">F: {selectedSupplier.cowMilk?.fat}% | S: {selectedSupplier.cowMilk?.snf}%</p></div><div className="p-3 bg-amber-50/50 border border-amber-100 rounded-xl text-center"><p className="text-[8px] font-black text-amber-600 uppercase tracking-tighter">म्हेस दूध</p><p className="text-sm font-black text-amber-900">{selectedSupplier.buffaloMilk?.quantity || 0}L</p><p className="text-[8px] font-bold text-amber-400">F: {selectedSupplier.buffaloMilk?.fat}% | S: {selectedSupplier.buffaloMilk?.snf}%</p></div></div></div>
+              <div className="p-3 border-b flex items-center justify-between bg-primary/5 sticky top-0 z-10 print:bg-white print:border-black print:border-b-2"><Button type="button" variant="ghost" size="icon" className="lg:hidden no-print" onClick={() => setSelectedSupplier(null)}><ArrowLeft className="h-4 w-4" /></Button><div className="flex-1 px-2 min-w-0"><h3 className="text-xs sm:text-sm font-black truncate uppercase print:text-lg">{selectedSupplier.name}</h3><p className="text-[9px] font-black text-muted-foreground uppercase print:text-black">ID: {selectedSupplier.supplierId || selectedSupplier.id} | {selectedSupplier.supplierType || 'Gavali'}</p></div><div className="flex gap-1.5 no-print"><Button type="button" variant="outline" size="icon" className="h-7 w-7 text-primary border-primary/20 hover:bg-primary/5 rounded-lg" onClick={handlePrintProfile}><Printer className="h-3.5 w-3.5" /></Button><Button type="button" variant="outline" size="icon" className="h-7 w-7 text-primary border-primary/20 hover:bg-primary/5 rounded-lg" onClick={() => openEditDialog(selectedSupplier)}><Edit className="h-3.5 w-3.5" /></Button><Button type="button" variant="outline" size="icon" className="h-7 w-7 text-destructive border-rose-200 hover:bg-destructive/5 rounded-lg" onClick={(e) => handleDeleteSupplier(selectedSupplier.id, e)}><Trash2 className="h-3.5 w-3.5" /></Button></div></div>
+              <ScrollArea className="flex-1 h-[650px] print:h-auto">
+                <div className="p-3 space-y-4 print:p-0 print:space-y-6">
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="bg-muted/20 p-2.5 rounded-xl border border-muted-foreground/5 space-y-1.5 print:bg-white print:border-black">
+                      <h4 className="text-[9px] font-black uppercase text-primary tracking-widest print:text-black print:text-[10px]">१) प्राथमिक माहिती</h4>
+                      <div className="space-y-1">
+                        <div><p className="text-[8px] text-muted-foreground uppercase font-black print:text-black">नाव</p><p className="text-[10px] font-black uppercase">{selectedSupplier.name || "-"}</p></div>
+                        <div><p className="text-[8px] text-muted-foreground uppercase font-black print:text-black">कोड (ID)</p><p className="text-[10px] font-black uppercase">{selectedSupplier.supplierId || "-"}</p></div>
+                        {selectedSupplier.supplierType === 'Center' && <div><p className="text-[8px] text-muted-foreground uppercase font-black print:text-black">ऑपरेटर</p><p className="text-[10px] font-black uppercase">{selectedSupplier.operatorName || "-"}</p></div>}
+                        <div><p className="text-[8px] text-muted-foreground uppercase font-black print:text-black">मोबाईल</p><p className="text-[10px] font-black">{selectedSupplier.mobile || "-"}</p></div>
+                        <div><p className="text-[8px] text-muted-foreground uppercase font-black print:text-black">पत्ता / गाव</p><p className="text-[10px] font-black uppercase">{selectedSupplier.address || selectedSupplier.village || "-"}</p></div>
+                      </div>
+                    </div>
+                    <div className="bg-muted/20 p-2.5 rounded-xl border border-muted-foreground/5 space-y-1.5 print:bg-white print:border-black">
+                      <h4 className="text-[9px] font-black uppercase text-primary tracking-widest print:text-black print:text-[10px]">२) परवाना व तांत्रिक</h4>
+                      <div className="space-y-1">
+                        <div><p className="text-[8px] text-muted-foreground uppercase font-black print:text-black">FSSAI क्र.</p><p className="text-[10px] font-black uppercase">{selectedSupplier.fssaiNumber || "-"}</p></div>
+                        <div><p className="text-[8px] text-muted-foreground uppercase font-black print:text-black">मुदत (Expiry)</p><p className="text-[10px] font-black">{selectedSupplier.fssaiExpiry || "-"}</p></div>
+                        <div><p className="text-[8px] text-muted-foreground uppercase font-black print:text-black">काटा ब्रँड</p><p className="text-[10px] font-black uppercase">{selectedSupplier.scaleBrand || "-"}</p></div>
+                        <div><p className="text-[8px] text-muted-foreground uppercase font-black print:text-black">मशीन ब्रँड</p><p className="text-[10px] font-black uppercase">{selectedSupplier.fatMachineBrand || "-"}</p></div>
+                        <div><p className="text-[8px] text-muted-foreground uppercase font-black print:text-black">बॅटरी स्थिती</p><p className="text-[10px] font-black uppercase">{selectedSupplier.batteryCondition || "-"}</p></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="bg-muted/20 p-2.5 rounded-xl border border-muted-foreground/5 space-y-1.5 print:bg-white print:border-black">
+                      <h4 className="text-[9px] font-black uppercase text-primary tracking-widest print:text-black print:text-[10px]">३) व्यावसायिक माहिती</h4>
+                      <div className="space-y-1">
+                        <div><p className="text-[8px] text-muted-foreground uppercase font-black print:text-black">पेमेंट सायकल</p><p className="text-[10px] font-black">{selectedSupplier.paymentCycle || "7 Days"}</p></div>
+                        <div><p className="text-[8px] text-muted-foreground uppercase font-black print:text-black">जागेची मालकी</p><p className="text-[10px] font-black">{selectedSupplier.spaceOwnership === 'Self' ? 'स्वतःची' : 'भाड्याची'}</p></div>
+                        <div><p className="text-[8px] text-muted-foreground uppercase font-black print:text-black">स्थानिक स्पर्धा</p><p className="text-[10px] font-black uppercase">{selectedSupplier.competition || "-"}</p></div>
+                        <div><p className="text-[8px] text-muted-foreground uppercase font-black print:text-black">पशुखाद्य ब्रँड</p><p className="text-[10px] font-black uppercase">{selectedSupplier.cattleFeedBrand || "-"}</p></div>
+                      </div>
+                    </div>
+                    <div className="bg-muted/20 p-2.5 rounded-xl border border-muted-foreground/5 space-y-1.5 print:bg-white print:border-black">
+                      <h4 className="text-[9px] font-black uppercase text-primary tracking-widest print:text-black print:text-[10px]">४) साठा व गुणवत्ता</h4>
+                      <div className="space-y-1">
+                        <div><p className="text-[8px] text-muted-foreground uppercase font-black print:text-black">ग्रेड</p><Badge className="h-4 px-1.5 text-[8px] font-black bg-emerald-500 border-none text-white print:bg-black">{selectedSupplier.hygieneGrade || "A"}</Badge></div>
+                        <div><p className="text-[8px] text-muted-foreground uppercase font-black print:text-black">बर्फ लाद्या</p><p className="text-[10px] font-black">{selectedSupplier.iceBlocks || 0}</p></div>
+                        <div><p className="text-[8px] text-muted-foreground uppercase font-black print:text-black">एकूण कॅन</p><p className="text-[10px] font-black">{selectedSupplier.milkCansCount || 0}</p></div>
+                        <div><p className="text-[8px] text-muted-foreground uppercase font-black print:text-black">रसायन स्टॉक</p><p className="text-[10px] font-black uppercase">{selectedSupplier.chemicalsStock || "-"}</p></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-2">{[{icon: Laptop, label: 'POP सिस्टम', val: selectedSupplier.computerAvailable}, {icon: Zap, label: 'UPS/Inv', val: selectedSupplier.upsInverterAvailable}, {icon: Sun, label: 'सोलर', val: selectedSupplier.solarAvailable}].map((it, i) => (<div key={i} className={`p-2 rounded-xl border flex flex-col items-center gap-1 ${it.val ? 'bg-green-50 border-green-100 shadow-sm' : 'bg-muted/20 opacity-50 border-muted-foreground/5'} print:border-black print:opacity-100`}><it.icon className={`h-4 w-4 ${it.val ? 'text-green-600' : 'text-muted-foreground'} print:text-black`} /><span className="text-[8px] font-black uppercase">{it.label}: {it.val ? 'हो' : 'नाही'}</span></div>))}</div>
+                  <div className="space-y-1.5"><h4 className="text-[9px] font-black uppercase text-primary tracking-widest print:text-black print:text-[10px]">दूध आकडेवारी (AVG)</h4><div className="grid grid-cols-2 gap-2"><div className="p-3 bg-blue-50/50 border border-blue-100 rounded-xl text-center print:bg-white print:border-black"><p className="text-[8px] font-black text-blue-600 uppercase tracking-tighter print:text-black">गाय दूध</p><p className="text-sm font-black text-blue-900 print:text-black">{selectedSupplier.cowMilk?.quantity || 0}L</p><p className="text-[8px] font-bold text-blue-400 print:text-black">F: {selectedSupplier.cowMilk?.fat}% | S: {selectedSupplier.cowMilk?.snf}%</p></div><div className="p-3 bg-amber-50/50 border border-amber-100 rounded-xl text-center print:bg-white print:border-black"><p className="text-[8px] font-black text-amber-600 uppercase tracking-tighter print:text-black">म्हेस दूध</p><p className="text-sm font-black text-amber-900 print:text-black">{selectedSupplier.buffaloMilk?.quantity || 0}L</p><p className="text-[8px] font-bold text-amber-400 print:text-black">F: {selectedSupplier.buffaloMilk?.fat}% | S: {selectedSupplier.buffaloMilk?.snf}%</p></div></div></div>
                   {selectedSupplier.equipment && selectedSupplier.equipment.length > 0 && (
-                    <div className="space-y-1.5"><h4 className="text-[9px] font-black uppercase text-primary tracking-widest">साहित्य यादी (Material)</h4><div className="border border-muted-foreground/10 rounded-xl overflow-hidden"><table className="w-full text-[10px]"><thead><tr className="bg-muted/20 text-[8px] font-black uppercase border-b"><th className="p-2 text-left">साहित्य</th><th className="p-2 text-center">नग</th><th className="p-2 text-right">मालकी</th></tr></thead><tbody className="divide-y">{selectedSupplier.equipment.map(e => (<tr key={e.id} className="hover:bg-muted/5 transition-colors"><td className="p-2 font-black uppercase text-[9px]">{e.name}</td><td className="p-2 text-center font-black">{e.quantity}</td><td className="p-2 text-right"><Badge variant="outline" className={`text-[7px] font-black uppercase h-4 ${e.ownership === 'Self' ? 'border-amber-200 text-amber-600 bg-amber-50' : 'border-blue-200 text-blue-600 bg-blue-50'}`}>{e.ownership === 'Self' ? 'स्वतः' : 'डेअरी'}</Badge></td></tr>))}</tbody></table></div></div>
+                    <div className="space-y-1.5"><h4 className="text-[9px] font-black uppercase text-primary tracking-widest print:text-black print:text-[10px]">साहित्य यादी (Material)</h4><div className="border border-muted-foreground/10 rounded-xl overflow-hidden print:border-black"><table className="w-full text-[10px]"><thead><tr className="bg-muted/20 text-[8px] font-black uppercase border-b print:bg-white print:border-black"><th className="p-2 text-left print:text-black">साहित्य</th><th className="p-2 text-center print:text-black">नग</th><th className="p-2 text-right print:text-black">मालकी</th></tr></thead><tbody className="divide-y print:divide-black">{selectedSupplier.equipment.map(e => (<tr key={e.id} className="hover:bg-muted/5 transition-colors"><td className="p-2 font-black uppercase text-[9px] print:text-black">{e.name}</td><td className="p-2 text-center font-black print:text-black">{e.quantity}</td><td className="p-2 text-right"><Badge variant="outline" className={`text-[7px] font-black uppercase h-4 ${e.ownership === 'Self' ? 'border-amber-200 text-amber-600 bg-amber-50' : 'border-blue-200 text-blue-600 bg-blue-50'} print:text-black print:border-black`}>{e.ownership === 'Self' ? 'स्वतः' : 'डेअरी'}</Badge></td></tr>))}</tbody></table></div></div>
                   )}
+                  <div className="space-y-1.5"><h4 className="text-[9px] font-black uppercase text-primary tracking-widest print:text-black print:text-[10px]">भेळस तपासणी किट</h4><div className="p-2.5 bg-muted/10 rounded-xl border border-muted-foreground/5 text-[10px] font-bold print:bg-white print:border-black">{selectedSupplier.adulterationKitInfo || "-"}</div></div>
+                  {(selectedSupplier.additionalNotes || selectedSupplier.additionalInfo) && <div className="space-y-1.5"><h4 className="text-[9px] font-black uppercase text-primary tracking-widest print:text-black print:text-[10px]">विशेष शेरा (NOTES)</h4><div className="p-2.5 bg-muted/10 rounded-xl border border-muted-foreground/5 italic text-[10px] text-slate-600 leading-relaxed print:bg-white print:border-black print:text-black">{selectedSupplier.additionalNotes || selectedSupplier.additionalInfo}</div></div>}
+                  
+                  <div className="hidden print:grid grid-cols-2 gap-10 text-center uppercase font-black text-[8px] tracking-widest text-slate-400 mt-20">
+                    <div className="border-t border-black pt-2 text-black">अधिकारी स्वाक्षरी</div>
+                    <div className="border-t border-black pt-2 text-black">सुपरवायझर स्वाक्षरी</div>
+                  </div>
                 </div>
               </ScrollArea>
             </div>
-          ) : (<div className="hidden lg:flex flex-col items-center gap-2 p-10 justify-center h-full"><User className="h-12 w-12 text-muted-foreground/10" /><h4 className="font-black text-muted-foreground/30 text-[10px] uppercase tracking-[0.3em]">सप्लायर निवडा</h4></div>)}
+          ) : (<div className="hidden lg:flex flex-col items-center gap-2 p-10 justify-center h-full no-print"><User className="h-12 w-12 text-muted-foreground/10" /><h4 className="font-black text-muted-foreground/30 text-[10px] uppercase tracking-[0.3em]">सप्लायर निवडा</h4></div>)}
         </Card>
       </div>
 
@@ -369,6 +424,62 @@ export default function RouteDetailsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <style jsx global>{`
+        @media print {
+          @page {
+            size: A4;
+            margin: 5mm;
+          }
+          
+          body > *:not(#printable-area), 
+          header, nav, aside, footer, .sidebar, .no-print, button {
+            display: none !important;
+          }
+
+          body {
+            background: white !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            overflow: visible !important;
+          }
+
+          #printable-area {
+            position: absolute !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 100% !important;
+            max-width: none !important;
+            transform: none !important;
+            box-shadow: none !important;
+            border: none !important;
+            padding: 0 !important;
+            background: white !important;
+            overflow: visible !important;
+            display: block !important;
+            visibility: visible !important;
+          }
+
+          #printable-area * {
+            visibility: visible !important;
+            color: black !important;
+            print-color-adjust: exact;
+            -webkit-print-color-adjust: exact;
+          }
+
+          table {
+            width: 100% !important;
+            border-collapse: collapse !important;
+            border: 1.5px solid black !important;
+          }
+
+          th, td {
+            border: 1px solid black !important;
+            padding: 4px !important;
+            font-size: 10px !important;
+          }
+        }
+      `}</style>
     </div>
   )
 }
