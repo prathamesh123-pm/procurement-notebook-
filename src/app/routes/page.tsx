@@ -161,7 +161,7 @@ export default function RoutesPage() {
                   </div>
                   <div className="grid grid-cols-3 gap-1.5 bg-muted/20 p-2.5 rounded-xl border border-muted-foreground/5 text-[7px] font-black uppercase text-center opacity-80">
                     <div className="space-y-0.5"><div className="text-muted-foreground">सप्लायर</div><div className="text-foreground text-[10px]">{totals.pointsCount}</div></div>
-                    <div className="space-y-0.5"><div className="text-muted-foreground leading-tight">कॉस्टिंग पर <br/>किलोमीटर</div><div className="text-foreground text-[10px]">₹{route.costPerKm}</div></div>
+                    <div className="space-y-0.5"><div className="text-muted-foreground leading-tight">कॉस्टिंग</div><div className="text-foreground text-[10px]">₹{route.costPerKm}</div></div>
                     <div className="space-y-0.5"><div className="text-muted-foreground">बर्फ</div><div className="text-foreground text-[10px]">{route.iceBlocks || 0}</div></div>
                   </div>
                 </CardContent>

@@ -8,11 +8,12 @@ import { Input } from "@/components/ui/input"
 import { Card } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { 
-  ArrowLeft, Save, AlertCircle, Ban, IndianRupee, ShieldAlert, RefreshCw
+  ArrowLeft, Save, AlertCircle, Ban, IndianRupee, ShieldAlert, RefreshCw, PlusCircle, Trash2
 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { useUser, useFirestore, useDoc, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking } from "@/firebase"
 import { collection, doc } from "firebase/firestore"
+import { ScrollArea } from "@/components/ui/scroll-area"
 
 function SeizureReportForm() {
   const router = useRouter()
@@ -29,7 +30,8 @@ function SeizureReportForm() {
     supplierName: "", supplierId: "", route: "",
     seizureQty: "", milkType: "MIX", 
     reason: "Adulteration", fineAmount: "",
-    actionTaken: "Destroyed", notes: ""
+    actionTaken: "Destroyed", notes: "",
+    points: [""]
   })
 
   const reportRef = useMemoFirebase(() => {
@@ -45,9 +47,21 @@ function SeizureReportForm() {
 
   useEffect(() => {
     if (existingReport && existingReport.fullData) {
-      setFormData(existingReport.fullData)
+      setFormData(prev => ({ ...prev, ...existingReport.fullData }))
     }
   }, [existingReport])
+
+  const addPoint = () => setFormData(prev => ({ ...prev, points: [...prev.points, ""] }))
+  const removePoint = (index: number) => {
+    if (formData.points.length > 1) {
+      setFormData(prev => ({ ...prev, points: prev.points.filter((_, i) => i !== index) }))
+    }
+  }
+  const updatePoint = (index: number, val: string) => {
+    const updated = [...formData.points]
+    updated[index] = val
+    setFormData(prev => ({ ...prev, points: updated }))
+  }
 
   const handleSave = () => {
     if (!db || !user || !formData.supplierName) {
@@ -55,14 +69,21 @@ function SeizureReportForm() {
       return
     }
 
+    const filteredPoints = formData.points.filter(p => p.trim())
+    const pointsSummary = filteredPoints.map((p, i) => `${i + 1}. ${p}`).join(' | ')
+
     const reportData = {
       type: 'Seizure & Penalty',
       date: formData.date,
       reportDate: formData.date,
       generatedByUserId: user.uid,
-      summary: `जप्ती: ${formData.supplierName}. दूध: ${formData.seizureQty}L. दंड: ₹${formData.fineAmount}. कारण: ${formData.reason}.`,
+      summary: `जप्ती: ${formData.supplierName}. दूध: ${formData.seizureQty}L. दंड: ₹${formData.fineAmount}. कारण: ${formData.reason}. ${pointsSummary ? `तपशील: ${pointsSummary}` : ''}`,
       overallSummary: `जप्ती: ${formData.supplierName}. दूध: ${formData.seizureQty}L. दंड: ₹${formData.fineAmount}. कारण: ${formData.reason}.`,
-      fullData: { ...formData, name: user.displayName || "संकलन सुपरवायझर" },
+      fullData: { 
+        ...formData, 
+        points: filteredPoints,
+        name: user.displayName || "संकलन सुपरवायझर" 
+      },
       updatedAt: new Date().toISOString()
     }
 
@@ -82,7 +103,7 @@ function SeizureReportForm() {
   if (!mounted || isLoading) return <div className="p-20 text-center font-black uppercase text-[10px] opacity-50 animate-pulse">लोड होत आहे...</div>
 
   return (
-    <div className="compact-form-container px-2">
+    <div className="compact-form-container px-2 pb-20">
       <div className="flex items-center gap-2 border-b pb-2 mb-2">
         <Button variant="ghost" size="icon" onClick={() => router.push('/reports')} className="h-8 w-8 shrink-0"><ArrowLeft className="h-4 w-4" /></Button>
         <div className="min-w-0">
@@ -91,8 +112,8 @@ function SeizureReportForm() {
         </div>
       </div>
 
-      <div className="space-y-2">
-        <Card className="compact-card border-destructive/10">
+      <div className="space-y-3">
+        <Card className="compact-card border-destructive/10 p-3">
           <div className="space-y-2">
             <h3 className="text-[9px] font-black uppercase text-destructive border-b pb-0.5 flex items-center gap-1"><Ban className="h-3 w-3" /> १) पुरवठादार माहिती</h3>
             <div className="space-y-1.5">
@@ -105,7 +126,7 @@ function SeizureReportForm() {
           </div>
         </Card>
 
-        <Card className="compact-card">
+        <Card className="compact-card p-3">
           <div className="space-y-2">
             <h3 className="text-[9px] font-black uppercase text-primary border-b pb-0.5 flex items-center gap-1"><AlertCircle className="h-3 w-3" /> २) जप्ती तपशील</h3>
             <div className="grid grid-cols-2 gap-2">
@@ -116,15 +137,33 @@ function SeizureReportForm() {
           </div>
         </Card>
 
-        <Card className="compact-card bg-rose-50/30">
+        <Card className="compact-card p-3 bg-muted/5">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-[9px] font-black uppercase text-primary flex items-center gap-1"><PlusCircle className="h-3 w-3" /> ३) अतिरिक्त मुद्दे</h3>
+            <Button type="button" variant="outline" size="sm" onClick={addPoint} className="h-6 text-[8px] font-black uppercase px-2 rounded-lg">मुद्दा जोडा</Button>
+          </div>
+          <ScrollArea className="max-h-[200px]">
+            <div className="space-y-2">
+              {formData.points.map((p, i) => (
+                <div key={i} className="flex gap-2 items-center">
+                  <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center font-black text-[9px] text-primary shrink-0">{i + 1}</div>
+                  <Input value={p} onChange={e => updatePoint(i, e.target.value)} placeholder="तपशील लिहा..." className="h-8 text-[10px] font-bold bg-white border-none rounded-lg" />
+                  <Button type="button" variant="ghost" size="icon" onClick={() => removePoint(i)} className="h-7 w-7 text-rose-400 shrink-0"><Trash2 className="h-3.5 w-3.5" /></Button>
+                </div>
+              ))}
+            </div>
+          </ScrollArea>
+        </Card>
+
+        <Card className="compact-card p-3 bg-rose-50/30">
           <div className="space-y-1">
             <Label className="compact-label flex items-center gap-1"><IndianRupee className="h-3 w-3" /> दंड रक्कम (PENALTY AMOUNT)</Label>
             <Input type="number" className="compact-input h-10 border-destructive/20 text-lg text-destructive" value={formData.fineAmount || ""} onChange={e => setFormData({...formData, fineAmount: e.target.value})} placeholder="0.00" />
           </div>
         </Card>
 
-        <Button onClick={handleSave} className="compact-button w-full h-10 bg-destructive text-white mb-10">
-          {editId ? <RefreshCw className="h-3.5 w-3.5 mr-1.5" /> : <Save className="h-3.5 w-3.5 mr-1.5" />}
+        <Button onClick={handleSave} className="compact-button w-full h-12 bg-destructive text-white shadow-xl shadow-destructive/20 mb-10 font-black uppercase tracking-widest transition-all active:scale-95">
+          {editId ? <RefreshCw className="h-4 w-4 mr-1.5" /> : <Save className="h-4 w-4 mr-1.5" />}
           {editId ? 'जप्ती अहवाल अपडेट करा' : 'जप्ती अहवाल जतन करा'}
         </Button>
       </div>
