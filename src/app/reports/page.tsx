@@ -250,7 +250,6 @@ export default function ReportsPage() {
   const GenericTableLayout = ({ report }: { report: any }) => {
     const d = report.fullData || {};
     
-    // Deduplication logic for Submitter and ID
     const seenLabels = new Set<string>();
     const filteredEntries = orderedKeys
       .filter(key => {
@@ -259,7 +258,6 @@ export default function ReportsPage() {
         
         const label = labelMap[key] || key.toUpperCase();
         
-        // Skip duplicate submitter names or IDs
         if (["displayName", "name"].includes(key) && seenLabels.has("अहवाल सादरकर्ता")) return false;
         if (["employeeId", "idNumber"].includes(key) && seenLabels.has("अधिकारी आयडी (Emp ID)")) return false;
         
@@ -270,7 +268,6 @@ export default function ReportsPage() {
       .map(key => [key, d[key]]);
 
     const formatVal = (key: string, val: any): string => {
-      // Map Quality Inspector to संकलन सुपरवायझर
       if ((key === 'name' || key === 'displayName' || key === 'assignedTo') && (!val || val === 'Quality Inspector' || val === 'Procurement Officer' || val === 'संकलन सुपरवायझर')) {
         return "संकलन सुपरवायझर";
       }

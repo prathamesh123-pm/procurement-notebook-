@@ -159,10 +159,10 @@ export default function RoutesPage() {
                     <div className="p-3 rounded-2xl bg-blue-50 border border-blue-100 text-center"><div className="text-blue-600 font-black text-[8px] uppercase tracking-tighter">गाय (COW)</div><p className="text-lg font-black text-blue-900">{totals.totalCow.toFixed(1)}L</p></div>
                     <div className="p-3 rounded-2xl bg-amber-50 border border-amber-100 text-center"><div className="text-amber-600 font-black text-[8px] uppercase tracking-tighter">म्हेस (BUF)</div><p className="text-lg font-black text-amber-900">{totals.totalBuf.toFixed(1)}L</p></div>
                   </div>
-                  <div className="grid grid-cols-3 gap-1.5 bg-muted/20 p-2.5 rounded-xl border border-muted-foreground/5 text-[8px] font-black uppercase text-center opacity-80">
-                    <div className="space-y-0.5"><div className="text-muted-foreground">पॉइंट</div><div className="text-foreground">{totals.pointsCount}</div></div>
-                    <div className="space-y-0.5"><div className="text-muted-foreground">दर</div><div className="text-foreground">₹{route.costPerKm}</div></div>
-                    <div className="space-y-0.5"><div className="text-muted-foreground">बर्फ</div><div className="text-foreground">{route.iceBlocks || 0}</div></div>
+                  <div className="grid grid-cols-3 gap-1.5 bg-muted/20 p-2.5 rounded-xl border border-muted-foreground/5 text-[7px] font-black uppercase text-center opacity-80">
+                    <div className="space-y-0.5"><div className="text-muted-foreground">सप्लायर</div><div className="text-foreground text-[10px]">{totals.pointsCount}</div></div>
+                    <div className="space-y-0.5"><div className="text-muted-foreground leading-tight">कॉस्टिंग पर <br/>किलोमीटर</div><div className="text-foreground text-[10px]">₹{route.costPerKm}</div></div>
+                    <div className="space-y-0.5"><div className="text-muted-foreground">बर्फ</div><div className="text-foreground text-[10px]">{route.iceBlocks || 0}</div></div>
                   </div>
                 </CardContent>
                 <CardFooter className="p-0 border-t mt-auto border-muted-foreground/10">
