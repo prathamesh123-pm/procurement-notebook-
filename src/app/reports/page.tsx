@@ -37,7 +37,7 @@ export default function ReportsPage() {
   const { data: firestoreReports, isLoading } = useCollection(reportsQuery)
   const { data: userData } = useDoc(userDocRef)
 
-  const profileName = userData?.displayName || user?.displayName || "संकलन प्रतिनिधी";
+  const profileName = userData?.displayName || user?.displayName || "संकलन सुपरवायझर";
   const profileId = userData?.employeeId || "---";
 
   const [filterDate, setFilterDate] = useState<string>("")
@@ -111,56 +111,56 @@ export default function ReportsPage() {
   }
 
   const labelMap: Record<string, string> = {
-    // Seizure
+    // Seizure (जप्ती)
     supplierName: "पुरवठादार किंवा केंद्राचे पूर्ण नाव",
-    supplierId: "पुरवठादार किंवा केंद्राचा आयडी कोड",
-    route: "संबंधित संकलन रूटचे नाव",
-    seizureQty: "जप्त केलेल्या दुधाचे एकूण प्रमाण (Liters)",
-    reason: "जप्ती किंवा कारवाईचे मुख्य तांत्रिक कारण",
-    fineAmount: "आकारलेली एकूण दंडाची रक्कम (₹)",
-    actionTaken: "जप्त दुधावर केलेली अंतिम कार्यवाही",
+    supplierId: "पुरवठादार किंवा केंद्राचा कोड",
+    route: "संकलन रूटचे नाव",
+    seizureQty: "जप्त केलेल्या दुधाचे प्रमाण (Liters)",
+    reason: "दूध जप्त करण्याचे कारण",
+    fineAmount: "आकारलेली दंडाची रक्कम (₹)",
+    actionTaken: "जप्त केलेल्या दुधावर केलेली कारवाई",
     
-    // Breakdown
-    routeName: "दुध संकलनाच्या रूटचे नाव",
-    vehicleNo: "ब्रेकडाऊन झालेल्या वाहनाचा क्रमांक",
-    vehicleNumber: "ब्रेकडाऊन झालेल्या वाहनाचा क्रमांक",
-    vehicleType: "वाहनाचा प्रकार (उदा. टेम्पो/पिकअप)",
-    capacity: "वाहनाची एकूण दुध संकलन क्षमता (L)",
-    driverName: "बिघाड झाला त्यावेळच्या ड्रायव्हरचे नाव",
-    mobile: "ड्रायव्हरचा चालू मोबाईल क्रमांक",
-    breakdownTime: "वाहन बिघाड किंवा अपघात झाल्याची वेळ",
-    location: "बिघाड झालेल्या नेमक्या ठिकाणाचे नाव",
-    severity: "बिघाडाचे स्वरूप (छोटा किंवा मोठा)",
-    detailedReason: "बिघाडाच्या कारणाचे सविस्तर तांत्रिक वर्णन",
-    estimatedRepairTime: "दुरुस्तीसाठी लागणारा अंदाजे वेळ (तास)",
-    estimatedRepairCost: "दुरुस्तीसाठी लागणारा अंदाजे खर्च (₹)",
-    recoveryVehicleNo: "दुध वाचवण्यासाठी पाठवलेल्या पर्यायी गाडीचा क्रमांक",
-    recoveryArrivalTime: "पर्यायी गाडी पोहोचण्याची अंदाजे वेळ",
-    milkHot: "बिघाडामुळे दुध गरम झाले होते का?",
-    milkSour: "बिघाडामुळे दुध पूर्णपणे खराब झाले का?",
+    // Breakdown (गाडी बिघाड)
+    routeName: "दुध संकलन रूटचे नाव",
+    vehicleNo: "गाडीचा नंबर (MH...)",
+    vehicleNumber: "गाडीचा नंबर (MH...)",
+    vehicleType: "गाडीचा प्रकार (उदा. पिकअप)",
+    capacity: "गाडीची एकूण दूध क्षमता (L)",
+    driverName: "ड्रायव्हरचे नाव",
+    mobile: "ड्रायव्हरचा मोबाईल नंबर",
+    breakdownTime: "गाडी बिघाड झाल्याची वेळ",
+    location: "बिघाड झालेल्या ठिकाणाचे नाव",
+    severity: "बिघाडाचे स्वरूप (छोटा/मोठा)",
+    detailedReason: "बिघाडाचे सविस्तर वर्णन",
+    estimatedRepairTime: "दुरुस्तीसाठी लागणारा वेळ (तास)",
+    estimatedRepairCost: "दुरुस्तीसाठी लागणारा खर्च (₹)",
+    recoveryVehicleNo: "दुध वाचवण्यासाठी पाठवलेली दुसरी गाडी",
+    recoveryArrivalTime: "दुसरी गाडी पोहोचण्याची वेळ",
+    milkHot: "दूध गरम झाले होते का?",
+    milkSour: "दूध पूर्णपणे खराब झाले का?",
     
-    // Daily Work / Task
-    title: "आजच्या नियोजित कामाचा विषय किंवा टास्क",
-    remark: "केलेल्या कामाबद्दल सविस्तर शेरा किंवा कार्यवाही",
-    achievements: "आजच्या दिवसातील महत्त्वाची मोठी कामगिरी",
-    problems: "कामात आलेल्या महत्त्वाच्या समस्या किंवा अडथळे",
-    actionsTaken: "समस्येवर केलेली तात्काळ कार्यवाही",
-    supervisorName: "संबंधित सुपरवायझरचे नाव",
+    // Daily Work / Task (दैनिक काम)
+    title: "आजच्या कामाचा विषय किंवा टास्क",
+    remark: "केलेल्या कामाबद्दल सविस्तर शेरा/नोंद",
+    achievements: "आजची मोठी कामगिरी",
+    problems: "कामात आलेले अडथळे/समस्या",
+    actionsTaken: "केलेली कार्यवाही",
+    supervisorName: "सुपरवायझरचे नाव",
     
-    // Chilling
-    centerName: "चिलिंग किंवा संकलन केंद्राचे नाव",
-    tempAtArrival: "दुध पोहोचल्यावर मोजलेले सुरुवातीचे तापमान (°C)",
-    tempAfterChilling: "चिलिंग प्रक्रिया पूर्ण झाल्यावरचे तापमान (°C)",
-    waterSupply: "केंद्रावरील पाणी पुरवठ्याची स्थिती",
-    powerBackup: "पॉवर बॅकअप (Generator/UPS) उपलब्ध आहे का?",
-    hygieneStandard: "स्वच्छतेचा एकूण दर्जा (Standard)",
-    staffUniform: "स्टाफने अधिकृत गणवेश परिधान केला होता का?",
-    fssaiDisplay: "FSSAI परवाना दर्शनी भागात लावला आहे का?",
-    iceBankStatus: "आईस बँकची (Ice Bank) सद्यस्थिती",
+    // Chilling (चिलिंग)
+    centerName: "चिलिंग केंद्राचे नाव",
+    tempAtArrival: "सुरुवातीचे तापमान (°C)",
+    tempAfterChilling: "चिलिंग नंतरचे तापमान (°C)",
+    waterSupply: "पाणी पुरवठ्याची स्थिती",
+    powerBackup: "पॉवर बॅकअप सुविधा उपलब्ध आहे का?",
+    hygieneStandard: "स्वच्छतेचा दर्जा",
+    staffUniform: "स्टाफने गणवेश घातला होता का?",
+    fssaiDisplay: "FSSAI परवाना लावला आहे का?",
+    iceBankStatus: "आईस बँकची सद्यस्थिती",
     
     // Generic
-    summary: "आजच्या कामकाजाचा संक्षिप्त सारांश",
-    totalLossAmount: "या घटनेमुळे झालेले एकूण आर्थिक नुकसान (₹)"
+    summary: "कामाचा संक्षिप्त सारांश",
+    totalLossAmount: "झालेले एकूण आर्थिक नुकसान (₹)"
   };
 
   const orderedKeys = [
@@ -276,7 +276,6 @@ export default function ReportsPage() {
   const GenericTableLayout = ({ report }: { report: any }) => {
     const d = report.fullData || {};
     
-    // Filter out internal non-display keys
     const filteredEntries = orderedKeys
       .filter(key => {
         const val = d[key];
@@ -319,7 +318,7 @@ export default function ReportsPage() {
             <table className="w-full border-collapse">
               <thead>
                 <tr className="bg-slate-900 text-white font-black text-[10px] uppercase tracking-widest print:bg-black">
-                  <th className="p-2 text-left w-1/3 border-r border-white/20">तपशील (QUESTION / FIELD)</th>
+                  <th className="p-2 text-left w-1/3 border-r border-white/20">तपशील (FIELD / QUESTION)</th>
                   <th className="p-2 text-left">माहिती (DETAILS)</th>
                 </tr>
               </thead>
@@ -365,7 +364,7 @@ export default function ReportsPage() {
                 <table className="w-full border-collapse text-[9px]">
                   <thead className="bg-slate-900 text-white font-black uppercase tracking-wider print:bg-black">
                     <tr>
-                      <th className="p-2 text-left border-r border-white/20">पुरवठादाराचे नाव</th>
+                      <th className="p-2 text-left border-r border-white/20">नाव</th>
                       <th className="p-2 text-center w-16 border-r border-white/20">प्रकार</th>
                       <th className="p-2 text-center w-16 border-r border-white/20">Ltr</th>
                       <th className="p-2 text-right w-24">रक्कम (₹)</th>
