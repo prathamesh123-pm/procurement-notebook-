@@ -35,7 +35,6 @@ export default function WorkLogPage() {
   const [mounted, setMounted] = useState(false)
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
   
-  // State for multiple remark points
   const [remarkPoints, setRemarkPoints] = useState<string[]>([""])
   const [isDetailOpen, setIsDetailOpen] = useState(false)
 
@@ -55,7 +54,7 @@ export default function WorkLogPage() {
       remark: "", 
       supplierName: newTaskSupplierName, 
       supplierId: newTaskSupplierId, 
-      assignedTo: "Manager", 
+      assignedTo: "संकलन सुपरवायझर", 
       assignedToUserId: user.uid,
       status: 'pending', 
       createdAt: new Date().toISOString() 
@@ -85,7 +84,6 @@ export default function WorkLogPage() {
     const task = firestoreTasks?.find(t => t.id === taskId)
     if (!task) return
     
-    // Format points into a list for the report
     const nonAtEmptyPoints = remarkPoints.filter(p => p.trim())
     const formattedRemark = nonAtEmptyPoints
       .map((p, i) => `${i + 1}. ${p}`)
@@ -103,7 +101,7 @@ export default function WorkLogPage() {
         remark: formattedRemark, 
         remarkPoints: nonAtEmptyPoints,
         status: 'completed',
-        name: user.displayName || "Procurement Officer"
+        name: user.displayName || "संकलन सुपरवायझर"
       },
       createdAt: new Date().toISOString()
     }
@@ -146,113 +144,16 @@ export default function WorkLogPage() {
 
   return (
     <div className="space-y-3 max-w-5xl mx-auto w-full pb-10 px-1 animate-in fade-in duration-500">
-      <div className="flex flex-col gap-0.5 border-b pb-3 px-1">
-        <h2 className="text-lg font-black text-foreground flex items-center gap-2 uppercase">
-          <ListTodo className="h-5 w-5 text-primary" /> कामकाज नोंद (WORK LOG)
-        </h2>
-      </div>
-
-      <Card className="border shadow-none bg-white rounded-xl overflow-hidden border-muted-foreground/10">
-        <CardContent className="p-3 space-y-3">
-          <div className="grid grid-cols-2 gap-2">
-            <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase text-primary/60 tracking-widest">गवळी नाव</Label><Input value={newTaskSupplierName} onChange={e => setNewTaskSupplierName(e.target.value)} className="h-9 text-[11px] bg-muted/20 border-none rounded-lg p-3 font-black" placeholder="उदा. सागर" /></div>
-            <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase text-primary/60 tracking-widest">कोड (CODE)</Label><Input value={newTaskSupplierId} onChange={e => setNewTaskSupplierId(e.target.value)} className="h-9 text-[11px] bg-muted/20 border-none rounded-lg p-3 font-black" placeholder="123" /></div>
-          </div>
-          <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase text-primary/60 tracking-widest">टास्क / कामाचे नाव</Label><Input value={newTaskTitle} onChange={e => setNewTaskTitle(e.target.value)} className="h-9 text-[11px] bg-muted/20 border-none rounded-lg font-black p-3" placeholder="उदा. थकीत बाकी वसुली" /></div>
-          
-          <AIGuidanceCard context={newTaskTitle} formType="task" />
-          
-          <Button type="button" onClick={addTask} className="w-full font-black h-10 rounded-xl text-xs shadow-lg shadow-primary/20 mt-2"><Plus className="h-4 w-4 mr-1.5" /> जतन करा (SAVE TASK)</Button>
-        </CardContent>
-      </Card>
-
-      <div className="space-y-2 pt-2">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
-          <input placeholder="प्रलंबित टास्क शोधा (SEARCH)..." className="pl-9 h-10 w-full text-[10px] bg-white rounded-xl shadow-sm border-muted-foreground/10 outline-none focus:ring-1 focus:ring-primary font-black uppercase" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
-        </div>
-
+      <div className="flex flex-col gap-0.5 border-b pb-3 px-1"><h2 className="text-lg font-black text-foreground flex items-center gap-2 uppercase"><ListTodo className="h-5 w-5 text-primary" /> कामकाज नोंद (WORK LOG)</h2></div>
+      <Card className="border shadow-none bg-white rounded-xl overflow-hidden border-muted-foreground/10"><CardContent className="p-3 space-y-3"><div className="grid grid-cols-2 gap-2"><div className="space-y-0.5"><Label className="text-[9px] font-black uppercase text-primary/60 tracking-widest">गवळी नाव</Label><Input value={newTaskSupplierName || ""} onChange={e => setNewTaskSupplierName(e.target.value)} className="h-9 text-[11px] bg-muted/20 border-none rounded-lg p-3 font-black" placeholder="उदा. सागर" /></div><div className="space-y-0.5"><Label className="text-[9px] font-black uppercase text-primary/60 tracking-widest">कोड (CODE)</Label><Input value={newTaskSupplierId || ""} onChange={e => setNewTaskSupplierId(e.target.value)} className="h-9 text-[11px] bg-muted/20 border-none rounded-lg p-3 font-black" placeholder="123" /></div></div><div className="space-y-0.5"><Label className="text-[9px] font-black uppercase text-primary/60 tracking-widest">टास्क / कामाचे नाव</Label><Input value={newTaskTitle || ""} onChange={e => setNewTaskTitle(e.target.value)} className="h-9 text-[11px] bg-muted/20 border-none rounded-lg font-black p-3" placeholder="उदा. थकीत बाकी वसुली" /></div><AIGuidanceCard context={newTaskTitle} formType="task" /><Button type="button" onClick={addTask} className="w-full font-black h-10 rounded-xl text-xs shadow-lg shadow-primary/20 mt-2"><Plus className="h-4 w-4 mr-1.5" /> जतन करा (SAVE TASK)</Button></CardContent></Card>
+      <div className="space-y-2 pt-2"><div className="relative"><Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" /><input placeholder="प्रलंबित टास्क शोधा..." className="pl-9 h-10 w-full text-[10px] bg-white rounded-xl shadow-sm border-muted-foreground/10 outline-none focus:ring-1 focus:ring-primary font-black uppercase" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} /></div>
         <div className="grid grid-cols-1 gap-2">
-          {isLoading ? (
-            <div className="text-center py-10 italic text-muted-foreground font-black uppercase text-[9px] opacity-50">लोड होत आहे...</div>
-          ) : pendingTasks.length > 0 ? pendingTasks.map(task => (
-            <Card key={task.id} className="border shadow-none bg-white hover:bg-primary/5 cursor-pointer border-l-4 border-l-primary rounded-xl overflow-hidden relative group transition-all" onClick={() => { 
-              setSelectedTask(task); 
-              setRemarkPoints([""]); 
-              setIsDetailOpen(true); 
-            }}>
-              <div className="p-3 flex items-center justify-between gap-2">
-                <div className="flex flex-col gap-1 min-w-0 flex-1">
-                  <h4 className="font-black text-[12px] text-slate-900 truncate uppercase tracking-tight">{task.title}</h4>
-                  <div className="flex items-center gap-3 text-[9px] font-black text-muted-foreground uppercase">
-                    {task.supplierName && <span className="flex items-center gap-1 bg-primary/5 px-1.5 py-0.5 rounded text-primary border border-primary/10"><User className="h-3 w-3" /> {task.supplierName}</span>}
-                    {task.supplierId && <span className="flex items-center gap-1 bg-muted px-1.5 py-0.5 rounded border border-muted-foreground/5"><Hash className="h-3 w-3" /> {task.supplierId}</span>}
-                  </div>
-                </div>
-                <Button type="button" size="icon" variant="ghost" onClick={(e) => handleDeleteTask(task.id, e)} className="h-8 w-8 text-destructive hover:bg-destructive/10 rounded-lg">
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-            </Card>
-          )) : (
-            <div className="text-center py-16 bg-white rounded-2xl border-2 border-dashed border-slate-200 flex flex-col items-center gap-3 opacity-20">
-              <ListTodo className="h-10 w-10" />
-              <p className="text-[10px] font-black uppercase tracking-widest">एकही प्रलंबित टास्क नाही</p>
-            </div>
-          )}
+          {pendingTasks.map(task => (
+            <Card key={task.id} className="border shadow-none bg-white hover:bg-primary/5 cursor-pointer border-l-4 border-l-primary rounded-xl overflow-hidden relative group transition-all" onClick={() => { setSelectedTask(task); setRemarkPoints([""]); setIsDetailOpen(true); }}><div className="p-3 flex items-center justify-between gap-2"><div className="flex flex-col gap-1 min-w-0 flex-1"><h4 className="font-black text-[12px] text-slate-900 truncate uppercase tracking-tight">{task.title}</h4><div className="flex items-center gap-3 text-[9px] font-black text-muted-foreground uppercase">{task.supplierName && <span className="flex items-center gap-1 bg-primary/5 px-1.5 py-0.5 rounded text-primary border border-primary/10"><User className="h-3 w-3" /> {task.supplierName}</span>}</div></div><Button type="button" size="icon" variant="ghost" onClick={(e) => handleDeleteTask(task.id, e)} className="h-8 w-8 text-destructive hover:bg-destructive/10 rounded-lg"><Trash2 className="h-4 w-4" /></Button></div></Card>
+          ))}
         </div>
       </div>
-
-      <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
-        <DialogContent className="max-w-lg p-0 overflow-hidden rounded-2xl border-none shadow-2xl">
-          <DialogHeader className="p-4 bg-primary text-white flex flex-row items-center justify-between">
-            <div>
-              <DialogTitle className="text-xs font-black flex items-center gap-2 uppercase tracking-widest"><ListTodo className="h-4 w-4" /> टास्क तपशील (TASK DETAIL)</DialogTitle>
-              <DialogDescription className="text-[8px] text-white/70 uppercase">कार्यवाहीची नोंद करा (मुद्द्यांनुसार).</DialogDescription>
-            </div>
-            <Button type="button" variant="ghost" size="icon" onClick={() => setIsDetailOpen(false)} className="text-white hover:bg-white/10 rounded-full h-8 w-8"><X className="h-5 w-5" /></Button>
-          </DialogHeader>
-          <div className="p-5 space-y-5 bg-white">
-            <div className="p-4 rounded-2xl bg-primary/5 border border-primary/10 shadow-inner">
-              <h3 className="text-xs font-black text-slate-900 mb-1 uppercase tracking-widest">{selectedTask?.title}</h3>
-            </div>
-            
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <Label className="text-[9px] font-black uppercase text-primary tracking-[0.2em] flex items-center gap-1.5"><Edit className="h-3.5 w-3.5" /> कार्यवाही / शेरा (REMARK POINTS)</Label>
-                <Button type="button" variant="outline" size="sm" onClick={addRemarkPoint} className="h-7 text-[9px] font-black gap-1 rounded-lg border-primary/20 text-primary">
-                  <PlusCircle className="h-3 w-3" /> मुद्दा जोडा
-                </Button>
-              </div>
-              
-              <ScrollArea className="max-h-[300px] pr-2">
-                <div className="space-y-2">
-                  {remarkPoints.map((point, index) => (
-                    <div key={index} className="flex gap-2 items-start">
-                      <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center font-black text-[10px] text-primary shrink-0 border border-primary/5">{index + 1}</div>
-                      <Input 
-                        value={point} 
-                        onChange={e => updateRemarkPoint(index, e.target.value)} 
-                        placeholder="मुद्दा लिहा..." 
-                        className="h-9 text-[11px] font-bold bg-slate-50 border-none rounded-xl px-3 focus-visible:ring-primary shadow-inner"
-                      />
-                      <Button type="button" variant="ghost" size="icon" onClick={() => removeRemarkPoint(index)} className="h-8 w-8 text-rose-400 hover:bg-rose-50 rounded-lg shrink-0">
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              </ScrollArea>
-            </div>
-          </div>
-          <DialogFooter className="p-4 border-t bg-slate-50 flex gap-2 justify-end">
-            <Button type="button" variant="outline" className="h-10 text-[10px] font-black rounded-xl border-primary/20 px-6 uppercase" onClick={() => setIsDetailOpen(false)}>रद्द</Button>
-            <Button type="button" className="h-10 text-[10px] font-black rounded-xl bg-primary shadow-lg shadow-primary/20 px-8 uppercase" onClick={() => selectedTask && completeTask(selectedTask.id)}>
-              <CheckCircle2 className="h-4 w-4 mr-1.5" /> पूर्ण करा (COMPLETE)
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}><DialogContent className="max-w-lg p-0 overflow-hidden rounded-2xl border-none shadow-2xl"><DialogHeader className="p-4 bg-primary text-white flex flex-row items-center justify-between"><div><DialogTitle className="text-xs font-black flex items-center gap-2 uppercase tracking-widest"><ListTodo className="h-4 w-4" /> टास्क तपशील</DialogTitle></div></DialogHeader><div className="p-5 space-y-5 bg-white"><div className="p-4 rounded-2xl bg-primary/5 border border-primary/10 shadow-inner"><h3 className="text-xs font-black text-slate-900 mb-1 uppercase tracking-widest">{selectedTask?.title}</h3></div><div className="space-y-3"><div className="flex items-center justify-between"><Label className="text-[9px] font-black uppercase text-primary tracking-[0.2em] flex items-center gap-1.5"><Edit className="h-3.5 w-3.5" /> कार्यवाही / शेरा</Label><Button type="button" variant="outline" size="sm" onClick={addRemarkPoint} className="h-7 text-[9px] font-black gap-1 rounded-lg border-primary/20 text-primary"><PlusCircle className="h-3 w-3" /> मुद्दा जोडा</Button></div><ScrollArea className="max-h-[300px] pr-2"><div className="space-y-2">{remarkPoints.map((point, index) => (<div key={index} className="flex gap-2 items-start"><div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center font-black text-[10px] text-primary shrink-0">{index + 1}</div><Input value={point || ""} onChange={e => updateRemarkPoint(index, e.target.value)} placeholder="मुद्दा लिहा..." className="h-9 text-[11px] font-bold bg-slate-50 border-none rounded-xl" /><Button type="button" variant="ghost" size="icon" onClick={() => removeRemarkPoint(index)} className="text-rose-400"><Trash2 className="h-3.5 w-3.5" /></Button></div>))}</div></ScrollArea></div></div><DialogFooter className="p-4 border-t bg-slate-50 flex gap-2 justify-end"><Button type="button" variant="outline" className="h-10 text-[10px] font-black rounded-xl" onClick={() => setIsDetailOpen(false)}>रद्द</Button><Button type="button" className="h-10 text-[10px] font-black rounded-xl bg-primary" onClick={() => selectedTask && completeTask(selectedTask.id)}><CheckCircle2 className="h-4 w-4 mr-1.5" /> पूर्ण करा</Button></DialogFooter></DialogContent></Dialog>
     </div>
   )
 }

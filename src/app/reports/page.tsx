@@ -41,7 +41,7 @@ export default function ReportsPage() {
 
   useEffect(() => setMounted(true), [])
 
-  // Simplified and focused report types based on user feedback
+  // Optimized list of 8 essential report types
   const reportTypes = [
     { title: "रूट व्हिजिट", type: "Route Visit", icon: Truck, color: "text-blue-600", bg: "bg-blue-50" },
     { title: "क्षेत्र भेट", type: "Field Visit", icon: MapPin, color: "text-emerald-600", bg: "bg-emerald-50" },
@@ -60,9 +60,9 @@ export default function ReportsPage() {
       const q = searchQuery.toLowerCase()
       const matchesSearch = r.type?.toLowerCase().includes(q) || r.summary?.toLowerCase().includes(q) || r.overallSummary?.toLowerCase().includes(q)
       
-      // Breakdown filter handles both old and new naming conventions
       let matchesType = !typeFilter || r.type === typeFilter;
-      if (typeFilter === "Transport Breakdown Report" && r.type === "Breakdown") {
+      // Handle breakdown naming variations
+      if (typeFilter === "Transport Breakdown Report" && (r.type === "Breakdown" || r.type === "Transport Breakdown Report")) {
         matchesType = true;
       }
 
@@ -253,7 +253,7 @@ export default function ReportsPage() {
   const GenericTableLayout = ({ report }: { report: any }) => {
     const d = report.fullData || {};
     
-    // Deduplicate labels to avoid double display of Reporter Name/ID
+    // Improved deduplication logic for display
     const seenLabels = new Set<string>();
     const filteredEntries = orderedKeys
       .filter(key => {
@@ -392,7 +392,7 @@ export default function ReportsPage() {
         </Button>
       </div>
 
-      {/* Categories Grid - Focused on user essentials */}
+      {/* Grid of essential categories */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-8">
         {reportTypes.map((rt) => (
           <button 

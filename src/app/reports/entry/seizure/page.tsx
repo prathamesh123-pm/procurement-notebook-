@@ -62,7 +62,7 @@ function SeizureReportForm() {
       generatedByUserId: user.uid,
       summary: `जप्ती: ${formData.supplierName}. दूध: ${formData.seizureQty}L. दंड: ₹${formData.fineAmount}. कारण: ${formData.reason}.`,
       overallSummary: `जप्ती: ${formData.supplierName}. दूध: ${formData.seizureQty}L. दंड: ₹${formData.fineAmount}. कारण: ${formData.reason}.`,
-      fullData: { ...formData, name: user.displayName || "Quality Inspector" },
+      fullData: { ...formData, name: user.displayName || "संकलन सुपरवायझर" },
       updatedAt: new Date().toISOString()
     }
 
@@ -96,10 +96,10 @@ function SeizureReportForm() {
           <div className="space-y-2">
             <h3 className="text-[9px] font-black uppercase text-destructive border-b pb-0.5 flex items-center gap-1"><Ban className="h-3 w-3" /> १) पुरवठादार माहिती</h3>
             <div className="space-y-1.5">
-              <div className="space-y-0.5"><Label className="compact-label">नाव *</Label><Input className="compact-input h-9" value={formData.supplierName} onChange={e => setFormData({...formData, supplierName: e.target.value})} /></div>
+              <div className="space-y-0.5"><Label className="compact-label">नाव *</Label><Input className="compact-input h-9" value={formData.supplierName || ""} onChange={e => setFormData({...formData, supplierName: e.target.value})} /></div>
               <div className="grid grid-cols-2 gap-2">
-                <div className="space-y-0.5"><Label className="compact-label">आयडी / कोड</Label><Input className="compact-input h-9" value={formData.supplierId} onChange={e => setFormData({...formData, supplierId: e.target.value})} /></div>
-                <div className="space-y-0.5"><Label className="compact-label">रूट</Label><Input className="compact-input h-9" value={formData.route} onChange={e => setFormData({...formData, route: e.target.value})} /></div>
+                <div className="space-y-0.5"><Label className="compact-label">आयडी / कोड</Label><Input className="compact-input h-9" value={formData.supplierId || ""} onChange={e => setFormData({...formData, supplierId: e.target.value})} /></div>
+                <div className="space-y-0.5"><Label className="compact-label">रूट</Label><Input className="compact-input h-9" value={formData.route || ""} onChange={e => setFormData({...formData, route: e.target.value})} /></div>
               </div>
             </div>
           </div>
@@ -109,17 +109,17 @@ function SeizureReportForm() {
           <div className="space-y-2">
             <h3 className="text-[9px] font-black uppercase text-primary border-b pb-0.5 flex items-center gap-1"><AlertCircle className="h-3 w-3" /> २) जप्ती तपशील</h3>
             <div className="grid grid-cols-2 gap-2">
-              <div className="space-y-0.5"><Label className="compact-label">दूध प्रमाण (L)</Label><Input type="number" className="compact-input h-9" value={formData.seizureQty} onChange={e => setFormData({...formData, seizureQty: e.target.value})} /></div>
-              <div className="space-y-0.5"><Label className="compact-label">कारण (Reason)</Label><Input className="compact-input h-9" value={formData.reason} onChange={e => setFormData({...formData, reason: e.target.value})} /></div>
+              <div className="space-y-0.5"><Label className="compact-label">दूध प्रमाण (L)</Label><Input type="number" className="compact-input h-9" value={formData.seizureQty || ""} onChange={e => setFormData({...formData, seizureQty: e.target.value})} /></div>
+              <div className="space-y-0.5"><Label className="compact-label">कारण (Reason)</Label><Input className="compact-input h-9" value={formData.reason || ""} onChange={e => setFormData({...formData, reason: e.target.value})} /></div>
             </div>
-            <div className="space-y-0.5"><Label className="compact-label">केलेली कार्यवाही</Label><Input className="compact-input h-9" value={formData.actionTaken} onChange={e => setFormData({...formData, actionTaken: e.target.value})} /></div>
+            <div className="space-y-0.5"><Label className="compact-label">केलेली कार्यवाही</Label><Input className="compact-input h-9" value={formData.actionTaken || ""} onChange={e => setFormData({...formData, actionTaken: e.target.value})} /></div>
           </div>
         </Card>
 
         <Card className="compact-card bg-rose-50/30">
           <div className="space-y-1">
             <Label className="compact-label flex items-center gap-1"><IndianRupee className="h-3 w-3" /> दंड रक्कम (PENALTY AMOUNT)</Label>
-            <Input type="number" className="compact-input h-10 border-destructive/20 text-lg text-destructive" value={formData.fineAmount} onChange={e => setFormData({...formData, fineAmount: e.target.value})} placeholder="0.00" />
+            <Input type="number" className="compact-input h-10 border-destructive/20 text-lg text-destructive" value={formData.fineAmount || ""} onChange={e => setFormData({...formData, fineAmount: e.target.value})} placeholder="0.00" />
           </div>
         </Card>
 

@@ -101,7 +101,7 @@ export default function BreakdownPage() {
       updatedAt: new Date().toISOString() 
     }
 
-    // Prepare report data
+    // Prepare report data with updated reporter fallback
     const reportData = {
       type: 'Transport Breakdown Report',
       date: reportDate,
@@ -111,7 +111,7 @@ export default function BreakdownPage() {
       overallSummary: `वाहन: ${formData.vehicleNo}, ड्रायव्हर: ${formData.driverName}, नुकसान: ₹${totalLoss}`,
       fullData: {
         ...recordData,
-        name: user.displayName || "Procurement Officer",
+        name: user.displayName || "संकलन सुपरवायझर",
         status: "EMERGENCY"
       },
       updatedAt: new Date().toISOString()
@@ -121,7 +121,6 @@ export default function BreakdownPage() {
       const docRef = doc(db, 'users', user.uid, 'breakdowns', editingId)
       updateDocumentNonBlocking(docRef, recordData)
       
-      // Update linked report
       if (formData.linkedReportId) {
         const reportRef = doc(db, 'users', user.uid, 'dailyWorkReports', formData.linkedReportId);
         updateDocumentNonBlocking(reportRef, reportData);
@@ -205,10 +204,7 @@ export default function BreakdownPage() {
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">रूट (ROUTE) *</Label><Input value={formData.routeName || ""} onChange={e => setFormData({...formData, routeName: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" /></div>
                 <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">गाडी नंबर *</Label><Input value={formData.vehicleNo || ""} onChange={e => setFormData({...formData, vehicleNo: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" placeholder="MH..." /></div>
-                <div className="space-y-0.5">
-                  <Label className="text-[9px] font-black uppercase opacity-60">गाडीचा प्रकार</Label>
-                  <Input value={formData.vehicleType || ""} onChange={e => setFormData({...formData, vehicleType: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" placeholder="उदा. पिकअप" />
-                </div>
+                <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">गाडीचा प्रकार</Label><Input value={formData.vehicleType || ""} onChange={e => setFormData({...formData, vehicleType: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" /></div>
                 <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">गाडी क्षमता (L)</Label><Input value={formData.capacity || ""} onChange={e => setFormData({...formData, capacity: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" /></div>
                 <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">ड्रायव्हरचे नाव</Label><Input value={formData.driverName || ""} onChange={e => setFormData({...formData, driverName: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" /></div>
                 <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">ड्रायव्हर मोबाईल</Label><Input value={formData.mobile || ""} onChange={e => setFormData({...formData, mobile: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" /></div>
@@ -222,28 +218,16 @@ export default function BreakdownPage() {
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">बिघाड वेळ</Label><Input type="time" value={formData.breakdownTime || ""} onChange={e => setFormData({...formData, breakdownTime: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" /></div>
                 <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">लोकेशन (ठिकाण)</Label><Input value={formData.location || ""} onChange={e => setFormData({...formData, location: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" /></div>
-                <div className="col-span-2 space-y-0.5">
-                  <Label className="text-[9px] font-black uppercase opacity-60">बिघाडाचे मुख्य कारण</Label>
-                  <Input value={formData.reason || ""} onChange={e => setFormData({...formData, reason: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" />
-                </div>
+                <div className="col-span-2 space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">बिघाडाचे मुख्य कारण</Label><Input value={formData.reason || ""} onChange={e => setFormData({...formData, reason: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" /></div>
               </div>
-              
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <Label className="text-[9px] font-black uppercase opacity-60">बिघाडाचे स्वरूप (Severity)</Label>
+                <div className="space-y-1.5"><Label className="text-[9px] font-black uppercase opacity-60">बिघाडाचे स्वरूप</Label>
                   <RadioGroup value={formData.severity || "MINOR"} onValueChange={v => setFormData({...formData, severity: v})} className="flex gap-2">
-                    <div className="flex items-center gap-1.5 bg-muted/10 px-3 py-1.5 rounded-lg border border-muted-foreground/5 cursor-pointer">
-                      <RadioGroupItem value="MINOR" id="sev-min" className="h-3 w-3" /><Label htmlFor="sev-min" className="text-[10px] font-black uppercase cursor-pointer">छोटा (Minor)</Label>
-                    </div>
-                    <div className="flex items-center gap-1.5 bg-muted/10 px-3 py-1.5 rounded-lg border border-muted-foreground/5 cursor-pointer">
-                      <RadioGroupItem value="MAJOR" id="sev-maj" className="h-3 w-3" /><Label htmlFor="sev-maj" className="text-[10px] font-black uppercase cursor-pointer text-rose-600">मोठा (Major)</Label>
-                    </div>
+                    <div className="flex items-center gap-1.5 bg-muted/10 px-3 py-1.5 rounded-lg border border-muted-foreground/5"><RadioGroupItem value="MINOR" id="sev-min" className="h-3 w-3" /><Label htmlFor="sev-min" className="text-[10px] font-black uppercase">छोटा</Label></div>
+                    <div className="flex items-center gap-1.5 bg-muted/10 px-3 py-1.5 rounded-lg border border-muted-foreground/5"><RadioGroupItem value="MAJOR" id="sev-maj" className="h-3 w-3" /><Label htmlFor="sev-maj" className="text-[10px] font-black uppercase text-rose-600">मोठा</Label></div>
                   </RadioGroup>
                 </div>
-                <div className="space-y-1.5">
-                  <Label className="text-[9px] font-black uppercase opacity-60">कारणाचे सविस्तर वर्णन</Label>
-                  <Textarea value={formData.detailedReason || ""} onChange={e => setFormData({...formData, detailedReason: e.target.value})} className="min-h-[60px] text-[11px] bg-muted/20 border-none font-medium rounded-lg p-2" />
-                </div>
+                <div className="space-y-1.5"><Label className="text-[9px] font-black uppercase opacity-60">सविस्तर वर्णन</Label><Textarea value={formData.detailedReason || ""} onChange={e => setFormData({...formData, detailedReason: e.target.value})} className="min-h-[60px] text-[11px] bg-muted/20 border-none font-medium rounded-lg p-2" /></div>
               </div>
             </div>
 
@@ -264,15 +248,13 @@ export default function BreakdownPage() {
                 <Milk className="h-3 w-3" /> ४) दुधाची स्थिती
               </h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <div className="flex items-center justify-between p-2 bg-muted/10 rounded-xl border border-muted-foreground/5 shadow-sm">
-                  <span className="text-[9px] font-black uppercase">दूध गरम झाले का?</span>
+                <div className="flex items-center justify-between p-2 bg-muted/10 rounded-xl border border-muted-foreground/5"><span className="text-[9px] font-black uppercase">दूध गरम झाले का?</span>
                   <RadioGroup value={formData.milkHot || "NO"} onValueChange={v => setFormData({...formData, milkHot: v})} className="flex gap-3">
                     <div className="flex items-center gap-1"><RadioGroupItem value="YES" id="mh-y" className="h-2.5 w-2.5"/><Label htmlFor="mh-y" className="text-[8px] font-black">हो</Label></div>
                     <div className="flex items-center gap-1"><RadioGroupItem value="NO" id="mh-n" className="h-2.5 w-2.5"/><Label htmlFor="mh-n" className="text-[8px] font-black">नाही</Label></div>
                   </RadioGroup>
                 </div>
-                <div className="flex items-center justify-between p-2 bg-muted/10 rounded-xl border border-muted-foreground/5 shadow-sm">
-                  <span className="text-[9px] font-black uppercase">दूध खराब झाले का?</span>
+                <div className="flex items-center justify-between p-2 bg-muted/10 rounded-xl border border-muted-foreground/5"><span className="text-[9px] font-black uppercase">दूध खराब झाले का?</span>
                   <RadioGroup value={formData.milkSour || "NO"} onValueChange={v => setFormData({...formData, milkSour: v})} className="flex gap-3">
                     <div className="flex items-center gap-1"><RadioGroupItem value="YES" id="ms-y" className="h-2.5 w-2.5"/><Label htmlFor="ms-y" className="text-[8px] font-black">हो</Label></div>
                     <div className="flex items-center gap-1"><RadioGroupItem value="NO" id="ms-n" className="h-2.5 w-2.5"/><Label htmlFor="ms-n" className="text-[8px] font-black">नाही</Label></div>
@@ -291,91 +273,40 @@ export default function BreakdownPage() {
               <div className="border rounded-xl overflow-hidden border-rose-100 shadow-inner">
                 <table className="w-full text-[10px]">
                   <thead>
-                    <tr className="bg-rose-50/50 text-[8px] font-black border-b uppercase tracking-widest text-rose-700">
-                      <th className="p-2 text-left">कोड/गवळी नाव</th>
-                      <th className="p-2 text-center">प्रकार</th>
-                      <th className="p-2 text-center">Ltr</th>
-                      <th className="p-2 text-right">रक्कम (₹)</th>
-                      <th className="p-2 w-8"></th>
-                    </tr>
+                    <tr className="bg-rose-50/50 text-[8px] font-black border-b uppercase tracking-widest text-rose-700"><th className="p-2 text-left">कोड/गवळी नाव</th><th className="p-2 text-center">प्रकार</th><th className="p-2 text-center">Ltr</th><th className="p-2 text-right">रक्कम (₹)</th><th className="p-2 w-8"></th></tr>
                   </thead>
                   <tbody>
                     {(formData.centerLosses || []).map((loss) => (
                       <tr key={loss.id} className="border-b last:border-0 bg-white">
-                        <td className="p-0 flex">
-                          <Input placeholder="ID" value={loss.centerCode || ""} onChange={e => updateLossRow(loss.id, { centerCode: e.target.value })} className="h-8 w-12 text-[10px] border-none font-black border-r rounded-none bg-transparent" />
-                          <Input placeholder="NAME" value={loss.centerName || ""} onChange={e => updateLossRow(loss.id, { centerName: e.target.value })} className="h-8 text-[10px] border-none font-black rounded-none flex-1 bg-transparent" />
-                        </td>
-                        <td className="p-0 text-center">
-                          <select 
-                            value={loss.milkType || "MIX"} 
-                            onChange={e => updateLossRow(loss.id, { milkType: e.target.value as any })}
-                            className="h-8 text-[9px] font-black bg-transparent border-none outline-none text-center"
-                          >
-                            <option value="MIX">MIX</option>
-                            <option value="COW">COW</option>
-                          </select>
-                        </td>
-                        <td className="p-0">
-                          <Input type="number" placeholder="0" value={loss.qtyLiters || ""} onChange={e => updateLossRow(loss.id, { qtyLiters: e.target.value })} className="h-8 text-[10px] border-none text-center font-black bg-transparent" />
-                        </td>
-                        <td className="p-0">
-                          <Input type="number" value={loss.lossAmount || ""} onChange={e => updateLossRow(loss.id, { lossAmount: e.target.value })} className="h-8 text-[10px] border-none text-right font-black bg-transparent text-rose-600" />
-                        </td>
-                        <td className="p-1">
-                          <Button type="button" variant="ghost" size="icon" onClick={() => handleRemoveLossRow(loss.id)} className="h-7 w-7 text-rose-400 hover:bg-rose-50"><X className="h-3.5 w-3.5" /></Button>
-                        </td>
+                        <td className="p-0 flex"><Input value={loss.centerCode || ""} onChange={e => updateLossRow(loss.id, { centerCode: e.target.value })} className="h-8 w-12 text-[10px] border-none font-black border-r rounded-none bg-transparent" /><Input value={loss.centerName || ""} onChange={e => updateLossRow(loss.id, { centerName: e.target.value })} className="h-8 text-[10px] border-none font-black rounded-none flex-1 bg-transparent" /></td>
+                        <td className="p-0 text-center"><select value={loss.milkType || "MIX"} onChange={e => updateLossRow(loss.id, { milkType: e.target.value as any })} className="h-8 text-[9px] font-black bg-transparent border-none outline-none text-center"><option value="MIX">MIX</option><option value="COW">COW</option></select></td>
+                        <td className="p-0"><Input type="number" value={loss.qtyLiters || ""} onChange={e => updateLossRow(loss.id, { qtyLiters: e.target.value })} className="h-8 text-[10px] border-none text-center font-black bg-transparent" /></td>
+                        <td className="p-0"><Input type="number" value={loss.lossAmount || ""} onChange={e => updateLossRow(loss.id, { lossAmount: e.target.value })} className="h-8 text-[10px] border-none text-right font-black bg-transparent text-rose-600" /></td>
+                        <td className="p-1"><Button type="button" variant="ghost" size="icon" onClick={() => handleRemoveLossRow(loss.id)} className="h-7 w-7 text-rose-400 hover:bg-rose-50"><X className="h-3.5 w-3.5" /></Button></td>
                       </tr>
                     ))}
-                    {(!formData.centerLosses || formData.centerLosses.length === 0) && (
-                      <tr>
-                        <td colSpan={5} className="p-10 text-center text-muted-foreground opacity-30 uppercase font-black text-[8px] tracking-widest italic">नुकसानीची नोंद करण्यासाठी 'जोडा' बटण दाबा</td>
-                      </tr>
-                    )}
                   </tbody>
                 </table>
               </div>
               <div className="flex justify-end pt-2">
-                <div className="bg-rose-600 text-white px-4 py-2 rounded-xl flex items-center gap-3 shadow-lg">
-                  <span className="text-[10px] font-black uppercase tracking-widest">एकूण नुकसान:</span>
-                  <span className="text-sm font-black flex items-center"><IndianRupee className="h-3.5 w-3.5 mr-0.5" />{currentTotalLoss}</span>
-                </div>
+                <div className="bg-rose-600 text-white px-4 py-2 rounded-xl flex items-center gap-3 shadow-lg"><span className="text-[10px] font-black uppercase tracking-widest">एकूण नुकसान:</span><span className="text-sm font-black flex items-center"><IndianRupee className="h-3.5 w-3.5 mr-0.5" />{currentTotalLoss}</span></div>
               </div>
             </div>
 
-            <Button type="button" onClick={handleSaveRecord} className="w-full font-black h-12 bg-rose-600 text-white hover:bg-rose-700 shadow-xl shadow-rose-200 rounded-xl uppercase text-xs tracking-widest transition-all active:scale-95">
-              <Save className="h-4 w-4 mr-2" /> {editingId ? 'अद्ययावत करा (UPDATE)' : 'जतन करा (SAVE & REPORT)'}
-            </Button>
+            <Button type="button" onClick={handleSaveRecord} className="w-full font-black h-12 bg-rose-600 text-white hover:bg-rose-700 shadow-xl shadow-rose-200 rounded-xl uppercase text-xs tracking-widest transition-all active:scale-95"><Save className="h-4 w-4 mr-2" /> {editingId ? 'अद्ययावत करा (UPDATE)' : 'जतन करा (SAVE & REPORT)'}</Button>
           </CardContent>
         </Card>
 
         <Card className="lg:col-span-4 border shadow-none bg-white rounded-xl overflow-hidden border-muted-foreground/10 mx-auto w-full">
-          <div className="bg-muted/10 py-3 px-3 border-b font-black text-[9px] uppercase flex items-center gap-2 tracking-[0.2em]">
-            <History className="h-3.5 w-3.5 opacity-50" /> जुन्या नोंदी (LOGS)
-          </div>
+          <div className="bg-muted/10 py-3 px-3 border-b font-black text-[9px] uppercase flex items-center gap-2 tracking-[0.2em]"><History className="h-3.5 w-3.5 opacity-50" /> जुन्या नोंदी (LOGS)</div>
           <ScrollArea className="h-[600px]">
             <div className="p-2 space-y-2">
               {records?.sort((a,b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).map((record) => (
                 <Card key={record.id} className="p-3 flex items-start justify-between border shadow-none bg-muted/5 rounded-xl border-muted-foreground/5 hover:bg-rose-50/50 transition-all cursor-pointer group" onClick={() => { setEditingId(record.id); setFormData(record); window.scrollTo({top: 0, behavior: 'smooth'}); }}>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-1.5">
-                      <h4 className="font-black text-[11px] truncate uppercase tracking-tight text-slate-900">{record.routeName || "N/A"}</h4>
-                      <Badge className={`h-3 px-1 text-[6px] font-black uppercase border-none ${record.severity === 'MAJOR' ? 'bg-rose-500' : 'bg-amber-500'}`}>{record.severity || "MINOR"}</Badge>
-                    </div>
-                    <p className="text-[9px] font-bold text-muted-foreground uppercase mt-0.5">{record.vehicleNo || "N/A"} | {record.vehicleType || "N/A"}</p>
-                    <div className="flex items-center gap-2 mt-1">
-                      <span className="text-[8px] font-black text-rose-600 bg-rose-50 px-1 rounded">₹{record.totalLossAmount || 0}</span>
-                      <span className="text-[8px] font-black text-muted-foreground opacity-50 uppercase">{record.date || "N/A"}</span>
-                    </div>
-                  </div>
-                  <Button type="button" size="icon" variant="ghost" className="h-8 w-8 text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => handleDeleteRecord(record.id, e)}>
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </Button>
+                  <div className="min-w-0 flex-1"><div className="flex items-center gap-1.5"><h4 className="font-black text-[11px] truncate uppercase tracking-tight text-slate-900">{record.routeName || "N/A"}</h4><Badge className={`h-3 px-1 text-[6px] font-black uppercase border-none ${record.severity === 'MAJOR' ? 'bg-rose-500' : 'bg-amber-500'}`}>{record.severity || "MINOR"}</Badge></div><p className="text-[9px] font-bold text-muted-foreground uppercase mt-0.5">{record.vehicleNo || "N/A"} | {record.vehicleType || "N/A"}</p><div className="flex items-center gap-2 mt-1"><span className="text-[8px] font-black text-rose-600 bg-rose-50 px-1 rounded">₹{record.totalLossAmount || 0}</span><span className="text-[8px] font-black text-muted-foreground opacity-50 uppercase">{record.date || "N/A"}</span></div></div>
+                  <Button type="button" size="icon" variant="ghost" className="h-8 w-8 text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => handleDeleteRecord(record.id, e)}><Trash2 className="h-3.5 w-3.5" /></Button>
                 </Card>
               ))}
-              {records?.length === 0 && (
-                <div className="text-center py-20 opacity-20 font-black uppercase text-[9px] tracking-widest italic">रेकॉर्ड शून्य</div>
-              )}
             </div>
           </ScrollArea>
         </Card>
