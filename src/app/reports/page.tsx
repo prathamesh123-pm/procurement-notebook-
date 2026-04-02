@@ -111,7 +111,6 @@ export default function ReportsPage() {
   }
 
   const labelMap: Record<string, string> = {
-    // Seizure
     supplierName: "पुरवठादार किंवा केंद्राचे पूर्ण नाव",
     supplierId: "पुरवठादार किंवा केंद्राचा आयडी कोड",
     route: "संबंधित संकलन रूटचे नाव",
@@ -119,8 +118,6 @@ export default function ReportsPage() {
     reason: "दूध जप्त करण्याचे कारण",
     fineAmount: "आकारलेली दंडाची रक्कम (₹)",
     actionTaken: "जप्त केलेल्या दुधावर केलेली कारवाई",
-    
-    // Breakdown
     routeName: "दुध संकलन रूटचे नाव",
     vehicleNo: "गाडीचा नंबर (MH...)",
     vehicleNumber: "गाडीचा नंबर (MH...)",
@@ -138,8 +135,6 @@ export default function ReportsPage() {
     recoveryArrivalTime: "दुसरी गाडी पोहोचण्याची वेळ",
     milkHot: "दूध गरम झाले होते का?",
     milkSour: "दूध पूर्णपणे खराब झाले का?",
-    
-    // Structured Field Visit
     visitPerson: "कोणाची भेट घेतली? (नाव व पद)",
     visitPurpose: "भेटीचा मुख्य उद्देश",
     visitDiscussion: "झालेली सविस्तर चर्चा व मुद्दे",
@@ -147,21 +142,14 @@ export default function ReportsPage() {
     travelStartKm: "प्रवास सुरुवात किलोमीटर (Start KM)",
     travelEndKm: "प्रवास शेवट किलोमीटर (End KM)",
     travelTotalKm: "प्रवास केलेले एकूण किलोमीटर",
-
-    // Structured Office Work
     officeTaskSubject: "ऑफिस कामाचा मुख्य विषय",
     officeTaskDetails: "केलेल्या कामाचा सविस्तर गोषवारा",
     pendingOfficeWork: "प्रलंबित कामे (उद्यासाठी)",
-    
-    // Daily Work / Task Generic
     title: "कामाचा विषय किंवा टास्क",
     remark: "सविस्तर शेरा/नोंद",
     achievements: "आजची मोठी कामगिरी",
     problems: "कामात आलेले अडथळे/समस्या",
     actionsTaken: "केलेली कार्यवाही",
-    supervisorName: "सुपरवायझरचे नाव",
-    
-    // Chilling
     centerName: "चिलिंग केंद्राचे नाव",
     tempAtArrival: "सुरुवातीचे तापमान (°C)",
     tempAfterChilling: "चिलिंग नंतरचे तापमान (°C)",
@@ -171,8 +159,6 @@ export default function ReportsPage() {
     staffUniform: "स्टाफने गणवेश घातला होता का?",
     fssaiDisplay: "FSSAI परवाना लावला आहे का?",
     iceBankStatus: "आईस बँकची सद्यस्थिती",
-    
-    // Generic
     summary: "कामाचा संक्षिप्त सारांश",
     totalLossAmount: "या घटनेमुळे झालेले एकूण आर्थिक नुकसान (₹)"
   };
@@ -202,7 +188,6 @@ export default function ReportsPage() {
   const RouteSlipLayout = ({ report }: { report: any }) => {
     const d = report.fullData || {};
     const logs = d.routeVisitLogs || [];
-    
     const totalEmpty = logs.reduce((sum: number, l: any) => sum + (Number(l.emptyCans) || 0), 0);
     const totalFull = logs.reduce((sum: number, l: any) => sum + (Number(l.fullCans) || 0), 0);
 
@@ -210,16 +195,11 @@ export default function ReportsPage() {
       <div className="bg-white p-4 font-sans text-slate-900 border-[2px] border-slate-900 rounded-sm shadow-none w-full max-w-full mx-auto print:border-black printable-report">
         <div className="flex justify-between items-center border-b-[2px] border-slate-900 pb-2 mb-4 print:border-black">
           <div className="space-y-0.5 text-left">
-            <h1 className="font-black uppercase text-lg tracking-tighter">
-              {d.reportHeading || 'रूट व्हिजिट रिपोर्ट'}
-            </h1>
+            <h1 className="font-black uppercase text-lg tracking-tighter">{d.reportHeading || 'रूट व्हिजिट रिपोर्ट'}</h1>
             <p className="text-[8px] font-black uppercase text-slate-500 tracking-[0.2em]">सादरकर्ता: {profileName} (ID: {profileId})</p>
           </div>
-          <div className="text-right font-black uppercase text-[9px] leading-tight">
-            <p>तारीख: {d.reportDate || '---'}</p>
-          </div>
+          <div className="text-right font-black uppercase text-[9px]">तारीख: {d.reportDate || '---'}</div>
         </div>
-
         <div className="grid grid-cols-2 gap-4 mb-4 font-black text-[10px] uppercase text-left">
           <div className="space-y-1 p-2 bg-slate-50 border border-slate-200 rounded-lg print:bg-white print:border-black">
             <div className="flex justify-between border-b border-slate-200 pb-0.5"><span>रूट नाव:</span> <span>{d.routeName || '---'}</span></div>
@@ -227,10 +207,9 @@ export default function ReportsPage() {
           </div>
           <div className="space-y-1 p-2 bg-slate-50 border border-slate-200 rounded-lg print:bg-white print:border-black">
             <div className="flex justify-between border-b border-slate-200 pb-0.5"><span>वाहन क्रमांक:</span> <span>{d.vehicleNumber || '---'}</span></div>
-            <div className="flex justify-between border-b border-slate-200 pb-0.5"><span>स्लिप नंबर:</span> <span>#{d.slipNo || '---'}</span></div>
+            <div className="flex justify-between"><span>स्लिप नंबर:</span> <span>#{d.slipNo || '---'}</span></div>
           </div>
         </div>
-
         <div className="overflow-x-auto border border-slate-900 rounded-lg mb-4 print:border-black">
           <table className="w-full border-collapse">
             <thead>
@@ -245,16 +224,16 @@ export default function ReportsPage() {
             </thead>
             <tbody className="divide-y divide-slate-900 print:divide-black">
               {logs.map((log: any, idx: number) => (
-                <tr key={idx} className="font-bold text-[9px] uppercase hover:bg-slate-50 transition-colors">
+                <tr key={idx} className="font-bold text-[9px] uppercase">
                   <td className="p-2 text-center border-r border-slate-900 bg-slate-50 print:border-black">{idx + 1}</td>
                   <td className="p-2 border-r border-slate-900 font-black print:border-black text-left">
                     {log.supplierName || '---'} <br/>
                     <span className="text-[7px] text-slate-400">ID: {log.centerCode || '---'}</span>
                   </td>
                   <td className="p-2 text-center border-r border-slate-900 print:border-black">{log.arrivalTime || '--:--'}</td>
-                  <td className="p-2 text-center border-r border-slate-900 font-black print:border-black">{log.emptyCans || '0'}</td>
+                  <td className="p-2 text-center border-r border-slate-900 print:border-black">{log.emptyCans || '0'}</td>
                   <td className="p-2 text-center border-r border-slate-900 print:border-black">{log.departureTime || '--:--'}</td>
-                  <td className="p-2 text-center bg-primary/5 font-black text-primary print:text-black">{log.fullCans || '0'}</td>
+                  <td className="p-2 text-center font-black text-primary print:text-black">{log.fullCans || '0'}</td>
                 </tr>
               ))}
               <tr className="bg-slate-900 text-white font-black text-[10px] uppercase print:bg-black">
@@ -266,7 +245,6 @@ export default function ReportsPage() {
             </tbody>
           </table>
         </div>
-
         <div className="mt-12 grid grid-cols-2 gap-10 text-center uppercase font-black text-[8px] tracking-widest text-slate-400">
           <div className="border-t border-slate-900 pt-2 print:border-black print:text-black">अधिकारी स्वाक्षरी</div>
           <div className="border-t border-slate-900 pt-2 print:border-black print:text-black">सुपरवायझर स्वाक्षरी</div>
@@ -278,32 +256,18 @@ export default function ReportsPage() {
   const GenericTableLayout = ({ report }: { report: any }) => {
     const d = report.fullData || {};
     const mainHeading = d.reportHeading || d.title || report.type;
-
-    // KM fields grouping logic
     const kmKeys = ["travelStartKm", "travelEndKm", "travelTotalKm"];
-
-    const filteredEntries = orderedKeys
-      .filter(key => {
-        const val = d[key];
-        return val !== undefined && val !== "" && val !== null && !kmKeys.includes(key);
-      })
-      .map(key => [key, d[key]]);
-
-    const formatVal = (key: string, val: any): string => {
-      if (typeof val === 'boolean') return val ? "हो (YES)" : "नाही (NO)";
-      if (Array.isArray(val)) return val.join(' | ');
-      return String(val || "-");
-    }
+    const filteredEntries = orderedKeys.filter(key => {
+      const val = d[key];
+      return val !== undefined && val !== "" && val !== null && !kmKeys.includes(key);
+    }).map(key => [key, d[key]]);
 
     return (
       <div className="bg-white font-sans text-slate-900 border-[2px] border-slate-900 rounded-sm shadow-none print:border-black mb-4 last:mb-0 break-inside-avoid w-full max-w-full mx-auto p-6 printable-report">
         <div className="border-b-[2px] border-slate-900 text-center pb-4 mb-4 print:border-black">
           <h1 className="text-xl font-black uppercase tracking-tight">{mainHeading}</h1>
-          <div className="mt-2 text-[9px] font-black uppercase tracking-widest text-slate-500">
-            सादरकर्ता: {profileName} (ID: {profileId}) | तारीख: {report.date}
-          </div>
+          <div className="mt-2 text-[9px] font-black uppercase tracking-widest text-slate-500">सादरकर्ता: {profileName} (ID: {profileId}) | तारीख: {report.date}</div>
         </div>
-
         <div className="space-y-4">
           <div className="border border-slate-900 rounded-lg overflow-hidden print:border-black">
             <table className="w-full border-collapse">
@@ -315,22 +279,14 @@ export default function ReportsPage() {
               </thead>
               <tbody className="divide-y divide-slate-900 print:divide-black">
                 {filteredEntries.map(([key, val]) => (
-                  <tr key={key} className="font-bold text-[10px] hover:bg-slate-50 transition-colors text-left">
-                    <td className="p-2 bg-slate-50 uppercase text-[9px] font-black border-r border-slate-900 print:bg-white print:border-black">
-                      {labelMap[key] || key.toUpperCase()}
-                    </td>
-                    <td className="p-2 whitespace-pre-wrap">
-                      {formatVal(key, val)}
-                    </td>
+                  <tr key={key} className="font-bold text-[10px] text-left">
+                    <td className="p-2 bg-slate-50 uppercase text-[9px] font-black border-r border-slate-900 print:bg-white print:border-black">{labelMap[key] || key.toUpperCase()}</td>
+                    <td className="p-2 whitespace-pre-wrap">{typeof val === 'boolean' ? (val ? "हो (YES)" : "नाही (NO)") : (Array.isArray(val) ? val.join(' | ') : String(val || "-"))}</td>
                   </tr>
                 ))}
-
-                {/* Grouped KM Metrics Row */}
                 {(d.travelStartKm || d.travelEndKm || d.travelTotalKm) && (
-                  <tr className="font-bold text-[10px] hover:bg-slate-50 transition-colors text-left">
-                    <td className="p-2 bg-slate-50 uppercase text-[9px] font-black border-r border-slate-900 print:bg-white print:border-black">
-                      प्रवासाचे किलोमीटर (START/END/TOTAL)
-                    </td>
+                  <tr className="font-bold text-[10px] text-left">
+                    <td className="p-2 bg-slate-50 uppercase text-[9px] font-black border-r border-slate-900 print:bg-white print:border-black">प्रवासाचे किलोमीटर (START/END/TOTAL)</td>
                     <td className="p-0">
                       <div className="flex divide-x divide-slate-900 h-full print:divide-black">
                         <div className="flex-1 p-2 flex flex-col items-center justify-center">
@@ -352,43 +308,25 @@ export default function ReportsPage() {
               </tbody>
             </table>
           </div>
-
           {(d.points && d.points.length > 0) && (
             <div className="mt-4 space-y-2 text-left">
-              <div className="flex items-center gap-1.5 text-[10px] font-black uppercase text-primary">
-                <AlertCircle className="h-4 w-4" /> विशेष निरीक्षणे:
-              </div>
+              <div className="flex items-center gap-1.5 text-[10px] font-black uppercase text-primary"><AlertCircle className="h-4 w-4" /> विशेष निरीक्षणे:</div>
               <div className="border border-slate-900 rounded-lg p-3 print:border-black">
-                <ul className="space-y-1.5">
-                  {d.points.map((p: string, i: number) => (
-                    <li key={i} className="text-[10px] font-bold flex gap-2">
-                      <span className="text-primary font-black shrink-0">{i + 1}.</span>
-                      <span>{p}</span>
-                    </li>
-                  ))}
-                </ul>
+                <ul className="space-y-1.5">{d.points.map((p: string, i: number) => (<li key={i} className="text-[10px] font-bold flex gap-2"><span className="text-primary font-black shrink-0">{i + 1}.</span><span>{p}</span></li>))}</ul>
               </div>
             </div>
           )}
-
           {((d.losses && d.losses.length > 0) || (d.centerLosses && d.centerLosses.length > 0)) && (
             <div className="mt-4 space-y-2 text-left">
-              <div className="flex items-center gap-1.5 text-[10px] font-black uppercase text-rose-700">
-                <AlertTriangle className="h-4 w-4" /> नुकसानीचा सविस्तर तक्ता:
-              </div>
+              <div className="flex items-center gap-1.5 text-[10px] font-black uppercase text-rose-700"><AlertTriangle className="h-4 w-4" /> नुकसानीचा सविस्तर तक्ता:</div>
               <div className="border border-slate-900 rounded-lg overflow-hidden shadow-sm print:border-black overflow-x-auto">
                 <table className="w-full border-collapse text-[9px]">
                   <thead className="bg-slate-900 text-white font-black uppercase tracking-wider print:bg-black">
-                    <tr>
-                      <th className="p-2 text-left border-r border-white/20">नाव</th>
-                      <th className="p-2 text-center w-16 border-r border-white/20">प्रकार</th>
-                      <th className="p-2 text-center w-16 border-r border-white/20">Ltr</th>
-                      <th className="p-2 text-right w-24">रक्कम (₹)</th>
-                    </tr>
+                    <tr><th className="p-2 text-left border-r border-white/20">नाव</th><th className="p-2 text-center w-16 border-r border-white/20">प्रकार</th><th className="p-2 text-center w-16 border-r border-white/20">Ltr</th><th className="p-2 text-right w-24">रक्कम (₹)</th></tr>
                   </thead>
                   <tbody className="divide-y divide-slate-200 print:divide-black">
                     {(d.losses || d.centerLosses).map((l: any, i: number) => (
-                      <tr key={i} className="text-center font-bold hover:bg-slate-50 transition-colors">
+                      <tr key={i} className="text-center font-bold">
                         <td className="p-2 text-left uppercase border-r border-slate-200 font-black print:border-black">{l.supplierName || l.centerName || '---'}</td>
                         <td className="p-2 border-r border-slate-200 print:border-black">{l.milkType || '-'}</td>
                         <td className="p-2 border-r border-slate-200 font-black print:border-black">{l.qtyLiters || '0'}</td>
@@ -405,7 +343,6 @@ export default function ReportsPage() {
             </div>
           )}
         </div>
-
         <div className="mt-20 grid grid-cols-2 gap-10 text-center uppercase font-black text-[8px] tracking-widest text-slate-400">
           <div className="border-t border-slate-900 pt-2 print:border-black print:text-black">अधिकारी स्वाक्षरी</div>
           <div className="border-t border-slate-900 pt-2 print:border-black print:text-black">सुपरवायझर स्वाक्षरी</div>
@@ -420,23 +357,17 @@ export default function ReportsPage() {
     <div className="compact-form-container pb-20 max-w-4xl mx-auto px-2 animate-in fade-in duration-700">
       <div className="flex flex-col sm:flex-row items-center justify-between border-b-2 border-primary/20 pb-4 mb-6 gap-4">
         <div className="flex flex-col gap-1 items-center sm:items-start text-center sm:text-left">
-          <h2 className="text-xl font-black text-slate-900 flex items-center gap-2 uppercase tracking-tight">
-            <Archive className="h-6 w-6 text-primary" /> अहवाल संग्रहालय
-          </h2>
+          <h2 className="text-xl font-black text-slate-900 flex items-center gap-2 uppercase tracking-tight"><Archive className="h-6 w-6 text-primary" /> अहवाल संग्रहालय</h2>
           <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] ml-1">Archive & Record Management</p>
         </div>
-        <Button asChild size="sm" className="h-10 px-6 font-black uppercase rounded-2xl shadow-xl shadow-primary/20 hover:scale-[1.02] transition-all active:scale-95 w-full sm:w-auto">
+        <Button asChild size="sm" className="h-10 px-6 font-black uppercase rounded-2xl shadow-xl shadow-primary/20 transition-all active:scale-95 w-full sm:w-auto">
           <Link href="/reports/entry/seizure"><Plus className="h-4 w-4 mr-2" /> जप्ती नोंद</Link>
         </Button>
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-8">
         {reportTypes.map((rt) => (
-          <button 
-            key={rt.title} 
-            onClick={() => setTypeFilter(typeFilter === rt.type ? null : rt.type)}
-            className={`h-16 flex flex-col items-center justify-center p-1 rounded-xl border transition-all hover:shadow-md active:scale-95 ${typeFilter === rt.type ? 'bg-primary text-white border-primary shadow-primary/20' : 'bg-white text-slate-900 border-slate-100 shadow-sm'}`}
-          >
+          <button key={rt.title} onClick={() => setTypeFilter(typeFilter === rt.type ? null : rt.type)} className={`h-16 flex flex-col items-center justify-center p-1 rounded-xl border transition-all hover:shadow-md active:scale-95 ${typeFilter === rt.type ? 'bg-primary text-white border-primary shadow-primary/20' : 'bg-white text-slate-900 border-slate-100 shadow-sm'}`}>
             <rt.icon className={`h-4 w-4 mb-1 ${typeFilter === rt.type ? 'text-white' : rt.color}`} />
             <span className="text-[8px] font-black leading-tight text-center uppercase tracking-tighter">{rt.title}</span>
           </button>
@@ -452,11 +383,7 @@ export default function ReportsPage() {
           <div className="relative w-full sm:w-auto">
             <Input type="date" className="h-11 text-[11px] bg-slate-50 border-none rounded-2xl font-black w-full sm:w-36 shadow-inner" value={filterDate} onChange={e => setFilterDate(e.target.value)} />
           </div>
-          {typeFilter && (
-            <Button variant="ghost" size="icon" onClick={() => setTypeFilter(null)} className="h-11 w-11 text-rose-500 bg-rose-50 rounded-2xl hover:bg-rose-100">
-              <X className="h-5 w-5" />
-            </Button>
-          )}
+          {typeFilter && <Button variant="ghost" size="icon" onClick={() => setTypeFilter(null)} className="h-11 w-11 text-rose-500 bg-rose-50 rounded-2xl"><X className="h-5 w-5" /></Button>}
         </div>
       </Card>
 
@@ -476,33 +403,20 @@ export default function ReportsPage() {
                   <td className="p-4 font-black text-[11px] text-slate-500 uppercase">{report.date}</td>
                   <td className="p-4 text-left">
                     <div className="flex flex-col gap-1 min-w-0">
-                      <span className="text-[11px] font-black uppercase text-primary group-hover:underline">
-                        {report.fullData?.reportHeading || report.type}
-                      </span>
+                      <span className="text-[11px] font-black uppercase text-primary group-hover:underline">{report.fullData?.reportHeading || report.type}</span>
                       <p className="text-[10px] text-slate-500 line-clamp-1 italic font-bold opacity-80">{report.summary}</p>
                     </div>
                   </td>
                   <td className="p-4 text-right">
                     <div className="flex justify-end gap-2 sm:opacity-0 group-hover:opacity-100 transition-all">
-                      <Button variant="ghost" size="icon" className="h-9 w-9 text-primary hover:bg-primary/10 rounded-xl" onClick={(e) => handleEditReport(report, e)}>
-                        <FileEdit className="h-4 w-4" />
-                      </Button>
-                      <Button variant="ghost" size="icon" className="h-9 w-9 text-rose-500 hover:bg-rose-50 rounded-xl" onClick={(e) => handleDeleteReport(report.id, e)}>
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                      <Button variant="ghost" size="icon" className="h-9 w-9 text-primary hover:bg-primary/10 rounded-xl" onClick={(e) => handleEditReport(report, e)}><FileEdit className="h-4 w-4" /></Button>
+                      <Button variant="ghost" size="icon" className="h-9 w-9 text-rose-500 hover:bg-rose-50 rounded-xl" onClick={(e) => handleDeleteReport(report.id, e)}><Trash2 className="h-4 w-4" /></Button>
                     </div>
                   </td>
                 </tr>
               ))}
               {filteredReports.length === 0 && (
-                <tr>
-                  <td colSpan={3} className="py-32 text-center">
-                    <div className="flex flex-col items-center gap-4 opacity-20">
-                      <Archive className="h-16 w-16" />
-                      <p className="font-black uppercase text-[11px] tracking-[0.4em] italic">कोणतीही नोंद उपलब्ध नाही</p>
-                    </div>
-                  </td>
-                </tr>
+                <tr><td colSpan={3} className="py-32 text-center opacity-20"><Archive className="h-16 w-16 mx-auto mb-4" /><p className="font-black uppercase text-[11px] tracking-[0.4em] italic">कोणतीही नोंद उपलब्ध नाही</p></td></tr>
               )}
             </tbody>
           </table>
@@ -511,43 +425,25 @@ export default function ReportsPage() {
 
       <Dialog open={isViewOpen} onOpenChange={setIsViewOpen}>
         <DialogContent className="max-w-[850px] w-[95vw] p-0 rounded-[2rem] overflow-hidden border-none shadow-2xl bg-slate-100 sm:w-full">
-          <DialogHeader className="p-4 bg-white border-b flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0 no-print">
-            <div className="flex items-center gap-3 px-2 sm:px-4">
-              <div className="p-2 bg-primary/10 text-primary rounded-xl">
-                {isGroupView ? <FileStack className="h-5 w-5" /> : <FileText className="h-5 w-5" />}
-              </div>
+          <DialogHeader className="p-4 bg-white border-b flex flex-col sm:flex-row items-center justify-between no-print">
+            <div className="flex items-center gap-3 px-2">
+              <div className="p-2 bg-primary/10 text-primary rounded-xl">{isGroupView ? <FileStack className="h-5 w-5" /> : <FileText className="h-5 w-5" />}</div>
               <div className="text-left">
                 <DialogTitle className="text-[11px] font-black uppercase text-slate-900 tracking-[0.2em]">{isGroupView ? 'एकत्रित कार्य अहवाल' : 'अहवाल तपशील'}</DialogTitle>
-                <DialogDescription className="text-[9px] font-bold uppercase text-slate-400">{isGroupView ? 'All Daily Tasks' : 'Preview'}</DialogDescription>
+                <DialogDescription className="text-[9px] font-bold uppercase text-slate-400">Preview</DialogDescription>
               </div>
             </div>
-            <div className="flex flex-wrap gap-2 pr-2 sm:pr-4 justify-center">
-              {selectedReport?.type === 'Daily Task' && (
-                <Button 
-                  variant={isGroupView ? "secondary" : "outline"} 
-                  size="sm" 
-                  onClick={() => setIsGroupView(!isGroupView)} 
-                  className="h-9 sm:h-10 px-3 sm:px-4 font-black uppercase rounded-xl border-primary/20 text-[9px] sm:text-[10px]"
-                >
-                  {isGroupView ? <Layers className="h-4 w-4 mr-2" /> : <FileStack className="h-4 w-4 mr-2" />}
-                  {isGroupView ? 'सिंगल टास्क' : 'पूर्ण दिवसाचे टास्क'}
-                </Button>
-              )}
-              <Button size="sm" onClick={() => window.print()} className="h-9 sm:h-10 px-4 sm:px-6 font-black uppercase rounded-xl shadow-lg shadow-primary/20 text-[9px] sm:text-[10px]"><Printer className="h-4 w-4 mr-2" /> प्रिंट करा</Button>
-              <Button size="icon" variant="ghost" onClick={() => setIsViewOpen(false)} className="h-9 sm:h-10 w-9 sm:w-10 text-slate-400 hover:bg-slate-100 rounded-xl"><X className="h-6 w-6" /></Button>
+            <div className="flex gap-2 pr-2">
+              {selectedReport?.type === 'Daily Task' && <Button variant={isGroupView ? "secondary" : "outline"} size="sm" onClick={() => setIsGroupView(!isGroupView)} className="h-9 px-3 font-black uppercase rounded-xl border-primary/20 text-[9px]">{isGroupView ? <Layers className="h-4 w-4 mr-2" /> : <FileStack className="h-4 w-4 mr-2" />} {isGroupView ? 'सिंगल टास्क' : 'पूर्ण दिवसाचे टास्क'}</Button>}
+              <Button size="sm" onClick={() => window.print()} className="h-9 px-4 font-black uppercase rounded-xl shadow-lg shadow-primary/20 text-[9px]"><Printer className="h-4 w-4 mr-2" /> प्रिंट करा</Button>
+              <Button size="icon" variant="ghost" onClick={() => setIsViewOpen(false)} className="h-9 w-9 text-slate-400 hover:bg-slate-100 rounded-xl"><X className="h-6 w-6" /></Button>
             </div>
           </DialogHeader>
-          <ScrollArea className="max-h-[80vh] sm:max-h-[85vh] p-3 sm:p-6 bg-slate-100">
-            <div className="max-w-full sm:max-w-[210mm] mx-auto transition-all animate-in zoom-in-95 duration-300 space-y-4">
+          <ScrollArea className="max-h-[85vh] p-3 sm:p-6 bg-slate-100">
+            <div className="max-w-full sm:max-w-[210mm] mx-auto space-y-4">
               {reportsToRender.map((report, idx) => (
                 <div key={report.id} className={idx > 0 ? "print:page-break-before-always" : ""}>
-                  {report.type === 'Route Visit' ? (
-                    <RouteSlipLayout report={report} />
-                  ) : report.fullData?.isWordDoc ? (
-                    <div className="prose prose-sm max-w-none px-6 sm:px-12 py-6 sm:py-10 bg-white border-[2px] border-slate-900 rounded-sm shadow-2xl min-h-[400px] sm:min-h-[600px] print:shadow-none print:border-black overflow-hidden printable-report" dangerouslySetInnerHTML={{ __html: report.fullData.content }} />
-                  ) : (
-                    <GenericTableLayout report={report} />
-                  )}
+                  {report.type === 'Route Visit' ? <RouteSlipLayout report={report} /> : (report.fullData?.isWordDoc ? <div className="prose prose-sm max-w-none px-6 sm:px-12 py-10 bg-white border-[2px] border-slate-900 rounded-sm shadow-2xl min-h-[600px] print:shadow-none print:border-black printable-report" dangerouslySetInnerHTML={{ __html: report.fullData.content }} /> : <GenericTableLayout report={report} />)}
                 </div>
               ))}
             </div>
@@ -557,95 +453,17 @@ export default function ReportsPage() {
 
       <style jsx global>{`
         @media print {
-          @page {
-            size: A4;
-            margin: 5mm;
-          }
-          
-          body > *:not([role="dialog"]), 
-          header, nav, aside, footer, .sidebar, .no-print, button {
-            display: none !important;
-          }
-
-          body {
-            background: white !important;
-            padding: 0 !important;
-            margin: 0 !important;
-            overflow: visible !important;
-          }
-
-          [role="dialog"] {
-            position: absolute !important;
-            left: 0 !important;
-            top: 0 !important;
-            width: 100% !important;
-            max-width: none !important;
-            transform: none !important;
-            box-shadow: none !important;
-            border: none !important;
-            padding: 0 !important;
-            background: white !important;
-            overflow: visible !important;
-            display: block !important;
-            visibility: visible !important;
-          }
-
-          [role="dialog"] header,
-          [role="dialog"] button,
-          [data-state="open"] > div:first-child {
-            display: none !important;
-          }
-
-          .printable-report {
-            display: block !important;
-            visibility: visible !important;
-            width: 100% !important;
-            margin: 0 !important;
-            padding: 10px !important;
-            border: 2px solid black !important;
-            background: white !important;
-            box-shadow: none !important;
-            min-height: auto !important;
-            color: black !important;
-          }
-
-          .printable-report * {
-            visibility: visible !important;
-            color: black !important;
-            print-color-adjust: exact;
-            -webkit-print-color-adjust: exact;
-          }
-
-          table {
-            width: 100% !important;
-            border-collapse: collapse !important;
-            table-layout: fixed !important;
-            border: 1.5px solid black !important;
-          }
-
-          th, td {
-            border: 1px solid black !important;
-            word-wrap: break-word !important;
-            overflow-wrap: break-word !important;
-            padding: 4px !important;
-            font-size: 10px !important;
-          }
-
-          h1, h2, h3, h4 {
-            color: black !important;
-            text-transform: uppercase !important;
-          }
-
-          .bg-primary, .bg-slate-900, .bg-rose-600 {
-            background-color: transparent !important;
-            color: black !important;
-            border: 1px solid black !important;
-          }
-
-          .text-primary, .text-rose-600, .text-emerald-700 {
-            color: black !important;
-            font-weight: 900 !important;
-          }
+          @page { size: A4; margin: 5mm; }
+          body > *:not([role="dialog"]), header, nav, aside, footer, .sidebar, .no-print, button { display: none !important; }
+          body { background: white !important; padding: 0 !important; margin: 0 !important; overflow: visible !important; }
+          [role="dialog"] { position: absolute !important; left: 0 !important; top: 0 !important; width: 100% !important; max-width: none !important; transform: none !important; box-shadow: none !important; border: none !important; padding: 0 !important; background: white !important; overflow: visible !important; display: block !important; visibility: visible !important; }
+          .printable-report { display: block !important; visibility: visible !important; width: 100% !important; margin: 0 !important; padding: 10px !important; border: 2px solid black !important; background: white !important; box-shadow: none !important; color: black !important; }
+          .printable-report * { visibility: visible !important; color: black !important; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+          table { width: 100% !important; border-collapse: collapse !important; table-layout: fixed !important; border: 1.5px solid black !important; }
+          th, td { border: 1px solid black !important; padding: 4px !important; font-size: 10px !important; }
+          h1, h2, h3, h4 { color: black !important; text-transform: uppercase !important; }
+          .bg-primary, .bg-slate-900, .bg-rose-600 { background-color: transparent !important; color: black !important; border: 1px solid black !important; }
+          .text-primary, .text-rose-600 { color: black !important; font-weight: 900 !important; }
         }
       `}</style>
     </div>
