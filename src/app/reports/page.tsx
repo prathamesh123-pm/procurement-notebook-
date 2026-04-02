@@ -40,7 +40,6 @@ export default function ReportsPage() {
 
   useEffect(() => setMounted(true), [])
 
-  // Only 8 essential categories
   const reportTypes = [
     { title: "रूट व्हिजिट", type: "Route Visit", icon: Truck, color: "text-blue-600", bg: "bg-blue-50" },
     { title: "क्षेत्र भेट", type: "Field Visit", icon: MapPin, color: "text-emerald-600", bg: "bg-emerald-50" },
@@ -102,8 +101,8 @@ export default function ReportsPage() {
   }
 
   const labelMap: Record<string, string> = {
-    displayName: "अहवाल सादरकर्ता",
-    name: "अहवाल सादरकर्ता",
+    displayName: "संकलन सुपरवायझर",
+    name: "संकलन सुपरवायझर",
     employeeId: "अधिकारी आयडी (Emp ID)",
     idNumber: "अधिकारी आयडी (Emp ID)",
     supplierName: "पुरवठादार / गवळी नाव",
