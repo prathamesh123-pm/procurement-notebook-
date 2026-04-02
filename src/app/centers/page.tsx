@@ -253,11 +253,19 @@ export default function CentersPage() {
                 </Button>
               </div>
             </div>
+<<<<<<< HEAD
             <ScrollArea className="max-h-[700px] print:max-h-none print:overflow-visible w-full">
               <div className="p-4 space-y-5 pb-10 print:p-8 print:space-y-8 flex flex-col items-center max-w-full">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 print:grid-cols-2 w-full">
                   <div className="bg-muted/20 p-3 rounded-2xl border border-muted-foreground/5 space-y-1.5 print:bg-white print:border-black print:border-2">
                     <h4 className="text-[9px] font-black uppercase text-primary tracking-widest flex items-center gap-2 border-b border-primary/10 pb-1 print:text-black print:border-black print:text-[12pt]">
+=======
+            <ScrollArea className="max-h-[700px] print:max-h-none">
+              <div className="p-4 space-y-5 pb-10 print:p-6 print:space-y-8 print:w-full print:mx-auto">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 print:gap-6">
+                  <div className="bg-muted/20 p-3 rounded-2xl border border-muted-foreground/5 space-y-1.5 print:bg-white print:border-black print:rounded-none">
+                    <h4 className="text-[9px] font-black uppercase text-primary tracking-widest flex items-center gap-2 border-b border-primary/10 pb-1 print:text-black print:text-xs">
+>>>>>>> 6c0c428 (आजची मोठी कामगिरी)
                       <User className="h-3.5 w-3.5 print:hidden" /> १) प्राथमिक माहिती
                     </h4>
                     <div className="grid grid-cols-2 gap-x-2 gap-y-1">
@@ -404,6 +412,7 @@ export default function CentersPage() {
             margin: 15mm;
           }
           
+<<<<<<< HEAD
           html, body {
             visibility: hidden !important;
             background: white !important;
@@ -443,6 +452,45 @@ export default function CentersPage() {
           }
 
           .printable-report * {
+=======
+          body > *:not([role="main"]), 
+          header, nav, aside, footer, .sidebar, .no-print, button {
+            display: none !important;
+          }
+
+          body {
+            background: white !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            overflow: visible !important;
+          }
+
+          #printable-area {
+            position: relative !important;
+            display: block !important;
+            visibility: visible !important;
+            width: 100% !important;
+            max-width: none !important;
+            margin: 0 auto !important;
+            padding: 20px !important;
+            border: 2px solid black !important;
+            background: white !important;
+            box-shadow: none !important;
+            left: 0 !important;
+            top: 0 !important;
+          }
+
+          #printable-area * {
+            visibility: visible !important;
+            color: black !important;
+            print-color-adjust: exact;
+            -webkit-print-color-adjust: exact;
+          }
+
+          /* Normalizing Font Sizes for Print */
+          #printable-area p, #printable-area span, #printable-area td {
+            font-size: 11pt !important;
+>>>>>>> 6c0c428 (आजची मोठी कामगिरी)
             color: black !important;
           }
           
@@ -466,14 +514,33 @@ export default function CentersPage() {
           table {
             width: 100% !important;
             border-collapse: collapse !important;
+<<<<<<< HEAD
             border: 2px solid black !important;
             margin: 15pt 0 !important;
+=======
+            border: 1.5px solid black !important;
+>>>>>>> 6c0c428 (आजची मोठी कामगिरी)
           }
 
           th, td {
             border: 1px solid black !important;
+<<<<<<< HEAD
             padding: 10pt !important;
             font-size: 11pt !important;
+=======
+            padding: 8px !important;
+            font-size: 11pt !important;
+          }
+
+          th {
+            background-color: #f0f0f0 !important;
+            font-weight: 900 !important;
+          }
+
+          .bg-muted/20, .bg-blue-50/30 {
+            background-color: transparent !important;
+            border: 1px solid black !important;
+>>>>>>> 6c0c428 (आजची मोठी कामगिरी)
           }
         }
       `}</style>

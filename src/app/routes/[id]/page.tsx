@@ -242,6 +242,7 @@ export default function RouteDetailsPage() {
                   <Button type="button" variant="outline" size="icon" className="h-9 w-9 text-primary border-primary/20 hover:bg-primary/5 rounded-xl" onClick={() => openEditDialog(selectedSupplier)}><Edit className="h-4 w-4" /></Button>
                 </div>
               </div>
+<<<<<<< HEAD
               <ScrollArea className="flex-1 h-[600px] print:h-auto print:overflow-visible w-full">
                 <div className="p-4 space-y-5 print:p-8 print:space-y-8 flex flex-col items-center">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 print:grid-cols-2 w-full">
@@ -253,6 +254,19 @@ export default function RouteDetailsPage() {
                         <div><p className="text-[8px] text-muted-foreground uppercase font-black print:text-slate-500">ऑपरेटर</p><p className="text-[10px] font-black uppercase truncate print:text-[10pt]">{selectedSupplier.operatorName || "-"}</p></div>
                         <div><p className="text-[8px] text-muted-foreground uppercase font-black print:text-slate-500">मोबाईल</p><p className="text-[10px] font-black print:text-[10pt]">{selectedSupplier.mobile || "-"}</p></div>
                         <div className="col-span-2"><p className="text-[8px] text-muted-foreground uppercase font-black print:text-slate-500">पत्ता</p><p className="text-[10px] font-black uppercase truncate print:text-[10pt]">{selectedSupplier.address || selectedSupplier.village || "-"}</p></div>
+=======
+              <ScrollArea className="flex-1 h-[600px] print:h-auto">
+                <div className="p-4 space-y-5 print:p-6 print:space-y-8 print:w-full print:mx-auto">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 print:gap-6">
+                    <div className="bg-muted/20 p-3 rounded-2xl border border-muted-foreground/5 space-y-1.5 print:bg-white print:border-black print:rounded-none">
+                      <h4 className="text-[9px] font-black uppercase text-primary tracking-widest border-b border-primary/10 pb-1 print:text-black print:text-xs">१) प्राथमिक माहिती</h4>
+                      <div className="grid grid-cols-2 gap-x-2 gap-y-1 print:gap-y-3">
+                        <div><p className="text-[8px] text-muted-foreground uppercase font-black print:text-[10pt]">नाव</p><p className="text-[10px] font-black uppercase truncate print:text-[12pt]">{selectedSupplier.name}</p></div>
+                        <div><p className="text-[8px] text-muted-foreground uppercase font-black print:text-[10pt]">कोड</p><p className="text-[10px] font-black uppercase print:text-[12pt]">{selectedSupplier.supplierId}</p></div>
+                        <div><p className="text-[8px] text-muted-foreground uppercase font-black print:text-[10pt]">ऑपरेटर</p><p className="text-[10px] font-black uppercase truncate print:text-[12pt]">{selectedSupplier.operatorName || "-"}</p></div>
+                        <div><p className="text-[8px] text-muted-foreground uppercase font-black print:text-[10pt]">मोबाईल</p><p className="text-[10px] font-black print:text-[12pt]">{selectedSupplier.mobile || "-"}</p></div>
+                        <div className="col-span-2"><p className="text-[8px] text-muted-foreground uppercase font-black print:text-[10pt]">पत्ता</p><p className="text-[10px] font-black uppercase truncate print:text-[12pt]">{selectedSupplier.address || selectedSupplier.village || "-"}</p></div>
+>>>>>>> 6c0c428 (आजची मोठी कामगिरी)
                       </div>
                     </div>
                     <div className="bg-muted/20 p-3 rounded-2xl border border-muted-foreground/5 space-y-1.5 print:bg-white print:border-black print:border-2">
@@ -377,6 +391,7 @@ export default function RouteDetailsPage() {
             margin: 15mm;
           }
           
+<<<<<<< HEAD
           html, body {
             visibility: hidden !important;
             background: white !important;
@@ -407,6 +422,40 @@ export default function RouteDetailsPage() {
 
           header, nav, aside, footer, .sidebar, .no-print, button, [role="dialog"], .sidebar-trigger {
             display: none !important;
+=======
+          body > *:not([role="main"]), 
+          header, nav, aside, footer, .sidebar, .no-print, button {
+            display: none !important;
+          }
+
+          body {
+            background: white !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            overflow: visible !important;
+          }
+
+          #printable-area {
+            position: relative !important;
+            display: block !important;
+            visibility: visible !important;
+            width: 100% !important;
+            max-width: none !important;
+            margin: 0 auto !important;
+            padding: 20px !important;
+            border: 2px solid black !important;
+            background: white !important;
+            box-shadow: none !important;
+            left: 0 !important;
+            top: 0 !important;
+          }
+
+          #printable-area * {
+            visibility: visible !important;
+            color: black !important;
+            print-color-adjust: exact;
+            -webkit-print-color-adjust: exact;
+>>>>>>> 6c0c428 (आजची मोठी कामगिरी)
           }
 
           [data-radix-scroll-area-viewport] {
@@ -439,14 +488,28 @@ export default function RouteDetailsPage() {
           table {
             width: 100% !important;
             border-collapse: collapse !important;
+<<<<<<< HEAD
             border: 2px solid black !important;
             margin: 15pt 0 !important;
+=======
+            border: 1.5px solid black !important;
+>>>>>>> 6c0c428 (आजची मोठी कामगिरी)
           }
 
           th, td {
             border: 1px solid black !important;
+<<<<<<< HEAD
             padding: 10pt !important;
             font-size: 11pt !important;
+=======
+            padding: 8px !important;
+            font-size: 11pt !important;
+          }
+
+          .bg-muted/20, .bg-blue-50/30 {
+            background-color: transparent !important;
+            border: 1px solid black !important;
+>>>>>>> 6c0c428 (आजची मोठी कामगिरी)
           }
         }
       `}</style>

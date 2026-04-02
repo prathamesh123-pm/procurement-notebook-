@@ -149,6 +149,7 @@ export default function ReportsPage() {
     actionsTaken: "केलेली कार्यवाही",
     achievements: "आजची मोठी कामगिरी",
     problems: "महत्त्वाच्या समस्या",
+<<<<<<< HEAD
     centerName: "केंद्राचे नाव",
     tempAtArrival: "सुरुवातीचे तापमान (°C)",
     tempAfterChilling: "चिलिंग नंतरचे तापमान (°C)",
@@ -169,6 +170,38 @@ export default function ReportsPage() {
     "officeTaskSubject", "officeTaskDetails", "pendingOfficeWork",
     "title", "remark", "actionTaken", "actionsTaken", "achievements", "problems",
     "summary", "supervisorName",
+=======
+    supervisorName: "सुपरवायझरचे नाव",
+    routeName: "रूट नाव",
+    vehicleNumber: "वाहन क्र.",
+    vehicleNo: "वाहन क्र.",
+    vehicleType: "वाहन प्रकार",
+    driverName: "ड्रायव्हर",
+    mobile: "मोबाईल",
+    breakdownTime: "वेळ",
+    location: "ठिकाण",
+    reason: "कारण",
+    severity: "स्वरूप",
+    detailedReason: "सविस्तर माहिती",
+    estimatedRepairTime: "दुरुस्ती वेळ",
+    estimatedRepairCost: "दुरुस्ती खर्च",
+    recoveryVehicleNo: "पर्यायी गाडी",
+    recoveryArrivalTime: "पर्यायी गाडी वेळ",
+    milkHot: "दूध गरम?",
+    milkSour: "दूध आंबट?",
+    summary: "सारांश",
+    totalLossAmount: "नुकसान (₹)",
+    fineAmount: "दंड (₹)",
+    seizureQty: "प्रमाण (L)"
+  };
+
+  const orderedKeys = [
+    "supplierName", "supplierId",
+    "title",
+    "remark", "actionTaken", "actionsTaken", "achievements", "problems",
+    "supervisorName",
+    "summary",
+>>>>>>> 6c0c428 (आजची मोठी कामगिरी)
     "routeName", "vehicleNumber", "vehicleNo", "vehicleType", "driverName", "mobile",
     "breakdownTime", "location", "reason", "severity", "detailedReason",
     "estimatedRepairTime", "estimatedRepairCost", "recoveryVehicleNo", "recoveryArrivalTime",
@@ -289,10 +322,24 @@ export default function ReportsPage() {
     });
 
     return (
+<<<<<<< HEAD
       <div className="bg-white font-sans text-slate-900 border-[2px] border-slate-900 rounded-sm shadow-none print:border-black mb-6 last:mb-0 break-inside-avoid w-full max-w-[210mm] mx-auto p-4 sm:p-8 printable-report">
         <div className="border-b-[2px] border-slate-900 text-center pb-5 mb-6 print:border-black">
           <h1 className="text-[14pt] sm:text-[18pt] font-black uppercase tracking-tight leading-tight">{mainHeading}</h1>
           <div className="mt-3 text-[8pt] sm:text-[10pt] font-black uppercase tracking-widest text-slate-500">सादरकर्ता: {profileName} (ID: {profileId}) | तारीख: {report.date}</div>
+=======
+      <div className="bg-white font-sans text-slate-900 border-[2px] border-slate-900 rounded-sm shadow-none print:border-black mb-4 last:mb-0 break-inside-avoid w-full max-w-full mx-auto p-6 printable-report">
+        <div className="border-b-[2px] border-slate-900 text-center pb-4 mb-4 print:border-black">
+          <div className="flex justify-center mb-1">
+            <div className="p-2 bg-primary text-white rounded-xl print:bg-black">
+              <ClipboardCheck className="h-6 w-6" />
+            </div>
+          </div>
+          <h1 className="text-xl font-black uppercase tracking-tight">अहवाल (OFFICIAL REPORT)</h1>
+          <div className="mt-2 px-4 py-0.5 text-[8px] font-black uppercase tracking-widest bg-slate-900 text-white inline-block print:bg-black">
+            {report.type}
+          </div>
+>>>>>>> 6c0c428 (आजची मोठी कामगिरी)
         </div>
         <div className="space-y-6">
           <div className="border border-slate-900 rounded-xl overflow-hidden print:border-black">
@@ -513,6 +560,7 @@ export default function ReportsPage() {
           }
 
           .printable-report {
+<<<<<<< HEAD
             position: absolute !important;
             left: 50% !important;
             top: 0 !important;
@@ -521,6 +569,13 @@ export default function ReportsPage() {
             margin: 0 !important;
             padding: 10mm !important;
             box-shadow: none !important;
+=======
+            display: block !important;
+            visibility: visible !important;
+            width: 100% !important;
+            margin: 0 auto !important;
+            padding: 20px !important;
+>>>>>>> 6c0c428 (आजची मोठी कामगिरी)
             border: 2px solid black !important;
             background: white !important;
             color: black !important;
@@ -545,8 +600,48 @@ export default function ReportsPage() {
             color: black !important;
           }
 
+<<<<<<< HEAD
           h1 { font-size: 20pt !important; text-align: center !important; margin-bottom: 10pt !important; }
           h3, h4 { font-size: 13pt !important; }
+=======
+          .printable-report * {
+            visibility: visible !important;
+            color: black !important;
+            print-color-adjust: exact;
+            -webkit-print-color-adjust: exact;
+          }
+
+          table {
+            width: 100% !important;
+            border-collapse: collapse !important;
+            table-layout: fixed !important;
+            border: 1.5px solid black !important;
+          }
+
+          th, td {
+            border: 1px solid black !important;
+            word-wrap: break-word !important;
+            overflow-wrap: break-word !important;
+            padding: 8px !important;
+            font-size: 11pt !important;
+          }
+
+          h1, h2, h3, h4 {
+            color: black !important;
+            text-transform: uppercase !important;
+          }
+
+          .bg-primary, .bg-slate-900, .bg-rose-600 {
+            background-color: transparent !important;
+            color: black !important;
+            border: 1px solid black !important;
+          }
+
+          .text-primary, .text-rose-600, .text-emerald-700 {
+            color: black !important;
+            font-weight: 900 !important;
+          }
+>>>>>>> 6c0c428 (आजची मोठी कामगिरी)
         }
       `}</style>
     </div>
