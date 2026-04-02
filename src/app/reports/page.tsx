@@ -41,6 +41,7 @@ export default function ReportsPage() {
 
   useEffect(() => setMounted(true), [])
 
+  // Simplified and focused report types based on user feedback
   const reportTypes = [
     { title: "रूट व्हिजिट", type: "Route Visit", icon: Truck, color: "text-blue-600", bg: "bg-blue-50" },
     { title: "क्षेत्र भेट", type: "Field Visit", icon: MapPin, color: "text-emerald-600", bg: "bg-emerald-50" },
@@ -50,11 +51,6 @@ export default function ReportsPage() {
     { title: "जप्ती व दंड", type: "Seizure & Penalty", icon: ShieldAlert, color: "text-amber-600", bg: "bg-amber-50" },
     { title: "दैनिक कामकाज", type: "Daily Work Report", icon: ClipboardCheck, color: "text-indigo-600", bg: "bg-indigo-50" },
     { title: "वर्ड फॉर्म", type: "Official Document", icon: FileSignature, color: "text-slate-600", bg: "bg-slate-50" },
-    { title: "सर्वेक्षण", type: "Milk Procurement Survey", icon: ClipboardList, color: "text-cyan-600", bg: "bg-cyan-50" },
-    { title: "ऑडिट", type: "Collection Center Audit", icon: FileCheck, color: "text-emerald-700", bg: "bg-emerald-50" },
-    { title: "चिलिंग", type: "Chilling Report", icon: Thermometer, color: "text-blue-400", bg: "bg-blue-50" },
-    { title: "FSSAI तपासणी", type: "FSSAI Center Inspection", icon: ShieldCheck, color: "text-green-600", bg: "bg-green-50" },
-    { title: "कस्टम फॉर्म", type: "Custom Form", icon: Layers, color: "text-orange-400", bg: "bg-orange-50" },
   ]
 
   const filteredReports = useMemo(() => {
@@ -63,7 +59,13 @@ export default function ReportsPage() {
       const matchesDate = filterDate === "" || r.date === filterDate
       const q = searchQuery.toLowerCase()
       const matchesSearch = r.type?.toLowerCase().includes(q) || r.summary?.toLowerCase().includes(q) || r.overallSummary?.toLowerCase().includes(q)
-      const matchesType = !typeFilter || r.type === typeFilter
+      
+      // Breakdown filter handles both old and new naming conventions
+      let matchesType = !typeFilter || r.type === typeFilter;
+      if (typeFilter === "Transport Breakdown Report" && r.type === "Breakdown") {
+        matchesType = true;
+      }
+
       return matchesDate && matchesSearch && matchesType
     }).sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime())
   }, [firestoreReports, filterDate, searchQuery, typeFilter])
@@ -91,14 +93,11 @@ export default function ReportsPage() {
       'Field Visit': '/daily-report',
       'Daily Office Work': '/daily-report',
       'Transport Breakdown Report': '/reports/entry/breakdown',
+      'Breakdown': '/reports/entry/breakdown',
       'Daily Work Report': '/reports/entry/daily',
       'Seizure & Penalty': '/reports/entry/seizure',
       'Daily Task': '/work-log',
-      'Official Document': '/form-builder',
-      'Milk Procurement Survey': '/reports/entry/survey',
-      'Collection Center Audit': '/reports/entry/audit',
-      'Chilling Report': '/reports/entry/chilling',
-      'FSSAI Center Inspection': '/reports/entry/fssai'
+      'Official Document': '/form-builder'
     }
     const path = typeMap[report.type] || '/reports'
     router.push(`${path}?edit=${report.id}`)
@@ -111,8 +110,8 @@ export default function ReportsPage() {
     idNumber: "अधिकारी आयडी (Emp ID)",
     supplierName: "पुरवठादार / गवळी नाव",
     supplierId: "आयडी / कोड नंबर",
-    title: "टास्क शीर्षक",
-    remark: "शेरा / कार्यवाही",
+    title: "टास्क / विषय",
+    remark: "कार्यवाही / शेरा",
     actionTaken: "केलेली कार्यवाही",
     actionsTaken: "केलेली कार्यवाही",
     achievements: "आजची मोठी कामगिरी",
@@ -138,48 +137,19 @@ export default function ReportsPage() {
     summary: "कामाचा सारांश",
     totalLossAmount: "एकूण नुकसान (₹)",
     fineAmount: "दंड रक्कम (₹)",
-    seizureQty: "जप्ती प्रमाण (L)",
-    centerName: "केंद्राचे नाव",
-    centerCode: "केंद्र कोड",
-    auditDate: "ऑडिट तारीख",
-    morningQty: "सकाळ संकलन (L)",
-    eveningQty: "संध्याकाळ संकलन (L)",
-    fat: "फॅट (%)",
-    snf: "SNF (%)",
-    result: "अंतिम निकाल",
-    ownerName: "मालकाचे नाव",
-    capacity: "क्षमता (L)",
-    licenseStatus: "परवाना स्थिती",
-    tempAtArrival: "आगमनाचे तापमान (°C)",
-    tempAfterChilling: "चिलिंग नंतर तापमान (°C)",
-    waterSupply: "पाणी पुरवठा",
-    powerBackup: "पॉवर बॅकअप",
-    hygieneStandard: "स्वच्छता निकष",
-    staffUniform: "स्टाफ गणवेश",
-    fssaiDisplay: "FSSAI डिस्प्ले",
-    iceBankStatus: "आईस बँक स्थिती",
-    observations: "विशेष निरीक्षणे",
-    type: "प्रकार (Type)",
-    facility: "सुविधा (Facility)",
-    totalMilk: "एकूण दूध (L)",
-    paymentCycle: "पेमेंट सायकल"
+    seizureQty: "जप्ती प्रमाण (L)"
   };
 
   const orderedKeys = [
     "displayName", "name", "employeeId", "idNumber",
-    "supplierName", "centerName",
-    "supplierId", "centerCode",
+    "supplierName", "supplierId",
     "title",
     "remark", "actionTaken", "actionsTaken", "achievements", "problems",
     "summary",
     "routeName", "vehicleNumber", "vehicleNo", "vehicleType", "driverName", "mobile",
     "breakdownTime", "location", "reason", "severity", "detailedReason",
     "estimatedRepairTime", "estimatedRepairCost", "recoveryVehicleNo", "recoveryArrivalTime",
-    "milkHot", "milkSour", "totalLossAmount", "fineAmount", "seizureQty",
-    "auditDate", "morningQty", "eveningQty", "fat", "snf", "result",
-    "ownerName", "capacity", "licenseStatus", "tempAtArrival", "tempAfterChilling",
-    "waterSupply", "powerBackup", "hygieneStandard", "staffUniform", "fssaiDisplay", "iceBankStatus",
-    "observations", "type", "facility", "totalMilk", "paymentCycle"
+    "milkHot", "milkSour", "totalLossAmount", "fineAmount", "seizureQty"
   ];
 
   const reportsToRender = useMemo(() => {
@@ -410,7 +380,8 @@ export default function ReportsPage() {
         </Button>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-2 mb-8">
+      {/* Categories Grid - Focused on user essentials */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-8">
         {reportTypes.map((rt) => (
           <button 
             key={rt.title} 
