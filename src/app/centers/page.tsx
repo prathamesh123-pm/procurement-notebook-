@@ -444,8 +444,18 @@ export default function CentersPage() {
 
           #printable-area * {
             color: black !important;
-            print-color-adjust: exact;
-            -webkit-print-color-adjust: exact;
+          }
+          
+          #printable-area h3 {
+            font-size: 20pt !important;
+            font-weight: 900 !important;
+          }
+
+          #printable-area h4 {
+            font-size: 13pt !important;
+            font-weight: 900 !important;
+            border-bottom: 2px solid black !important;
+            margin-bottom: 10px !important;
           }
 
           table {
