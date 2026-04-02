@@ -148,33 +148,33 @@ function BreakdownReportForm() {
         <Card className="compact-card p-3 border-rose-100 mx-auto w-full">
           <div className="flex items-center gap-1.5 border-b border-primary/10 pb-1 mb-2">
             <User className="h-3 w-3 text-primary" />
-            <h3 className="text-[10px] font-black uppercase text-primary tracking-widest">१) वाहन व ड्रायव्हर माहिती</h3>
+            <h3 className="text-[10px] font-black uppercase text-primary tracking-widest">१) वाहन व ड्रायव्हरची माहिती</h3>
           </div>
           <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">रूट (ROUTE) *</Label><Input value={formData.routeName || ""} onChange={e => setFormData({...formData, routeName: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" /></div>
-            <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">गाडी नंबर *</Label><Input value={formData.vehicleNo || ""} onChange={e => setFormData({...formData, vehicleNo: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" placeholder="MH..." /></div>
+            <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">दुध संकलनाच्या रूटचे नाव *</Label><Input value={formData.routeName || ""} onChange={e => setFormData({...formData, routeName: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" /></div>
+            <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">ब्रेकडाऊन झालेल्या वाहनाचा क्रमांक *</Label><Input value={formData.vehicleNo || ""} onChange={e => setFormData({...formData, vehicleNo: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" placeholder="MH..." /></div>
             <div className="space-y-0.5">
-              <Label className="text-[9px] font-black uppercase opacity-60">गाडीचा प्रकार</Label>
-              <Input value={formData.vehicleType || ""} onChange={e => setFormData({...formData, vehicleType: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" placeholder="उदा. टेम्पो / पिकअप" />
+              <Label className="text-[9px] font-black uppercase opacity-60">वाहनाचा प्रकार (उदा. टेम्पो/पिकअप)</Label>
+              <Input value={formData.vehicleType || ""} onChange={e => setFormData({...formData, vehicleType: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" placeholder="उदा. पिकअप" />
             </div>
-            <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">गाडी क्षमता (L)</Label><Input value={formData.capacity || ""} onChange={e => setFormData({...formData, capacity: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" /></div>
-            <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">ड्रायव्हरचे नाव</Label><Input value={formData.driverName || ""} onChange={e => setFormData({...formData, driverName: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" /></div>
-            <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">ड्रायव्हर मोबाईल</Label><Input value={formData.mobile || ""} onChange={e => setFormData({...formData, mobile: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" /></div>
+            <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">वाहनाची एकूण दुध संकलन क्षमता (L)</Label><Input value={formData.capacity || ""} onChange={e => setFormData({...formData, capacity: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" /></div>
+            <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">बिघाड झाला त्यावेळच्या ड्रायव्हरचे नाव</Label><Input value={formData.driverName || ""} onChange={e => setFormData({...formData, driverName: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" /></div>
+            <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">ड्रायव्हरचा चालू मोबाईल क्रमांक</Label><Input value={formData.mobile || ""} onChange={e => setFormData({...formData, mobile: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" /></div>
           </div>
         </Card>
 
         <Card className="compact-card p-3 bg-rose-50/20 border-rose-100 mx-auto w-full">
           <div className="flex items-center gap-1.5 border-b border-rose-200 pb-1 mb-2">
             <AlertTriangle className="h-3 w-3 text-rose-600" />
-            <h3 className="text-[10px] font-black uppercase text-rose-600 tracking-widest">२) ब्रेकडाऊन तपशील</h3>
+            <h3 className="text-[10px] font-black uppercase text-rose-600 tracking-widest">२) वाहन ब्रेकडाऊनचा सविस्तर तपशील</h3>
           </div>
           <div className="space-y-3">
             <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">बिघाड वेळ</Label><Input type="time" value={formData.breakdownTime || ""} onChange={e => setFormData({...formData, breakdownTime: e.target.value})} className="h-9 text-[11px] bg-white border-none font-black rounded-lg" /></div>
-              <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">लोकेशन (ठिकाण)</Label><Input value={formData.location || ""} onChange={e => setFormData({...formData, location: e.target.value})} className="h-9 text-[11px] bg-white border-none font-black rounded-lg" placeholder="उदा. माण गाव" /></div>
+              <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">वाहन बिघाड किंवा अपघात झाल्याची वेळ</Label><Input type="time" value={formData.breakdownTime || ""} onChange={e => setFormData({...formData, breakdownTime: e.target.value})} className="h-9 text-[11px] bg-white border-none font-black rounded-lg" /></div>
+              <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">बिघाड झालेल्या नेमक्या ठिकाणाचे नाव</Label><Input value={formData.location || ""} onChange={e => setFormData({...formData, location: e.target.value})} className="h-9 text-[11px] bg-white border-none font-black rounded-lg" placeholder="उदा. खटाव फाटा" /></div>
               <div className="col-span-2 space-y-0.5">
-                <Label className="text-[9px] font-black uppercase opacity-60">बिघाडाचे मुख्य कारण</Label>
-                <Input value={formData.reason || ""} onChange={e => setFormData({...formData, reason: e.target.value})} className="h-9 text-[11px] bg-white border-none font-black rounded-lg" placeholder="उदा. इंजिन ओव्हरहीट / टायर फाटला" />
+                <Label className="text-[9px] font-black uppercase opacity-60">वाहन बिघाडाचे मुख्य तांत्रिक कारण</Label>
+                <Input value={formData.reason || ""} onChange={e => setFormData({...formData, reason: e.target.value})} className="h-9 text-[11px] bg-white border-none font-black rounded-lg" placeholder="उदा. इंजिन बिघाड / टायर फुटणे" />
               </div>
             </div>
             
@@ -191,7 +191,7 @@ function BreakdownReportForm() {
                 </RadioGroup>
               </div>
               <div className="space-y-1.5">
-                <Label className="text-[9px] font-black uppercase opacity-60">कारणाचे सविस्तर वर्णन</Label>
+                <Label className="text-[9px] font-black uppercase opacity-60">बिघाडाच्या कारणाचे सविस्तर तांत्रिक वर्णन</Label>
                 <Textarea value={formData.detailedReason || ""} onChange={e => setFormData({...formData, detailedReason: e.target.value})} className="min-h-[60px] text-[11px] bg-white border-none font-medium rounded-lg p-2" />
               </div>
             </div>
@@ -204,28 +204,28 @@ function BreakdownReportForm() {
             <h3 className="text-[10px] font-black uppercase text-primary tracking-widest">३) दुरुस्ती व पर्यायी सोय</h3>
           </div>
           <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">दुरुस्ती वेळ (तास)</Label><Input value={formData.estimatedRepairTime || ""} onChange={e => setFormData({...formData, estimatedRepairTime: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" placeholder="उदा. 4 तास" /></div>
-            <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">अंदाजे खर्च (₹)</Label><Input type="number" value={formData.estimatedRepairCost || "0"} onChange={e => setFormData({...formData, estimatedRepairCost: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" /></div>
-            <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">पर्यायी गाडी क्र.</Label><Input value={formData.recoveryVehicleNo || ""} onChange={e => setFormData({...formData, recoveryVehicleNo: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" placeholder="MH..." /></div>
-            <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">पर्यायी गाडी वेळ</Label><Input type="time" value={formData.recoveryArrivalTime || ""} onChange={e => setFormData({...formData, recoveryArrivalTime: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" /></div>
+            <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">दुरुस्तीसाठी लागणारा अंदाजे वेळ (तास)</Label><Input value={formData.estimatedRepairTime || ""} onChange={e => setFormData({...formData, estimatedRepairTime: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" placeholder="उदा. 3 तास" /></div>
+            <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">दुरुस्तीसाठी लागणारा अंदाजे खर्च (₹)</Label><Input type="number" value={formData.estimatedRepairCost || "0"} onChange={e => setFormData({...formData, estimatedRepairCost: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" /></div>
+            <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">पर्यायी उपलब्ध केलेल्या गाडीचा क्रमांक</Label><Input value={formData.recoveryVehicleNo || ""} onChange={e => setFormData({...formData, recoveryVehicleNo: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" placeholder="MH..." /></div>
+            <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase opacity-60">पर्यायी गाडी पोहोचण्याची अंदाजे वेळ</Label><Input type="time" value={formData.recoveryArrivalTime || ""} onChange={e => setFormData({...formData, recoveryArrivalTime: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-black rounded-lg" /></div>
           </div>
         </Card>
 
         <Card className="compact-card p-3 bg-blue-50/20 border-blue-100 mx-auto w-full">
           <div className="flex items-center gap-1.5 border-b border-blue-200 pb-1 mb-2">
             <Milk className="h-3 w-3 text-blue-600" />
-            <h3 className="text-[10px] font-black uppercase text-blue-600 tracking-widest">४) दुधाची स्थिती</h3>
+            <h3 className="text-[10px] font-black uppercase text-blue-600 tracking-widest">४) दुधाची सद्यस्थिती</h3>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             <div className="flex items-center justify-between p-2 bg-white rounded-xl border border-blue-100 shadow-sm">
-              <span className="text-[9px] font-black uppercase">दूध गरम झाले का?</span>
+              <span className="text-[9px] font-black uppercase">बिघाडामुळे दुध गरम झाले होते का?</span>
               <RadioGroup value={formData.milkHot || "NO"} onValueChange={v => setFormData({...formData, milkHot: v})} className="flex gap-3">
                 <div className="flex items-center gap-1"><RadioGroupItem value="YES" id="mh-y" className="h-2.5 w-2.5"/><Label htmlFor="mh-y" className="text-[8px] font-black">हो</Label></div>
                 <div className="flex items-center gap-1"><RadioGroupItem value="NO" id="mh-n" className="h-2.5 w-2.5"/><Label htmlFor="mh-n" className="text-[8px] font-black">नाही</Label></div>
               </RadioGroup>
             </div>
             <div className="flex items-center justify-between p-2 bg-white rounded-xl border border-blue-100 shadow-sm">
-              <span className="text-[9px] font-black uppercase">दूध खराब झाले का?</span>
+              <span className="text-[9px] font-black uppercase">बिघाडामुळे दुध पूर्णपणे खराब झाले का?</span>
               <RadioGroup value={formData.milkSour || "NO"} onValueChange={v => setFormData({...formData, milkSour: v})} className="flex gap-3">
                 <div className="flex items-center gap-1"><RadioGroupItem value="YES" id="ms-y" className="h-2.5 w-2.5"/><Label htmlFor="ms-y" className="text-[8px] font-black">हो</Label></div>
                 <div className="flex items-center gap-1"><RadioGroupItem value="NO" id="ms-n" className="h-2.5 w-2.5"/><Label htmlFor="ms-n" className="text-[8px] font-black">नाही</Label></div>
@@ -238,7 +238,7 @@ function BreakdownReportForm() {
 
         <div className="space-y-2 pt-2">
           <div className="flex items-center justify-between">
-            <span className="text-[9px] font-black uppercase text-rose-700 tracking-[0.2em] flex items-center gap-1.5"><ShieldAlert className="h-3.5 w-3.5" /> नुकसान तपशील (LOSS LOG)</span>
+            <span className="text-[9px] font-black uppercase text-rose-700 tracking-[0.2em] flex items-center gap-1.5"><ShieldAlert className="h-3.5 w-3.5" /> नुकसानीचा सविस्तर तक्ता (LOSS LOG)</span>
             <Button type="button" size="sm" onClick={handleAddLossRow} className="h-7 text-[9px] bg-rose-600 text-white font-black uppercase rounded-lg shadow-md"><PlusCircle className="h-3.5 w-3.5 mr-1" /> जोडा</Button>
           </div>
           <div className="border rounded-xl overflow-hidden border-rose-100 shadow-inner">
@@ -290,7 +290,7 @@ function BreakdownReportForm() {
           </div>
           <div className="flex justify-end pt-2">
             <div className="bg-rose-600 text-white px-4 py-2 rounded-xl flex items-center gap-3 shadow-lg">
-              <span className="text-[10px] font-black uppercase tracking-widest">एकूण नुकसान:</span>
+              <span className="text-[10px] font-black uppercase tracking-widest">एकूण आर्थिक नुकसान:</span>
               <span className="text-sm font-black flex items-center"><IndianRupee className="h-3.5 w-3.5 mr-0.5" />{currentTotalLoss}</span>
             </div>
           </div>
@@ -298,7 +298,7 @@ function BreakdownReportForm() {
 
         <Button onClick={handleSave} className="compact-button w-full bg-rose-600 text-white shadow-xl shadow-rose-200 mt-4 mb-10 h-12 uppercase font-black tracking-[0.2em] transition-all active:scale-95">
           {editId ? <RefreshCw className="h-4 w-4 mr-2" /> : <Save className="h-4 w-4 mr-2" />}
-          {editId ? 'अहवाल अद्ययावत करा' : 'अहवाल जतन करा'}
+          {editId ? 'ब्रेकडाऊन अहवाल अद्ययावत करा' : 'ब्रेकडाऊन अहवाल जतन करा'}
         </Button>
       </div>
     </div>

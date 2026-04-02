@@ -37,7 +37,7 @@ export default function ReportsPage() {
   const { data: firestoreReports, isLoading } = useCollection(reportsQuery)
   const { data: userData } = useDoc(userDocRef)
 
-  const profileName = userData?.displayName || "संकलन सुपरवायझर";
+  const profileName = userData?.displayName || user?.displayName || "संकलन प्रतिनिधी";
   const profileId = userData?.employeeId || "---";
 
   const [filterDate, setFilterDate] = useState<string>("")
@@ -111,46 +111,68 @@ export default function ReportsPage() {
   }
 
   const labelMap: Record<string, string> = {
-    supplierName: "पुरवठादार / नाव",
-    supplierId: "आयडी / कोड",
-    title: "टास्क / विषय",
-    remark: "कार्यवाही / शेरा",
-    actionTaken: "केलेली कार्यवाही",
-    actionsTaken: "केलेली कार्यवाही",
-    achievements: "आजची मोठी कामगिरी",
-    problems: "महत्त्वाच्या समस्या",
-    routeName: "रूट नाव",
-    vehicleNumber: "वाहन क्र.",
-    vehicleNo: "वाहन क्र.",
-    vehicleType: "वाहन प्रकार",
-    driverName: "ड्रायव्हर",
-    mobile: "मोबाईल",
-    breakdownTime: "वेळ",
-    location: "ठिकाण",
-    reason: "कारण",
-    severity: "स्वरूप",
-    detailedReason: "सविस्तर माहिती",
-    estimatedRepairTime: "दुरुस्ती वेळ",
-    estimatedRepairCost: "दुरुस्ती खर्च",
-    recoveryVehicleNo: "पर्यायी गाडी",
-    recoveryArrivalTime: "पर्यायी गाडी वेळ",
-    milkHot: "दूध गरम?",
-    milkSour: "दूध आंबट?",
-    summary: "सारांश",
-    totalLossAmount: "नुकसान (₹)",
-    fineAmount: "दंड (₹)",
-    seizureQty: "प्रमाण (L)"
+    // Seizure
+    supplierName: "पुरवठादार किंवा केंद्राचे पूर्ण नाव",
+    supplierId: "पुरवठादार किंवा केंद्राचा आयडी कोड",
+    route: "संबंधित संकलन रूटचे नाव",
+    seizureQty: "जप्त केलेल्या दुधाचे एकूण प्रमाण (Liters)",
+    reason: "जप्ती किंवा कारवाईचे मुख्य तांत्रिक कारण",
+    fineAmount: "आकारलेली एकूण दंडाची रक्कम (₹)",
+    actionTaken: "जप्त दुधावर केलेली अंतिम कार्यवाही",
+    
+    // Breakdown
+    routeName: "दुध संकलनाच्या रूटचे नाव",
+    vehicleNo: "ब्रेकडाऊन झालेल्या वाहनाचा क्रमांक",
+    vehicleNumber: "ब्रेकडाऊन झालेल्या वाहनाचा क्रमांक",
+    vehicleType: "वाहनाचा प्रकार (उदा. टेम्पो/पिकअप)",
+    capacity: "वाहनाची एकूण दुध संकलन क्षमता (L)",
+    driverName: "बिघाड झाला त्यावेळच्या ड्रायव्हरचे नाव",
+    mobile: "ड्रायव्हरचा चालू मोबाईल क्रमांक",
+    breakdownTime: "वाहन बिघाड किंवा अपघात झाल्याची वेळ",
+    location: "बिघाड झालेल्या नेमक्या ठिकाणाचे नाव",
+    severity: "बिघाडाचे स्वरूप (छोटा किंवा मोठा)",
+    detailedReason: "बिघाडाच्या कारणाचे सविस्तर तांत्रिक वर्णन",
+    estimatedRepairTime: "दुरुस्तीसाठी लागणारा अंदाजे वेळ (तास)",
+    estimatedRepairCost: "दुरुस्तीसाठी लागणारा अंदाजे खर्च (₹)",
+    recoveryVehicleNo: "दुध वाचवण्यासाठी पाठवलेल्या पर्यायी गाडीचा क्रमांक",
+    recoveryArrivalTime: "पर्यायी गाडी पोहोचण्याची अंदाजे वेळ",
+    milkHot: "बिघाडामुळे दुध गरम झाले होते का?",
+    milkSour: "बिघाडामुळे दुध पूर्णपणे खराब झाले का?",
+    
+    // Daily Work / Task
+    title: "आजच्या नियोजित कामाचा विषय किंवा टास्क",
+    remark: "केलेल्या कामाबद्दल सविस्तर शेरा किंवा कार्यवाही",
+    achievements: "आजच्या दिवसातील महत्त्वाची मोठी कामगिरी",
+    problems: "कामात आलेल्या महत्त्वाच्या समस्या किंवा अडथळे",
+    actionsTaken: "समस्येवर केलेली तात्काळ कार्यवाही",
+    supervisorName: "संबंधित सुपरवायझरचे नाव",
+    
+    // Chilling
+    centerName: "चिलिंग किंवा संकलन केंद्राचे नाव",
+    tempAtArrival: "दुध पोहोचल्यावर मोजलेले सुरुवातीचे तापमान (°C)",
+    tempAfterChilling: "चिलिंग प्रक्रिया पूर्ण झाल्यावरचे तापमान (°C)",
+    waterSupply: "केंद्रावरील पाणी पुरवठ्याची स्थिती",
+    powerBackup: "पॉवर बॅकअप (Generator/UPS) उपलब्ध आहे का?",
+    hygieneStandard: "स्वच्छतेचा एकूण दर्जा (Standard)",
+    staffUniform: "स्टाफने अधिकृत गणवेश परिधान केला होता का?",
+    fssaiDisplay: "FSSAI परवाना दर्शनी भागात लावला आहे का?",
+    iceBankStatus: "आईस बँकची (Ice Bank) सद्यस्थिती",
+    
+    // Generic
+    summary: "आजच्या कामकाजाचा संक्षिप्त सारांश",
+    totalLossAmount: "या घटनेमुळे झालेले एकूण आर्थिक नुकसान (₹)"
   };
 
   const orderedKeys = [
-    "supplierName", "supplierId",
+    "supplierName", "supplierId", "route",
     "title",
     "remark", "actionTaken", "actionsTaken", "achievements", "problems",
     "summary",
     "routeName", "vehicleNumber", "vehicleNo", "vehicleType", "driverName", "mobile",
     "breakdownTime", "location", "reason", "severity", "detailedReason",
     "estimatedRepairTime", "estimatedRepairCost", "recoveryVehicleNo", "recoveryArrivalTime",
-    "milkHot", "milkSour", "totalLossAmount", "fineAmount", "seizureQty"
+    "milkHot", "milkSour", "totalLossAmount", "fineAmount", "seizureQty",
+    "centerName", "tempAtArrival", "tempAfterChilling", "waterSupply", "powerBackup", "hygieneStandard", "staffUniform", "fssaiDisplay", "iceBankStatus"
   ];
 
   const reportsToRender = useMemo(() => {
@@ -254,6 +276,7 @@ export default function ReportsPage() {
   const GenericTableLayout = ({ report }: { report: any }) => {
     const d = report.fullData || {};
     
+    // Filter out internal non-display keys
     const filteredEntries = orderedKeys
       .filter(key => {
         const val = d[key];
@@ -296,7 +319,7 @@ export default function ReportsPage() {
             <table className="w-full border-collapse">
               <thead>
                 <tr className="bg-slate-900 text-white font-black text-[10px] uppercase tracking-widest print:bg-black">
-                  <th className="p-2 text-left w-1/3 border-r border-white/20">तपशील (FIELD)</th>
+                  <th className="p-2 text-left w-1/3 border-r border-white/20">तपशील (QUESTION / FIELD)</th>
                   <th className="p-2 text-left">माहिती (DETAILS)</th>
                 </tr>
               </thead>
@@ -318,7 +341,7 @@ export default function ReportsPage() {
           {(d.points && d.points.length > 0) && (
             <div className="mt-4 space-y-2">
               <div className="flex items-center gap-1.5 text-[10px] font-black uppercase text-primary">
-                <AlertCircle className="h-4 w-4" /> विशेष निरीक्षणे:
+                <AlertCircle className="h-4 w-4" /> विशेष निरीक्षणे किंवा नमूद केलेले मुद्दे:
               </div>
               <div className="border border-slate-900 rounded-lg p-3 print:border-black">
                 <ul className="space-y-1.5">
@@ -336,13 +359,13 @@ export default function ReportsPage() {
           {((d.losses && d.losses.length > 0) || (d.centerLosses && d.centerLosses.length > 0)) && (
             <div className="mt-4 space-y-2">
               <div className="flex items-center gap-1.5 text-[10px] font-black uppercase text-rose-700">
-                <AlertTriangle className="h-4 w-4" /> नुकसान तपशील:
+                <AlertTriangle className="h-4 w-4" /> नुकसानीचा सविस्तर तक्ता:
               </div>
               <div className="border border-slate-900 rounded-lg overflow-hidden shadow-sm print:border-black overflow-x-auto">
                 <table className="w-full border-collapse text-[9px]">
                   <thead className="bg-slate-900 text-white font-black uppercase tracking-wider print:bg-black">
                     <tr>
-                      <th className="p-2 text-left border-r border-white/20">नाव</th>
+                      <th className="p-2 text-left border-r border-white/20">पुरवठादाराचे नाव</th>
                       <th className="p-2 text-center w-16 border-r border-white/20">प्रकार</th>
                       <th className="p-2 text-center w-16 border-r border-white/20">Ltr</th>
                       <th className="p-2 text-right w-24">रक्कम (₹)</th>
@@ -358,7 +381,7 @@ export default function ReportsPage() {
                       </tr>
                     ))}
                     <tr className="bg-slate-50 font-black text-[10px] print:bg-white print:border-t-2 print:border-black">
-                      <td className="p-2 text-right uppercase border-r border-slate-200 print:border-black" colSpan={3}>एकूण नुकसान:</td>
+                      <td className="p-2 text-right uppercase border-r border-slate-200 print:border-black" colSpan={3}>एकूण आर्थिक नुकसान:</td>
                       <td className="p-2 text-right text-base print:text-black">₹{d.totalLossAmount || d.lossAmount || '0'}</td>
                     </tr>
                   </tbody>
