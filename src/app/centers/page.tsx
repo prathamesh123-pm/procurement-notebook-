@@ -498,10 +498,10 @@ export default function CentersPage() {
                   {formData.equipment.map((item) => (
                     <div key={item.id} className="grid grid-cols-12 gap-2 items-center bg-muted/10 p-2 rounded-xl border border-muted-foreground/5 shadow-inner">
                       <div className="col-span-6">
-                        <Input value={item.name} onChange={e => setFormData({ ...formData, equipment: formData.equipment.map(eq => eq.id === item.id ? { ...eq, name: e.target.value } : eq) })} className="h-8 text-[11px] px-3 bg-white border-none rounded-lg font-bold" placeholder="साहित्याचे नाव" />
+                        <Input value={item.name || ""} onChange={e => setFormData({ ...formData, equipment: formData.equipment.map(eq => eq.id === item.id ? { ...eq, name: e.target.value } : eq) })} className="h-8 text-[11px] px-3 bg-white border-none rounded-lg font-bold" placeholder="साहित्याचे नाव" />
                       </div>
                       <div className="col-span-2">
-                        <Input type="number" value={item.quantity} onChange={e => setFormData({ ...formData, equipment: formData.equipment.map(eq => eq.id === item.id ? { ...eq, quantity: Number(e.target.value) } : eq) })} className="h-8 text-[11px] px-0 text-center bg-white border-none rounded-lg font-black" />
+                        <Input type="number" value={item.quantity || 0} onChange={e => setFormData({ ...formData, equipment: formData.equipment.map(eq => eq.id === item.id ? { ...eq, quantity: Number(e.target.value) } : eq) })} className="h-8 text-[11px] px-0 text-center bg-white border-none rounded-lg font-black" />
                       </div>
                       <div className="col-span-3">
                         <Select value={item.ownership} onValueChange={v => setFormData({ ...formData, equipment: formData.equipment.map(eq => eq.id === item.id ? { ...eq, ownership: v as any } : eq) })}>
@@ -526,14 +526,14 @@ export default function CentersPage() {
 
               <div className="space-y-2 pt-4 border-t border-dashed">
                 <Label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest ml-1">भेळस तपासणी किट माहिती</Label>
-                <Input placeholder="..." value={formData.adulterationKitInfo} onChange={e => setFormData({...formData, adulterationKitInfo: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-black rounded-xl shadow-inner" />
+                <Input placeholder="..." value={formData.adulterationKitInfo || ""} onChange={e => setFormData({...formData, adulterationKitInfo: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-black rounded-xl shadow-inner" />
               </div>
 
               <div className="space-y-3">
                 <h4 className="text-[11px] font-black uppercase text-primary border-b pb-1 tracking-widest flex items-center gap-2">
                   <ClipboardList className="h-4 w-4" /> ५) अतिरिक्त माहिती (NOTES)
                 </h4>
-                <Textarea value={formData.additionalNotes} onChange={e => setFormData({...formData, additionalNotes: e.target.value})} className="min-h-[100px] text-[12px] rounded-2xl bg-muted/20 border-none font-bold p-4 shadow-inner" placeholder="केंद्राबद्दल विशेष माहिती किंवा नोंदी लिहा..." />
+                <Textarea value={formData.additionalNotes || ""} onChange={e => setFormData({...formData, additionalNotes: e.target.value})} className="min-h-[100px] text-[12px] rounded-2xl bg-muted/20 border-none font-bold p-4 shadow-inner" placeholder="केंद्राबद्दल विशेष माहिती किंवा नोंदी लिहा..." />
               </div>
             </div>
           </ScrollArea>

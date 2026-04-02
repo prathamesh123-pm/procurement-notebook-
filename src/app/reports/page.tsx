@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { 
   Archive, Search, X, Printer, Trash2, FileEdit, Truck, ListTodo, 
-  ShieldAlert, ClipboardCheck, FileSignature, Plus, Info, AlertTriangle, FileCheck, User, Layers, FileStack, ClipboardList, Thermometer, ShieldCheck, Briefcase, Milk, MapPin
+  ShieldAlert, ClipboardCheck, FileSignature, Plus, Info, AlertTriangle, FileCheck, User, Layers, FileStack, ClipboardList, Thermometer, ShieldCheck as ShieldIcon, Briefcase, Milk, MapPin, FileText
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
@@ -265,7 +265,7 @@ export default function ReportsPage() {
       .map(key => [key, d[key]]);
 
     const formatVal = (key: string, val: any): string => {
-      if ((key === 'name' || key === 'displayName') && (!val || val === 'Quality Inspector' || val === 'Procurement Officer')) {
+      if ((key === 'name' || key === 'displayName' || key === 'assignedTo') && (!val || val === 'Quality Inspector' || val === 'Procurement Officer' || val === 'संकलन सुपरवायझर')) {
         return "संकलन सुपरवायझर";
       }
       if (typeof val === 'boolean') return val ? "हो (YES)" : "नाही (NO)";
