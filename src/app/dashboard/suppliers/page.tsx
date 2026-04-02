@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect, useMemo, Suspense } from "react"
@@ -45,26 +46,30 @@ function SuppliersContent() {
   const [isAdding, setIsAdding] = useState(false)
   const [mounted, setMounted] = useState(false)
 
-  const [formData, setFormData] = useState<Partial<Supplier>>({
-    supplierId: "", name: "", address: "", mobile: "", routeId: "", supplierType: "Gavali", competition: "", additionalInfo: "",
-    iceBlocks: 0, scaleBrand: "", fatMachineBrand: "", cattleFeedBrand: "", fssaiNumber: "", fssaiExpiry: "",
-    milkCansCount: 0, computerAvailable: false, upsInverterAvailable: false, solarAvailable: false,
+  const [formData, setFormData] = useState({
+    supplierId: "", name: "", address: "", mobile: "", routeId: "", 
+    supplierType: "Gavali" as SupplierType, competition: "", additionalInfo: "",
+    iceBlocks: "0", scaleBrand: "", fatMachineBrand: "", cattleFeedBrand: "", 
+    fssaiNumber: "", fssaiExpiry: "", milkCansCount: "0", 
+    computerAvailable: false, upsInverterAvailable: false, solarAvailable: false,
     adulterationKitInfo: "",
-    cowMilk: { quantity: 0, fat: 0, snf: 0 },
-    buffaloMilk: { quantity: 0, fat: 0, snf: 0 },
-    equipment: []
+    cowQty: "0", cowFat: "0", cowSnf: "0",
+    bufQty: "0", bufFat: "0", bufSnf: "0",
+    equipment: [] as EquipmentItem[]
   })
 
   useEffect(() => setMounted(true), [])
 
   const resetFormData = () => {
     setFormData({ 
-      supplierId: "", name: "", address: "", mobile: "", routeId: "", supplierType: "Gavali", competition: "", additionalInfo: "",
-      iceBlocks: 0, scaleBrand: "", fatMachineBrand: "", cattleFeedBrand: "", fssaiNumber: "", fssaiExpiry: "",
-      milkCansCount: 0, computerAvailable: false, upsInverterAvailable: false, solarAvailable: false,
+      supplierId: "", name: "", address: "", mobile: "", routeId: "", 
+      supplierType: "Gavali", competition: "", additionalInfo: "",
+      iceBlocks: "0", scaleBrand: "", fatMachineBrand: "", cattleFeedBrand: "", 
+      fssaiNumber: "", fssaiExpiry: "", milkCansCount: "0", 
+      computerAvailable: false, upsInverterAvailable: false, solarAvailable: false,
       adulterationKitInfo: "",
-      cowMilk: { quantity: 0, fat: 0, snf: 0 },
-      buffaloMilk: { quantity: 0, fat: 0, snf: 0 },
+      cowQty: "0", cowFat: "0", cowSnf: "0",
+      bufQty: "0", bufFat: "0", bufSnf: "0",
       equipment: []
     })
   }
@@ -75,8 +80,18 @@ function SuppliersContent() {
       return
     }
     const newSupp = {
-      ...formData,
-      // If it's a center, sync these fields
+      supplierId: formData.supplierId, name: formData.name, address: formData.address, 
+      mobile: formData.mobile, routeId: formData.routeId, supplierType: formData.supplierType,
+      competition: formData.competition, additionalInfo: formData.additionalInfo,
+      iceBlocks: Number(formData.iceBlocks), scaleBrand: formData.scaleBrand,
+      fatMachineBrand: formData.fatMachineBrand, cattleFeedBrand: formData.cattleFeedBrand,
+      fssaiNumber: formData.fssaiNumber, fssaiExpiry: formData.fssaiExpiry,
+      milkCansCount: Number(formData.milkCansCount), computerAvailable: formData.computerAvailable,
+      upsInverterAvailable: formData.upsInverterAvailable, solarAvailable: formData.solarAvailable,
+      adulterationKitInfo: formData.adulterationKitInfo,
+      cowMilk: { quantity: Number(formData.cowQty), fat: Number(formData.cowFat), snf: Number(formData.cowSnf) },
+      buffaloMilk: { quantity: Number(formData.bufQty), fat: Number(formData.bufFat), snf: Number(formData.bufSnf) },
+      equipment: formData.equipment,
       operatorName: formData.supplierType === 'Center' ? formData.name : undefined,
       village: formData.supplierType === 'Center' ? formData.address : undefined,
       updatedAt: new Date().toISOString()
@@ -93,15 +108,24 @@ function SuppliersContent() {
     if (!selectedSupplier || !db) return
     const docRef = doc(db, 'suppliers', selectedSupplier.id)
     
-    // Create update data without the internal ID
-    const { id, ...updateData } = formData
-    
-    updateDocumentNonBlocking(docRef, { 
-      ...updateData, 
+    const updateData = { 
+      supplierId: formData.supplierId, name: formData.name, address: formData.address, 
+      mobile: formData.mobile, routeId: formData.routeId, supplierType: formData.supplierType,
+      competition: formData.competition, additionalInfo: formData.additionalInfo,
+      iceBlocks: Number(formData.iceBlocks), scaleBrand: formData.scaleBrand,
+      fatMachineBrand: formData.fatMachineBrand, cattleFeedBrand: formData.cattleFeedBrand,
+      fssaiNumber: formData.fssaiNumber, fssaiExpiry: formData.fssaiExpiry,
+      milkCansCount: Number(formData.milkCansCount), computerAvailable: formData.computerAvailable,
+      upsInverterAvailable: formData.upsInverterAvailable, solarAvailable: formData.solarAvailable,
+      adulterationKitInfo: formData.adulterationKitInfo,
+      cowMilk: { quantity: Number(formData.cowQty), fat: Number(formData.cowFat), snf: Number(formData.cowSnf) },
+      buffaloMilk: { quantity: Number(formData.bufQty), fat: Number(formData.bufFat), snf: Number(formData.bufSnf) },
+      equipment: formData.equipment,
       operatorName: formData.supplierType === 'Center' ? formData.name : undefined,
       village: formData.supplierType === 'Center' ? formData.address : undefined,
       updatedAt: new Date().toISOString() 
-    })
+    }
+    updateDocumentNonBlocking(docRef, updateData)
     setIsEditing(false)
     setSelectedSupplier(null)
     toast({ title: "यशस्वी", description: "माहिती अद्ययावत झाली." })
@@ -143,6 +167,25 @@ function SuppliersContent() {
 
   const totalMilk = (s: Supplier) => (s.cowMilk?.quantity || 0) + (s.buffaloMilk?.quantity || 0)
 
+  const prepareEdit = (supp: Supplier) => {
+    setSelectedSupplier(supp)
+    setFormData({
+      supplierId: supp.supplierId || "", name: supp.name || "", address: supp.address || "",
+      mobile: supp.mobile || "", routeId: supp.routeId || "", supplierType: supp.supplierType || "Gavali",
+      competition: supp.competition || "", additionalInfo: supp.additionalInfo || "",
+      iceBlocks: String(supp.iceBlocks || 0), scaleBrand: supp.scaleBrand || "",
+      fatMachineBrand: supp.fatMachineBrand || "", cattleFeedBrand: supp.cattleFeedBrand || "",
+      fssaiNumber: supp.fssaiNumber || "", fssaiExpiry: supp.fssaiExpiry || "",
+      milkCansCount: String(supp.milkCansCount || 0), computerAvailable: supp.computerAvailable || false,
+      upsInverterAvailable: supp.upsInverterAvailable || false, solarAvailable: supp.solarAvailable || false,
+      adulterationKitInfo: supp.adulterationKitInfo || "",
+      cowQty: String(supp.cowMilk?.quantity || 0), cowFat: String(supp.cowMilk?.fat || 0), cowSnf: String(supp.cowMilk?.snf || 0),
+      bufQty: String(supp.buffaloMilk?.quantity || 0), bufFat: String(supp.buffaloMilk?.fat || 0), bufSnf: String(supp.buffaloMilk?.snf || 0),
+      equipment: supp.equipment || []
+    })
+    setIsEditing(true)
+  }
+
   if (!mounted) return <div className="p-10 text-center italic opacity-50">लोड होत आहे...</div>
 
   return (
@@ -183,17 +226,17 @@ function SuppliersContent() {
                         </SelectContent>
                       </Select>
                     </div>
-                    <div className="space-y-1 col-span-2"><Label className="text-[9px] font-black uppercase text-muted-foreground opacity-60">नाव</Label><Input value={formData.name ?? ""} onChange={e => setFormData({...formData, name: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-bold rounded-lg p-3" placeholder="..." /></div>
-                    <div className="space-y-1"><Label className="text-[9px] font-black uppercase text-muted-foreground opacity-60">आयडी (ID) *</Label><Input value={formData.supplierId ?? ""} onChange={e => setFormData({...formData, supplierId: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-bold rounded-lg p-3" placeholder="..." /></div>
-                    <div className="space-y-1"><Label className="text-[9px] font-black uppercase text-muted-foreground opacity-60">मोबाईल</Label><Input value={formData.mobile ?? ""} onChange={e => setFormData({...formData, mobile: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-bold rounded-lg p-3" placeholder="..." /></div>
+                    <div className="space-y-1 col-span-2"><Label className="text-[9px] font-black uppercase text-muted-foreground opacity-60">नाव</Label><Input value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-bold rounded-lg p-3" placeholder="..." /></div>
+                    <div className="space-y-1"><Label className="text-[9px] font-black uppercase text-muted-foreground opacity-60">आयडी (ID) *</Label><Input value={formData.supplierId} onChange={e => setFormData({...formData, supplierId: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-bold rounded-lg p-3" placeholder="..." /></div>
+                    <div className="space-y-1"><Label className="text-[9px] font-black uppercase text-muted-foreground opacity-60">मोबाईल</Label><Input value={formData.mobile} onChange={e => setFormData({...formData, mobile: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-bold rounded-lg p-3" placeholder="..." /></div>
                     <div className="space-y-1 col-span-2">
                       <Label className="text-[9px] font-black uppercase text-muted-foreground opacity-60">रूट</Label>
-                      <Select value={formData.routeId ?? ""} onValueChange={val => setFormData({...formData, routeId: val})}>
+                      <Select value={formData.routeId} onValueChange={val => setFormData({...formData, routeId: val})}>
                         <SelectTrigger className="h-9 text-[11px] bg-muted/20 border-none rounded-lg font-bold"><SelectValue placeholder="रूट निवडा" /></SelectTrigger>
                         <SelectContent>{(routes || []).map(r => <SelectItem key={r.id} value={r.id} className="text-[11px] font-black">{r.name}</SelectItem>)}</SelectContent>
                       </Select>
                     </div>
-                    <div className="col-span-2 space-y-1"><Label className="text-[9px] font-black uppercase text-muted-foreground opacity-60">पत्ता</Label><Input value={formData.address ?? ""} onChange={e => setFormData({...formData, address: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-bold rounded-lg p-3" placeholder="..." /></div>
+                    <div className="col-span-2 space-y-1"><Label className="text-[9px] font-black uppercase text-muted-foreground opacity-60">पत्ता</Label><Input value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-bold rounded-lg p-3" placeholder="..." /></div>
                   </div>
                 </div>
 
@@ -202,22 +245,22 @@ function SuppliersContent() {
                     <Laptop className="h-3 w-3" /> २) तांत्रिक व इन्व्हेंटरी
                   </h4>
                   <div className="grid grid-cols-2 gap-2.5">
-                    <div className="space-y-1"><Label className="text-[9px] font-black uppercase text-muted-foreground opacity-60">काटा ब्रँड</Label><Input value={formData.scaleBrand ?? ""} onChange={e => setFormData({...formData, scaleBrand: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-bold rounded-lg p-3" /></div>
-                    <div className="space-y-1"><Label className="text-[9px] font-black uppercase text-muted-foreground opacity-60">मशीन ब्रँड</Label><Input value={formData.fatMachineBrand ?? ""} onChange={e => setFormData({...formData, fatMachineBrand: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-bold rounded-lg p-3" /></div>
+                    <div className="space-y-1"><Label className="text-[9px] font-black uppercase text-muted-foreground opacity-60">काटा ब्रँड</Label><Input value={formData.scaleBrand} onChange={e => setFormData({...formData, scaleBrand: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-bold rounded-lg p-3" /></div>
+                    <div className="space-y-1"><Label className="text-[9px] font-black uppercase text-muted-foreground opacity-60">मशीन ब्रँड</Label><Input value={formData.fatMachineBrand} onChange={e => setFormData({...formData, fatMachineBrand: e.target.value})} className="h-9 text-[11px] bg-muted/20 border-none font-bold rounded-lg p-3" /></div>
                   </div>
 
                   <div className="grid grid-cols-1 gap-2 mt-1">
-                    <div className="flex items-center space-x-2 bg-muted/10 p-2.5 rounded-xl border border-muted-foreground/5 shadow-sm active:bg-primary/5 transition-colors cursor-pointer" onClick={() => setFormData({...formData, computerAvailable: !formData.computerAvailable})}>
-                      <Checkbox id="comp-s" checked={formData.computerAvailable} onCheckedChange={(v) => setFormData({...formData, computerAvailable: !!v})} />
-                      <Label htmlFor="comp-s" className="text-[10px] font-black uppercase cursor-pointer tracking-wider">POP सिस्टम आहे का?</Label>
+                    <div className="flex items-center space-x-2 bg-muted/10 p-2.5 rounded-xl border border-muted-foreground/5 shadow-sm cursor-pointer" onClick={() => setFormData({...formData, computerAvailable: !formData.computerAvailable})}>
+                      <Checkbox checked={formData.computerAvailable} />
+                      <Label className="text-[10px] font-black uppercase cursor-pointer tracking-wider">POP सिस्टम आहे का?</Label>
                     </div>
-                    <div className="flex items-center space-x-2 bg-muted/10 p-2.5 rounded-xl border border-muted-foreground/5 shadow-sm active:bg-primary/5 transition-colors cursor-pointer" onClick={() => setFormData({...formData, upsInverterAvailable: !formData.upsInverterAvailable})}>
-                      <Checkbox id="ups-s" checked={formData.upsInverterAvailable} onCheckedChange={(v) => setFormData({...formData, upsInverterAvailable: !!v})} />
-                      <Label htmlFor="ups-s" className="text-[10px] font-black uppercase cursor-pointer tracking-wider">UPS / इनव्हर्टर आहे का?</Label>
+                    <div className="flex items-center space-x-2 bg-muted/10 p-2.5 rounded-xl border border-muted-foreground/5 shadow-sm cursor-pointer" onClick={() => setFormData({...formData, upsInverterAvailable: !formData.upsInverterAvailable})}>
+                      <Checkbox checked={formData.upsInverterAvailable} />
+                      <Label className="text-[10px] font-black uppercase cursor-pointer tracking-wider">UPS / इनव्हर्टर आहे का?</Label>
                     </div>
-                    <div className="flex items-center space-x-2 bg-muted/10 p-2.5 rounded-xl border border-muted-foreground/5 shadow-sm active:bg-primary/5 transition-colors cursor-pointer" onClick={() => setFormData({...formData, solarAvailable: !formData.solarAvailable})}>
-                      <Checkbox id="solar-s" checked={formData.solarAvailable} onCheckedChange={(v) => setFormData({...formData, solarAvailable: !!v})} />
-                      <Label htmlFor="solar-s" className="text-[10px] font-black uppercase cursor-pointer tracking-wider">सोलर उपलब्ध आहे का?</Label>
+                    <div className="flex items-center space-x-2 bg-muted/10 p-2.5 rounded-xl border border-muted-foreground/5 shadow-sm cursor-pointer" onClick={() => setFormData({...formData, solarAvailable: !formData.solarAvailable})}>
+                      <Checkbox checked={formData.solarAvailable} />
+                      <Label className="text-[10px] font-black uppercase cursor-pointer tracking-wider">सोलर उपलब्ध आहे का?</Label>
                     </div>
                   </div>
 
@@ -296,11 +339,7 @@ function SuppliersContent() {
           <TableBody>
             {filteredSuppliers.length > 0 ? (
               filteredSuppliers.map((supp) => (
-                <TableRow key={supp.id} className="cursor-pointer hover:bg-primary/5 transition-colors group border-b last:border-0" onClick={() => {
-                  setSelectedSupplier(supp)
-                  setFormData(supp)
-                  setIsEditing(true)
-                }}>
+                <TableRow key={supp.id} className="cursor-pointer hover:bg-primary/5 transition-colors group border-b last:border-0" onClick={() => prepareEdit(supp)}>
                   <TableCell className="py-2 px-4">
                     <div className="flex flex-col">
                       <div className="flex items-center gap-1.5">
@@ -316,7 +355,7 @@ function SuppliersContent() {
                   <TableCell className="text-center font-black text-[11px] text-primary">{totalMilk(supp).toFixed(1)}</TableCell>
                   <TableCell className="text-right px-4">
                     <div className="flex justify-end gap-1">
-                      <Button variant="ghost" size="icon" className="h-7 w-7 text-primary hover:bg-primary/10 rounded-lg opacity-0 group-hover:opacity-100" onClick={(e) => { e.stopPropagation(); setSelectedSupplier(supp); setFormData(supp); setIsEditing(true); }}>
+                      <Button variant="ghost" size="icon" className="h-7 w-7 text-primary hover:bg-primary/10 rounded-lg opacity-0 group-hover:opacity-100" onClick={(e) => { e.stopPropagation(); prepareEdit(supp); }}>
                         <Edit className="h-3 w-3" />
                       </Button>
                       <Button variant="ghost" size="icon" onClick={(e) => {
@@ -367,22 +406,22 @@ function SuppliersContent() {
                     <MapPin className="h-4 w-4 text-primary shrink-0 mt-0.5" />
                     <div>
                       <Label className="text-[8px] text-muted-foreground uppercase font-black">पत्ता</Label>
-                      <p className="text-[10px] font-bold uppercase">{selectedSupplier?.address}</p>
+                      <p className="text-[10px] font-bold uppercase">{formData.address}</p>
                     </div>
                  </div>
                  
                  <div className="grid grid-cols-1 gap-2">
-                    <div className="flex items-center space-x-2 bg-muted/10 p-2.5 rounded-xl border border-muted-foreground/5">
-                      <Checkbox id="edit-comp" checked={formData.computerAvailable} onCheckedChange={(v) => setFormData({...formData, computerAvailable: !!v})} />
-                      <Label htmlFor="edit-comp" className="text-[10px] font-black uppercase cursor-pointer">POP सिस्टम आहे का?</Label>
+                    <div className="flex items-center space-x-2 bg-muted/10 p-2.5 rounded-xl border border-muted-foreground/5 cursor-pointer" onClick={() => setFormData({...formData, computerAvailable: !formData.computerAvailable})}>
+                      <Checkbox checked={formData.computerAvailable} />
+                      <Label className="text-[10px] font-black uppercase cursor-pointer">POP सिस्टम आहे का?</Label>
                     </div>
-                    <div className="flex items-center space-x-2 bg-muted/10 p-2.5 rounded-xl border border-muted-foreground/5">
-                      <Checkbox id="edit-ups" checked={formData.upsInverterAvailable} onCheckedChange={(v) => setFormData({...formData, upsInverterAvailable: !!v})} />
-                      <Label htmlFor="edit-ups" className="text-[10px] font-black uppercase cursor-pointer">UPS / इनव्हर्टर</Label>
+                    <div className="flex items-center space-x-2 bg-muted/10 p-2.5 rounded-xl border border-muted-foreground/5 cursor-pointer" onClick={() => setFormData({...formData, upsInverterAvailable: !formData.upsInverterAvailable})}>
+                      <Checkbox checked={formData.upsInverterAvailable} />
+                      <Label className="text-[10px] font-black uppercase cursor-pointer">UPS / इनव्हर्टर</Label>
                     </div>
-                    <div className="flex items-center space-x-2 bg-muted/10 p-2.5 rounded-xl border border-muted-foreground/5">
-                      <Checkbox id="edit-solar" checked={formData.solarAvailable} onCheckedChange={(v) => setFormData({...formData, solarAvailable: !!v})} />
-                      <Label htmlFor="edit-solar" className="text-[10px] font-black uppercase cursor-pointer">सोलर उपलब्ध</Label>
+                    <div className="flex items-center space-x-2 bg-muted/10 p-2.5 rounded-xl border border-muted-foreground/5 cursor-pointer" onClick={() => setFormData({...formData, solarAvailable: !formData.solarAvailable})}>
+                      <Checkbox checked={formData.solarAvailable} />
+                      <Label className="text-[10px] font-black uppercase cursor-pointer">सोलर उपलब्ध</Label>
                     </div>
                  </div>
 

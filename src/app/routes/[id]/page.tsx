@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
@@ -159,7 +160,7 @@ export default function RouteDetailsPage() {
   }
 
   const updateEquipmentRow = (id: string, updates: Partial<EquipmentItem>) => {
-    setFormData({ ...formData, equipment: formData.equipment.map(e => i.id === id ? { ...e, ...updates } : e) })
+    setFormData({ ...formData, equipment: formData.equipment.map(e => e.id === id ? { ...e, ...updates } : e) })
   }
 
   const filteredSuppliers = useMemo(() => {
@@ -284,13 +285,21 @@ export default function RouteDetailsPage() {
                   <div className="space-y-1.5">
                     {formData.equipment.map((item) => (
                       <div key={item.id} className="grid grid-cols-12 gap-1 items-center bg-muted/10 p-1.5 rounded-lg border border-muted-foreground/5">
-                        <Input value={item.name} onChange={e => updateEquipmentRow(item.id, {name: e.target.value})} className="col-span-6 h-7 text-[10px] px-2 bg-white border-none rounded-md" placeholder="साहित्य नाव" />
-                        <Input type="number" value={item.quantity} onChange={e => updateEquipmentRow(item.id, {quantity: Number(e.target.value)})} className="col-span-2 h-7 text-[10px] px-0 text-center bg-white border-none rounded-md" />
-                        <Select value={item.ownership} onValueChange={v => updateEquipmentRow(item.id, {ownership: v as any})}>
-                          <SelectTrigger className="col-span-3 h-7 text-[8px] px-1 bg-white border-none rounded-md"><SelectValue /></SelectTrigger>
-                          <SelectContent><SelectItem value="Self" className="text-[10px]">स्वतः</SelectItem><SelectItem value="Company" className="text-[10px]">डेअरी</SelectItem></SelectContent>
-                        </Select>
-                        <Button variant="ghost" size="icon" onClick={() => removeEquipmentRow(item.id)} className="col-span-1 h-6 w-6 text-destructive hover:bg-destructive/5"><X className="h-3.5 w-3.5" /></Button>
+                        <div className="col-span-6">
+                          <Input value={item.name} onChange={e => updateEquipmentRow(item.id, {name: e.target.value})} className="h-7 text-[10px] px-2 bg-white border-none rounded-md" placeholder="साहित्य नाव" />
+                        </div>
+                        <div className="col-span-2">
+                          <Input type="number" value={item.quantity} onChange={e => updateEquipmentRow(item.id, {quantity: Number(e.target.value)})} className="h-7 text-[10px] px-0 text-center bg-white border-none rounded-md" />
+                        </div>
+                        <div className="col-span-3">
+                          <Select value={item.ownership} onValueChange={v => updateEquipmentRow(item.id, {ownership: v as any})}>
+                            <SelectTrigger className="h-7 text-[8px] px-1 bg-white border-none rounded-md"><SelectValue /></SelectTrigger>
+                            <SelectContent><SelectItem value="Self" className="text-[10px]">स्वतः</SelectItem><SelectItem value="Company" className="text-[10px]">डेअरी</SelectItem></SelectContent>
+                          </Select>
+                        </div>
+                        <div className="col-span-1 flex justify-end">
+                          <Button variant="ghost" size="icon" onClick={() => removeEquipmentRow(item.id)} className="h-6 w-6 text-destructive hover:bg-destructive/5"><X className="h-3.5 w-3.5" /></Button>
+                        </div>
                       </div>
                     ))}
                   </div>
