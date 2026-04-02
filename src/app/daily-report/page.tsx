@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect, Suspense } from "react"
@@ -234,8 +235,8 @@ function DailyReportForm() {
                 <div className="flex justify-between items-center mb-2"><span className="text-[9px] font-black text-muted-foreground opacity-40"># {index + 1}</span><Button type="button" variant="ghost" size="icon" onClick={() => removeRouteEntry(entry.id)} className="h-6 w-6 text-rose-400"><Trash2 className="h-3.5 w-3.5" /></Button></div>
                 <div className="grid grid-cols-2 gap-2">
                   <div className="col-span-2 flex gap-2">
-                    <Input className="compact-input h-8 w-20 shrink-0" placeholder="कोड" value={entry.centerCode || ""} onChange={e => updateRouteEntry(entry.id, { centerCode: e.target.value })} />
-                    <Input className="compact-input h-8 flex-1" placeholder="केंद्राचे नाव" value={entry.supplierName || ""} onChange={e => updateRouteEntry(entry.id, { supplierName: e.target.value })} />
+                    <div className="space-y-0.5 w-20 shrink-0"><Label className="text-[8px] font-black uppercase opacity-50">केंद्र कोड</Label><Input className="compact-input h-8" placeholder="कोड" value={entry.centerCode || ""} onChange={e => updateRouteEntry(entry.id, { centerCode: e.target.value })} /></div>
+                    <div className="space-y-0.5 flex-1"><Label className="text-[8px] font-black uppercase opacity-50">केंद्राचे नाव</Label><Input className="compact-input h-8" placeholder="केंद्राचे नाव" value={entry.supplierName || ""} onChange={e => updateRouteEntry(entry.id, { supplierName: e.target.value })} /></div>
                   </div>
                   <div className="space-y-0.5"><Label className="compact-label">वेळ (IN/OUT)</Label><div className="flex gap-1"><Input className="compact-input h-8 text-center" type="time" value={entry.arrivalTime || ""} onChange={e => updateRouteEntry(entry.id, { arrivalTime: e.target.value })} /><Input className="compact-input h-8 text-center" type="time" value={entry.departureTime || ""} onChange={e => updateRouteEntry(entry.id, { departureTime: e.target.value })} /></div></div>
                   <div className="space-y-0.5"><Label className="compact-label">कॅन (E/F)</Label><div className="flex gap-1"><Input className="compact-input h-8 text-center" placeholder="E" value={entry.emptyCans || ""} onChange={e => updateRouteEntry(entry.id, { emptyCans: e.target.value })} /><Input className="compact-input h-8 text-center font-black text-primary" placeholder="F" value={entry.fullCans || ""} onChange={e => updateRouteEntry(entry.id, { fullCans: e.target.value })} /></div></div>
