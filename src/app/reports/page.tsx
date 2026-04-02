@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { useUser, useFirestore, useCollection, useMemoFirebase, deleteDocumentNonBlocking } from "@/firebase"
+import { useUser, useFirestore, useCollection, useDoc, useMemoFirebase, deleteDocumentNonBlocking } from "@/firebase"
 import { collection, doc } from "firebase/firestore"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -29,7 +29,17 @@ export default function ReportsPage() {
     return collection(db, 'users', user.uid, 'dailyWorkReports')
   }, [db, user])
 
+  const userDocRef = useMemoFirebase(() => {
+    if (!db || !user) return null
+    return doc(db, 'users', user.uid)
+  }, [db, user])
+
   const { data: firestoreReports, isLoading } = useCollection(reportsQuery)
+  const { data: userData } = useDoc(userDocRef)
+
+  const profileName = userData?.displayName || "संकलन सुपरवायझर";
+  const profileId = userData?.employeeId || "---";
+
   const [filterDate, setFilterDate] = useState<string>("")
   const [searchQuery, setSearchQuery] = useState("")
   const [typeFilter, setTypeFilter] = useState<string | null>(null)
@@ -101,10 +111,6 @@ export default function ReportsPage() {
   }
 
   const labelMap: Record<string, string> = {
-    displayName: "अहवाल सादरकर्ता",
-    name: "अहवाल सादरकर्ता",
-    employeeId: "अधिकारी आयडी (Emp ID)",
-    idNumber: "अधिकारी आयडी (Emp ID)",
     supplierName: "पुरवठादार / नाव",
     supplierId: "आयडी / कोड",
     title: "टास्क / विषय",
@@ -119,7 +125,6 @@ export default function ReportsPage() {
     vehicleType: "वाहन प्रकार",
     driverName: "ड्रायव्हर",
     mobile: "मोबाईल",
-    repName: "प्रतिनिधी",
     breakdownTime: "वेळ",
     location: "ठिकाण",
     reason: "कारण",
@@ -138,7 +143,6 @@ export default function ReportsPage() {
   };
 
   const orderedKeys = [
-    "displayName", "name", "employeeId", "idNumber",
     "supplierName", "supplierId",
     "title",
     "remark", "actionTaken", "actionsTaken", "achievements", "problems",
@@ -183,13 +187,13 @@ export default function ReportsPage() {
 
         <div className="grid grid-cols-2 gap-4 mb-4 font-black text-[10px] uppercase">
           <div className="space-y-1 p-2 bg-slate-50 border border-slate-200 rounded-lg print:bg-white print:border-black">
-            <div className="flex justify-between border-b border-slate-200 pb-0.5"><span>सादरकर्ता:</span> <span className="text-primary print:text-black">संकलन सुपरवायझर</span></div>
+            <div className="flex justify-between border-b border-slate-200 pb-0.5"><span>सादरकर्ता:</span> <span className="text-primary print:text-black">{profileName}</span></div>
             <div className="flex justify-between border-b border-slate-200 pb-0.5"><span>रूट नाव:</span> <span>{d.routeName || '---'}</span></div>
             <div className="flex justify-between border-b border-slate-200 pb-0.5"><span>ड्रायव्हर:</span> <span>{d.driverName || '---'}</span></div>
             <div className="flex justify-between"><span>वेळ (IN/OUT):</span> <span>{d.routeInTime || '--:--'} / {d.routeOutTime || '--:--'}</span></div>
           </div>
           <div className="space-y-1 p-2 bg-slate-50 border border-slate-200 rounded-lg print:bg-white print:border-black">
-            <div className="flex justify-between border-b border-slate-200 pb-0.5"><span>आयडी:</span> <span>{d.employeeId || d.idNumber || '---'}</span></div>
+            <div className="flex justify-between border-b border-slate-200 pb-0.5"><span>आयडी:</span> <span>{profileId}</span></div>
             <div className="flex justify-between border-b border-slate-200 pb-0.5"><span>वाहन क्रमांक:</span> <span>{d.vehicleNumber || '---'}</span></div>
             <div className="flex justify-between border-b border-slate-200 pb-0.5"><span>स्लिप नंबर:</span> <span>#{d.slipNo || '---'}</span></div>
             <div className="flex justify-between items-center">
@@ -249,30 +253,15 @@ export default function ReportsPage() {
 
   const GenericTableLayout = ({ report }: { report: any }) => {
     const d = report.fullData || {};
-    const seenLabels = new Set<string>();
     
     const filteredEntries = orderedKeys
       .filter(key => {
         const val = d[key];
-        if (val === undefined || val === "" || val === null) return false;
-        
-        const label = labelMap[key] || key.toUpperCase();
-        
-        if (["displayName", "name"].includes(key) && seenLabels.has("अहवाल सादरकर्ता")) return false;
-        if (["employeeId", "idNumber"].includes(key) && seenLabels.has("अधिकारी आयडी (Emp ID)")) return false;
-        
-        if (seenLabels.has(label)) return false;
-        seenLabels.add(label);
-        return true;
+        return val !== undefined && val !== "" && val !== null;
       })
       .map(key => [key, d[key]]);
 
     const formatVal = (key: string, val: any): string => {
-      if (["name", "displayName", "assignedTo"].includes(key)) {
-        if (!val || val === 'Quality Inspector' || val === 'Procurement Officer' || val === 'User' || val === 'संकलन सुपरवायझर') {
-          return "संकलन सुपरवायझर";
-        }
-      }
       if (typeof val === 'boolean') return val ? "हो (YES)" : "नाही (NO)";
       if (Array.isArray(val)) return val.join(' | ');
       return String(val || "-");
@@ -280,7 +269,7 @@ export default function ReportsPage() {
 
     return (
       <div className="bg-white font-sans text-slate-900 border-[2px] border-slate-900 rounded-sm shadow-none print:border-black mb-4 last:mb-0 break-inside-avoid w-full max-w-full mx-auto p-6 printable-report">
-        <div className="border-b-[2px] border-slate-900 text-center pb-4 mb-6 print:border-black">
+        <div className="border-b-[2px] border-slate-900 text-center pb-4 mb-4 print:border-black">
           <div className="flex justify-center mb-1">
             <div className="p-2 bg-primary text-white rounded-xl print:bg-black">
               <ClipboardCheck className="h-6 w-6" />
@@ -292,14 +281,13 @@ export default function ReportsPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 mb-4 font-black text-[9px] uppercase border-b border-dashed border-slate-300 pb-2">
-          <div className="flex flex-col text-left">
-            <span className="text-slate-400">तारीख:</span>
-            <span className="text-base">{report.date}</span>
+        <div className="flex justify-between items-center mb-4 text-[9px] font-black uppercase text-slate-500 border-b border-dashed pb-2">
+          <div className="flex items-center gap-2">
+            <span className="bg-slate-100 px-2 py-0.5 rounded print:border print:border-black">सादरकर्ता: {profileName}</span>
+            <span className="bg-slate-100 px-2 py-0.5 rounded print:border print:border-black">आयडी: {profileId}</span>
           </div>
-          <div className="flex flex-col text-right">
-            <span className="text-slate-400">रिपोर्ट ID:</span>
-            <span className="text-sm">#{report.id.slice(-8).toUpperCase()}</span>
+          <div className="text-right">
+            <span>तारीख: {report.date}</span>
           </div>
         </div>
 
