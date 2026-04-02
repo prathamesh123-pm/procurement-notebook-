@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect, Suspense } from "react"
@@ -57,7 +56,6 @@ function DailyReportForm() {
     startReading: "", endReading: "", totalKm: "0", shortageLiters: "0",
     excessLiters: "0", routeVisitLogs: [] as RouteVisitEntry[],
     
-    // Structured Field Visit Data
     visitPerson: "",
     visitPurpose: "",
     visitDiscussion: "",
@@ -66,7 +64,6 @@ function DailyReportForm() {
     travelEndKm: "",
     travelTotalKm: "0",
     
-    // Structured Office Work Data
     officeTaskSubject: "",
     officeTaskDetails: "",
     pendingOfficeWork: "",
@@ -97,7 +94,6 @@ function DailyReportForm() {
     }))
   }, [])
 
-  // Auto-calculate Total KM
   useEffect(() => {
     const start = parseFloat(formData.travelStartKm);
     const end = parseFloat(formData.travelEndKm);
@@ -112,7 +108,8 @@ function DailyReportForm() {
       setFormData(prev => ({
         ...prev,
         name: profileData.displayName || prev.name,
-        idNumber: profileData.employeeId || prev.idNumber
+        idNumber: profileData.employeeId || prev.idNumber,
+        supervisorName: profileData.displayName || prev.supervisorName
       }))
     }
   }, [profileData, editId])
@@ -242,6 +239,8 @@ function DailyReportForm() {
                   </div>
                   <div className="space-y-0.5"><Label className="compact-label">वेळ (IN/OUT)</Label><div className="flex gap-1"><Input className="compact-input h-8 text-center" type="time" value={entry.arrivalTime || ""} onChange={e => updateRouteEntry(entry.id, { arrivalTime: e.target.value })} /><Input className="compact-input h-8 text-center" type="time" value={entry.departureTime || ""} onChange={e => updateRouteEntry(entry.id, { departureTime: e.target.value })} /></div></div>
                   <div className="space-y-0.5"><Label className="compact-label">कॅन (E/F)</Label><div className="flex gap-1"><Input className="compact-input h-8 text-center" placeholder="E" value={entry.emptyCans || ""} onChange={e => updateRouteEntry(entry.id, { emptyCans: e.target.value })} /><Input className="compact-input h-8 text-center font-black text-primary" placeholder="F" value={entry.fullCans || ""} onChange={e => updateRouteEntry(entry.id, { fullCans: e.target.value })} /></div></div>
+                  <div className="space-y-0.5"><Label className="compact-label">बर्फ दिला (Kg)</Label><Input className="compact-input h-8" value={entry.iceAllocated || ""} onChange={e => updateRouteEntry(entry.id, { iceAllocated: e.target.value })} /></div>
+                  <div className="space-y-0.5"><Label className="compact-label">बर्फ वापरला (Kg)</Label><Input className="compact-input h-8" value={entry.iceUsed || ""} onChange={e => updateRouteEntry(entry.id, { iceUsed: e.target.value })} /></div>
                 </div>
               </Card>
             ))}
@@ -326,9 +325,22 @@ function DailyReportForm() {
       <Card className="border-none shadow-xl bg-slate-900 text-white rounded-2xl overflow-hidden mt-4">
         <CardContent className="p-4 space-y-4">
           <div className="grid grid-cols-1 gap-4">
-            <div className="space-y-1"><Label className="text-[9px] font-black uppercase text-emerald-400 tracking-widest">आजची मोठी कामगिरी</Label><Textarea value={formData.achievements || ""} onChange={e => setFormData({...formData, achievements: e.target.value})} className="min-h-[50px] text-[10px] rounded-xl bg-white/10 border-none font-bold p-2 text-white" /></div>
-            <div className="space-y-1"><Label className="text-[9px] font-black uppercase text-rose-400 tracking-widest">महत्त्वाच्या समस्या</Label><Textarea value={formData.problems || ""} onChange={e => setFormData({...formData, problems: e.target.value})} className="min-h-[50px] text-[10px] rounded-xl bg-white/10 border-none font-bold p-2 text-white" /></div>
-            <div className="space-y-1"><Label className="text-[9px] font-black uppercase text-blue-400 tracking-widest">केलेली कार्यवाही</Label><Textarea value={formData.actionsTaken || ""} onChange={e => setFormData({...formData, actionsTaken: e.target.value})} className="min-h-[50px] text-[10px] rounded-xl bg-white/10 border-none font-bold p-2 text-white" /></div>
+            <div className="space-y-1">
+              <Label className="text-[9px] font-black uppercase text-emerald-400 tracking-widest">आजची मोठी कामगिरी</Label>
+              <Textarea value={formData.achievements || ""} onChange={e => setFormData({...formData, achievements: e.target.value})} className="min-h-[50px] text-[10px] rounded-xl bg-white/10 border-none font-bold p-2 text-white" />
+            </div>
+            <div className="space-y-1">
+              <Label className="text-[9px] font-black uppercase text-rose-400 tracking-widest">महत्त्वाच्या समस्या</Label>
+              <Textarea value={formData.problems || ""} onChange={e => setFormData({...formData, problems: e.target.value})} className="min-h-[50px] text-[10px] rounded-xl bg-white/10 border-none font-bold p-2 text-white" />
+            </div>
+            <div className="space-y-1">
+              <Label className="text-[9px] font-black uppercase text-blue-400 tracking-widest">केलेली कार्यवाही</Label>
+              <Textarea value={formData.actionsTaken || ""} onChange={e => setFormData({...formData, actionsTaken: e.target.value})} className="min-h-[50px] text-[10px] rounded-xl bg-white/10 border-none font-bold p-2 text-white" />
+            </div>
+            <div className="space-y-1">
+              <Label className="text-[9px] font-black uppercase text-slate-400 tracking-widest">सुपरवायझरचे नाव</Label>
+              <Input value={formData.supervisorName || ""} onChange={e => setFormData({...formData, supervisorName: e.target.value})} className="h-9 text-[10px] rounded-xl bg-white/10 border-none font-bold px-2 text-white" />
+            </div>
           </div>
           <div className="flex flex-col gap-4 pt-3 border-t border-white/10">
             <Button type="button" onClick={handleSave} className="w-full font-black h-12 rounded-xl shadow-2xl bg-primary text-white text-xs uppercase tracking-widest transition-all active:scale-95">{editId ? <RefreshCw className="h-4 w-4 mr-2" /> : <Save className="h-4 w-4 mr-2" />} {editId ? 'अहवाल अपडेट करा' : 'अहवाल जतन करा'}</Button>

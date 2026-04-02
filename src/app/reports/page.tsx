@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
@@ -160,6 +159,7 @@ export default function ReportsPage() {
     fssaiDisplay: "FSSAI परवाना लावला आहे का?",
     iceBankStatus: "आईस बँकची सद्यस्थिती",
     summary: "कामाचा संक्षिप्त सारांश",
+    supervisorName: "सुपरवायझरचे नाव",
     totalLossAmount: "या घटनेमुळे झालेले एकूण आर्थिक नुकसान (₹)"
   };
 
@@ -168,7 +168,7 @@ export default function ReportsPage() {
     "visitPerson", "visitPurpose", "visitDiscussion", "travelVehicle", "travelStartKm", "travelEndKm", "travelTotalKm",
     "officeTaskSubject", "officeTaskDetails", "pendingOfficeWork",
     "title", "remark", "actionTaken", "actionsTaken", "achievements", "problems",
-    "summary",
+    "summary", "supervisorName",
     "routeName", "vehicleNumber", "vehicleNo", "vehicleType", "driverName", "mobile",
     "breakdownTime", "location", "reason", "severity", "detailedReason",
     "estimatedRepairTime", "estimatedRepairCost", "recoveryVehicleNo", "recoveryArrivalTime",
@@ -203,7 +203,7 @@ export default function ReportsPage() {
         <div className="grid grid-cols-2 gap-6 mb-6 font-black text-[10pt] uppercase text-left">
           <div className="space-y-1.5 p-3 bg-slate-50 border border-slate-300 rounded-xl print:bg-white print:border-black">
             <div className="flex justify-between border-b border-slate-300 pb-1"><span>रूट नाव:</span> <span>{d.routeName || '---'}</span></div>
-            <div className="flex justify-between"><span>ड्रायव्हर:</span> <span>{d.driverName || '---'}</span></div>
+            <div className="flex justify-between"><span>ड्रायव्वर:</span> <span>{d.driverName || '---'}</span></div>
           </div>
           <div className="space-y-1.5 p-3 bg-slate-50 border border-slate-300 rounded-xl print:bg-white print:border-black">
             <div className="flex justify-between border-b border-slate-300 pb-1"><span>वाहन क्रमांक:</span> <span>{d.vehicleNumber || '---'}</span></div>
@@ -258,7 +258,6 @@ export default function ReportsPage() {
     const mainHeading = d.reportHeading || d.title || report.type;
     const kmKeys = ["travelStartKm", "travelEndKm", "travelTotalKm"];
     
-    // Improved data extraction: ensure all fields in fullData are checked against labelMap
     const entriesToShow = orderedKeys.filter(key => {
       const val = d[key];
       return val !== undefined && val !== "" && val !== null && !kmKeys.includes(key);
@@ -290,7 +289,6 @@ export default function ReportsPage() {
                   );
                 })}
                 
-                {/* Logistics Row: Shows KM data in one line if available */}
                 {(d.travelStartKm || d.travelEndKm || d.travelTotalKm) && (
                   <tr className="font-bold text-[10pt] text-left">
                     <td className="p-3 bg-slate-50 uppercase text-[9pt] font-black border-r border-slate-900 print:bg-white print:border-black">प्रवासाचे किलोमीटर (START/END/TOTAL)</td>
@@ -316,7 +314,6 @@ export default function ReportsPage() {
             </table>
           </div>
 
-          {/* Points/Observations Section */}
           {(d.points && d.points.length > 0) && (
             <div className="mt-6 space-y-3 text-left">
               <div className="flex items-center gap-2 text-[11pt] font-black uppercase text-primary">
@@ -335,7 +332,6 @@ export default function ReportsPage() {
             </div>
           )}
 
-          {/* Losses Table if applicable */}
           {((d.losses && d.losses.length > 0) || (d.centerLosses && d.centerLosses.length > 0)) && (
             <div className="mt-6 space-y-3 text-left">
               <div className="flex items-center gap-2 text-[11pt] font-black uppercase text-rose-700">
@@ -371,7 +367,6 @@ export default function ReportsPage() {
           )}
         </div>
         
-        {/* Signature Area */}
         <div className="mt-20 grid grid-cols-2 gap-12 text-center uppercase font-black text-[9pt] tracking-widest text-slate-400">
           <div className="border-t-2 border-slate-900 pt-3 print:border-black print:text-black">अधिकारी स्वाक्षरी</div>
           <div className="border-t-2 border-slate-900 pt-3 print:border-black print:text-black">सुपरवायझर स्वाक्षरी</div>
