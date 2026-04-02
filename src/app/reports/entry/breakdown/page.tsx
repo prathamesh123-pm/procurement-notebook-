@@ -87,15 +87,15 @@ function BreakdownReportForm() {
       qtyLiters: "", 
       lossAmount: "" 
     }
-    setFormData({ ...formData, centerLosses: [...formData.centerLosses, newLoss] })
+    setFormData({ ...formData, centerLosses: [...(formData.centerLosses || []), newLoss] })
   }
 
   const handleRemoveLossRow = (id: string) => { 
-    setFormData({ ...formData, centerLosses: formData.centerLosses.filter(l => l.id !== id) }) 
+    setFormData({ ...formData, centerLosses: (formData.centerLosses || []).filter(l => l.id !== id) }) 
   }
 
   const updateLossRow = (id: string, updates: Partial<DetailedBreakdownLoss>) => {
-    setFormData({ ...formData, centerLosses: formData.centerLosses.map(l => l.id === id ? { ...l, ...updates } : l) })
+    setFormData({ ...formData, centerLosses: (formData.centerLosses || []).map(l => l.id === id ? { ...l, ...updates } : l) })
   }
 
   const handleSave = () => {
@@ -104,7 +104,7 @@ function BreakdownReportForm() {
       return
     }
 
-    const totalLoss = formData.centerLosses.reduce((acc, curr) => acc + (Number(curr.lossAmount) || 0), 0)
+    const totalLoss = (formData.centerLosses || []).reduce((acc, curr) => acc + (Number(curr.lossAmount) || 0), 0)
     
     const reportData = {
       type: 'Transport Breakdown Report',
@@ -132,7 +132,7 @@ function BreakdownReportForm() {
 
   if (!mounted || isLoading) return <div className="p-20 text-center font-black uppercase text-[10px] opacity-50 animate-pulse">लोड होत आहे...</div>
 
-  const currentTotalLoss = formData.centerLosses.reduce((acc, curr) => acc + (Number(curr.lossAmount) || 0), 0);
+  const currentTotalLoss = (formData.centerLosses || []).reduce((acc, curr) => acc + (Number(curr.lossAmount) || 0), 0);
 
   return (
     <div className="compact-form-container px-2 max-w-[650px] mx-auto pb-20">
@@ -145,7 +145,7 @@ function BreakdownReportForm() {
       </div>
 
       <div className="space-y-3">
-        <Card className="compact-card p-3 border-rose-100">
+        <Card className="compact-card p-3 border-rose-100 mx-auto w-full">
           <div className="flex items-center gap-1.5 border-b border-primary/10 pb-1 mb-2">
             <User className="h-3 w-3 text-primary" />
             <h3 className="text-[10px] font-black uppercase text-primary tracking-widest">१) वाहन व ड्रायव्हर माहिती</h3>
@@ -163,7 +163,7 @@ function BreakdownReportForm() {
           </div>
         </Card>
 
-        <Card className="compact-card p-3 bg-rose-50/20 border-rose-100">
+        <Card className="compact-card p-3 bg-rose-50/20 border-rose-100 mx-auto w-full">
           <div className="flex items-center gap-1.5 border-b border-rose-200 pb-1 mb-2">
             <AlertTriangle className="h-3 w-3 text-rose-600" />
             <h3 className="text-[10px] font-black uppercase text-rose-600 tracking-widest">२) ब्रेकडाऊन तपशील</h3>
@@ -198,7 +198,7 @@ function BreakdownReportForm() {
           </div>
         </Card>
 
-        <Card className="compact-card p-3 border-primary/10">
+        <Card className="compact-card p-3 border-primary/10 mx-auto w-full">
           <div className="flex items-center gap-1.5 border-b border-primary/10 pb-1 mb-2">
             <Settings className="h-3 w-3 text-primary" />
             <h3 className="text-[10px] font-black uppercase text-primary tracking-widest">३) दुरुस्ती व पर्यायी सोय</h3>
@@ -211,7 +211,7 @@ function BreakdownReportForm() {
           </div>
         </Card>
 
-        <Card className="compact-card p-3 bg-blue-50/20 border-blue-100">
+        <Card className="compact-card p-3 bg-blue-50/20 border-blue-100 mx-auto w-full">
           <div className="flex items-center gap-1.5 border-b border-blue-200 pb-1 mb-2">
             <Milk className="h-3 w-3 text-blue-600" />
             <h3 className="text-[10px] font-black uppercase text-blue-600 tracking-widest">४) दुधाची स्थिती</h3>
@@ -253,7 +253,7 @@ function BreakdownReportForm() {
                 </tr>
               </thead>
               <tbody>
-                {formData.centerLosses.map((loss) => (
+                {(formData.centerLosses || []).map((loss) => (
                   <tr key={loss.id} className="border-b last:border-0 bg-white">
                     <td className="p-0 flex">
                       <Input placeholder="ID" value={loss.centerCode} onChange={e => updateLossRow(loss.id, { centerCode: e.target.value })} className="h-8 w-12 text-[10px] border-none font-black border-r rounded-none bg-transparent" />
@@ -280,7 +280,7 @@ function BreakdownReportForm() {
                     </td>
                   </tr>
                 ))}
-                {formData.centerLosses.length === 0 && (
+                {(!formData.centerLosses || formData.centerLosses.length === 0) && (
                   <tr>
                     <td colSpan={5} className="p-10 text-center text-muted-foreground opacity-30 uppercase font-black text-[8px] tracking-widest italic">नुकसानीची नोंद करण्यासाठी 'जोडा' बटण दाबा</td>
                   </tr>

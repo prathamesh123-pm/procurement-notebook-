@@ -73,15 +73,15 @@ export default function BreakdownPage() {
       qtyLiters: "", 
       lossAmount: "" 
     }
-    setFormData({ ...formData, centerLosses: [...formData.centerLosses, newLoss] })
+    setFormData({ ...formData, centerLosses: [...(formData.centerLosses || []), newLoss] })
   }
 
   const handleRemoveLossRow = (id: string) => { 
-    setFormData({ ...formData, centerLosses: formData.centerLosses.filter(l => l.id !== id) }) 
+    setFormData({ ...formData, centerLosses: (formData.centerLosses || []).filter(l => l.id !== id) }) 
   }
 
   const updateLossRow = (id: string, updates: Partial<DetailedBreakdownLoss>) => {
-    setFormData({ ...formData, centerLosses: formData.centerLosses.map(l => l.id === id ? { ...l, ...updates } : l) })
+    setFormData({ ...formData, centerLosses: (formData.centerLosses || []).map(l => l.id === id ? { ...l, ...updates } : l) })
   }
 
   const handleSaveRecord = () => {
@@ -90,7 +90,7 @@ export default function BreakdownPage() {
       return
     }
 
-    const totalLoss = formData.centerLosses.reduce((acc, curr) => acc + (Number(curr.lossAmount) || 0), 0)
+    const totalLoss = (formData.centerLosses || []).reduce((acc, curr) => acc + (Number(curr.lossAmount) || 0), 0)
     const recordData = { 
       ...formData, 
       date: new Date().toISOString().split('T')[0], 
@@ -151,7 +151,7 @@ export default function BreakdownPage() {
 
   if (!mounted || isLoading) return <div className="p-10 text-center italic font-black uppercase text-[10px] opacity-50">लोड होत आहे...</div>
 
-  const currentTotalLoss = formData.centerLosses.reduce((acc, curr) => acc + (Number(curr.lossAmount) || 0), 0);
+  const currentTotalLoss = (formData.centerLosses || []).reduce((acc, curr) => acc + (Number(curr.lossAmount) || 0), 0);
 
   return (
     <div className="space-y-3 max-w-7xl mx-auto w-full pb-10 px-1 animate-in fade-in duration-500">
@@ -163,7 +163,7 @@ export default function BreakdownPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-2 items-start">
-        <Card className="lg:col-span-8 border shadow-none bg-white rounded-xl overflow-hidden border-rose-100">
+        <Card className="lg:col-span-8 border shadow-none bg-white rounded-xl overflow-hidden border-rose-100 mx-auto w-full">
           <CardHeader className="py-2 px-3 border-b flex flex-row items-center justify-between bg-rose-50/50">
             <span className="text-[10px] font-black uppercase flex items-center gap-2 text-rose-600 tracking-widest">
               <AlertTriangle className="h-3.5 w-3.5" /> {editingId ? 'माहिती बदला (EDIT)' : 'नवीन नोंद (NEW ENTRY)'}
@@ -275,7 +275,7 @@ export default function BreakdownPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {formData.centerLosses.map((loss) => (
+                    {(formData.centerLosses || []).map((loss) => (
                       <tr key={loss.id} className="border-b last:border-0 bg-white">
                         <td className="p-0 flex">
                           <Input placeholder="ID" value={loss.centerCode} onChange={e => updateLossRow(loss.id, { centerCode: e.target.value })} className="h-8 w-12 text-[10px] border-none font-black border-r rounded-none bg-transparent" />
@@ -302,7 +302,7 @@ export default function BreakdownPage() {
                         </td>
                       </tr>
                     ))}
-                    {formData.centerLosses.length === 0 && (
+                    {(!formData.centerLosses || formData.centerLosses.length === 0) && (
                       <tr>
                         <td colSpan={5} className="p-10 text-center text-muted-foreground opacity-30 uppercase font-black text-[8px] tracking-widest italic">नुकसानीची नोंद करण्यासाठी 'जोडा' बटण दाबा</td>
                       </tr>
@@ -324,7 +324,7 @@ export default function BreakdownPage() {
           </CardContent>
         </Card>
 
-        <Card className="lg:col-span-4 border shadow-none bg-white rounded-xl overflow-hidden border-muted-foreground/10">
+        <Card className="lg:col-span-4 border shadow-none bg-white rounded-xl overflow-hidden border-muted-foreground/10 mx-auto w-full">
           <div className="bg-muted/10 py-3 px-3 border-b font-black text-[9px] uppercase flex items-center gap-2 tracking-[0.2em]">
             <History className="h-3.5 w-3.5 opacity-50" /> जुन्या नोंदी (LOGS)
           </div>
