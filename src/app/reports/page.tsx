@@ -378,7 +378,7 @@ export default function ReportsPage() {
   if (!mounted) return null;
 
   return (
-    <div className="compact-form-container pb-20 max-w-[700px] mx-auto px-2 animate-in fade-in duration-700">
+    <div className="compact-form-container pb-20 max-w-4xl mx-auto px-2 animate-in fade-in duration-700">
       <div className="flex flex-col sm:flex-row items-center justify-between border-b-2 border-primary/20 pb-4 mb-6 gap-4">
         <div className="flex flex-col gap-1 items-center sm:items-start text-center sm:text-left">
           <h2 className="text-xl font-black text-slate-900 flex items-center gap-2 uppercase tracking-tight">

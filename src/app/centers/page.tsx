@@ -174,7 +174,7 @@ export default function CentersPage() {
   if (!mounted || isLoading) return <div className="p-10 text-center italic font-black uppercase text-[10px] opacity-50">लोड होत आहे...</div>
 
   return (
-    <div className="space-y-4 max-w-[850px] mx-auto w-full pb-10 px-2 animate-in fade-in duration-500">
+    <div className="space-y-4 max-w-4xl mx-auto w-full pb-10 px-2 animate-in fade-in duration-500">
       <div className="flex flex-col sm:flex-row items-center justify-between gap-3 border-b pb-4 no-print text-center sm:text-left">
         <div className="min-w-0">
           <h2 className="text-xl font-black text-foreground flex items-center justify-center sm:justify-start gap-2 uppercase tracking-tight">
@@ -188,7 +188,7 @@ export default function CentersPage() {
       </div>
 
       <div className="flex flex-col items-center space-y-4 w-full">
-        <Card className="border shadow-2xl bg-white rounded-2xl overflow-hidden border-muted-foreground/10 no-print max-w-[600px] mx-auto w-full">
+        <Card className="border shadow-2xl bg-white rounded-2xl overflow-hidden border-muted-foreground/10 no-print w-full">
           <div className="p-3 border-b bg-muted/5">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
@@ -224,7 +224,7 @@ export default function CentersPage() {
         </Card>
 
         {selectedCenter && (
-          <Card className="border shadow-2xl bg-white rounded-3xl overflow-hidden border-muted-foreground/10 animate-in slide-in-from-bottom-2 duration-300 print:border-none print:shadow-none max-w-full mx-auto w-full" id="printable-area">
+          <Card className="border shadow-2xl bg-white rounded-3xl overflow-hidden border-muted-foreground/10 animate-in slide-in-from-bottom-2 duration-300 print:border-none print:shadow-none w-full" id="printable-area">
             <div className="p-3 border-b flex items-center justify-between bg-primary/5 print:bg-white print:border-b-2 print:border-black">
               <div className="min-w-0">
                 <h3 className="text-[13px] font-black truncate uppercase text-slate-900 print:text-xl">{selectedCenter.name}</h3>
@@ -280,7 +280,7 @@ export default function CentersPage() {
                     <div className="grid grid-cols-2 gap-x-2 gap-y-1">
                       <div><p className="text-[8px] text-muted-foreground uppercase font-black">पेमेंट सायकल</p><p className="text-[10px] font-black">{selectedCenter.paymentCycle || "7 Days"}</p></div>
                       <div><p className="text-[8px] text-muted-foreground uppercase font-black">जागा</p><p className="text-[10px] font-black">{selectedCenter.spaceOwnership === 'Self' ? 'स्वतःची' : 'भाड्याची'}</p></div>
-                      <div><p className="text-[8px] text-muted-foreground uppercase font-black">स्थानिक स्पर्धा</p><p className="text-[10px] font-black uppercase truncate">{selectedCenter.competition || "-"}</p></div>
+                      <div><p className="text-[8px] text-muted-foreground uppercase font-black">स्थानीय स्पर्धा</p><p className="text-[10px] font-black uppercase truncate">{selectedCenter.competition || "-"}</p></div>
                       <div><p className="text-[8px] text-muted-foreground uppercase font-black">स्वच्छता ग्रेड</p>
                         <Badge className={`h-4 px-1.5 text-[8px] font-black border-none text-white ${selectedCenter.hygieneGrade === 'A' ? 'bg-emerald-500' : selectedCenter.hygieneGrade === 'B' ? 'bg-blue-500' : 'bg-rose-500'}`}>
                           {selectedCenter.hygieneGrade || "A"}
@@ -442,7 +442,7 @@ export default function CentersPage() {
                 </h4>
                 <div className="grid grid-cols-1 gap-4">
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="space-y-1.5"><Label className="text-[10px] uppercase font-black opacity-60">स्थानिक स्पर्धा (Competition)</Label><Input value={formData.competition} onChange={e => setFormData({...formData, competition: e.target.value})} className="h-10 text-[12px] rounded-xl bg-muted/20 border-none font-black shadow-inner" placeholder="उदा. अमूल" /></div>
+                    <div className="space-y-1.5"><Label className="text-[10px] uppercase font-black opacity-60">स्थानीय स्पर्धा (Competition)</Label><Input value={formData.competition} onChange={e => setFormData({...formData, competition: e.target.value})} className="h-10 text-[12px] rounded-xl bg-muted/20 border-none font-black shadow-inner" placeholder="उदा. अमूल" /></div>
                     <div className="space-y-1.5"><Label className="text-[10px] uppercase font-black opacity-60">पेमेंट सायकल</Label>
                       <Select value={formData.paymentCycle} onValueChange={v => setFormData({...formData, paymentCycle: v})}>
                         <SelectTrigger className="h-10 text-[12px] bg-muted/20 border-none font-black rounded-xl"><SelectValue /></SelectTrigger>
