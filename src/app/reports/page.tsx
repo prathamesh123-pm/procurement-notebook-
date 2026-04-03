@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { useUser, useFirestore, useCollection, useDoc, useMemoFirebase, deleteDocumentNonBlocking } from "@/firebase"
+import { useUser, useFirestore, useCollection, useMemoFirebase, deleteDocumentNonBlocking } from "@/firebase"
 import { collection, doc } from "firebase/firestore"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -111,69 +111,57 @@ export default function ReportsPage() {
   }
 
   const labelMap: Record<string, string> = {
-    supplierName: "पुरवठादार किंवा केंद्राचे पूर्ण नाव",
+    supplierName: "पुरवठादार किंवा केंद्राचे नाव",
     supplierId: "पुरवठादार कोड (ID)",
     centerCode: "केंद्र कोड (ID)",
-    route: "संकलन रूटचे नाव",
-    seizureQty: "जप्त दुधाचे एकूण प्रमाण (Liters)",
-    reason: "दूध जप्त करण्याचे मुख्य कारण",
-    fineAmount: "आकारलेली दंडाची रक्कम (₹)",
-    actionTaken: "जप्त दुधावर केलेली कार्यवाही",
-    routeName: "रूटचे नाव",
-    vehicleNo: "गाडी क्रमांक (MH...)",
-    vehicleNumber: "गाडी क्रमांक (MH...)",
-    driverName: "ड्रायव्हरचे नाव",
-    mobile: "मोबाईल नंबर",
-    breakdownTime: "बिघाड झाल्याची वेळ",
-    location: "बिघाड झालेल्या ठिकाणाचे नाव",
-    severity: "बिघाडाचे स्वरूप (छोटा/मोठा)",
-    detailedReason: "बिघाडाचे सविस्तर वर्णन",
-    estimatedRepairTime: "दुरुस्तीसाठी लागणारा वेळ (तास)",
-    estimatedRepairCost: "दुरुस्तीसाठी लागणारा खर्च (₹)",
-    recoveryVehicleNo: "पर्यायी गाडी क्रमांक",
-    recoveryArrivalTime: "पर्यायी गाडी पोहोचण्याची वेळ",
-    milkHot: "दूध गरम झाले होते का?",
-    milkSour: "दूध पूर्णपणे खराब झाले का?",
-    visitPerson: "कोणाची भेट घेतली? (नाव व पद)",
-    visitPurpose: "भेटीचा मुख्य उद्देश",
-    visitDiscussion: "झालेली सविस्तर चर्चा व मुद्दे",
-    travelVehicle: "वापरलेले वाहन",
-    travelStartKm: "प्रवास सुरुवात KM",
-    travelEndKm: "प्रवास शेवट KM",
-    travelTotalKm: "प्रवास केलेले एकूण KM",
-    officeTaskSubject: "कामाचा मुख्य विषय",
-    officeTaskDetails: "कामाचा सविस्तर गोषवारा",
-    pendingOfficeWork: "प्रलंबित कामे (उद्यासाठी)",
-    title: "टास्कचे नाव",
-    remark: "सविस्तर शेरा/नोंद",
-    actionsTaken: "केलेली कार्यवाही",
-    achievements: "आजची मोठी कामगिरी",
-    problems: "महत्त्वाच्या समस्या",
     centerName: "केंद्राचे नाव",
-    tempAtArrival: "सुरुवातीचे तापमान (°C)",
-    tempAfterChilling: "चिलिंग नंतरचे तापमान (°C)",
-    waterSupply: "पाणी पुरवठा स्थिती",
-    powerBackup: "पॉवर बॅकअप सुविधा",
-    hygieneStandard: "स्वच्छतेचा दर्जा",
-    staffUniform: "स्टाफ गणवेश",
-    fssaiDisplay: "FSSAI परवाना",
-    iceBankStatus: "आईस बँक स्थिती",
-    summary: "थोडक्यात सारांश",
-    supervisorName: "सुपरवायझरचे नाव",
-    totalLossAmount: "एकूण आर्थिक नुकसान (₹)"
+    route: "संकलन रूट",
+    routeName: "रूट नाव",
+    seizureQty: "जप्त दूध (Liters)",
+    reason: "जप्तीचे कारण",
+    fineAmount: "दंडाची रक्कम (₹)",
+    actionTaken: "केलेली कार्यवाही",
+    actionsTaken: "केलेली कार्यवाही",
+    vehicleNo: "वाहन क्र.",
+    vehicleNumber: "वाहन क्र.",
+    driverName: "ड्रायव्हर",
+    mobile: "मोबाईल",
+    location: "ठिकाण",
+    breakdownTime: "बिघाड वेळ",
+    severity: "बिघाड स्वरूप",
+    detailedReason: "बिघाड सविस्तर",
+    estimatedRepairTime: "दुरुस्ती वेळ",
+    estimatedRepairCost: "दुरुस्ती खर्च (₹)",
+    recoveryVehicleNo: "पर्यायी गाडी",
+    recoveryArrivalTime: "पोहोच वेळ",
+    milkHot: "दूध गरम झाले?",
+    milkSour: "दूध खराब झाले?",
+    visitPerson: "भेटलेली व्यक्ती",
+    visitPurpose: "भेटीचा उद्देश",
+    visitDiscussion: "झालेली चर्चा",
+    travelVehicle: "वाहन प्रकार",
+    travelTotalKm: "एकूण KM",
+    officeTaskSubject: "कामाचा विषय",
+    officeTaskDetails: "कामाचा गोषवारा",
+    pendingOfficeWork: "उद्याची कामे",
+    achievements: "आजची कामगिरी",
+    problems: "समस्या",
+    supervisorName: "सुपरवायझर",
+    totalLossAmount: "आर्थिक नुकसान (₹)",
+    tempAfterChilling: "तापमान (°C)",
+    result: "तपासणी निकाल"
   };
 
   const orderedKeys = [
-    "supplierName", "supplierId", "centerCode", "route",
+    "supplierName", "centerName", "supplierId", "centerCode", "route", "routeName",
     "visitPerson", "visitPurpose", "visitDiscussion", "travelVehicle", 
     "officeTaskSubject", "officeTaskDetails", "pendingOfficeWork",
-    "title", "remark", "actionTaken", "actionsTaken", "achievements", "problems",
-    "summary", "supervisorName",
-    "routeName", "vehicleNumber", "vehicleNo", "vehicleType", "driverName", "mobile",
-    "breakdownTime", "location", "reason", "severity", "detailedReason",
-    "estimatedRepairTime", "estimatedRepairCost", "recoveryVehicleNo", "recoveryArrivalTime",
-    "milkHot", "milkSour", "totalLossAmount", "fineAmount", "seizureQty",
-    "centerName", "tempAtArrival", "tempAfterChilling", "waterSupply", "powerBackup", "hygieneStandard", "staffUniform", "fssaiDisplay", "iceBankStatus"
+    "achievements", "problems", "actionsTaken", "actionTaken", "supervisorName",
+    "vehicleNumber", "vehicleNo", "driverName", "mobile", "breakdownTime", "location", 
+    "severity", "detailedReason", "estimatedRepairTime", "estimatedRepairCost", 
+    "recoveryVehicleNo", "recoveryArrivalTime", "milkHot", "milkSour", 
+    "totalLossAmount", "fineAmount", "seizureQty", "reason",
+    "tempAfterChilling", "result"
   ];
 
   const reportsToRender = useMemo(() => {
@@ -194,85 +182,87 @@ export default function ReportsPage() {
     const totalIceUsed = logs.reduce((sum: number, l: any) => sum + (Number(l.iceUsed) || 0), 0);
 
     return (
-      <div className="bg-white font-sans text-slate-900 border-[2px] border-slate-900 rounded-sm shadow-none w-full max-w-[210mm] mx-auto print:border-black printable-report p-4 sm:p-6 mb-4">
-        <div className="flex flex-col sm:flex-row justify-between items-center border-b-[2px] border-slate-900 pb-2 mb-4 print:border-black gap-2 text-center sm:text-left">
-          <div className="space-y-0.5">
-            <h1 className="font-black uppercase text-[12pt] sm:text-[16pt] leading-tight tracking-tighter">{d.reportHeading || 'रूट व्हिजिट अहवाल'}</h1>
-            <p className="text-[7pt] sm:text-[8pt] font-black uppercase text-slate-500 tracking-[0.1em]">सादरकर्ता: {profileName} (ID: {profileId})</p>
+      <div className="bg-white font-sans text-slate-900 border-[1.5px] border-slate-900 rounded-sm shadow-none w-full max-w-[210mm] mx-auto print:border-black printable-report p-4 sm:p-5 mb-2 overflow-visible">
+        <div className="flex flex-col sm:flex-row justify-between items-center border-b-[1.5px] border-slate-900 pb-1.5 mb-2 print:border-black gap-1 text-center sm:text-left">
+          <div className="space-y-0">
+            <h1 className="font-black uppercase text-[11pt] sm:text-[14pt] leading-tight tracking-tight">{d.reportHeading || 'अहवाल'}</h1>
+            <p className="text-[6pt] sm:text-[7pt] font-black uppercase text-slate-500 tracking-widest">सादरकर्ता: {profileName} (ID: {profileId})</p>
           </div>
-          <div className="text-right font-black uppercase text-[8pt] sm:text-[9pt]">तारीख: {report.date}</div>
+          <div className="text-right font-black uppercase text-[7pt] sm:text-[8pt]">तारीख: {report.date}</div>
         </div>
-        <div className="grid grid-cols-2 gap-2 mb-4 font-black text-[8pt] uppercase">
-          <div className="p-2 bg-slate-50 border border-slate-300 rounded-lg print:bg-white print:border-black">
-            <div className="flex justify-between border-b border-slate-200 pb-0.5 mb-0.5"><span>रूट:</span> <span>{d.routeName || '---'}</span></div>
-            <div className="flex justify-between"><span>ड्रायव्वर:</span> <span>{d.driverName || '---'}</span></div>
+        
+        <div className="grid grid-cols-2 gap-1.5 mb-2 font-black text-[7pt] uppercase">
+          <div className="p-1.5 bg-slate-50 border border-slate-200 rounded-md print:bg-white print:border-black flex justify-between gap-2">
+            <span>रूट: {d.routeName || '---'}</span>
+            <span>ड्रायव्हर: {d.driverName || '---'}</span>
           </div>
-          <div className="p-2 bg-slate-50 border border-slate-300 rounded-lg print:bg-white print:border-black">
-            <div className="flex justify-between border-b border-slate-200 pb-0.5 mb-0.5"><span>गाडी क्र.:</span> <span>{d.vehicleNumber || '---'}</span></div>
-            <div className="flex justify-between"><span>स्लिप:</span> <span>#{d.slipNo || '---'}</span></div>
+          <div className="p-1.5 bg-slate-50 border border-slate-200 rounded-md print:bg-white print:border-black flex justify-between gap-2">
+            <span>वाहन क्र.: {d.vehicleNumber || '---'}</span>
+            <span>स्लिप: #{d.slipNo || '---'}</span>
           </div>
         </div>
-        <div className="border border-slate-900 rounded-lg overflow-hidden mb-4 print:border-black">
+
+        <div className="border border-slate-900 rounded-md overflow-hidden mb-2 print:border-black">
           <table className="w-full border-collapse">
             <thead>
-              <tr className="bg-slate-900 text-white font-black text-[7pt] uppercase tracking-wider print:bg-black">
-                <th className="p-1.5 text-center w-6 border-r border-white/20">क्र.</th>
-                <th className="p-1.5 text-left border-r border-white/20">केंद्र व कोड</th>
-                <th className="p-1.5 text-center border-r border-white/20">वेळ (IN/OUT)</th>
-                <th className="p-1.5 text-center border-r border-white/20">कॅन (E/F)</th>
-                <th className="p-1.5 text-center border-r border-white/20">बर्फ (Kg)</th>
+              <tr className="bg-slate-900 text-white font-black text-[6pt] sm:text-[7pt] uppercase tracking-wider print:bg-black">
+                <th className="p-1 text-center w-5 border-r border-white/20">क्र.</th>
+                <th className="p-1 text-left border-r border-white/20">केंद्र व कोड</th>
+                <th className="p-1 text-center border-r border-white/20">वेळ</th>
+                <th className="p-1 text-center border-r border-white/20">कॅन (E/F)</th>
+                <th className="p-1 text-center border-r border-white/20">बर्फ (Kg)</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-900 print:divide-black">
               {logs.map((log: any, idx: number) => (
-                <tr key={idx} className="font-bold text-[7pt] uppercase">
-                  <td className="p-1.5 text-center border-r border-slate-900 bg-slate-50 print:border-black">{idx + 1}</td>
-                  <td className="p-1.5 border-r border-slate-900 font-black print:border-black text-left">
-                    {log.supplierName || '---'} <span className="text-[6pt] text-slate-500 ml-1">ID: {log.centerCode || '---'}</span>
+                <tr key={idx} className="font-bold text-[6pt] sm:text-[7pt] uppercase">
+                  <td className="p-1 text-center border-r border-slate-900 bg-slate-50 print:border-black">{idx + 1}</td>
+                  <td className="p-1 border-r border-slate-900 font-black print:border-black text-left">
+                    {log.supplierName || '---'} <span className="text-[5pt] text-slate-500">({log.centerCode || '---'})</span>
                   </td>
-                  <td className="p-1.5 text-center border-r border-slate-900 print:border-black">{log.arrivalTime || '--'} / {log.departureTime || '--'}</td>
-                  <td className="p-1.5 text-center border-r border-slate-900 print:border-black">{log.emptyCans || '0'} / <span className="font-black text-primary print:text-black">{log.fullCans || '0'}</span></td>
-                  <td className="p-1.5 text-center border-r border-slate-900 print:border-black">{log.iceAllocated || '0'} / {log.iceUsed || '0'}</td>
+                  <td className="p-1 text-center border-r border-slate-900 print:border-black">{log.arrivalTime || '--'}-{log.departureTime || '--'}</td>
+                  <td className="p-1 text-center border-r border-slate-900 print:border-black">{log.emptyCans || '0'}/<span className="font-black text-primary print:text-black">{log.fullCans || '0'}</span></td>
+                  <td className="p-1 text-center border-r border-slate-900 print:border-black">{log.iceAllocated || '0'}/{log.iceUsed || '0'}</td>
                 </tr>
               ))}
-              <tr className="bg-slate-900 text-white font-black text-[8pt] uppercase print:bg-black">
-                <td className="p-2 text-center border-r border-white/20" colSpan={3}>एकूण सारांश</td>
-                <td className="p-2 text-center border-r border-white/20">{totalEmpty} / {totalFull}</td>
-                <td className="p-2 text-center">{totalIceAllocated} / {totalIceUsed}</td>
+              <tr className="bg-slate-100 font-black text-[7pt] uppercase print:bg-white print:border-t-2 print:border-black">
+                <td className="p-1.5 text-right border-r border-slate-900 print:border-black" colSpan={3}>एकूण सारांश:</td>
+                <td className="p-1.5 text-center border-r border-slate-900 print:border-black">{totalEmpty} / {totalFull}</td>
+                <td className="p-1.5 text-center">{totalIceAllocated} / {totalIceUsed}</td>
               </tr>
             </tbody>
           </table>
         </div>
 
-        <div className="space-y-2 text-left">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-left mb-4">
           {d.achievements && (
-            <div className="p-2 border border-slate-900 rounded-lg print:border-black">
-              <h4 className="text-[8pt] font-black uppercase text-primary border-b border-slate-200 pb-0.5 mb-1 print:text-black">आजची मोठी कामगिरी:</h4>
-              <p className="text-[8pt] font-bold leading-tight">{d.achievements}</p>
+            <div className="p-1.5 border border-slate-300 rounded-md print:border-black">
+              <span className="text-[6pt] font-black uppercase text-primary print:text-black block border-b mb-0.5">कामगिरी:</span>
+              <p className="text-[7pt] font-bold leading-tight line-clamp-2">{d.achievements}</p>
             </div>
           )}
           {d.problems && (
-            <div className="p-2 border border-slate-900 rounded-lg print:border-black">
-              <h4 className="text-[8pt] font-black uppercase text-rose-600 border-b border-slate-200 pb-0.5 mb-1 print:text-black">महत्त्वाच्या समस्या:</h4>
-              <p className="text-[8pt] font-bold leading-tight">{d.problems}</p>
+            <div className="p-1.5 border border-slate-300 rounded-md print:border-black">
+              <span className="text-[6pt] font-black uppercase text-rose-600 print:text-black block border-b mb-0.5">समस्या:</span>
+              <p className="text-[7pt] font-bold leading-tight line-clamp-2">{d.problems}</p>
             </div>
           )}
           {d.actionsTaken && (
-            <div className="p-2 border border-slate-900 rounded-lg print:border-black">
-              <h4 className="text-[8pt] font-black uppercase text-blue-600 border-b border-slate-200 pb-0.5 mb-1 print:text-black">केलेली कार्यवाही:</h4>
-              <p className="text-[8pt] font-bold leading-tight">{d.actionsTaken}</p>
+            <div className="p-1.5 border border-slate-300 rounded-md print:border-black">
+              <span className="text-[6pt] font-black uppercase text-blue-600 print:text-black block border-b mb-0.5">कार्यवाही:</span>
+              <p className="text-[7pt] font-bold leading-tight line-clamp-2">{d.actionsTaken}</p>
             </div>
           )}
           {d.supervisorName && (
-            <div className="text-right mt-2">
-              <p className="text-[8pt] font-black uppercase">सुपरवायझर: {d.supervisorName}</p>
+            <div className="p-1.5 flex items-end justify-end">
+              <p className="text-[7pt] font-black uppercase">सुपरवायझर: {d.supervisorName}</p>
             </div>
           )}
         </div>
 
-        <div className="mt-8 grid grid-cols-2 gap-8 text-center uppercase font-black text-[8pt] tracking-widest text-slate-400">
-          <div className="border-t-2 border-slate-900 pt-2 print:border-black print:text-black">अधिकारी स्वाक्षरी</div>
-          <div className="border-t-2 border-slate-900 pt-2 print:border-black print:text-black">सुपरवायझर स्वाक्षरी</div>
+        <div className="mt-6 grid grid-cols-2 gap-10 text-center uppercase font-black text-[7pt] tracking-widest text-slate-400">
+          <div className="border-t-[1px] border-slate-900 pt-1 print:border-black print:text-black">अधिकारी स्वाक्षरी</div>
+          <div className="border-t-[1px] border-slate-900 pt-1 print:border-black print:text-black">सुपरवायझर स्वाक्षरी</div>
         </div>
       </div>
     );
@@ -288,99 +278,82 @@ export default function ReportsPage() {
     });
 
     return (
-      <div className="bg-white font-sans text-slate-900 border-[2px] border-slate-900 rounded-sm shadow-none print:border-black mb-4 last:mb-0 break-inside-avoid w-full max-w-[210mm] mx-auto p-4 sm:p-6 printable-report">
-        <div className="border-b-[2px] border-slate-900 text-center pb-3 mb-4 print:border-black">
-          <h1 className="text-[12pt] sm:text-[16pt] font-black uppercase tracking-tight leading-tight">{mainHeading}</h1>
-          <div className="mt-1 text-[7pt] sm:text-[8pt] font-black uppercase tracking-widest text-slate-500">सादरकर्ता: {profileName} (ID: {profileId}) | तारीख: {report.date}</div>
-        </div>
-        <div className="space-y-4">
-          <div className="border border-slate-900 rounded-lg overflow-hidden print:border-black">
-            <table className="w-full border-collapse">
-              <thead>
-                <tr className="bg-slate-900 text-white font-black text-[7pt] sm:text-[9pt] uppercase tracking-widest print:bg-black">
-                  <th className="p-2 text-left w-1/3 border-r border-white/20">तपशील (QUESTION)</th>
-                  <th className="p-2 text-left">माहिती (DETAILS)</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-900 print:divide-black">
-                {entriesToShow.map((key) => {
-                  const val = d[key];
-                  return (
-                    <tr key={key} className="font-bold text-[7pt] sm:text-[9pt] text-left">
-                      <td className="p-2 bg-slate-50 uppercase text-[6pt] sm:text-[8pt] font-black border-r border-slate-900 print:bg-white print:border-black">{labelMap[key] || key.toUpperCase()}</td>
-                      <td className="p-2 whitespace-pre-wrap leading-tight">{typeof val === 'boolean' ? (val ? "हो (YES)" : "नाही (NO)") : (Array.isArray(val) ? val.join(' | ') : String(val || "-"))}</td>
-                    </tr>
-                  );
-                })}
-                
-                {(d.travelStartKm || d.travelEndKm || d.travelTotalKm) && (
-                  <tr className="font-bold text-[7pt] sm:text-[9pt] text-left">
-                    <td className="p-2 bg-slate-50 uppercase text-[6pt] sm:text-[8pt] font-black border-r border-slate-900 print:bg-white print:border-black">प्रवासाचे किलोमीटर (KM)</td>
-                    <td className="p-2">
-                      <div className="grid grid-cols-3 gap-1 text-center">
-                        <div className="p-1 bg-slate-50 rounded border border-slate-200 print:bg-white print:border-black"><span className="text-[5pt] text-slate-400 font-black uppercase block">सुरुवात</span><span className="text-[8pt] font-black">{d.travelStartKm || '0'}</span></div>
-                        <div className="p-1 bg-slate-50 rounded border border-slate-200 print:bg-white print:border-black"><span className="text-[5pt] text-slate-400 font-black uppercase block">शेवट</span><span className="text-[8pt] font-black">{d.travelEndKm || '0'}</span></div>
-                        <div className="p-1 bg-blue-50 rounded border border-blue-100 print:bg-white print:border-black"><span className="text-[5pt] text-primary font-black uppercase block print:text-black">एकूण</span><span className="text-[9pt] font-black text-primary print:text-black">{d.travelTotalKm || '0'}</span></div>
-                      </div>
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-
-          {(d.points && d.points.length > 0) && (
-            <div className="mt-2 space-y-1 text-left">
-              <div className="text-[8pt] font-black uppercase text-primary">विशेष निरीक्षणे:</div>
-              <div className="border border-slate-900 rounded-lg p-2 print:border-black">
-                <ul className="space-y-1">
-                  {d.points.map((p: string, i: number) => (
-                    <li key={i} className="text-[7pt] sm:text-[8pt] font-bold flex gap-2">
-                      <span className="text-primary font-black shrink-0">{i + 1}.</span>
-                      <span className="leading-tight">{p}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          )}
-
-          {((d.losses && d.losses.length > 0) || (d.centerLosses && d.centerLosses.length > 0)) && (
-            <div className="mt-2 space-y-1 text-left">
-              <div className="text-[8pt] font-black uppercase text-rose-700">नुकसानीचा सविस्तर तक्ता:</div>
-              <div className="border border-slate-900 rounded-lg overflow-hidden shadow-sm print:border-black">
-                <table className="w-full border-collapse text-[7pt] sm:text-[8pt]">
-                  <thead className="bg-slate-900 text-white font-black uppercase tracking-wider print:bg-black">
-                    <tr>
-                      <th className="p-1.5 text-left border-r border-white/20">नाव</th>
-                      <th className="p-1.5 text-center w-12 border-r border-white/20">प्रकार</th>
-                      <th className="p-1.5 text-center w-12 border-r border-white/20">Ltr</th>
-                      <th className="p-1.5 text-right w-20">रक्कम (₹)</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-200 print:divide-black">
-                    {(d.losses || d.centerLosses).map((l: any, i: number) => (
-                      <tr key={i} className="text-center font-bold">
-                        <td className="p-1.5 text-left uppercase border-r border-slate-200 font-black print:border-black">{l.supplierName || l.centerName || '---'}</td>
-                        <td className="p-1.5 border-r border-slate-200 print:border-black">{l.milkType || '-'}</td>
-                        <td className="p-1.5 border-r border-slate-200 font-black print:border-black">{l.qtyLiters || '0'}</td>
-                        <td className="p-1.5 text-right font-black print:text-black">₹{l.lossAmount || '0'}</td>
-                      </tr>
-                    ))}
-                    <tr className="bg-slate-50 font-black text-[8pt] print:bg-white print:border-t-2 print:border-black">
-                      <td className="p-2 text-right uppercase border-r border-slate-200 print:border-black" colSpan={3}>एकूण नुकसान:</td>
-                      <td className="p-2 text-right text-[9pt] print:text-black">₹{d.totalLossAmount || d.lossAmount || '0'}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
+      <div className="bg-white font-sans text-slate-900 border-[1.5px] border-slate-900 rounded-sm shadow-none print:border-black mb-2 last:mb-0 break-inside-avoid w-full max-w-[210mm] mx-auto p-4 sm:p-5 printable-report overflow-visible">
+        <div className="border-b-[1.5px] border-slate-900 text-center pb-1.5 mb-2 print:border-black">
+          <h1 className="text-[11pt] sm:text-[14pt] font-black uppercase tracking-tight leading-tight">{mainHeading}</h1>
+          <div className="mt-0.5 text-[6pt] sm:text-[7pt] font-black uppercase tracking-widest text-slate-500">सादरकर्ता: {profileName} (ID: {profileId}) | तारीख: {report.date}</div>
         </div>
         
-        <div className="mt-8 grid grid-cols-2 gap-8 text-center uppercase font-black text-[8pt] tracking-widest text-slate-400">
-          <div className="border-t-2 border-slate-900 pt-2 print:border-black print:text-black">अधिकारी स्वाक्षरी</div>
-          <div className="border-t-2 border-slate-900 pt-2 print:border-black print:text-black">सुपरवायझर स्वाक्षरी</div>
+        <div className="border border-slate-900 rounded-md overflow-hidden print:border-black">
+          <table className="w-full border-collapse">
+            <thead>
+              <tr className="bg-slate-900 text-white font-black text-[6pt] sm:text-[8pt] uppercase tracking-widest print:bg-black">
+                <th className="p-1.5 text-left w-[40%] border-r border-white/20">तपशील (QUESTION)</th>
+                <th className="p-1.5 text-left">माहिती (DETAILS)</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-900 print:divide-black">
+              {entriesToShow.map((key) => {
+                const val = d[key];
+                return (
+                  <tr key={key} className="font-bold text-[7pt] sm:text-[8.5pt] text-left">
+                    <td className="p-1.5 bg-slate-50 uppercase text-[6pt] sm:text-[7.5pt] font-black border-r border-slate-900 print:bg-white print:border-black">{labelMap[key] || key.toUpperCase()}</td>
+                    <td className="p-1.5 whitespace-pre-wrap leading-snug">{typeof val === 'boolean' ? (val ? "हो" : "नाही") : (Array.isArray(val) ? val.join(' | ') : String(val || "-"))}</td>
+                  </tr>
+                );
+              })}
+              
+              {(d.travelStartKm || d.travelEndKm || d.travelTotalKm) && (
+                <tr className="font-bold text-[7pt] sm:text-[8.5pt] text-left">
+                  <td className="p-1.5 bg-slate-50 uppercase text-[6pt] sm:text-[7.5pt] font-black border-r border-slate-900 print:bg-white print:border-black">प्रवास किमी (START/END/TOTAL)</td>
+                  <td className="p-1.5">
+                    <div className="flex gap-4 font-black uppercase text-[7pt] sm:text-[8pt]">
+                      <span>सुरुवात: {d.travelStartKm || '0'}</span>
+                      <span>शेवट: {d.travelEndKm || '0'}</span>
+                      <span className="text-primary print:text-black">एकूण: {d.travelTotalKm || '0'} KM</span>
+                    </div>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {((d.losses && d.losses.length > 0) || (d.centerLosses && d.centerLosses.length > 0)) && (
+          <div className="mt-2 space-y-1 text-left">
+            <div className="text-[7pt] font-black uppercase text-rose-700">नुकसानीचा तपशील:</div>
+            <div className="border border-slate-900 rounded-md overflow-hidden shadow-none print:border-black">
+              <table className="w-full border-collapse text-[6pt] sm:text-[7.5pt]">
+                <thead className="bg-slate-900 text-white font-black uppercase tracking-wider print:bg-black">
+                  <tr>
+                    <th className="p-1 text-left border-r border-white/20">नाव/कोड</th>
+                    <th className="p-1 text-center w-10 border-r border-white/20">प्रकार</th>
+                    <th className="p-1 text-center w-10 border-r border-white/20">Ltr</th>
+                    <th className="p-1 text-right w-16">रक्कम (₹)</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-200 print:divide-black">
+                  {(d.losses || d.centerLosses).map((l: any, i: number) => (
+                    <tr key={i} className="text-center font-bold">
+                      <td className="p-1 text-left uppercase border-r border-slate-200 font-black print:border-black">{l.supplierName || l.centerName || l.centerCode || '---'}</td>
+                      <td className="p-1 border-r border-slate-200 print:border-black">{l.milkType || '-'}</td>
+                      <td className="p-1 border-r border-slate-200 font-black print:border-black">{l.qtyLiters || '0'}</td>
+                      <td className="p-1 text-right font-black print:text-black">₹{l.lossAmount || '0'}</td>
+                    </tr>
+                  ))}
+                  <tr className="bg-slate-50 font-black text-[7pt] print:bg-white print:border-t-[1.5px] print:border-black">
+                    <td className="p-1.5 text-right uppercase border-r border-slate-200 print:border-black" colSpan={3}>एकूण आर्थिक नुकसान:</td>
+                    <td className="p-1.5 text-right text-[8pt] print:text-black">₹{d.totalLossAmount || d.lossAmount || '0'}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+        
+        <div className="mt-6 grid grid-cols-2 gap-10 text-center uppercase font-black text-[7pt] tracking-widest text-slate-400">
+          <div className="border-t-[1px] border-slate-900 pt-1 print:border-black print:text-black">अधिकारी स्वाक्षरी</div>
+          <div className="border-t-[1px] border-slate-900 pt-1 print:border-black print:text-black">सुपरवायझर स्वाक्षरी</div>
         </div>
       </div>
     );
@@ -481,7 +454,7 @@ export default function ReportsPage() {
                   {report.type === 'Route Visit' ? (
                     <RouteSlipLayout report={report} />
                   ) : (report.fullData?.isWordDoc ? (
-                    <div className="prose prose-sm max-w-none px-4 sm:px-12 py-6 sm:py-10 bg-white border-[2px] border-slate-900 rounded-sm shadow-2xl min-h-[600px] print:shadow-none print:border-black printable-report w-full mx-auto" dangerouslySetInnerHTML={{ __html: report.fullData.content }} />
+                    <div className="prose prose-sm max-w-none px-4 sm:px-12 py-6 sm:py-10 bg-white border-[1.5px] border-slate-900 rounded-sm shadow-2xl min-h-[600px] print:shadow-none print:border-black printable-report w-full mx-auto" dangerouslySetInnerHTML={{ __html: report.fullData.content }} />
                   ) : (
                     <GenericTableLayout report={report} />
                   ))}
@@ -496,52 +469,63 @@ export default function ReportsPage() {
         @media print {
           @page {
             size: A4;
-            margin: 10mm;
+            margin: 0mm;
           }
           
+          html, body {
+            visibility: hidden !important;
+            height: auto !important;
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            background: white !important;
+          }
+
           body * {
             visibility: hidden !important;
           }
 
           .printable-report, .printable-report * {
             visibility: visible !important;
+            opacity: 1 !important;
+            color: black !important;
           }
 
           .printable-report {
-            position: absolute !important;
+            position: fixed !important;
+            top: 50% !important;
             left: 50% !important;
-            top: 0 !important;
+            transform: translate(-50%, -50%) !important;
             width: 210mm !important;
-            transform: translateX(-50%) !important;
             margin: 0 !important;
             padding: 10mm !important;
             box-shadow: none !important;
-            border: 2px solid black !important;
+            border: 1.5px solid black !important;
             background: white !important;
-            color: black !important;
-            z-index: 9999 !important;
+            z-index: 99999 !important;
+            display: block !important;
           }
 
-          .no-print, button, header, nav, footer, .sidebar, .sidebar-trigger, [role="dialog"] > button, [data-radix-collection-item], [role="dialog"] {
+          .no-print, button, header, nav, footer, .sidebar, .sidebar-trigger, [role="dialog"] > button, [data-radix-collection-item], [role="dialog"], .bg-slate-100 {
             display: none !important;
+            background: none !important;
           }
 
           table { 
             width: 100% !important; 
             border-collapse: collapse !important; 
-            border: 2px solid black !important;
-            margin: 5pt 0 !important;
+            border: 1.5px solid black !important;
           }
 
           th, td { 
             border: 1px solid black !important; 
-            padding: 6pt !important; 
-            font-size: 9pt !important; 
+            padding: 4pt !important; 
+            font-size: 8pt !important;
             color: black !important;
           }
 
-          h1 { font-size: 16pt !important; text-align: center !important; margin-bottom: 5pt !important; }
-          h3, h4 { font-size: 11pt !important; }
+          h1 { font-size: 14pt !important; text-align: center !important; margin-bottom: 2pt !important; }
+          h3, h4 { font-size: 10pt !important; }
         }
       `}</style>
     </div>
