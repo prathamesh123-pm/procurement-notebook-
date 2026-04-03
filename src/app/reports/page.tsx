@@ -5,9 +5,9 @@ import { useState, useMemo, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { 
-  Archive, Search, X, Printer, Trash2, FileEdit, Truck, ListTodo, 
-  ShieldAlert, ClipboardCheck, FileSignature, Plus, MapPin, Briefcase, FileText,
-  Microscope, Thermometer, Milk
+  Archive, Search, X, Printer, Trash2, FileEdit, Truck, 
+  ShieldAlert, ClipboardCheck, Plus, MapPin, FileText,
+  Microscope, Milk
 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
@@ -51,14 +51,9 @@ export default function ReportsPage() {
 
   const reportTypes = [
     { title: "रूट व्हिजिट", type: "Route Visit", icon: Truck, color: "text-blue-600", bg: "bg-blue-50" },
-    { title: "क्षेत्र भेट", type: "Field Visit", icon: MapPin, color: "text-emerald-600", bg: "bg-emerald-50" },
-    { title: "ऑफिस काम", type: "Daily Office Work", icon: Briefcase, color: "text-purple-600", bg: "bg-purple-50" },
     { title: "ब्रेकडाऊन", type: "Transport Breakdown Report", icon: Truck, color: "text-rose-600", bg: "bg-rose-50" },
     { title: "जप्ती व दंड", type: "Seizure & Penalty", icon: ShieldAlert, color: "text-amber-600", bg: "bg-amber-50" },
-    { title: "दैनिक कामकाज", type: "Daily Work Report", icon: ClipboardCheck, color: "text-indigo-600", bg: "bg-indigo-50" },
-    { title: "ऑडिट", type: "Collection Center Audit", icon: Microscope, color: "text-emerald-600", bg: "bg-emerald-50" },
-    { title: "चिलिंग", type: "Chilling Report", icon: Thermometer, color: "text-blue-600", bg: "bg-blue-50" },
-    { title: "वर्ड फॉर्म", type: "Official Document", icon: FileSignature, color: "text-slate-600", bg: "bg-slate-50" },
+    { title: "केंद्र ऑडिट", type: "Collection Center Audit", icon: Microscope, color: "text-emerald-600", bg: "bg-emerald-50" },
   ]
 
   const labelMap: Record<string, string> = {
@@ -66,8 +61,6 @@ export default function ReportsPage() {
     date: "तारीख",
     shift: "शिफ्ट",
     slipNo: "स्लिप नंबर",
-    repName: "प्रतिनिधी नाव",
-    repId: "प्रतिनिधी आयडी",
     idNumber: "अधिकारी आयडी",
     supervisorName: "सुपरवायझर नाव",
     supplierName: "नाव",
@@ -77,9 +70,6 @@ export default function ReportsPage() {
     ownerName: "मालकाचे नाव",
     mobile: "मोबाईल",
     address: "पत्ता",
-    visitPerson: "भेटलेली व्यक्ती",
-    visitPurpose: "भेटीचा उद्देश",
-    visitDiscussion: "झालेली चर्चा",
     routeName: "रूट नाव",
     vehicleNumber: "वाहन क्र.",
     vehicleNo: "वाहन क्र.",
@@ -301,6 +291,8 @@ export default function ReportsPage() {
     );
   };
 
+  if (!mounted) return <div className="p-20 text-center font-black uppercase text-[10px] opacity-50">लोड होत आहे...</div>
+
   return (
     <div className="compact-form-container pb-20 max-w-4xl mx-auto px-2 animate-in fade-in duration-700">
       <div className="flex flex-col sm:flex-row items-center justify-between border-b-2 border-primary/20 pb-4 mb-6 gap-4">
@@ -313,7 +305,7 @@ export default function ReportsPage() {
         </Button>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 mb-6">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-6">
         {reportTypes.map((rt) => (
           <button key={rt.title} onClick={() => setTypeFilter(typeFilter === rt.type ? null : rt.type)} className={`h-16 flex flex-col items-center justify-center p-1 rounded-xl border transition-all ${typeFilter === rt.type ? 'bg-primary text-white border-primary' : 'bg-white text-slate-900 border-slate-100 shadow-sm'}`}>
             <rt.icon className={`h-4 w-4 mb-1 ${typeFilter === rt.type ? 'text-white' : rt.color}`} />

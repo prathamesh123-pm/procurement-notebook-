@@ -104,7 +104,7 @@ function DailyReportForm() {
     const reportData = {
       type: reportType === "route-visit" ? "Route Visit" : reportType === "field-visit" ? "Field Visit" : "Daily Office Work",
       date: formData.reportDate,
-      reportDate: formData.reportDate,
+      reportDate: formData.date || formData.reportDate,
       generatedByUserId: user.uid,
       summary: formData.reportHeading,
       overallSummary: formData.reportHeading,
