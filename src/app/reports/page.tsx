@@ -448,7 +448,12 @@ export default function ReportsPage() {
           html, body { visibility: hidden !important; height: auto !important; width: 100% !important; margin: 0 !important; padding: 0 !important; background: white !important; }
           body * { visibility: hidden !important; }
           .printable-report, .printable-report * { visibility: visible !important; opacity: 1 !important; color: black !important; }
-          .printable-report { position: relative !important; display: flex !important; flex-direction: column !important; align-items: center !important; margin: 0 auto !important; width: 100% !important; max-width: 210mm !important; box-shadow: none !important; border: 1.5px solid black !important; background: white !important; z-index: 99999 !important; padding: 10mm !important; }
+          .printable-report { 
+            position: relative !important; display: flex !important; flex-direction: column !important; align-items: center !important; 
+            margin: 0 auto !important; width: 100% !important; max-width: 210mm !important; 
+            box-shadow: none !important; border: 1.5px solid black !important; background: white !important; 
+            z-index: 99999 !important; padding: 10mm !important; break-inside: avoid;
+          }
           .no-print, button, header, nav, footer, .sidebar, .sidebar-trigger, [role="dialog"] > button { display: none !important; }
           table { width: 100% !important; border-collapse: collapse !important; border: 1.5px solid black !important; }
           th, td { border: 1px solid black !important; padding: 6pt !important; font-size: 9pt !important; color: black !important; }

@@ -5,19 +5,18 @@ import { useState, useEffect, useMemo } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Supplier, EquipmentItem, SupplierType } from "@/lib/types"
 import { 
   Plus, Search, MapPin, User, 
-  Truck, Edit, ChevronRight, ArrowLeft, X, Laptop, Zap, Sun, Trash2, Milk, Box, Info, Wallet, ShieldCheck, ClipboardList, CheckCircle2, Printer
+  Truck, Edit, ChevronRight, ArrowLeft, X, Laptop, Zap, Sun, Trash2, Milk, Box, Wallet, ShieldCheck, ClipboardList, Printer
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
 import { useToast } from "@/hooks/use-toast"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking, useDoc } from "@/firebase"
 import { collection, doc } from "firebase/firestore"
 import { Textarea } from "@/components/ui/textarea"
@@ -370,84 +369,58 @@ export default function RouteDetailsPage() {
         </Card>
       </div>
 
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="max-w-[550px] p-0 overflow-hidden rounded-3xl border-none shadow-2xl bg-white">
+          <DialogHeader className="p-4 bg-primary text-white sticky top-0 z-10">
+            <DialogTitle className="text-base font-black uppercase tracking-widest">{dialogMode === 'add' ? 'नवीन सप्लायर' : 'सप्लायर माहिती अपडेट करा'}</DialogTitle>
+            <DialogDescription className="text-[9px] text-white/70 uppercase">सप्लायरचा सविस्तर तपशील भरा.</DialogDescription>
+          </DialogHeader>
+          <ScrollArea className="max-h-[80vh] p-6">
+            <div className="space-y-6 pb-10">
+              <div className="grid grid-cols-1 gap-4">
+                <div className="space-y-1.5">
+                  <Label className="text-[10px] font-black uppercase text-muted-foreground">सप्लायर प्रकार *</Label>
+                  <Select value={formData.supplierType} onValueChange={(val: SupplierType) => setFormData({...formData, supplierType: val})}>
+                    <SelectTrigger className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Gavali">गवळी (Gavali)</SelectItem>
+                      <SelectItem value="Gotha">गोठा (Gotha)</SelectItem>
+                      <SelectItem value="Center">उत्पादक केंद्र (Center)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-muted-foreground">नाव *</Label><Input value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl" /></div>
+                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-muted-foreground">सप्लायर आयडी (ID) *</Label><Input value={formData.supplierId} onChange={e => setFormData({...formData, supplierId: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl" /></div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-muted-foreground">मोबाईल</Label><Input value={formData.mobile} onChange={e => setFormData({...formData, mobile: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl" /></div>
+                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-muted-foreground">पत्ता</Label><Input value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl" /></div>
+                </div>
+                <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-muted-foreground">विशेष शेरा</Label><Textarea value={formData.additionalNotes} onChange={e => setFormData({...formData, additionalNotes: e.target.value})} className="h-20 text-[12px] bg-muted/20 border-none rounded-xl" /></div>
+              </div>
+            </div>
+          </ScrollArea>
+          <DialogFooter className="p-4 border-t bg-muted/5">
+            <Button onClick={handleSaveSupplier} className="w-full font-black uppercase text-[11px] h-12 rounded-2xl shadow-xl">जतन करा</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <style jsx global>{`
         @media print {
-          @page {
-            size: A4;
-            margin: 15mm;
-          }
-          
-          html, body {
-            visibility: hidden !important;
-            background: white !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            height: auto !important;
-            width: 100% !important;
-          }
-
+          @page { size: A4; margin: 10mm; }
+          html, body { visibility: hidden !important; background: white !important; }
           body * { visibility: hidden !important; }
-
-          .printable-report, .printable-report * {
-            visibility: visible !important;
+          .printable-report, .printable-report * { visibility: visible !important; opacity: 1 !important; }
+          .printable-report { 
+            position: absolute !important; left: 0 !important; top: 0 !important; 
+            width: 100% !important; max-width: 210mm !important; margin: 0 auto !important; 
+            border: 1.5px solid black !important; padding: 10mm !important; box-shadow: none !important;
           }
-
-          .printable-report {
-            position: relative !important;
-            display: block !important;
-            margin: 0 auto !important;
-            width: 100% !important;
-            max-width: 210mm !important;
-            transform: none !important;
-            box-shadow: none !important;
-            border: 2px solid black !important;
-            padding: 10mm !important;
-            background: white !important;
-          }
-
-          header, nav, aside, footer, .sidebar, .no-print, button, [role="dialog"], .sidebar-trigger {
-            display: none !important;
-          }
-
-          [data-radix-scroll-area-viewport] {
-            display: block !important;
-            height: auto !important;
-            overflow: visible !important;
-          }
-
-          .printable-report * {
-            color: black !important;
-          }
-          
-          .printable-report h3 {
-            font-size: 20pt !important;
-            font-weight: 900 !important;
-            text-align: center !important;
-            border-bottom: 3px solid black;
-            padding-bottom: 10pt;
-            margin-bottom: 15pt;
-          }
-
-          .printable-report h4 {
-            font-size: 13pt !important;
-            font-weight: 900 !important;
-            border-bottom: 2px solid black !important;
-            margin-bottom: 10px !important;
-            margin-top: 20pt !important;
-          }
-
-          table {
-            width: 100% !important;
-            border-collapse: collapse !important;
-            border: 2px solid black !important;
-            margin: 15pt 0 !important;
-          }
-
-          th, td {
-            border: 1px solid black !important;
-            padding: 10pt !important;
-            font-size: 11pt !important;
-          }
+          .no-print, button, [role="dialog"], .sidebar-trigger, header { display: none !important; }
+          table { width: 100% !important; border-collapse: collapse !important; border: 1.5px solid black !important; }
+          th, td { border: 1px solid black !important; padding: 6pt !important; font-size: 10pt !important; color: black !important; }
         }
       `}</style>
     </div>

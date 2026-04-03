@@ -3,10 +3,10 @@
 
 import { useState, useEffect, useMemo } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card } from "@/components/ui/card"
 import { 
-  Warehouse, Plus, Search, MapPin, Edit, Truck, X, ChevronRight, Trash2, 
-  Laptop, Zap, Sun, Box, CheckCircle2, Milk, ShieldCheck, Info, Wallet, User, ClipboardList, Printer, Battery, Droplets, Thermometer
+  Warehouse, Plus, Search, MapPin, Edit, X, ChevronRight, Trash2, 
+  Laptop, Zap, Sun, Box, Milk, ShieldCheck, Wallet, User, ClipboardList, Printer
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
@@ -397,84 +397,77 @@ export default function CentersPage() {
         )}
       </div>
 
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="max-w-[550px] p-0 overflow-hidden rounded-3xl border-none shadow-2xl bg-white">
+          <DialogHeader className="p-4 bg-primary text-white sticky top-0 z-10">
+            <DialogTitle className="text-base font-black uppercase tracking-widest">{dialogMode === 'add' ? 'नवीन केंद्र' : 'केंद्राची माहिती अद्ययावत करा'}</DialogTitle>
+            <DialogDescription className="text-[9px] text-white/70 uppercase">केंद्राचा सविस्तर तपशील भरा.</DialogDescription>
+          </DialogHeader>
+          <ScrollArea className="max-h-[80vh] p-6">
+            <div className="space-y-6 pb-10">
+              <div className="grid grid-cols-1 gap-4">
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-muted-foreground">केंद्राचे नाव *</Label><Input value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl" /></div>
+                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-muted-foreground">केंद्र आयडी (ID) *</Label><Input value={formData.supplierId} onChange={e => setFormData({...formData, supplierId: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl" /></div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-muted-foreground">ऑपरेटर नाव</Label><Input value={formData.operatorName} onChange={e => setFormData({...formData, operatorName: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl" /></div>
+                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-muted-foreground">मोबाईल</Label><Input value={formData.mobile} onChange={e => setFormData({...formData, mobile: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl" /></div>
+                </div>
+                <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-muted-foreground">पत्ता</Label><Input value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl" /></div>
+                
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-muted-foreground">FSSAI क्र.</Label><Input value={formData.fssaiNumber} onChange={e => setFormData({...formData, fssaiNumber: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl" /></div>
+                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-muted-foreground">मुदत संपण्याची तारीख</Label><Input type="date" value={formData.fssaiExpiry} onChange={e => setFormData({...formData, fssaiExpiry: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl" /></div>
+                </div>
+
+                <div className="space-y-3 pt-2">
+                  <h4 className="text-[10px] font-black uppercase text-primary border-b pb-1">दूध संकलन व तांत्रिक</h4>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-muted-foreground">काटा ब्रँड</Label><Input value={formData.scaleBrand} onChange={e => setFormData({...formData, scaleBrand: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl" /></div>
+                    <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-muted-foreground">मशीन ब्रँड</Label><Input value={formData.fatMachineBrand} onChange={e => setFormData({...formData, fatMachineBrand: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl" /></div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2">
+                    <div className="flex items-center space-x-2 bg-muted/10 p-2 rounded-lg cursor-pointer" onClick={() => setFormData({...formData, computerAvailable: !formData.computerAvailable})}>
+                      <Checkbox checked={formData.computerAvailable} /><Label className="text-[9px] font-black uppercase">POP</Label>
+                    </div>
+                    <div className="flex items-center space-x-2 bg-muted/10 p-2 rounded-lg cursor-pointer" onClick={() => setFormData({...formData, upsInverterAvailable: !formData.upsInverterAvailable})}>
+                      <Checkbox checked={formData.upsInverterAvailable} /><Label className="text-[9px] font-black uppercase">UPS</Label>
+                    </div>
+                    <div className="flex items-center space-x-2 bg-muted/10 p-2 rounded-lg cursor-pointer" onClick={() => setFormData({...formData, solarAvailable: !formData.solarAvailable})}>
+                      <Checkbox checked={formData.solarAvailable} /><Label className="text-[9px] font-black uppercase">सोलर</Label>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-muted-foreground">विशेष शेरा</Label><Textarea value={formData.additionalNotes} onChange={e => setFormData({...formData, additionalNotes: e.target.value})} className="h-20 text-[12px] bg-muted/20 border-none rounded-xl" /></div>
+              </div>
+            </div>
+          </ScrollArea>
+          <DialogFooter className="p-4 border-t bg-muted/5">
+            <Button onClick={handleSaveCenter} className="w-full font-black uppercase text-[11px] h-12 rounded-2xl shadow-xl">
+              माहिती जतन करा
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <style jsx global>{`
         @media print {
-          @page {
-            size: A4;
-            margin: 15mm;
-          }
-          
-          html, body {
-            visibility: hidden !important;
-            background: white !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            height: auto !important;
-            width: 100% !important;
-          }
-
+          @page { size: A4; margin: 15mm; }
+          html, body { visibility: hidden !important; background: white !important; margin: 0 !important; padding: 0 !important; }
           body * { visibility: hidden !important; }
-
-          .printable-report, .printable-report * {
-            visibility: visible !important;
+          .printable-report, .printable-report * { visibility: visible !important; opacity: 1 !important; }
+          .printable-report { 
+            position: absolute !important; left: 0 !important; top: 0 !important; 
+            width: 100% !important; max-width: 210mm !important; margin: 0 auto !important; 
+            border: 1.5px solid black !important; padding: 10mm !important; 
+            box-shadow: none !important; display: block !important;
           }
-
-          .printable-report {
-            position: relative !important;
-            display: block !important;
-            margin: 0 auto !important;
-            width: 100% !important;
-            max-width: 210mm !important;
-            transform: none !important;
-            box-shadow: none !important;
-            border: 2px solid black !important;
-            padding: 10mm !important;
-            background: white !important;
-          }
-
-          header, nav, aside, footer, .sidebar, .no-print, button, [role="dialog"], .sidebar-trigger {
-            display: none !important;
-          }
-
-          [data-radix-scroll-area-viewport] {
-            display: block !important;
-            height: auto !important;
-            overflow: visible !important;
-          }
-
-          .printable-report * {
-            color: black !important;
-          }
-          
-          .printable-report h3 {
-            font-size: 20pt !important;
-            font-weight: 900 !important;
-            text-align: center !important;
-            border-bottom: 3px solid black;
-            padding-bottom: 10pt;
-            margin-bottom: 15pt;
-          }
-
-          .printable-report h4 {
-            font-size: 13pt !important;
-            font-weight: 900 !important;
-            border-bottom: 2px solid black !important;
-            margin-bottom: 10px !important;
-            margin-top: 20pt !important;
-          }
-
-          table {
-            width: 100% !important;
-            border-collapse: collapse !important;
-            border: 2px solid black !important;
-            margin: 15pt 0 !important;
-          }
-
-          th, td {
-            border: 1px solid black !important;
-            padding: 10pt !important;
-            font-size: 11pt !important;
-          }
+          .no-print, button, [role="dialog"], .sidebar-trigger, header { display: none !important; }
+          .printable-report * { color: black !important; }
+          table { width: 100% !important; border-collapse: collapse !important; border: 1.5px solid black !important; }
+          th, td { border: 1px solid black !important; padding: 8pt !important; font-size: 10pt !important; }
         }
       `}</style>
     </div>
