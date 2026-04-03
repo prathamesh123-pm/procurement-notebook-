@@ -7,7 +7,7 @@ import { Card } from "@/components/ui/card"
 import { 
   Archive, Search, X, Printer, Trash2, FileEdit, Truck, 
   ShieldAlert, ClipboardCheck, Plus, MapPin, FileText,
-  Microscope, Milk, User, Calendar, ClipboardList, Briefcase, ListTodo
+  Microscope, Milk, User, Calendar, ClipboardList, Briefcase, ListTodo, LayoutGrid
 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
@@ -50,14 +50,13 @@ export default function ReportsPage() {
   useEffect(() => setMounted(true), [])
 
   const reportTypes = [
-    { title: "रूट व्हिजिट", type: "Route Visit", icon: Truck, color: "text-blue-600", bg: "bg-blue-50" },
-    { title: "ब्रेकडाऊन", type: "Transport Breakdown Report", icon: Truck, color: "text-rose-600", bg: "bg-rose-50" },
-    { title: "जप्ती व दंड", type: "Seizure & Penalty", icon: ShieldAlert, color: "text-amber-600", bg: "bg-amber-50" },
-    { title: "केंद्र ऑडिट", type: "Collection Center Audit", icon: Microscope, color: "text-emerald-600", bg: "bg-emerald-50" },
-    { title: "क्षेत्र भेट", type: "Field Visit", icon: MapPin, color: "text-indigo-600", bg: "bg-indigo-50" },
-    { title: "ऑफिस काम", type: "Daily Office Work", icon: Briefcase, color: "text-slate-600", bg: "bg-slate-50" },
-    { title: "दैनिक कामकाज", type: "Daily Work Report", icon: ClipboardList, color: "text-cyan-600", bg: "bg-cyan-50" },
-    { title: "कामकाज नोंद", type: "Daily Task", icon: ListTodo, color: "text-orange-600", bg: "bg-orange-50" },
+    { title: "रूट व्हिजिट", type: "Route Visit", icon: Truck, color: "text-blue-600" },
+    { title: "ब्रेकडाऊन", type: "Transport Breakdown Report", icon: Truck, color: "text-rose-600" },
+    { title: "जप्ती व दंड", type: "Seizure & Penalty", icon: ShieldAlert, color: "text-amber-600" },
+    { title: "क्षेत्र भेट", type: "Field Visit", icon: MapPin, color: "text-indigo-600" },
+    { title: "ऑफिस काम", type: "Daily Office Work", icon: Briefcase, color: "text-slate-600" },
+    { title: "दैनिक कामकाज", type: "Daily Work Report", icon: ClipboardList, color: "text-cyan-600" },
+    { title: "कामकाज नोंद", type: "Daily Task", icon: ListTodo, color: "text-orange-600" },
   ]
 
   const labelMap: Record<string, string> = {
@@ -93,16 +92,13 @@ export default function ReportsPage() {
     achievements: "आजची मोठी कामगिरी",
     problems: "महत्त्वाच्या समस्या",
     actionsTaken: "केलेली कार्यवाही",
-    totalLossAmount: "नुकसान (₹)",
+    totalLossAmount: "एकूण आर्थिक नुकसान",
     fineAmount: "दंड (₹)",
     seizureQty: "जप्त दूध (L)",
-    tempAfterChilling: "तापमान (°C)",
-    result: "निकाल",
     morningQty: "सकाळ (L)",
     eveningQty: "संध्याकाळ (L)",
     fat: "फॅट (%)",
-    snf: "SNF (%)",
-    remark: "कामकाज शेरा"
+    snf: "SNF (%)"
   };
 
   const filteredReports = useMemo(() => {
@@ -209,6 +205,61 @@ export default function ReportsPage() {
         <div className="w-full mt-auto pt-8 grid grid-cols-2 gap-12 text-center uppercase font-black text-[9pt] tracking-widest">
           <div className="border-t-[1.5px] border-black pt-2">अधिकारी स्वाक्षरी</div>
           <div className="border-t-[1.5px] border-black pt-2">सुपरवायझर: {d.supervisorName || '---'}</div>
+        </div>
+      </div>
+    );
+  };
+
+  const BreakdownLayout = ({ report }: { report: any }) => {
+    const d = report.fullData || {};
+    const entries = Object.entries(d).filter(([k, v]) => labelMap[k] && v && !['centerLosses', 'reportHeading', 'name', 'idNumber'].includes(k));
+    const losses = d.centerLosses || [];
+    
+    return (
+      <div className="bg-white font-sans text-slate-900 border-[1.5px] border-black rounded-sm w-full max-w-[210mm] mx-auto p-6 printable-report flex flex-col items-center">
+        <ReportHeader title={d.reportHeading || report.type} date={report.date} subName={d.name || profileName} subId={d.idNumber || profileId} />
+        
+        <div className="w-full border border-black rounded overflow-hidden mb-4">
+          <table className="w-full border-collapse">
+            <tbody>
+              {entries.map(([k, v]: any) => (
+                <tr key={k} className="border-b border-black last:border-0 text-[9pt] font-bold">
+                  <td className="p-2 bg-slate-50 uppercase text-[8pt] font-black border-r border-black w-1/3">{labelMap[k]}</td>
+                  <td className="p-2">{String(v)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {losses.length > 0 && (
+          <div className="w-full border border-black rounded overflow-hidden mb-4">
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="bg-black text-white font-black text-[7pt] uppercase text-center">
+                  <th className="p-1 border-r border-white/20 text-left">कोड/गवळी नाव</th>
+                  <th className="p-1 border-r border-white/20">प्रकार</th>
+                  <th className="p-1 border-r border-white/20">Ltr</th>
+                  <th className="p-1">रक्कम (₹)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {losses.map((loss: any, idx: number) => (
+                  <tr key={idx} className="font-bold text-[8pt] uppercase border-b border-black last:border-0 text-center">
+                    <td className="p-1 border-r border-black text-left">{loss.centerCode} {loss.centerName}</td>
+                    <td className="p-1 border-r border-black">{loss.milkType}</td>
+                    <td className="p-1 border-r border-black">{loss.qtyLiters}</td>
+                    <td className="p-1">{loss.lossAmount}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        <div className="w-full mt-auto pt-8 grid grid-cols-2 gap-12 text-center uppercase font-black text-[9pt] tracking-widest">
+          <div className="border-t-[1.5px] border-black pt-2">अधिकारी स्वाक्षरी</div>
+          <div className="border-t-[1.5px] border-black pt-2">सुपरवायझर स्वाक्षरी</div>
         </div>
       </div>
     );
@@ -321,7 +372,11 @@ export default function ReportsPage() {
           </DialogHeader>
           <ScrollArea className="max-h-[85vh] p-4 bg-slate-100">
             <div className="w-full flex flex-col items-center">
-              {selectedReport && (selectedReport.type === 'Route Visit' ? <RouteSlipLayout report={selectedReport} /> : <GenericLayout report={selectedReport} />)}
+              {selectedReport && (
+                selectedReport.type === 'Route Visit' ? <RouteSlipLayout report={selectedReport} /> :
+                selectedReport.type === 'Transport Breakdown Report' ? <BreakdownLayout report={selectedReport} /> :
+                <GenericLayout report={selectedReport} />
+              )}
             </div>
           </ScrollArea>
         </DialogContent>

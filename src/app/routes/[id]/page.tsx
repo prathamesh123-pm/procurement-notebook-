@@ -57,7 +57,7 @@ export default function RouteDetailsPage() {
     name: "", supplierId: "", address: "", mobile: "", operatorName: "",
     supplierType: "Gavali" as SupplierType, fssaiNumber: "", fssaiExpiry: "",
     scaleBrand: "", fatMachineBrand: "", chemicalsStock: "", batteryCondition: "",
-    paymentCycle: "7 Days", spaceOwnership: "Self" as 'Self' | 'Rented', hygieneGrade: "A",
+    paymentCycle: "10 Days", spaceOwnership: "Self" as 'Self' | 'Rented', hygieneGrade: "A",
     competition: "", cattleFeedBrand: "", iceBlocks: "0",
     cowQty: "0", cowFat: "0", cowSnf: "0", bufQty: "0", bufFat: "0", bufSnf: "0",
     milkCansCount: "0", computerAvailable: false, upsInverterAvailable: false, solarAvailable: false,
@@ -71,7 +71,7 @@ export default function RouteDetailsPage() {
     setFormData({
       name: "", supplierId: "", address: "", mobile: "", operatorName: "",
       supplierType: "Gavali", fssaiNumber: "", fssaiExpiry: "", scaleBrand: "", fatMachineBrand: "",
-      chemicalsStock: "", batteryCondition: "", paymentCycle: "7 Days", spaceOwnership: "Self",
+      chemicalsStock: "", batteryCondition: "", paymentCycle: "10 Days", spaceOwnership: "Self",
       hygieneGrade: "A", competition: "", cattleFeedBrand: "", iceBlocks: "0",
       cowQty: "0", cowFat: "0", cowSnf: "0", bufQty: "0", bufFat: "0", bufSnf: "0",
       milkCansCount: "0", computerAvailable: false, upsInverterAvailable: false, solarAvailable: false,
@@ -88,7 +88,7 @@ export default function RouteDetailsPage() {
       supplierType: s.supplierType || "Gavali", fssaiNumber: s.fssaiNumber || "",
       fssaiExpiry: s.fssaiExpiry || "", scaleBrand: s.scaleBrand || "",
       fatMachineBrand: s.fatMachineBrand || "", chemicalsStock: s.chemicalsStock || "",
-      batteryCondition: s.batteryCondition || "", paymentCycle: s.paymentCycle || "7 Days",
+      batteryCondition: s.batteryCondition || "", paymentCycle: s.paymentCycle || "10 Days",
       spaceOwnership: s.spaceOwnership || "Self", hygieneGrade: s.hygieneGrade || "A",
       competition: s.competition || "", cattleFeedBrand: s.cattleFeedBrand || "",
       iceBlocks: String(s.iceBlocks || 0),
@@ -189,7 +189,7 @@ export default function RouteDetailsPage() {
                 <div className="space-y-3">
                   <h4 className="text-[10px] font-black uppercase text-primary tracking-widest border-b pb-1 flex items-center gap-2"><Wallet className="h-3.5 w-3.5" /> ३) व्यावसायिक माहिती</h4>
                   <div className="space-y-1.5 text-[11px] font-bold">
-                    <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">सायकल</span><span>{selectedSupplier.paymentCycle || "7 Days"}</span></div>
+                    <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">सायकल</span><span>{selectedSupplier.paymentCycle || "10 Days"}</span></div>
                     <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">जागा</span><span>{selectedSupplier.spaceOwnership === 'Self' ? 'स्वतःची' : 'भाड्याची'}</span></div>
                     <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">ग्रेड</span><Badge className="h-4 px-1 text-[8px] border-none bg-emerald-500">{selectedSupplier.hygieneGrade || "A"}</Badge></div>
                   </div>

@@ -45,7 +45,7 @@ export default function CentersPage() {
     fssaiNumber: "", fssaiExpiry: "",
     cowQty: "0", cowFat: "0", cowSnf: "0",
     bufQty: "0", bufFat: "0", bufSnf: "0",
-    iceBlocks: "0", cattleFeedBrand: "", competition: "", paymentCycle: "7 Days",
+    iceBlocks: "0", cattleFeedBrand: "", competition: "", paymentCycle: "10 Days",
     spaceOwnership: "Self" as 'Self' | 'Rented', hygieneGrade: "A",
     additionalNotes: "",
     scaleBrand: "", fatMachineBrand: "", chemicalsStock: "",
@@ -64,7 +64,7 @@ export default function CentersPage() {
       name: "", supplierId: "", operatorName: "", mobile: "", address: "", routeId: "",
       fssaiNumber: "", fssaiExpiry: "", cowQty: "0", cowFat: "0", cowSnf: "0",
       bufQty: "0", bufFat: "0", bufSnf: "0", iceBlocks: "0", cattleFeedBrand: "",
-      competition: "", paymentCycle: "7 Days", spaceOwnership: "Self", hygieneGrade: "A",
+      competition: "", paymentCycle: "10 Days", spaceOwnership: "Self", hygieneGrade: "A",
       additionalNotes: "", scaleBrand: "", fatMachineBrand: "",
       chemicalsStock: "", batteryCondition: "", milkCansCount: "0",
       computerAvailable: false, upsInverterAvailable: false, solarAvailable: false,
@@ -90,7 +90,7 @@ export default function CentersPage() {
       iceBlocks: String(center.iceBlocks || 0),
       cattleFeedBrand: center.cattleFeedBrand || "",
       competition: center.competition || "",
-      paymentCycle: center.paymentCycle || "7 Days",
+      paymentCycle: center.paymentCycle || "10 Days",
       spaceOwnership: center.spaceOwnership || "Self",
       hygieneGrade: center.hygieneGrade || "A",
       additionalNotes: center.additionalNotes || center.additionalInfo || "",
@@ -115,21 +115,10 @@ export default function CentersPage() {
     }
 
     const centerData = {
-      name: formData.name, supplierId: formData.supplierId, operatorName: formData.operatorName,
-      mobile: formData.mobile, address: formData.address, village: formData.address, fssaiNumber: formData.fssaiNumber,
-      fssaiExpiry: formData.fssaiExpiry, routeId: formData.routeId, supplierType: 'Center' as SupplierType,
+      ...formData, supplierType: 'Center' as SupplierType,
       cowMilk: { quantity: Number(formData.cowQty), fat: Number(formData.cowFat), snf: Number(formData.cowSnf) },
       buffaloMilk: { quantity: Number(formData.bufQty), fat: Number(formData.bufFat), snf: Number(formData.bufSnf) },
-      iceBlocks: Number(formData.iceBlocks), cattleFeedBrand: formData.cattleFeedBrand,
-      competition: formData.competition, paymentCycle: formData.paymentCycle,
-      spaceOwnership: formData.spaceOwnership, hygieneGrade: formData.hygieneGrade,
-      additionalNotes: formData.additionalNotes, additionalInfo: formData.additionalNotes,
-      scaleBrand: formData.scaleBrand, fatMachineBrand: formData.fatMachineBrand,
-      chemicalsStock: formData.chemicalsStock, batteryCondition: formData.batteryCondition,
-      milkCansCount: Number(formData.milkCansCount), computerAvailable: formData.computerAvailable,
-      upsInverterAvailable: formData.upsInverterAvailable, solarAvailable: formData.solarAvailable,
-      adulterationKitInfo: formData.adulterationKitInfo,
-      equipment: formData.equipment,
+      iceBlocks: Number(formData.iceBlocks), milkCansCount: Number(formData.milkCansCount),
       updatedAt: new Date().toISOString()
     }
 
@@ -157,10 +146,8 @@ export default function CentersPage() {
 
   const filteredCenters = useMemo(() => {
     return (centers || []).filter(center => {
-      const name = center.name?.toLowerCase() || ""
-      const code = center.supplierId?.toString().toLowerCase() || ""
       const q = searchQuery.toLowerCase()
-      return name.includes(q) || code.includes(q)
+      return center.name?.toLowerCase().includes(q) || center.supplierId?.toString().includes(q)
     })
   }, [centers, searchQuery])
 
@@ -173,9 +160,9 @@ export default function CentersPage() {
           <h2 className="text-xl font-black text-foreground flex items-center justify-center sm:justify-start gap-2 uppercase tracking-tight">
             <Warehouse className="h-6 w-6 text-primary" /> संकलन केंद्र (CENTERS)
           </h2>
-          <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Profile & Audit View</p>
+          <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Profile & Inventory</p>
         </div>
-        <Button type="button" onClick={handleOpenAdd} size="sm" className="w-full sm:w-auto font-black h-10 text-[10px] rounded-xl px-6 uppercase shadow-lg shadow-primary/20 transition-all active:scale-95">
+        <Button type="button" onClick={handleOpenAdd} size="sm" className="w-full sm:w-auto font-black h-10 text-[10px] rounded-xl px-6 uppercase shadow-lg shadow-primary/20">
           <Plus className="h-4 w-4 mr-1.5" /> नवीन केंद्र
         </Button>
       </div>
@@ -197,7 +184,7 @@ export default function CentersPage() {
                     <div className="flex items-center gap-3 mt-1">
                       <Badge variant="secondary" className="text-[8px] font-black h-4 px-1.5 rounded-md bg-muted/50 border-none">{center.supplierId}</Badge>
                       <span className="text-[9px] text-muted-foreground truncate flex items-center gap-1 font-bold">
-                        <MapPin className="h-3 w-3" /> {center.address || center.village || "पत्ता नाही"}
+                        <MapPin className="h-3 w-3" /> {center.address || "पत्ता नाही"}
                       </span>
                     </div>
                   </div>
@@ -233,7 +220,7 @@ export default function CentersPage() {
                       <div><p className="text-[8px] text-muted-foreground uppercase font-black print:text-slate-500">कोड</p><p className="text-[10px] font-black uppercase print:text-[10pt]">{selectedCenter.supplierId}</p></div>
                       <div><p className="text-[8px] text-muted-foreground uppercase font-black print:text-slate-500">ऑपरेटर</p><p className="text-[10px] font-black uppercase truncate print:text-[10pt]">{selectedCenter.operatorName || "-"}</p></div>
                       <div><p className="text-[8px] text-muted-foreground uppercase font-black print:text-slate-500">मोबाईल</p><p className="text-[10px] font-black print:text-[10pt]">{selectedCenter.mobile || "-"}</p></div>
-                      <div className="col-span-2"><p className="text-[8px] text-muted-foreground uppercase font-black print:text-slate-500">पत्ता</p><p className="text-[10px] font-black uppercase truncate print:text-[10pt]">{selectedCenter.address || selectedCenter.village || "-"}</p></div>
+                      <div className="col-span-2"><p className="text-[8px] text-muted-foreground uppercase font-black print:text-slate-500">पत्ता</p><p className="text-[10px] font-black uppercase truncate print:text-[10pt]">{selectedCenter.address || "-"}</p></div>
                     </div>
                   </div>
                   <div className="bg-muted/20 p-3 rounded-2xl border border-muted-foreground/5 space-y-1.5 print:bg-white print:border-black print:border-2">
@@ -255,7 +242,7 @@ export default function CentersPage() {
                       <Wallet className="h-3.5 w-3.5 print:hidden" /> ३) व्यावसायिक माहिती
                     </h4>
                     <div className="grid grid-cols-2 gap-x-2 gap-y-1">
-                      <div><p className="text-[8px] text-muted-foreground uppercase font-black print:text-slate-500">पेमेंट सायकल</p><p className="text-[10px] font-black print:text-[10pt]">{selectedCenter.paymentCycle || "7 Days"}</p></div>
+                      <div><p className="text-[8px] text-muted-foreground uppercase font-black print:text-slate-500">पेमेंट सायकल</p><p className="text-[10px] font-black print:text-[10pt]">{selectedCenter.paymentCycle || "10 Days"}</p></div>
                       <div><p className="text-[8px] text-muted-foreground uppercase font-black print:text-slate-500">जागा</p><p className="text-[10px] font-black print:text-[10pt]">{selectedCenter.spaceOwnership === 'Self' ? 'स्वतःची' : 'भाड्याची'}</p></div>
                       <div><p className="text-[8px] text-muted-foreground uppercase font-black print:text-slate-500">स्वच्छता ग्रेड</p>
                         <Badge className={`h-4 px-1.5 text-[8px] font-black border-none text-white ${selectedCenter.hygieneGrade === 'A' ? 'bg-emerald-500' : 'bg-rose-500'} print:bg-slate-200 print:text-black`}>
