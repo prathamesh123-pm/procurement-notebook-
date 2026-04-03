@@ -68,7 +68,7 @@ export default function ReportsPage() {
     repId: "प्रतिनिधी आयडी",
     idNumber: "अधिकारी आयडी",
     supervisorName: "सुपरवायझर नाव",
-    supplierName: "पुरवठादार नाव",
+    supplierName: "नाव",
     supplierId: "कोड (ID)",
     centerName: "केंद्राचे नाव",
     centerCode: "केंद्राचा कोड",
@@ -127,7 +127,8 @@ export default function ReportsPage() {
     facility: "सुविधा",
     totalMilk: "एकूण दूध (L)",
     paymentCycle: "पेमेंट सायकल",
-    otherInfo: "इतर माहिती"
+    otherInfo: "इतर माहिती",
+    remark: "सविस्तर शेरा"
   };
 
   const orderedKeys = [
@@ -135,7 +136,7 @@ export default function ReportsPage() {
     "supplierName", "centerName", "supplierId", "centerCode", "ownerName", "mobile", "address", "district", "taluka",
     "visitPerson", "visitPurpose", "visitDiscussion", "travelVehicle", 
     "officeTaskSubject", "officeTaskDetails", "pendingOfficeWork",
-    "achievements", "problems", "actionsTaken", "actionTaken", "supervisorName",
+    "achievements", "problems", "actionsTaken", "actionTaken", "supervisorName", "remark",
     "vehicleNumber", "vehicleNo", "driverName", "routeName", "route", "slipNo",
     "breakdownTime", "location", "severity", "detailedReason", "estimatedRepairTime", "estimatedRepairCost", 
     "recoveryVehicleNo", "recoveryArrivalTime", "milkHot", "milkSour", 
@@ -185,7 +186,7 @@ export default function ReportsPage() {
     const totalIceUsed = logs.reduce((sum: number, l: any) => sum + (Number(l.iceUsed) || 0), 0);
 
     return (
-      <div className="bg-white font-sans text-slate-900 border-[1.5px] border-slate-900 rounded-sm shadow-none w-full max-w-[210mm] mx-auto print:border-black printable-report p-4 sm:p-6 mb-4 overflow-visible flex flex-col items-center">
+      <div className="bg-white font-sans text-slate-900 border-[1.5px] border-slate-900 rounded-sm shadow-none w-full max-w-[210mm] mx-auto print:border-black printable-report p-4 sm:p-6 mb-4 overflow-visible flex flex-col items-center break-inside-avoid">
         <div className="w-full flex flex-col sm:flex-row justify-between items-center border-b-[1.5px] border-slate-900 pb-2 mb-3 print:border-black gap-2 text-center sm:text-left">
           <div className="space-y-0.5">
             <h1 className="font-black uppercase text-[12pt] sm:text-[16pt] leading-tight tracking-tight">{d.reportHeading || report.type}</h1>
@@ -431,7 +432,7 @@ export default function ReportsPage() {
                   {selectedReport.type === 'Route Visit' ? (
                     <RouteSlipLayout report={selectedReport} />
                   ) : (selectedReport.fullData?.isWordDoc ? (
-                    <div className="prose prose-sm max-w-none px-4 sm:px-12 py-6 sm:py-10 bg-white border-[1.5px] border-slate-900 rounded-sm shadow-2xl min-h-[600px] print:shadow-none print:border-black printable-report w-full mx-auto" dangerouslySetInnerHTML={{ __html: selectedReport.fullData.content }} />
+                    <div className="prose prose-sm max-w-none px-4 sm:px-12 py-6 sm:py-10 bg-white border-[1.5px] border-slate-900 rounded-sm shadow-2xl min-h-[600px] print:shadow-none print:border-black printable-report w-full mx-auto break-inside-avoid" dangerouslySetInnerHTML={{ __html: selectedReport.fullData.content }} />
                   ) : (
                     <GenericTableLayout report={selectedReport} />
                   ))}
@@ -450,11 +451,11 @@ export default function ReportsPage() {
           .printable-report, .printable-report * { visibility: visible !important; opacity: 1 !important; color: black !important; }
           .printable-report { 
             position: relative !important; display: flex !important; flex-direction: column !important; align-items: center !important; 
-            margin: 0 auto !important; width: 100% !important; max-width: 210mm !important; 
+            margin: 0 auto 10mm auto !important; width: 100% !important; max-width: 210mm !important; 
             box-shadow: none !important; border: 1.5px solid black !important; background: white !important; 
             z-index: 99999 !important; padding: 10mm !important; break-inside: avoid;
           }
-          .no-print, button, header, nav, footer, .sidebar, .sidebar-trigger, [role="dialog"] > button { display: none !important; }
+          .no-print, button, header, nav, footer, .sidebar, .sidebar-trigger, [role="dialog"] > button, .h-14, .h-6 { display: none !important; }
           table { width: 100% !important; border-collapse: collapse !important; border: 1.5px solid black !important; }
           th, td { border: 1px solid black !important; padding: 6pt !important; font-size: 9pt !important; color: black !important; }
           h1 { font-size: 16pt !important; text-align: center !important; margin-bottom: 5pt !important; }
