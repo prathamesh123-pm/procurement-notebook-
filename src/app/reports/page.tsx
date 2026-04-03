@@ -7,7 +7,7 @@ import { Card } from "@/components/ui/card"
 import { 
   Archive, Search, X, Printer, Trash2, FileEdit, Truck, 
   ShieldAlert, ClipboardCheck, Plus, MapPin, FileText,
-  Microscope, Milk, User, Calendar, ClipboardList, Briefcase, ListTodo, LayoutGrid
+  Microscope, Milk, User, Calendar, ClipboardList, Briefcase, ListTodo, LayoutGrid, FileCheck, FileSignature
 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
@@ -49,14 +49,16 @@ export default function ReportsPage() {
 
   useEffect(() => setMounted(true), [])
 
+  // 8 Filter Options as per user request
   const reportTypes = [
     { title: "रूट व्हिजिट", type: "Route Visit", icon: Truck, color: "text-blue-600" },
+    { title: "क्षेत्र भेट", type: "Field Visit", icon: MapPin, color: "text-emerald-600" },
+    { title: "ऑफिस काम", type: "Daily Office Work", icon: Briefcase, color: "text-purple-600" },
     { title: "ब्रेकडाऊन", type: "Transport Breakdown Report", icon: Truck, color: "text-rose-600" },
-    { title: "जप्ती व दंड", type: "Seizure & Penalty", icon: ShieldAlert, color: "text-amber-600" },
-    { title: "क्षेत्र भेट", type: "Field Visit", icon: MapPin, color: "text-indigo-600" },
-    { title: "ऑफिस काम", type: "Daily Office Work", icon: Briefcase, color: "text-slate-600" },
-    { title: "दैनिक कामकाज", type: "Daily Work Report", icon: ClipboardList, color: "text-cyan-600" },
     { title: "कामकाज नोंद", type: "Daily Task", icon: ListTodo, color: "text-orange-600" },
+    { title: "जप्ती व दंड", type: "Seizure & Penalty", icon: ShieldAlert, color: "text-amber-600" },
+    { title: "दैनिक कामकाज", type: "Daily Work Report", icon: ClipboardCheck, color: "text-indigo-600" },
+    { title: "वर्ड फॉर्म", type: "Official Document", icon: FileSignature, color: "text-slate-600" },
   ]
 
   const labelMap: Record<string, string> = {
@@ -303,33 +305,33 @@ export default function ReportsPage() {
           <h2 className="text-xl font-black text-slate-900 flex items-center justify-center sm:justify-start gap-2 uppercase tracking-tight">
             <Archive className="h-6 w-6 text-primary" /> अहवाल संग्रहालय
           </h2>
-          <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Archive Management</p>
+          <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">ARCHIVE & RECORD MANAGEMENT</p>
         </div>
         <Button asChild className="h-10 px-6 font-black uppercase rounded-2xl shadow-xl shadow-primary/20 w-full sm:w-auto">
           <Link href="/daily-report"><Plus className="h-4 w-4 mr-2" /> नवीन अहवाल</Link>
         </Button>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-6">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
         {reportTypes.map((rt) => (
           <button 
             key={rt.title} 
             onClick={() => setTypeFilter(typeFilter === rt.type ? null : rt.type)}
-            className={`h-16 flex flex-col items-center justify-center rounded-xl border transition-all ${typeFilter === rt.type ? 'bg-primary text-white border-primary shadow-lg scale-95' : 'bg-white text-slate-900 border-slate-100 shadow-sm hover:border-primary/20'}`}
+            className={`h-24 flex flex-col items-center justify-center rounded-2xl border transition-all ${typeFilter === rt.type ? 'bg-primary text-white border-primary shadow-xl scale-[0.98]' : 'bg-white text-slate-900 border-slate-100 shadow-sm hover:border-primary/20 hover:shadow-md'}`}
           >
-            <rt.icon className={`h-4 w-4 mb-1 ${typeFilter === rt.type ? 'text-white' : rt.color}`} />
-            <span className="text-[8px] font-black text-center uppercase tracking-tighter">{rt.title}</span>
+            <rt.icon className={`h-6 w-6 mb-2 ${typeFilter === rt.type ? 'text-white' : rt.color}`} />
+            <span className="text-[10px] font-black text-center uppercase tracking-tighter px-1">{rt.title}</span>
           </button>
         ))}
       </div>
 
-      <Card className="p-3 mb-6 bg-white border-none shadow-2xl rounded-3xl">
-        <div className="flex flex-wrap gap-2">
-          <div className="relative flex-1 min-w-[180px]">
+      <Card className="p-4 mb-6 bg-white border-none shadow-2xl rounded-3xl">
+        <div className="flex flex-wrap gap-3">
+          <div className="relative flex-1 min-w-[200px]">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-            <Input className="h-11 pl-10 text-[12px] bg-slate-50 border-none rounded-2xl font-bold shadow-inner" placeholder="अहवाल शोधा..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
+            <Input className="h-12 pl-10 text-[13px] bg-slate-50 border-none rounded-2xl font-bold shadow-inner" placeholder="नाव किंवा सारांश शोधा..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
           </div>
-          <Input type="date" className="h-11 text-[11px] bg-slate-50 border-none rounded-2xl font-black w-full sm:w-36 shadow-inner" value={filterDate} onChange={e => setFilterDate(e.target.value)} />
+          <Input type="date" className="h-12 text-[12px] bg-slate-50 border-none rounded-2xl font-black w-full sm:w-40 shadow-inner" value={filterDate} onChange={e => setFilterDate(e.target.value)} />
         </div>
       </Card>
 
@@ -338,19 +340,24 @@ export default function ReportsPage() {
           <thead>
             <tr className="bg-slate-50 border-b border-slate-100">
               <th className="p-4 text-[10px] font-black uppercase text-slate-400 tracking-widest">तारीख</th>
-              <th className="p-4 text-[10px] font-black uppercase text-slate-400 tracking-widest">अहवाल प्रकार</th>
-              <th className="p-4 text-right"></th>
+              <th className="p-4 text-[10px] font-black uppercase text-slate-400 tracking-widest">अहवाल शीर्षक व सारांश</th>
+              <th className="p-4 text-right text-[10px] font-black uppercase text-slate-400 tracking-widest">क्रिया</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-50">
             {filteredReports.map((report) => (
               <tr key={report.id} className="hover:bg-primary/[0.02] cursor-pointer group" onClick={() => { setSelectedReport(report); setIsViewOpen(true); }}>
                 <td className="p-4 font-black text-[11px] text-slate-500 uppercase">{report.date}</td>
-                <td className="p-4 font-black text-[11px] text-primary uppercase group-hover:translate-x-1 transition-transform">{report.fullData?.reportHeading || report.type}</td>
+                <td className="p-4">
+                  <div className="flex flex-col">
+                    <span className="font-black text-[12px] text-primary uppercase group-hover:translate-x-1 transition-transform">{report.fullData?.reportHeading || report.type}</span>
+                    <span className="text-[10px] text-slate-400 italic truncate max-w-[250px]">{report.summary}</span>
+                  </div>
+                </td>
                 <td className="p-4 text-right">
-                  <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Button variant="ghost" size="icon" className="h-8 w-8 text-primary" onClick={(e) => handleEditReport(report, e)}><FileEdit className="h-4 w-4" /></Button>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 text-rose-500" onClick={(e) => handleDeleteReport(report.id, e)}><Trash2 className="h-4 w-4" /></Button>
+                  <div className="flex justify-end gap-2">
+                    <Button variant="ghost" size="icon" className="h-9 w-9 text-primary hover:bg-primary/10 rounded-xl" onClick={(e) => handleEditReport(report, e)}><FileEdit className="h-4 w-4" /></Button>
+                    <Button variant="ghost" size="icon" className="h-9 w-9 text-rose-500 hover:bg-rose-50 rounded-xl" onClick={(e) => handleDeleteReport(report.id, e)}><Trash2 className="h-4 w-4" /></Button>
                   </div>
                 </td>
               </tr>
