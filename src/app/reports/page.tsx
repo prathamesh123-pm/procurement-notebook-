@@ -189,28 +189,35 @@ export default function ReportsPage() {
         <div className="w-full border border-black rounded overflow-hidden mb-4">
           <table className="w-full border-collapse">
             <thead>
-              <tr className="bg-black text-white font-black text-[8pt] uppercase tracking-wider">
-                <th className="p-1.5 text-center w-8 border-r border-white/20">क्र.</th>
-                <th className="p-1.5 text-left border-r border-white/20">केंद्र व कोड</th>
-                <th className="p-1.5 text-center border-r border-white/20">वेळ</th>
-                <th className="p-1.5 text-center border-r border-white/20">कॅन (E/F)</th>
-                <th className="p-1.5 text-center">बर्फ वापर</th>
+              <tr className="bg-black text-white font-black text-[7pt] uppercase tracking-wider">
+                <th className="p-1 border-r border-white/20 w-6">क्र.</th>
+                <th className="p-1 border-r border-white/20 text-left">केंद्राचे नाव</th>
+                <th className="p-1 border-r border-white/20 w-10">कोड</th>
+                <th className="p-1 border-r border-white/20 w-12">IN वेळ</th>
+                <th className="p-1 border-r border-white/20 w-12">OUT वेळ</th>
+                <th className="p-1 border-r border-white/20 w-8">E</th>
+                <th className="p-1 border-r border-white/20 w-8">F</th>
+                <th className="p-1 w-12">बर्फ वापर</th>
               </tr>
             </thead>
             <tbody>
               {logs.map((log: any, idx: number) => (
-                <tr key={idx} className="font-bold text-[8pt] uppercase border-b border-black last:border-0">
-                  <td className="p-1.5 text-center border-r border-black bg-slate-50">{idx + 1}</td>
-                  <td className="p-1.5 border-r border-black font-black text-left">{log.supplierName || '---'} ({log.centerCode || '---'})</td>
-                  <td className="p-1.5 text-center border-r border-black">{log.arrivalTime || '--'}-{log.departureTime || '--'}</td>
-                  <td className="p-1.5 text-center border-r border-black">{log.emptyCans || '0'}/{log.fullCans || '0'}</td>
-                  <td className="p-1.5 text-center">{log.iceUsed || '0'}</td>
+                <tr key={idx} className="font-bold text-[7.5pt] uppercase border-b border-black last:border-0">
+                  <td className="p-1 text-center border-r border-black bg-slate-50">{idx + 1}</td>
+                  <td className="p-1 border-r border-black text-left truncate max-w-[100px]">{log.supplierName || '---'}</td>
+                  <td className="p-1 border-r border-black text-center">{log.centerCode || '---'}</td>
+                  <td className="p-1 border-r border-black text-center">{log.arrivalTime || '--:--'}</td>
+                  <td className="p-1 border-r border-black text-center">{log.departureTime || '--:--'}</td>
+                  <td className="p-1 border-r border-black text-center">{log.emptyCans || '0'}</td>
+                  <td className="p-1 border-r border-black text-center">{log.fullCans || '0'}</td>
+                  <td className="p-1 text-center">{log.iceUsed || '0'}</td>
                 </tr>
               ))}
-              <tr className="bg-slate-100 font-black text-[9pt] uppercase border-t-[1.5px] border-black">
-                <td className="p-1.5 text-right border-r border-black" colSpan={3}>एकूण सारांश:</td>
-                <td className="p-1.5 text-center border-r border-black">{totalEmpty}/{totalFull}</td>
-                <td className="p-1.5 text-center">{totalIce}</td>
+              <tr className="bg-slate-100 font-black text-[8pt] uppercase border-t-[1.5px] border-black">
+                <td className="p-1 text-right border-r border-black" colSpan={5}>एकूण सारांश:</td>
+                <td className="p-1 text-center border-r border-black">{totalEmpty}</td>
+                <td className="p-1 text-center border-r border-black">{totalFull}</td>
+                <td className="p-1 text-center">{totalIce}</td>
               </tr>
             </tbody>
           </table>
