@@ -57,7 +57,7 @@ export default function ReportsPage() {
     { title: "कामकाज नोंद", type: "Daily Task", icon: ListTodo, color: "text-orange-600" },
     { title: "जप्ती व दंड", type: "Seizure & Penalty", icon: ShieldAlert, color: "text-amber-600" },
     { title: "दैनिक कामकाज", type: "Daily Work Report", icon: ClipboardCheck, color: "text-indigo-600" },
-    { title: "ऑडिट", type: "Collection Center Audit", icon: Microscope, color: "text-cyan-600" },
+    { title: "वर्ड फॉर्म", type: "Official Document", icon: FileSignature, color: "text-slate-600" },
   ]
 
   const labelMap: Record<string, string> = {
@@ -124,7 +124,9 @@ export default function ReportsPage() {
     actionTaken: "केलेली कार्यवाही",
     remark: "विशेष शेरा",
     otherInfo: "इतर माहिती",
-    notes: "नोंद"
+    notes: "नोंद",
+    title: "डॉक्युमेंट शीर्षक",
+    totalLossAmount: "एकूण नुकसान (₹)"
   };
 
   const fieldSequence = [
@@ -191,7 +193,7 @@ export default function ReportsPage() {
     const d = report.fullData || {};
     const logs = d.routeVisitLogs || [];
     return (
-      <div className="bg-white font-sans text-slate-900 border-[1.5px] border-black rounded-sm w-full max-w-[210mm] mx-auto p-6 printable-report flex flex-col items-center shadow-none">
+      <div className="bg-white font-sans text-slate-900 border-[1.5px] border-black rounded-sm w-full max-w-[210mm] mx-auto p-6 printable-report flex flex-col items-center shadow-none min-h-[297mm]">
         <ReportHeader title={d.reportHeading || report.type} date={report.date} subName={d.name || profileName} subId={d.idNumber || profileId} />
         <div className="w-full grid grid-cols-2 gap-2 mb-4 font-black text-[9pt] uppercase">
           <div className="p-2 border border-black rounded bg-slate-50 text-left">रूट: {d.routeName || '---'} | वाहन: {d.vehicleNumber || '---'}</div>
@@ -245,6 +247,24 @@ export default function ReportsPage() {
 
   const GenericLayout = ({ report }: { report: any }) => {
     const d = report.fullData || {};
+    
+    // Word Document Handling
+    if (report.type === 'Official Document') {
+      return (
+        <div className="bg-white font-sans text-slate-900 border-[1.5px] border-black rounded-sm w-full max-w-[210mm] mx-auto p-10 printable-report flex flex-col items-center shadow-none min-h-[297mm]">
+          <ReportHeader title={d.title || report.type} date={report.date} subName={d.name || profileName} subId={d.idNumber || profileId} />
+          <div 
+            className="w-full prose prose-sm max-w-none text-left mt-4"
+            dangerouslySetInnerHTML={{ __html: d.content || "" }} 
+          />
+          <div className="w-full mt-auto pt-8 grid grid-cols-2 gap-12 text-center uppercase font-black text-[9pt] tracking-widest">
+            <div className="border-t-[1.5px] border-black pt-2">अधिकारी स्वाक्षरी</div>
+            <div className="border-t-[1.5px] border-black pt-2">दिनांक: {report.date}</div>
+          </div>
+        </div>
+      );
+    }
+
     const orderedEntries = fieldSequence
       .filter(key => d[key] !== undefined && d[key] !== "" && labelMap[key])
       .map(key => [key, d[key]]);
@@ -254,7 +274,7 @@ export default function ReportsPage() {
     const remarkPoints = d.remarkPoints || [];
 
     return (
-      <div className="bg-white font-sans text-slate-900 border-[1.5px] border-black rounded-sm w-full max-w-[210mm] mx-auto p-6 printable-report flex flex-col items-center shadow-none">
+      <div className="bg-white font-sans text-slate-900 border-[1.5px] border-black rounded-sm w-full max-w-[210mm] mx-auto p-6 printable-report flex flex-col items-center shadow-none min-h-[297mm]">
         <ReportHeader title={d.reportHeading || report.type} date={report.date} subName={d.name || d.repName || profileName} subId={d.idNumber || d.repId || profileId} />
         
         <div className="w-full border border-black rounded overflow-hidden mb-4">
@@ -369,7 +389,7 @@ export default function ReportsPage() {
                 <td className="p-4 font-black text-[11px] text-slate-500 uppercase">{report.date}</td>
                 <td className="p-4">
                   <div className="flex flex-col">
-                    <span className="font-black text-[12px] text-primary uppercase group-hover:translate-x-1 transition-transform">{report.fullData?.reportHeading || report.type}</span>
+                    <span className="font-black text-[12px] text-primary uppercase group-hover:translate-x-1 transition-transform">{report.fullData?.reportHeading || report.fullData?.title || report.type}</span>
                     <span className="text-[10px] text-slate-400 italic truncate max-w-[250px]">{report.summary}</span>
                   </div>
                 </td>
@@ -389,7 +409,7 @@ export default function ReportsPage() {
         <DialogContent className="max-w-[850px] w-[95vw] p-0 rounded-3xl overflow-hidden border-none shadow-2xl bg-slate-100">
           <DialogHeader className="p-4 bg-white border-b flex flex-row items-center justify-between no-print">
             <DialogTitle className="text-[11px] font-black uppercase tracking-widest flex items-center gap-2">
-              <FileText className="h-4 w-4 text-primary" /> अहवाल प्रीव्ह्यू
+              <FileText className="h-4 w-4 text-primary" /> अहवाल प्रीव्ह्यू (PREVIEW)
             </DialogTitle>
             <div className="flex gap-2">
               <Button size="sm" onClick={() => window.print()} className="h-9 px-4 font-black uppercase rounded-xl bg-black text-white hover:bg-black/90"><Printer className="h-3.5 w-3.5 mr-1.5" /> प्रिंट अहवाल</Button>
@@ -415,7 +435,7 @@ export default function ReportsPage() {
           .printable-report { 
             position: absolute !important; left: 0 !important; right: 0 !important; top: 0 !important;
             margin: 0 auto !important; width: 100% !important; max-width: 210mm !important; 
-            border: 1.5px solid black !important; padding: 8mm !important; display: block !important;
+            border: 1.5px solid black !important; padding: 10mm !important; display: block !important;
             box-shadow: none !important;
           }
           .no-print, button, header, nav, footer, .sidebar, [role="dialog"] [class*="Close"] { display: none !important; }
