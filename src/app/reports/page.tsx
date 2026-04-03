@@ -60,15 +60,6 @@ export default function ReportsPage() {
     { title: "ऑडिट", type: "Collection Center Audit", icon: Microscope, color: "text-cyan-600" },
   ]
 
-  // Order of fields for generic display
-  const fieldSequence = [
-    "centerName", "centerCode", "ownerName", "supplierName", "supplierId", "mobile", "address",
-    "routeName", "vehicleNo", "vehicleNumber", "driverName", "breakdownTime", "location", "reason", "severity",
-    "morningQty", "eveningQty", "fat", "snf", "result", "licenseStatus", "fineAmount", "seizureQty",
-    "visitPerson", "visitPurpose", "visitDiscussion", "officeTaskSubject", "officeTaskDetails",
-    "achievements", "problems", "actionsTaken", "summary", "actionTaken", "supervisorName"
-  ];
-
   const labelMap: Record<string, string> = {
     reportHeading: "अहवाल शीर्षक",
     date: "तारीख",
@@ -115,6 +106,14 @@ export default function ReportsPage() {
     licenseStatus: "परवाना स्थिती",
     summary: "कामाचा सारांश"
   };
+
+  const fieldSequence = [
+    "centerName", "centerCode", "ownerName", "supplierName", "supplierId", "mobile", "address",
+    "routeName", "vehicleNo", "vehicleNumber", "driverName", "breakdownTime", "location", "reason", "severity",
+    "morningQty", "eveningQty", "fat", "snf", "result", "licenseStatus", "fineAmount", "seizureQty",
+    "visitPerson", "visitPurpose", "visitDiscussion", "officeTaskSubject", "officeTaskDetails",
+    "achievements", "problems", "actionsTaken", "summary", "actionTaken", "supervisorName"
+  ];
 
   const filteredReports = useMemo(() => {
     const list = firestoreReports || []
@@ -223,7 +222,6 @@ export default function ReportsPage() {
 
   const GenericLayout = ({ report }: { report: any }) => {
     const d = report.fullData || {};
-    // Extract entries based on the explicit fieldSequence to ensure order
     const orderedEntries = fieldSequence
       .filter(key => d[key] !== undefined && d[key] !== "" && labelMap[key])
       .map(key => [key, d[key]]);

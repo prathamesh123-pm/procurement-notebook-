@@ -159,7 +159,15 @@ export default function RouteDetailsPage() {
 
         <Card className="lg:col-span-8 border shadow-2xl bg-white rounded-3xl overflow-hidden min-h-[500px]">
           {selectedSupplier ? (
-            <div className="p-6 space-y-6 animate-in slide-in-from-right-2 duration-300 printable-report flex flex-col items-center">
+            <div className="p-6 space-y-6 animate-in slide-in-from-right-2 duration-300 printable-report flex flex-col items-center shadow-none">
+              <div className="w-full flex items-center justify-between no-print mb-4 border-b pb-2">
+                <Badge className="bg-primary/10 text-primary border-none uppercase text-[10px] font-black">{selectedSupplier.supplierType} PROFILE</Badge>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm" className="h-8 rounded-xl font-black uppercase text-[9px]" onClick={() => window.print()}><Printer className="h-3.5 w-3.5 mr-1" /> प्रिंट</Button>
+                  <Button variant="outline" size="sm" className="h-8 rounded-xl font-black uppercase text-[9px]" onClick={() => openEditDialog(selectedSupplier)}><Edit className="h-3.5 w-3.5 mr-1" /> बदल करा</Button>
+                </div>
+              </div>
+
               <div className="w-full border-b-2 border-black pb-2 mb-4 text-center">
                 <div className="flex items-center justify-center gap-2 mb-1">
                   <div className="h-8 w-8 bg-black rounded-lg flex items-center justify-center"><Milk className="h-5 w-5 text-white" /></div>
@@ -355,6 +363,21 @@ export default function RouteDetailsPage() {
           <DialogFooter className="p-4 border-t bg-muted/5"><Button onClick={handleSaveSupplier} className="w-full font-black uppercase text-[11px] h-12 rounded-2xl shadow-xl shadow-primary/20 tracking-widest transition-all active:scale-95"><CheckCircle2 className="h-5 w-5 mr-2" /> माहिती जतन करा</Button></DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <style jsx global>{`
+        @media print {
+          @page { size: A4; margin: 10mm; }
+          body * { visibility: hidden !important; background: white !important; }
+          .printable-report, .printable-report * { visibility: visible !important; opacity: 1 !important; color: black !important; }
+          .printable-report { 
+            position: absolute !important; left: 0 !important; right: 0 !important; top: 0 !important;
+            margin: 0 auto !important; width: 100% !important; max-width: 210mm !important; 
+            border: 1.5px solid black !important; padding: 10mm !important; display: block !important;
+            box-shadow: none !important;
+          }
+          .no-print, button, header, nav, footer, .sidebar, [role="dialog"] [class*="Close"] { display: none !important; }
+        }
+      `}</style>
     </div>
   )
 }
