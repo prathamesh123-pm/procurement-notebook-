@@ -149,14 +149,16 @@ export default function ReportsPage() {
     supervisorName: "सुपरवायझर",
     totalLossAmount: "आर्थिक नुकसान (₹)",
     tempAfterChilling: "तापमान (°C)",
-    result: "तपासणी निकाल"
+    result: "तपासणी निकाल",
+    title: "विषय/शीर्षक",
+    remark: "शेरा/निरीक्षण"
   };
 
   const orderedKeys = [
     "supplierName", "centerName", "supplierId", "centerCode", "route", "routeName",
     "visitPerson", "visitPurpose", "visitDiscussion", "travelVehicle", 
     "officeTaskSubject", "officeTaskDetails", "pendingOfficeWork",
-    "achievements", "problems", "actionsTaken", "actionTaken", "supervisorName",
+    "title", "remark", "actionTaken", "actionsTaken", "achievements", "problems", "supervisorName",
     "vehicleNumber", "vehicleNo", "driverName", "mobile", "breakdownTime", "location", 
     "severity", "detailedReason", "estimatedRepairTime", "estimatedRepairCost", 
     "recoveryVehicleNo", "recoveryArrivalTime", "milkHot", "milkSour", 
@@ -178,7 +180,6 @@ export default function ReportsPage() {
     const logs = d.routeVisitLogs || [];
     const totalEmpty = logs.reduce((sum: number, l: any) => sum + (Number(l.emptyCans) || 0), 0);
     const totalFull = logs.reduce((sum: number, l: any) => sum + (Number(l.fullCans) || 0), 0);
-    const totalIceAllocated = logs.reduce((sum: number, l: any) => sum + (Number(l.iceAllocated) || 0), 0);
     const totalIceUsed = logs.reduce((sum: number, l: any) => sum + (Number(l.iceUsed) || 0), 0);
 
     return (
@@ -210,7 +211,7 @@ export default function ReportsPage() {
                 <th className="p-1 text-left border-r border-white/20">केंद्र व कोड</th>
                 <th className="p-1 text-center border-r border-white/20">वेळ</th>
                 <th className="p-1 text-center border-r border-white/20">कॅन (E/F)</th>
-                <th className="p-1 text-center">बर्फ (Kg)</th>
+                <th className="p-1 text-center">बर्फ वापरला</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-900 print:divide-black">
@@ -222,13 +223,13 @@ export default function ReportsPage() {
                   </td>
                   <td className="p-1 text-center border-r border-slate-900 print:border-black">{log.arrivalTime || '--'}-{log.departureTime || '--'}</td>
                   <td className="p-1 text-center border-r border-slate-900 print:border-black">{log.emptyCans || '0'}/<span className="font-black text-primary print:text-black">{log.fullCans || '0'}</span></td>
-                  <td className="p-1 text-center border-r border-slate-900 print:border-black">{log.iceAllocated || '0'}/{log.iceUsed || '0'}</td>
+                  <td className="p-1 text-center border-r border-slate-900 print:border-black">{log.iceUsed || '0'}</td>
                 </tr>
               ))}
               <tr className="bg-slate-100 font-black text-[7pt] uppercase print:bg-white print:border-t-2 print:border-black">
                 <td className="p-1 text-right border-r border-slate-900 print:border-black" colSpan={3}>एकूण सारांश:</td>
                 <td className="p-1 text-center border-r border-slate-900 print:border-black">{totalEmpty} / {totalFull}</td>
-                <td className="p-1 text-center">{totalIceAllocated} / {totalIceUsed}</td>
+                <td className="p-1 text-center">{totalIceUsed}</td>
               </tr>
             </tbody>
           </table>
@@ -287,11 +288,13 @@ export default function ReportsPage() {
               
               {(d.travelStartKm || d.travelEndKm || d.travelTotalKm) && (
                 <tr className="font-bold text-[7pt] sm:text-[8pt] text-left">
-                  <td className="p-1.5 bg-slate-50 uppercase text-[6pt] sm:text-[7.5pt] font-black border-r border-slate-900 print:bg-white print:border-black">प्रवास किमी (S/E/T)</td>
-                  <td className="p-1.5 flex gap-3 font-black text-[7pt] sm:text-[8pt]">
-                    <span>सुरुवात: {d.travelStartKm || '0'}</span>
-                    <span>शेवट: {d.travelEndKm || '0'}</span>
-                    <span className="text-primary print:text-black">एकूण: {d.travelTotalKm || '0'} KM</span>
+                  <td className="p-1.5 bg-slate-50 uppercase text-[6pt] sm:text-[7.5pt] font-black border-r border-slate-900 print:bg-white print:border-black">प्रवास किमी</td>
+                  <td className="p-1.5 font-black text-[7pt] sm:text-[8pt]">
+                    <div className="grid grid-cols-3 gap-2">
+                      <div className="border border-slate-200 p-1 rounded text-center"><p className="text-[5pt] text-slate-400">सुरुवात</p>{d.travelStartKm || '0'}</div>
+                      <div className="border border-slate-200 p-1 rounded text-center"><p className="text-[5pt] text-slate-400">शेवट</p>{d.travelEndKm || '0'}</div>
+                      <div className="bg-primary/5 border border-primary/20 p-1 rounded text-center"><p className="text-[5pt] text-primary">एकूण KM</p>{d.travelTotalKm || '0'}</div>
+                    </div>
                   </td>
                 </tr>
               )}
@@ -417,7 +420,6 @@ export default function ReportsPage() {
               </div>
             </div>
             <div className="flex gap-2 w-full sm:w-auto justify-end sm:pr-2">
-              {selectedReport?.type === 'Daily Task' && <Button variant={isGroupView ? "secondary" : "outline"} size="sm" onClick={() => setIsGroupView(!isGroupView)} className="h-8 sm:h-9 px-2 sm:px-3 font-black uppercase rounded-xl border-primary/20 text-[8px] sm:text-[9px]">{isGroupView ? <Layers className="h-3.5 w-3.5 mr-1.5" /> : <FileStack className="h-3.5 w-3.5 mr-1.5" />} {isGroupView ? 'सिंगल' : 'दिवसाचे टास्क'}</Button>}
               <Button size="sm" onClick={() => window.print()} className="h-8 sm:h-9 px-3 sm:px-4 font-black uppercase rounded-xl shadow-lg shadow-primary/20 text-[8px] sm:text-[9px] bg-primary text-white"><Printer className="h-3.5 w-3.5 mr-1.5" /> प्रिंट</Button>
               <Button size="icon" variant="ghost" onClick={() => setIsViewOpen(false)} className="h-8 w-8 sm:h-9 sm:w-9 text-slate-400 hover:bg-slate-100 rounded-xl"><X className="h-5 w-5 sm:h-6 sm:w-6" /></Button>
             </div>

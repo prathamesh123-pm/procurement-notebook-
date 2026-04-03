@@ -12,7 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter, useSearchParams } from "next/navigation"
 import { 
-  ClipboardCheck, Truck, Plus, Trash2, MapPin, Briefcase, Save, ArrowLeft, ListPlus, Clock, Box, RefreshCw, User, Car, Navigation
+  ClipboardCheck, Truck, Plus, Trash2, MapPin, Briefcase, Save, ArrowLeft, ListPlus, Clock, RefreshCw, User, Car
 } from "lucide-react"
 import { useUser, useFirestore, useDoc, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking } from "@/firebase"
 import { collection, doc } from "firebase/firestore"
@@ -22,7 +22,6 @@ interface RouteVisitEntry {
   id: string;
   centerCode: string;
   supplierName: string;
-  iceAllocated: string;
   iceUsed: string;
   arrivalTime: string;
   departureTime: string;
@@ -46,7 +45,7 @@ function DailyReportForm() {
 
   const createEmptyRouteEntry = (): RouteVisitEntry => ({
     id: createId(),
-    centerCode: "", supplierName: "", iceAllocated: "", iceUsed: "", 
+    centerCode: "", supplierName: "", iceUsed: "", 
     arrivalTime: "", departureTime: "", emptyCans: "", fullCans: ""
   });
 
@@ -54,8 +53,8 @@ function DailyReportForm() {
     reportHeading: "दैनिक अहवाल",
     name: "", idNumber: "", reportDate: "", shift: "सकाळ", slipNo: "",
     driverName: "", vehicleNumber: "", routeName: "", routeOutTime: "", routeInTime: "",
-    startReading: "", endReading: "", totalKm: "0", shortageLiters: "0",
-    excessLiters: "0", routeVisitLogs: [] as RouteVisitEntry[],
+    startReading: "", endReading: "", totalKm: "0",
+    routeVisitLogs: [] as RouteVisitEntry[],
     
     visitPerson: "",
     visitPurpose: "",
@@ -240,8 +239,7 @@ function DailyReportForm() {
                   </div>
                   <div className="space-y-0.5"><Label className="compact-label">वेळ (IN/OUT)</Label><div className="flex gap-1"><Input className="compact-input h-8 text-center" type="time" value={entry.arrivalTime || ""} onChange={e => updateRouteEntry(entry.id, { arrivalTime: e.target.value })} /><Input className="compact-input h-8 text-center" type="time" value={entry.departureTime || ""} onChange={e => updateRouteEntry(entry.id, { departureTime: e.target.value })} /></div></div>
                   <div className="space-y-0.5"><Label className="compact-label">कॅन (E/F)</Label><div className="flex gap-1"><Input className="compact-input h-8 text-center" placeholder="E" value={entry.emptyCans || ""} onChange={e => updateRouteEntry(entry.id, { emptyCans: e.target.value })} /><Input className="compact-input h-8 text-center font-black text-primary" placeholder="F" value={entry.fullCans || ""} onChange={e => updateRouteEntry(entry.id, { fullCans: e.target.value })} /></div></div>
-                  <div className="space-y-0.5"><Label className="compact-label">बर्फ दिला (Kg)</Label><Input className="compact-input h-8" value={entry.iceAllocated || ""} onChange={e => updateRouteEntry(entry.id, { iceAllocated: e.target.value })} /></div>
-                  <div className="space-y-0.5"><Label className="compact-label">बर्फ वापरला (Kg)</Label><Input className="compact-input h-8" value={entry.iceUsed || ""} onChange={e => updateRouteEntry(entry.id, { iceUsed: e.target.value })} /></div>
+                  <div className="space-y-0.5 col-span-2"><Label className="compact-label">बर्फ वापरला</Label><Input className="compact-input h-8" value={entry.iceUsed || ""} onChange={e => updateRouteEntry(entry.id, { iceUsed: e.target.value })} /></div>
                 </div>
               </Card>
             ))}
