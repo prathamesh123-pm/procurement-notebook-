@@ -160,9 +160,6 @@ export default function CentersPage() {
 
   if (!mounted || isLoading) return <div className="p-10 text-center font-black uppercase text-[10px] opacity-50">लोड होत आहे...</div>
 
-  const profileName = userData?.displayName || user?.displayName || "सुपरवायझर";
-  const profileId = userData?.employeeId || "---";
-
   return (
     <div className="space-y-4 max-w-4xl mx-auto w-full pb-10 px-2 animate-in fade-in duration-500">
       <div className="flex flex-col sm:flex-row items-center justify-between gap-3 border-b pb-4 no-print text-center sm:text-left">
