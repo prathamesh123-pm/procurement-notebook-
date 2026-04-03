@@ -7,7 +7,7 @@ import { Card } from "@/components/ui/card"
 import { 
   Archive, Search, X, Printer, Trash2, FileEdit, Truck, ListTodo, 
   ShieldAlert, ClipboardCheck, FileSignature, Plus, MapPin, Briefcase, FileText,
-  Microscope, Thermometer
+  Microscope, Thermometer, Milk
 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
@@ -388,4 +388,3 @@ export default function ReportsPage() {
     </div>
   )
 }
-    

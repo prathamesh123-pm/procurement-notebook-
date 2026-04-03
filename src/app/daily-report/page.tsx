@@ -36,7 +36,6 @@ function DailyReportForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const editId = searchParams.get('edit')
-  const typeParam = searchParams.get('type')
 
   const [mounted, setMounted] = useState(false)
   const [reportType, setReportType] = useState<string>("route-visit")
