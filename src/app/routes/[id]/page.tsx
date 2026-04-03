@@ -172,8 +172,18 @@ export default function RouteDetailsPage() {
               <div className="space-y-4">
                 <h4 className="text-[11px] font-black uppercase text-primary border-b pb-1 flex items-center gap-2"><User className="h-4 w-4" /> १) प्राथमिक माहिती</h4>
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="col-span-2 space-y-1.5"><Label className="text-[10px] font-black uppercase text-muted-foreground">सप्लायर प्रकार *</Label>
-                    <Select value={formData.supplierType} onValueChange={(v: SupplierType) => setFormData({...formData, supplierType: v})}><SelectTrigger className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="Gavali">गवळी (Gavali)</SelectItem><SelectItem value="Gotha">गोठा (Gotha)</SelectItem><SelectItem value="Center">उत्पादक केंद्र (Center)</SelectItem></SelectContent></Select>
+                  <div className="col-span-2 space-y-1.5">
+                    <Label className="text-[10px] font-black uppercase text-muted-foreground">सप्लायर प्रकार *</Label>
+                    <Select value={formData.supplierType} onValueChange={(v: SupplierType) => setFormData({...formData, supplierType: v})}>
+                      <SelectTrigger className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Gavali">गवळी (Gavali)</SelectItem>
+                        <SelectItem value="Gotha">गोठा (Gotha)</SelectItem>
+                        <SelectItem value="Center">उत्पादक केंद्र (Center)</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                   <div className="col-span-2 space-y-1.5"><Label className="text-[10px] font-black uppercase text-muted-foreground">नाव *</Label><Input value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl" /></div>
                   <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-muted-foreground">आयडी (ID) *</Label><Input value={formData.supplierId} onChange={e => setFormData({...formData, supplierId: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl" /></div>

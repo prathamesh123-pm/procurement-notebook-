@@ -7,7 +7,7 @@ import { Card } from "@/components/ui/card"
 import { 
   Archive, Search, X, Printer, Trash2, FileEdit, Truck, 
   ShieldAlert, ClipboardCheck, Plus, MapPin, FileText,
-  Microscope, Milk
+  Microscope, Milk, User, Calendar, ClipboardList
 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
@@ -74,6 +74,11 @@ export default function ReportsPage() {
     vehicleNumber: "वाहन क्र.",
     vehicleNo: "वाहन क्र.",
     driverName: "ड्रायव्हर नाव",
+    visitPerson: "कोणाची भेट घेतली?",
+    visitPurpose: "भेटीचा मुख्य उद्देश",
+    visitDiscussion: "झालेली सविस्तर चर्चा",
+    officeTaskSubject: "कामाचा मुख्य विषय",
+    officeTaskDetails: "कामाचा सविस्तर गोषवारा",
     location: "बिघाड ठिकाण",
     reason: "बिघाड कारण",
     severity: "बिघाड स्वरूप",
@@ -84,7 +89,7 @@ export default function ReportsPage() {
     recoveryArrivalTime: "पोहोच वेळ",
     milkHot: "दूध गरम झाले?",
     milkSour: "दूध खराब झाले?",
-    achievements: "आजची कामगिरी",
+    achievements: "आजची मोठी कामगिरी",
     problems: "महत्त्वाच्या समस्या",
     actionTaken: "केलेली कार्यवाही",
     actionsTaken: "केलेली कार्यवाही",
@@ -104,11 +109,13 @@ export default function ReportsPage() {
   const orderedKeys = [
     "reportHeading", "date", "shift", "idNumber", "repId", "repName",
     "supplierName", "centerName", "supplierId", "centerCode", "ownerName", "mobile", "address",
-    "visitPerson", "visitPurpose", "visitDiscussion", "vehicleNumber", "vehicleNo", "driverName", "routeName", "slipNo",
+    "visitPerson", "visitPurpose", "visitDiscussion", "officeTaskSubject", "officeTaskDetails",
+    "vehicleNumber", "vehicleNo", "driverName", "routeName", "slipNo",
     "location", "reason", "severity", "detailedReason", "estimatedRepairTime", "estimatedRepairCost", 
     "recoveryVehicleNo", "recoveryArrivalTime", "milkHot", "milkSour", 
     "totalLossAmount", "fineAmount", "seizureQty",
-    "tempAfterChilling", "morningQty", "eveningQty", "fat", "snf", "result", "observations", "remark"
+    "tempAfterChilling", "morningQty", "eveningQty", "fat", "snf", "result", "observations", "remark",
+    "achievements", "problems", "actionsTaken", "actionTaken", "supervisorName"
   ];
 
   const filteredReports = useMemo(() => {
@@ -144,7 +151,7 @@ export default function ReportsPage() {
     router.push(`${path}?edit=${report.id}`)
   }
 
-  const ReportHeader = ({ title, date, profileName, profileId }: any) => (
+  const ReportHeader = ({ title, date, subName, subId }: any) => (
     <div className="w-full border-b-2 border-black pb-2 mb-4 text-center">
       <div className="flex items-center justify-center gap-2 mb-1">
         <div className="h-8 w-8 bg-black rounded-lg flex items-center justify-center">
@@ -154,7 +161,7 @@ export default function ReportsPage() {
       </div>
       <h2 className="text-[12pt] font-black uppercase text-slate-700 tracking-widest border-y border-slate-200 py-1 mb-2">{title}</h2>
       <div className="flex justify-between text-[8pt] font-black uppercase text-slate-500 tracking-wider">
-        <span>सादरकर्ता: {profileName} ({profileId})</span>
+        <span>सादरकर्ता: {subName} ({subId})</span>
         <span>तारीख: {date}</span>
       </div>
     </div>
@@ -166,14 +173,16 @@ export default function ReportsPage() {
     const totalEmpty = logs.reduce((sum: number, l: any) => sum + (Number(l.emptyCans) || 0), 0);
     const totalFull = logs.reduce((sum: number, l: any) => sum + (Number(l.fullCans) || 0), 0);
     const totalIce = logs.reduce((sum: number, l: any) => sum + (Number(l.iceUsed) || 0), 0);
+    const subName = d.name || profileName;
+    const subId = d.idNumber || profileId;
 
     return (
       <div className="bg-white font-sans text-slate-900 border-[1.5px] border-black rounded-sm shadow-none w-full max-w-[210mm] mx-auto print:border-black printable-report p-6 mb-4 flex flex-col items-center">
-        <ReportHeader title={d.reportHeading || report.type} date={report.date} profileName={profileName} profileId={profileId} />
+        <ReportHeader title={d.reportHeading || report.type} date={report.date} subName={subName} subId={subId} />
         
         <div className="w-full grid grid-cols-2 gap-2 mb-4 font-black text-[9pt] uppercase">
           <div className="p-2 border border-black rounded flex justify-between bg-slate-50"><span>रूट: {d.routeName || '---'}</span><span>ड्रायव्हर: {d.driverName || '---'}</span></div>
-          <div className="p-2 border border-black rounded flex justify-between bg-slate-50"><span>वाहन: {d.vehicleNumber || '---'}</span><span>स्लिप: #{d.slipNo || '---'}</span></div>
+          <div className="p-2 border border-black rounded flex justify-between bg-slate-50"><span>वाहन: {d.vehicleNumber || '---'}</span><span>शिफ्ट: {d.shift || '---'}</span></div>
         </div>
 
         <div className="w-full border border-black rounded overflow-hidden mb-4">
@@ -232,6 +241,9 @@ export default function ReportsPage() {
 
   const GenericTableLayout = ({ report }: { report: any }) => {
     const d = report.fullData || {};
+    const subName = d.name || d.repName || profileName;
+    const subId = d.idNumber || d.repId || profileId;
+    
     const entriesToShow = orderedKeys.filter(key => {
       const val = d[key];
       return val !== undefined && val !== "" && val !== null;
@@ -239,13 +251,14 @@ export default function ReportsPage() {
 
     return (
       <div className="bg-white font-sans text-slate-900 border-[1.5px] border-black rounded-sm shadow-none mb-4 last:mb-0 w-full max-w-[210mm] mx-auto p-6 printable-report flex flex-col items-center">
-        <ReportHeader title={d.reportHeading || report.type} date={report.date} profileName={profileName} profileId={profileId} />
+        <ReportHeader title={d.reportHeading || report.type} date={report.date} subName={subName} subId={subId} />
         
         <div className="w-full border border-black rounded overflow-hidden mb-4">
           <table className="w-full border-collapse">
             <tbody>
               {entriesToShow.map((key) => {
                 const val = d[key];
+                if (["achievements", "problems", "actionsTaken", "actionTaken", "supervisorName"].includes(key)) return null;
                 return (
                   <tr key={key} className="font-bold text-[9pt] text-left border-b border-black last:border-0">
                     <td className="p-1.5 bg-slate-50 uppercase text-[8pt] font-black border-r border-black w-[35%]">{labelMap[key] || key.toUpperCase()}</td>
@@ -382,8 +395,9 @@ export default function ReportsPage() {
             margin: 0 auto !important; width: 100% !important; max-width: 210mm !important; 
             border: 1.5px solid black !important; padding: 10mm !important; display: flex !important;
             flex-direction: column !important; align-items: center !important;
+            page-break-inside: avoid !important;
           }
-          .no-print, button, header, nav, footer, .sidebar, [role="dialog"] > button { display: none !important; }
+          .no-print, button, header, nav, footer, .sidebar, [role="dialog"] > button, .sr-only { display: none !important; }
           table { width: 100% !important; border-collapse: collapse !important; border: 1.2px solid black !important; }
           th, td { border: 1.2px solid black !important; padding: 4pt 6pt !important; font-size: 9pt !important; }
         }

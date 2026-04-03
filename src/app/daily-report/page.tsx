@@ -84,9 +84,14 @@ function DailyReportForm() {
 
   useEffect(() => {
     if (profileData && !editId) {
-      setFormData(prev => ({ ...prev, name: profileData.displayName || prev.name, idNumber: profileData.employeeId || prev.idNumber, supervisorName: profileData.displayName || prev.supervisorName }))
+      setFormData(prev => ({ 
+        ...prev, 
+        name: profileData.displayName || user?.displayName || prev.name, 
+        idNumber: profileData.employeeId || prev.idNumber, 
+        supervisorName: profileData.displayName || prev.supervisorName 
+      }))
     }
-  }, [profileData, editId])
+  }, [profileData, editId, user])
 
   useEffect(() => {
     if (existingReport && existingReport.fullData) {
@@ -104,11 +109,11 @@ function DailyReportForm() {
     const reportData = {
       type: reportType === "route-visit" ? "Route Visit" : reportType === "field-visit" ? "Field Visit" : "Daily Office Work",
       date: formData.reportDate,
-      reportDate: formData.date || formData.reportDate,
+      reportDate: formData.reportDate,
       generatedByUserId: user.uid,
       summary: formData.reportHeading,
       overallSummary: formData.reportHeading,
-      fullData: { ...formData, reportType },
+      fullData: { ...formData, reportType, name: formData.name || user.displayName || "सुपरवायझर" },
       updatedAt: new Date().toISOString()
     }
     if (editId) updateDocumentNonBlocking(doc(db, 'users', user.uid, 'dailyWorkReports', editId), reportData)
