@@ -248,9 +248,12 @@ export default function ReportsPage() {
   return (
     <div className="max-w-4xl mx-auto px-2 pb-20 animate-in fade-in duration-700">
       <div className="flex flex-col sm:flex-row items-center justify-between border-b-2 border-primary/20 pb-4 mb-6 gap-4">
-        <h2 className="text-xl font-black text-slate-900 flex items-center gap-2 uppercase tracking-tight">
-          <Archive className="h-6 w-6 text-primary" /> अहवाल संग्रहालय
-        </h2>
+        <div className="space-y-0.5 text-center sm:text-left">
+          <h2 className="text-xl font-black text-slate-900 flex items-center justify-center sm:justify-start gap-2 uppercase tracking-tight">
+            <Archive className="h-6 w-6 text-primary" /> अहवाल संग्रहालय
+          </h2>
+          <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Archive Management</p>
+        </div>
         <Button asChild className="h-10 px-6 font-black uppercase rounded-2xl shadow-xl shadow-primary/20 w-full sm:w-auto">
           <Link href="/daily-report"><Plus className="h-4 w-4 mr-2" /> नवीन अहवाल</Link>
         </Button>
@@ -261,10 +264,10 @@ export default function ReportsPage() {
           <button 
             key={rt.title} 
             onClick={() => setTypeFilter(typeFilter === rt.type ? null : rt.type)}
-            className={`h-16 flex flex-col items-center justify-center rounded-xl border transition-all ${typeFilter === rt.type ? 'bg-primary text-white border-primary' : 'bg-white text-slate-900 border-slate-100 shadow-sm'}`}
+            className={`h-16 flex flex-col items-center justify-center rounded-xl border transition-all ${typeFilter === rt.type ? 'bg-primary text-white border-primary shadow-lg scale-95' : 'bg-white text-slate-900 border-slate-100 shadow-sm hover:border-primary/20'}`}
           >
             <rt.icon className={`h-4 w-4 mb-1 ${typeFilter === rt.type ? 'text-white' : rt.color}`} />
-            <span className="text-[8px] font-black text-center uppercase">{rt.title}</span>
+            <span className="text-[8px] font-black text-center uppercase tracking-tighter">{rt.title}</span>
           </button>
         ))}
       </div>
@@ -273,7 +276,7 @@ export default function ReportsPage() {
         <div className="flex flex-wrap gap-2">
           <div className="relative flex-1 min-w-[180px]">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-            <Input className="h-11 pl-10 text-[12px] bg-slate-50 border-none rounded-2xl font-bold shadow-inner" placeholder="शोधा..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
+            <Input className="h-11 pl-10 text-[12px] bg-slate-50 border-none rounded-2xl font-bold shadow-inner" placeholder="अहवाल शोधा..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
           </div>
           <Input type="date" className="h-11 text-[11px] bg-slate-50 border-none rounded-2xl font-black w-full sm:w-36 shadow-inner" value={filterDate} onChange={e => setFilterDate(e.target.value)} />
         </div>
@@ -283,18 +286,18 @@ export default function ReportsPage() {
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-slate-50 border-b border-slate-100">
-              <th className="p-4 text-[10px] font-black uppercase text-slate-400">तारीख</th>
-              <th className="p-4 text-[10px] font-black uppercase text-slate-400">अहवाल</th>
+              <th className="p-4 text-[10px] font-black uppercase text-slate-400 tracking-widest">तारीख</th>
+              <th className="p-4 text-[10px] font-black uppercase text-slate-400 tracking-widest">अहवाल प्रकार</th>
               <th className="p-4 text-right"></th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-50">
             {filteredReports.map((report) => (
-              <tr key={report.id} className="hover:bg-primary/[0.02] cursor-pointer" onClick={() => { setSelectedReport(report); setIsViewOpen(true); }}>
+              <tr key={report.id} className="hover:bg-primary/[0.02] cursor-pointer group" onClick={() => { setSelectedReport(report); setIsViewOpen(true); }}>
                 <td className="p-4 font-black text-[11px] text-slate-500 uppercase">{report.date}</td>
-                <td className="p-4 font-black text-[11px] text-primary uppercase">{report.fullData?.reportHeading || report.type}</td>
+                <td className="p-4 font-black text-[11px] text-primary uppercase group-hover:translate-x-1 transition-transform">{report.fullData?.reportHeading || report.type}</td>
                 <td className="p-4 text-right">
-                  <div className="flex justify-end gap-1">
+                  <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                     <Button variant="ghost" size="icon" className="h-8 w-8 text-primary" onClick={(e) => handleEditReport(report, e)}><FileEdit className="h-4 w-4" /></Button>
                     <Button variant="ghost" size="icon" className="h-8 w-8 text-rose-500" onClick={(e) => handleDeleteReport(report.id, e)}><Trash2 className="h-4 w-4" /></Button>
                   </div>
@@ -309,11 +312,11 @@ export default function ReportsPage() {
         <DialogContent className="max-w-[850px] w-[95vw] p-0 rounded-3xl overflow-hidden border-none shadow-2xl bg-slate-100">
           <DialogHeader className="p-4 bg-white border-b flex flex-row items-center justify-between no-print">
             <DialogTitle className="text-[11px] font-black uppercase tracking-widest flex items-center gap-2">
-              <FileText className="h-4 w-4 text-primary" /> अहवाल तपशील
+              <FileText className="h-4 w-4 text-primary" /> अहवाल प्रीव्ह्यू
             </DialogTitle>
             <div className="flex gap-2">
-              <Button size="sm" onClick={() => window.print()} className="h-9 px-4 font-black uppercase rounded-xl"><Printer className="h-3.5 w-3.5 mr-1.5" /> प्रिंट</Button>
-              <Button size="icon" variant="ghost" onClick={() => setIsViewOpen(false)} className="h-9 w-9"><X className="h-5 w-5" /></Button>
+              <Button size="sm" onClick={() => window.print()} className="h-9 px-4 font-black uppercase rounded-xl bg-black text-white hover:bg-black/90"><Printer className="h-3.5 w-3.5 mr-1.5" /> प्रिंट अहवाल</Button>
+              <Button size="icon" variant="ghost" onClick={() => setIsViewOpen(false)} className="h-9 w-9 text-slate-400 hover:bg-slate-100 rounded-full"><X className="h-5 w-5" /></Button>
             </div>
           </DialogHeader>
           <ScrollArea className="max-h-[85vh] p-4 bg-slate-100">
@@ -326,17 +329,19 @@ export default function ReportsPage() {
 
       <style jsx global>{`
         @media print {
-          @page { size: A4; margin: 10mm; }
+          @page { size: A4; margin: 5mm; }
           body * { visibility: hidden !important; background: white !important; }
           .printable-report, .printable-report * { visibility: visible !important; opacity: 1 !important; color: black !important; }
           .printable-report { 
             position: absolute !important; left: 0 !important; right: 0 !important; top: 0 !important;
             margin: 0 auto !important; width: 100% !important; max-width: 210mm !important; 
-            border: 1.5px solid black !important; padding: 10mm !important; display: block !important;
+            border: 1.5px solid black !important; padding: 8mm !important; display: block !important;
+            box-shadow: none !important;
           }
-          .no-print, button, header, nav, footer, .sidebar { display: none !important; }
-          table { width: 100% !important; border-collapse: collapse !important; border: 1.2px solid black !important; }
-          th, td { border: 1.2px solid black !important; padding: 4pt 6pt !important; font-size: 9pt !important; }
+          .no-print, button, header, nav, footer, .sidebar, [role="dialog"] [class*="Close"] { display: none !important; }
+          table { width: 100% !important; border-collapse: collapse !important; border: 1.5px solid black !important; }
+          th, td { border: 1px solid black !important; padding: 3pt 5pt !important; font-size: 8.5pt !important; line-height: 1.2 !important; }
+          th { background-color: #f1f5f9 !important; -webkit-print-color-adjust: exact; }
         }
       `}</style>
     </div>
