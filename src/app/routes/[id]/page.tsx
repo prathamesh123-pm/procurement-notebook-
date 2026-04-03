@@ -10,17 +10,17 @@ import { Label } from "@/components/ui/label"
 import { Supplier, EquipmentItem, SupplierType } from "@/lib/types"
 import { 
   Plus, Search, MapPin, User, 
-  Truck, Edit, ChevronRight, ArrowLeft, X, Laptop, Zap, Sun, Trash2, Milk, Box, Wallet, ShieldCheck, ClipboardList, Printer, CheckCircle2
+  Truck, Edit, ChevronRight, ArrowLeft, X, Laptop, Zap, Sun, Trash2, Milk, Box, Wallet, ShieldCheck, Printer, CheckCircle2
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useToast } from "@/hooks/use-toast"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Checkbox } from "@/components/ui/checkbox"
 import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking, useDoc } from "@/firebase"
 import { collection, doc } from "firebase/firestore"
 import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 export default function RouteDetailsPage() {
   const params = useParams()
@@ -40,14 +40,8 @@ export default function RouteDetailsPage() {
     return collection(db, 'suppliers')
   }, [db, user])
 
-  const userDocRef = useMemoFirebase(() => {
-    if (!db || !user) return null
-    return doc(db, 'users', user.uid)
-  }, [db, user])
-
   const { data: allRoutes } = useCollection(routesQuery)
   const { data: allSuppliers, isLoading } = useCollection<Supplier>(suppliersQuery)
-  const { data: userData } = useDoc(userDocRef)
 
   const route = useMemo(() => allRoutes?.find(r => r.id === routeId), [allRoutes, routeId])
   const suppliersList = useMemo(() => allSuppliers?.filter(s => s.routeId === routeId) || [], [allSuppliers, routeId])
@@ -60,450 +54,166 @@ export default function RouteDetailsPage() {
   const [editingId, setEditingId] = useState<string | null>(null)
 
   const [formData, setFormData] = useState({
-    name: "", supplierId: "", address: "", mobile: "", competition: "", additionalNotes: "",
-    operatorName: "", supplierType: "Gavali" as SupplierType,
+    name: "", supplierId: "", address: "", mobile: "", operatorName: "",
+    supplierType: "Gavali" as SupplierType, fssaiNumber: "", fssaiExpiry: "",
+    scaleBrand: "", fatMachineBrand: "", chemicalsStock: "", batteryCondition: "",
+    paymentCycle: "7 Days", spaceOwnership: "Self" as 'Self' | 'Rented', hygieneGrade: "A",
+    competition: "", cattleFeedBrand: "", iceBlocks: "0",
     cowQty: "0", cowFat: "0", cowSnf: "0", bufQty: "0", bufFat: "0", bufSnf: "0",
-    iceBlocks: "0", paymentCycle: "7 Days", cattleFeedBrand: "",
-    fssaiNumber: "", fssaiExpiry: "", scaleBrand: "", fatMachineBrand: "",
-    adulterationKitInfo: "", spaceOwnership: "Self" as 'Self' | 'Rented', hygieneGrade: "A",
-    chemicalsStock: "", batteryCondition: "",
     milkCansCount: "0", computerAvailable: false, upsInverterAvailable: false, solarAvailable: false,
-    equipment: [] as EquipmentItem[]
+    adulterationKitInfo: "", additionalNotes: "", equipment: [] as EquipmentItem[]
   })
 
   useEffect(() => setMounted(true), [])
 
-  useEffect(() => {
-    if (selectedSupplier && allSuppliers) {
-      const updated = allSuppliers.find(s => s.id === selectedSupplier.id)
-      if (updated) setSelectedSupplier(updated)
-    }
-  }, [allSuppliers])
-
   const openAddDialog = () => {
-    setDialogMode('add')
-    setEditingId(null)
+    setDialogMode('add'); setEditingId(null);
     setFormData({
-      name: "", supplierId: "", address: "", mobile: "", competition: "", additionalNotes: "",
-      operatorName: "", supplierType: "Gavali",
+      name: "", supplierId: "", address: "", mobile: "", operatorName: "",
+      supplierType: "Gavali", fssaiNumber: "", fssaiExpiry: "", scaleBrand: "", fatMachineBrand: "",
+      chemicalsStock: "", batteryCondition: "", paymentCycle: "7 Days", spaceOwnership: "Self",
+      hygieneGrade: "A", competition: "", cattleFeedBrand: "", iceBlocks: "0",
       cowQty: "0", cowFat: "0", cowSnf: "0", bufQty: "0", bufFat: "0", bufSnf: "0",
-      iceBlocks: "0", paymentCycle: "7 Days", cattleFeedBrand: "",
-      fssaiNumber: "", fssaiExpiry: "", scaleBrand: "", fatMachineBrand: "",
-      adulterationKitInfo: "", spaceOwnership: "Self", hygieneGrade: "A",
-      chemicalsStock: "", batteryCondition: "",
       milkCansCount: "0", computerAvailable: false, upsInverterAvailable: false, solarAvailable: false,
-      equipment: []
+      adulterationKitInfo: "", additionalNotes: "", equipment: []
     })
     setIsDialogOpen(true)
   }
 
-  const openEditDialog = (supplier: Supplier) => {
-    setDialogMode('edit')
-    setEditingId(supplier.id)
+  const openEditDialog = (s: Supplier) => {
+    setDialogMode('edit'); setEditingId(s.id);
     setFormData({
-      name: supplier.name || "", supplierId: supplier.supplierId || "", address: supplier.address || supplier.village || "",
-      mobile: supplier.mobile || "", competition: supplier.competition || "", 
-      additionalNotes: supplier.additionalNotes || supplier.additionalInfo || "",
-      operatorName: supplier.operatorName || "",
-      supplierType: supplier.supplierType || "Gavali",
-      cowQty: String(supplier.cowMilk?.quantity ?? 0), cowFat: String(supplier.cowMilk?.fat ?? 0), cowSnf: String(supplier.cowMilk?.snf ?? 0),
-      bufQty: String(supplier.buffaloMilk?.quantity ?? 0), bufFat: String(supplier.buffaloMilk?.fat ?? 0), bufSnf: String(supplier.buffaloMilk?.snf ?? 0),
-      iceBlocks: String(supplier.iceBlocks ?? 0), paymentCycle: supplier.paymentCycle || "7 Days",
-      cattleFeedBrand: supplier.cattleFeedBrand || "", fssaiNumber: supplier.fssaiNumber || "",
-      fssaiExpiry: supplier.fssaiExpiry || "", scaleBrand: supplier.scaleBrand || "",
-      fatMachineBrand: supplier.fatMachineBrand || "", 
-      adulterationKitInfo: supplier.adulterationKitInfo || "",
-      spaceOwnership: supplier.spaceOwnership || "Self",
-      hygieneGrade: supplier.hygieneGrade || "A",
-      chemicalsStock: supplier.chemicalsStock || "",
-      batteryCondition: supplier.batteryCondition || "",
-      milkCansCount: String(supplier.milkCansCount || 0),
-      computerAvailable: supplier.computerAvailable || false, upsInverterAvailable: supplier.upsInverterAvailable || false,
-      solarAvailable: supplier.solarAvailable || false, equipment: supplier.equipment || []
+      name: s.name || "", supplierId: s.supplierId || "", address: s.address || "",
+      mobile: s.mobile || "", operatorName: s.operatorName || "",
+      supplierType: s.supplierType || "Gavali", fssaiNumber: s.fssaiNumber || "",
+      fssaiExpiry: s.fssaiExpiry || "", scaleBrand: s.scaleBrand || "",
+      fatMachineBrand: s.fatMachineBrand || "", chemicalsStock: s.chemicalsStock || "",
+      batteryCondition: s.batteryCondition || "", paymentCycle: s.paymentCycle || "7 Days",
+      spaceOwnership: s.spaceOwnership || "Self", hygieneGrade: s.hygieneGrade || "A",
+      competition: s.competition || "", cattleFeedBrand: s.cattleFeedBrand || "",
+      iceBlocks: String(s.iceBlocks || 0),
+      cowQty: String(s.cowMilk?.quantity || 0), cowFat: String(s.cowMilk?.fat || 0), cowSnf: String(s.cowMilk?.snf || 0),
+      bufQty: String(s.buffaloMilk?.quantity || 0), bufFat: String(s.buffaloMilk?.fat || 0), bufSnf: String(s.buffaloMilk?.snf || 0),
+      milkCansCount: String(s.milkCansCount || 0), computerAvailable: s.computerAvailable || false,
+      upsInverterAvailable: s.upsInverterAvailable || false, solarAvailable: s.solarAvailable || false,
+      adulterationKitInfo: s.adulterationKitInfo || "", additionalNotes: s.additionalNotes || s.additionalInfo || "",
+      equipment: s.equipment || []
     })
     setIsDialogOpen(true)
   }
 
   const handleSaveSupplier = () => {
-    if (!formData.name || !formData.supplierId || !db || !user) {
-      toast({ title: "त्रुटी", description: "नाव आणि आयडी आवश्यक आहे.", variant: "destructive" })
-      return
-    }
-
-    const supplierData = {
-      supplierId: formData.supplierId, name: formData.name, address: formData.address, mobile: formData.mobile,
-      routeId: routeId, competition: formData.competition, 
-      additionalNotes: formData.additionalNotes, additionalInfo: formData.additionalNotes,
-      supplierType: formData.supplierType,
-      operatorName: formData.operatorName || (formData.supplierType === 'Center' ? formData.name : undefined),
-      village: formData.address,
+    if (!formData.name || !formData.supplierId || !db) return;
+    const data = {
+      ...formData, routeId,
       cowMilk: { quantity: Number(formData.cowQty), fat: Number(formData.cowFat), snf: Number(formData.cowSnf) },
       buffaloMilk: { quantity: Number(formData.bufQty), fat: Number(formData.bufFat), snf: Number(formData.bufSnf) },
-      iceBlocks: Number(formData.iceBlocks), paymentCycle: formData.paymentCycle,
-      cattleFeedBrand: formData.cattleFeedBrand, fssaiNumber: formData.fssaiNumber,
-      fssaiExpiry: formData.fssaiExpiry, scaleBrand: formData.scaleBrand,
-      fatMachineBrand: formData.fatMachineBrand, adulterationKitInfo: formData.adulterationKitInfo,
-      spaceOwnership: formData.spaceOwnership, hygieneGrade: formData.hygieneGrade,
-      chemicalsStock: formData.chemicalsStock, batteryCondition: formData.batteryCondition,
-      milkCansCount: Number(formData.milkCansCount),
-      computerAvailable: formData.computerAvailable, upsInverterAvailable: formData.upsInverterAvailable,
-      solarAvailable: formData.solarAvailable, equipment: formData.equipment,
+      iceBlocks: Number(formData.iceBlocks), milkCansCount: Number(formData.milkCansCount),
       updatedAt: new Date().toISOString()
     }
-
-    if (dialogMode === 'add') {
-      addDocumentNonBlocking(collection(db, 'suppliers'), supplierData)
-      toast({ title: "यशस्वी", description: "पुरवठादार प्रोफाइल जतन झाले." })
-    } else if (editingId) {
-      updateDocumentNonBlocking(doc(db, 'suppliers', editingId), supplierData)
-      toast({ title: "यशस्वी", description: "माहिती अद्ययावत केली गेली." })
-    }
-    setIsDialogOpen(false)
+    if (dialogMode === 'add') addDocumentNonBlocking(collection(db, 'suppliers'), data)
+    else if (editingId) updateDocumentNonBlocking(doc(db, 'suppliers', editingId), data)
+    setIsDialogOpen(false); toast({ title: "यशस्वी", description: "पुरवठादार माहिती जतन झाली." })
   }
 
-  const handleDeleteSupplier = (id: string, e: React.MouseEvent) => {
-    e.stopPropagation()
-    e.preventDefault()
-    if (!db) return
-    if (confirm("तुम्हाला खात्री आहे की हा सप्लायर हटवायचा आहे?")) {
-      deleteDocumentNonBlocking(doc(db, 'suppliers', id))
-      if (selectedSupplier?.id === id) setSelectedSupplier(null)
-      toast({ title: "यशस्वी", description: "सप्लायर हटवण्यात आला." })
-    }
-  }
+  const filteredSuppliers = useMemo(() => suppliersList.filter(s => s.name.toLowerCase().includes(searchQuery.toLowerCase())), [suppliersList, searchQuery])
 
-  const addEquipmentRow = () => {
-    const newItem: EquipmentItem = { id: crypto.randomUUID(), name: "", quantity: 1, ownership: 'Self' }
-    setFormData({ ...formData, equipment: [...(formData.equipment || []), newItem] })
-  }
-
-  const removeEquipmentRow = (id: string) => {
-    setFormData({ ...formData, equipment: (formData.equipment || []).filter(e => e.id !== id) })
-  }
-
-  const updateEquipmentRow = (id: string, updates: Partial<EquipmentItem>) => {
-    setFormData({ ...formData, equipment: (formData.equipment || []).map(e => e.id === id ? { ...e, ...updates } : e) })
-  }
-
-  const filteredSuppliers = useMemo(() => {
-    return suppliersList.filter(s => (s.name?.toLowerCase() || "").includes(searchQuery.toLowerCase()))
-  }, [suppliersList, searchQuery])
-
-  if (!mounted || isLoading) return <div className="p-10 text-center italic text-muted-foreground uppercase text-[10px] opacity-50">लोड होत आहे...</div>
-
-  const profileName = userData?.displayName || user?.displayName || "सुपरवायझर";
-  const profileId = userData?.employeeId || "---";
+  if (!mounted || isLoading) return <div className="p-10 text-center font-black uppercase text-[10px] opacity-50">लोड होत आहे...</div>
 
   return (
-    <div className="space-y-4 max-w-[1000px] mx-auto w-full pb-10 px-2 animate-in fade-in duration-500">
-      <div className="flex items-center justify-between border-b pb-3 px-1 no-print">
+    <div className="space-y-4 max-w-6xl mx-auto w-full pb-10 px-2">
+      <div className="flex items-center justify-between border-b pb-3 no-print">
         <div className="flex items-center gap-3">
-          <Button type="button" variant="ghost" size="icon" className="h-9 w-9 rounded-full hover:bg-muted" onClick={() => router.push('/routes')}><ArrowLeft className="h-5 w-5" /></Button>
-          <div className="min-w-0">
-            <h2 className="text-lg font-black uppercase truncate tracking-tight">सप्लायर (Suppliers)</h2>
-            <p className="text-[10px] text-muted-foreground font-black uppercase truncate tracking-widest">RT: {route?.name || routeId}</p>
-          </div>
+          <Button variant="ghost" size="icon" onClick={() => router.push('/routes')}><ArrowLeft className="h-5 w-5" /></Button>
+          <div><h2 className="text-lg font-black uppercase">{route?.name || "रूट माहिती"}</h2><p className="text-[10px] font-bold text-muted-foreground uppercase">Supplier Management</p></div>
         </div>
-        <Button type="button" onClick={openAddDialog} size="sm" className="h-10 font-black gap-2 rounded-xl text-[11px] px-6 uppercase tracking-widest shadow-lg shadow-primary/20"><Plus className="h-4 w-4" /> नवीन सप्लायर</Button>
+        <Button onClick={openAddDialog} className="h-10 font-black rounded-xl text-[11px] uppercase tracking-widest px-6 shadow-lg shadow-primary/20"><Plus className="h-4 w-4 mr-1.5" /> नवीन सप्लायर</Button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-        <Card className={`lg:col-span-4 border shadow-2xl bg-white overflow-hidden flex flex-col border-muted-foreground/10 no-print ${selectedSupplier ? 'hidden lg:flex' : 'flex'}`}>
-          <div className="p-3 border-b bg-muted/5">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
-              <input placeholder="सप्लायर शोधा..." className="w-full pl-9 h-10 text-[12px] bg-white border border-muted-foreground/10 rounded-xl font-black uppercase outline-none focus:ring-2 focus:ring-primary shadow-inner" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
-            </div>
-          </div>
-          <ScrollArea className="h-[250px]">
-            <div className="divide-y">
-              {filteredSuppliers.map(s => (
-                <div key={s.id} onClick={() => setSelectedSupplier(s)} className={`p-3 cursor-pointer hover:bg-muted/50 flex justify-between items-center transition-all ${selectedSupplier?.id === s.id ? 'bg-primary/5 border-l-4 border-primary' : ''}`}>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
-                      <h4 className="font-black text-[11px] truncate uppercase text-slate-900">{s.name}</h4>
-                      {s.supplierType === 'Center' && <Badge className="bg-emerald-500 h-3 px-1 text-[6px] font-black border-none uppercase">Center</Badge>}
-                    </div>
-                    <p className="text-[9px] text-muted-foreground truncate font-bold mt-0.5">ID: {s.supplierId || s.id?.slice(-6)}</p>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:bg-destructive/5" onClick={(e) => handleDeleteSupplier(s.id, e)}>
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </Button>
-                    <ChevronRight className="h-4 w-4 text-muted-foreground opacity-30" />
-                  </div>
-                </div>
-              ))}
-            </div>
+        <Card className="lg:col-span-4 border shadow-2xl bg-white no-print">
+          <div className="p-3 border-b"><div className="relative"><Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" /><input placeholder="शोधा..." className="w-full pl-9 h-10 text-[12px] bg-muted/10 border-none rounded-xl font-black uppercase outline-none focus:ring-1 focus:ring-primary" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} /></div></div>
+          <ScrollArea className="h-[400px]">
+            {filteredSuppliers.map(s => (
+              <div key={s.id} onClick={() => setSelectedSupplier(s)} className={`p-3 cursor-pointer hover:bg-primary/5 border-b transition-all ${selectedSupplier?.id === s.id ? 'bg-primary/5 border-l-4 border-primary' : ''}`}>
+                <h4 className="font-black text-[11px] uppercase">{s.name}</h4>
+                <p className="text-[9px] text-muted-foreground font-bold">ID: {s.supplierId}</p>
+              </div>
+            ))}
           </ScrollArea>
         </Card>
 
-        <Card className={`lg:col-span-8 border shadow-2xl bg-white rounded-3xl min-h-[500px] border-muted-foreground/10 print:border-none print:shadow-none ${!selectedSupplier ? 'hidden lg:flex' : 'block'} printable-report`} id="printable-area">
+        <Card className="lg:col-span-8 border shadow-2xl bg-white rounded-3xl overflow-hidden min-h-[500px]">
           {selectedSupplier ? (
-            <div className="flex flex-col h-full items-center">
-              <div className="p-3 border-b flex items-center justify-between bg-primary/5 sticky top-0 z-10 print:bg-white print:border-black print:border-b-[3px] w-full">
-                <Button type="button" variant="ghost" size="icon" className="lg:hidden no-print" onClick={() => setSelectedSupplier(null)}><ArrowLeft className="h-5 w-5" /></Button>
-                <div className="flex-1 px-3 min-w-0">
-                  <h3 className="text-[13px] font-black truncate uppercase print:text-[18pt]">{selectedSupplier.name}</h3>
-                  <div className="flex items-center gap-2 mt-0.5">
-                    <p className="text-[9px] font-black text-muted-foreground uppercase print:text-[10pt] print:text-slate-600">ID: {selectedSupplier.supplierId || selectedSupplier.id} | {selectedSupplier.supplierType || 'Gavali'}</p>
-                    <span className="hidden print:inline-block text-[10pt] font-black uppercase text-slate-400">| सादरकर्ता: {profileName} (ID: {profileId})</span>
-                  </div>
-                </div>
-                <div className="flex gap-2 no-print">
-                  <Button type="button" variant="outline" size="icon" className="h-9 w-9 text-primary border-primary/20 hover:bg-primary/5 rounded-xl" onClick={() => window.print()}><Printer className="h-4 w-4" /></Button>
-                  <Button type="button" variant="outline" size="icon" className="h-9 w-9 text-primary border-primary/20 hover:bg-primary/5 rounded-xl" onClick={() => openEditDialog(selectedSupplier)}><Edit className="h-4 w-4" /></Button>
-                </div>
+            <div className="p-6 space-y-6">
+              <div className="flex justify-between items-center border-b pb-4">
+                <div><h3 className="text-xl font-black uppercase text-primary">{selectedSupplier.name}</h3><p className="text-[10px] font-black text-muted-foreground uppercase">ID: {selectedSupplier.supplierId} | {selectedSupplier.supplierType}</p></div>
+                <div className="flex gap-2 no-print"><Button variant="outline" size="icon" className="h-9 w-9 rounded-xl" onClick={() => window.print()}><Printer className="h-4 w-4" /></Button><Button variant="outline" size="icon" className="h-9 w-9 rounded-xl" onClick={() => openEditDialog(selectedSupplier)}><Edit className="h-4 w-4" /></Button></div>
               </div>
-              <ScrollArea className="flex-1 h-[600px] print:h-auto print:overflow-visible w-full">
-                <div className="p-4 space-y-5 print:p-8 print:space-y-8 flex flex-col items-center">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 print:grid-cols-2 w-full">
-                    <div className="bg-muted/20 p-3 rounded-2xl border border-muted-foreground/5 space-y-1.5 print:bg-white print:border-black print:border-2">
-                      <h4 className="text-[9px] font-black uppercase text-primary tracking-widest border-b border-primary/10 pb-1 print:text-black print:border-black print:text-[12pt]">१) प्राथमिक माहिती</h4>
-                      <div className="grid grid-cols-2 gap-x-2 gap-y-1">
-                        <div><p className="text-[8px] text-muted-foreground uppercase font-black print:text-slate-500">नाव</p><p className="text-[10px] font-black uppercase truncate print:text-[10pt]">{selectedSupplier.name}</p></div>
-                        <div><p className="text-[8px] text-muted-foreground uppercase font-black print:text-slate-500">कोड</p><p className="text-[10px] font-black uppercase print:text-[10pt]">{selectedSupplier.supplierId}</p></div>
-                        <div><p className="text-[8px] text-muted-foreground uppercase font-black print:text-slate-500">ऑपरेटर</p><p className="text-[10px] font-black uppercase truncate print:text-[10pt]">{selectedSupplier.operatorName || "-"}</p></div>
-                        <div><p className="text-[8px] text-muted-foreground uppercase font-black print:text-slate-500">मोबाईल</p><p className="text-[10px] font-black print:text-[10pt]">{selectedSupplier.mobile || "-"}</p></div>
-                        <div className="col-span-2"><p className="text-[8px] text-muted-foreground uppercase font-black print:text-slate-500">पत्ता</p><p className="text-[10px] font-black uppercase truncate print:text-[10pt]">{selectedSupplier.address || selectedSupplier.village || "-"}</p></div>
-                      </div>
-                    </div>
-                    <div className="bg-muted/20 p-3 rounded-2xl border border-muted-foreground/5 space-y-1.5 print:bg-white print:border-black print:border-2">
-                      <h4 className="text-[9px] font-black uppercase text-primary tracking-widest border-b border-primary/10 pb-1 print:text-black print:border-black print:text-[12pt]">२) परवाना व तांत्रिक</h4>
-                      <div className="grid grid-cols-2 gap-x-2 gap-y-1">
-                        <div><p className="text-[8px] text-muted-foreground uppercase font-black print:text-slate-500">FSSAI</p><p className="text-[10px] font-black uppercase print:text-[10pt]">{selectedSupplier.fssaiNumber || "-"}</p></div>
-                        <div><p className="text-[8px] text-muted-foreground uppercase font-black print:text-slate-500">मुदत</p><p className="text-[10px] font-black print:text-[10pt]">{selectedSupplier.fssaiExpiry || "-"}</p></div>
-                        <div><p className="text-[8px] text-muted-foreground uppercase font-black print:text-slate-500">काटा ब्रँड</p><p className="text-[10px] font-black uppercase truncate print:text-[10pt]">{selectedSupplier.scaleBrand || "-"}</p></div>
-                        <div><p className="text-[8px] text-muted-foreground uppercase font-black print:text-slate-500">मशीन ब्रँड</p><p className="text-[10px] font-black uppercase truncate print:text-[10pt]">{selectedSupplier.fatMachineBrand || "-"}</p></div>
-                        <div><p className="text-[8px] text-muted-foreground uppercase font-black print:text-slate-500">रसायन स्टॉक</p><p className="text-[10px] font-black uppercase truncate print:text-[10pt]">{selectedSupplier.chemicalsStock || "-"}</p></div>
-                        <div><p className="text-[8px] text-muted-foreground uppercase font-black print:text-slate-500">बॅटरी स्थिती</p><p className="text-[10px] font-black uppercase truncate print:text-[10pt]">{selectedSupplier.batteryCondition || "-"}</p></div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 print:grid-cols-2 w-full">
-                    <div className="bg-muted/20 p-3 rounded-2xl border border-muted-foreground/5 space-y-1.5 print:bg-white print:border-black print:border-2">
-                      <h4 className="text-[9px] font-black uppercase text-primary tracking-widest border-b border-primary/10 pb-1 print:text-black print:border-black print:text-[12pt]">३) व्यावसायिक माहिती</h4>
-                      <div className="grid grid-cols-2 gap-x-2 gap-y-1">
-                        <div><p className="text-[8px] text-muted-foreground uppercase font-black print:text-slate-500">पेमेंट सायकल</p><p className="text-[10px] font-black print:text-[10pt]">{selectedSupplier.paymentCycle || "7 Days"}</p></div>
-                        <div><p className="text-[8px] text-muted-foreground uppercase font-black print:text-slate-500">जागा</p><p className="text-[10px] font-black print:text-[10pt]">{selectedSupplier.spaceOwnership === 'Self' ? 'स्वतःची' : 'भाड्याची'}</p></div>
-                        <div><p className="text-[8px] text-muted-foreground uppercase font-black print:text-slate-500">स्पर्धा</p><p className="text-[10px] font-black uppercase truncate print:text-[10pt]">{selectedSupplier.competition || "-"}</p></div>
-                        <div><p className="text-[8px] text-muted-foreground uppercase font-black print:text-slate-500">ग्रेड</p>
-                          <Badge className={`h-4 px-1.5 text-[8px] font-black border-none text-white ${selectedSupplier.hygieneGrade === 'A' ? 'bg-emerald-500' : selectedSupplier.hygieneGrade === 'B' ? 'bg-blue-500' : 'bg-rose-500'} print:bg-slate-200 print:text-black print:text-[8pt]`}>
-                            {selectedSupplier.hygieneGrade || "A"}
-                          </Badge>
-                        </div>
-                        <div><p className="text-[8px] text-muted-foreground uppercase font-black print:text-slate-500">पशुखाद्य</p><p className="text-[10px] font-black uppercase truncate print:text-[10pt]">{selectedSupplier.cattleFeedBrand || "-"}</p></div>
-                        <div><p className="text-[8px] text-muted-foreground uppercase font-black print:text-slate-500">बर्फ लाद्या</p><p className="text-[10px] font-black uppercase truncate print:text-[10pt]">{selectedSupplier.iceBlocks || 0}</p></div>
-                      </div>
-                    </div>
-                    <div className="bg-blue-50/30 p-3 rounded-2xl border border-blue-100 space-y-1.5 print:bg-white print:border-black print:border-2">
-                      <h4 className="text-[9px] font-black uppercase text-blue-700 tracking-widest border-b border-blue-200 pb-1 print:text-black print:border-black print:text-[12pt]">४) दूध संकलन सारांश</h4>
-                      <div className="grid grid-cols-2 gap-2">
-                        <div className="text-center p-2 bg-white rounded-lg border border-blue-50 print:border-slate-300">
-                          <p className="text-[7px] font-black text-blue-500 uppercase print:text-slate-500">गाय</p>
-                          <p className="text-[11px] font-black print:text-[12pt]">{selectedSupplier.cowMilk?.quantity || 0} L</p>
-                          <p className="text-[7px] text-muted-foreground print:text-[8pt]">F: {selectedSupplier.cowMilk?.fat}% | S: {selectedSupplier.cowMilk?.snf}%</p>
-                        </div>
-                        <div className="text-center p-2 bg-white rounded-lg border border-blue-50 print:border-slate-300">
-                          <p className="text-[7px] font-black text-blue-500 uppercase print:text-slate-500">म्हेस</p>
-                          <p className="text-[11px] font-black print:text-[12pt]">{selectedSupplier.buffaloMilk?.quantity || 0} L</p>
-                          <p className="text-[7px] text-muted-foreground print:text-[8pt]">F: {selectedSupplier.buffaloMilk?.fat}% | S: {selectedSupplier.buffaloMilk?.snf}%</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-3 gap-2 print:grid-cols-3 w-full">
-                    {[{icon: Laptop, label: 'POP', val: selectedSupplier.computerAvailable}, {icon: Zap, label: 'UPS', val: selectedSupplier.upsInverterAvailable}, {icon: Sun, label: 'सोलर', val: selectedSupplier.solarAvailable}].map((it, i) => (
-                      <div key={i} className={`p-2 rounded-xl border flex flex-col items-center gap-1 transition-all ${it.val ? 'bg-green-50 border-green-100 shadow-sm' : 'bg-muted/20 opacity-40 border-muted-foreground/5'} print:border-black print:border-2 print:opacity-100`}>
-                        <it.icon className="h-4 w-4" />
-                        <span className="text-[8px] font-black uppercase text-center print:text-[9pt]">{it.label}: {it.val ? 'हो' : 'नाही'}</span>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="space-y-1.5 w-full">
-                    <h4 className="text-[9px] font-black uppercase text-primary tracking-widest flex items-center gap-2 border-b pb-1 print:text-black print:border-black print:text-[12pt]">
-                      <Box className="h-3.5 w-3.5 print:hidden" /> साहित्याची यादी (INVENTORY)
-                    </h4>
-                    <div className="border border-muted-foreground/10 rounded-xl overflow-hidden shadow-sm print:border-2 print:border-black">
-                      <table className="w-full text-left border-collapse">
-                        <thead>
-                          <tr className="bg-muted/30 border-b print:bg-slate-100 print:border-black">
-                            <th className="p-2 text-[8px] font-black uppercase text-muted-foreground print:text-black print:text-[10pt]">साहित्य</th>
-                            <th className="p-2 text-[8px] font-black uppercase text-muted-foreground text-center print:text-black print:text-[10pt]">नग</th>
-                            <th className="p-2 text-[8px] font-black uppercase text-muted-foreground text-right print:text-black print:text-[10pt]">मालकी</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-muted-foreground/5 print:divide-black">
-                          {(selectedSupplier.equipment || []).map((e, idx) => (
-                            <tr key={e.id || idx} className="bg-white">
-                              <td className="p-2 font-black uppercase text-[10px] print:text-black print:text-[10pt]">{e.name}</td>
-                              <td className="p-2 text-center font-black text-[10px] print:text-black print:text-[10pt]">{e.quantity}</td>
-                              <td className="p-2 text-right">
-                                <Badge variant="outline" className="text-[7px] font-black uppercase h-4 px-1.5 bg-muted/50 border-none print:text-black print:border-slate-300 print:text-[8pt]">
-                                  {e.ownership === 'Self' ? 'स्वतः' : 'डेअरी'}
-                                </Badge>
-                              </td>
-                            </tr>
-                          ))}
-                          {(!selectedSupplier.equipment || selectedSupplier.equipment.length === 0) && (
-                            <tr><td colSpan={3} className="p-6 text-center text-[9px] opacity-30 font-black uppercase print:text-[10pt]">नोंद नाही</td></tr>
-                          )}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 print:grid-cols-2 w-full">
-                    <div className="space-y-1">
-                      <h4 className="text-[9px] font-black uppercase text-primary tracking-widest border-b pb-1 print:border-black print:text-[12pt]">भेळस तपासणी किट</h4>
-                      <div className="p-2 bg-muted/10 rounded-xl text-[9px] font-bold print:bg-white print:border-2 print:border-black print:text-[10pt] print:p-3">{selectedSupplier.adulterationKitInfo || "-"}</div>
-                    </div>
-                    <div className="space-y-1">
-                      <h4 className="text-[9px] font-black uppercase text-primary tracking-widest border-b pb-1 print:border-black print:text-[12pt]">विशेष शेरा</h4>
-                      <div className="p-2 bg-muted/10 rounded-xl italic text-[9px] text-slate-600 print:bg-white print:border-2 print:border-black print:text-black print:text-[10pt] print:p-3">{selectedSupplier.additionalNotes || selectedSupplier.additionalInfo || "-"}</div>
-                    </div>
-                  </div>
-                  
-                  <div className="hidden print:grid grid-cols-2 gap-12 text-center uppercase font-black text-[9pt] tracking-widest text-slate-400 mt-20 w-full">
-                    <div className="border-t-2 border-black pt-3 text-black">अधिकारी स्वाक्षरी</div>
-                    <div className="border-t-2 border-black pt-3 text-black">सुपरवायझर स्वाक्षरी</div>
-                  </div>
-                </div>
-              </ScrollArea>
+              <div className="grid grid-cols-2 gap-4 text-[11px]">
+                <div className="space-y-1"><p className="font-black text-slate-400 uppercase text-[9px]">ऑपरेटर</p><p className="font-bold">{selectedSupplier.operatorName || "-"}</p></div>
+                <div className="space-y-1"><p className="font-black text-slate-400 uppercase text-[9px]">मोबाईल</p><p className="font-bold">{selectedSupplier.mobile || "-"}</p></div>
+                <div className="col-span-2 space-y-1"><p className="font-black text-slate-400 uppercase text-[9px]">पत्ता</p><p className="font-bold">{selectedSupplier.address || "-"}</p></div>
+              </div>
+              <div className="grid grid-cols-3 gap-2 py-4">
+                <div className="p-3 bg-blue-50 border border-blue-100 rounded-2xl text-center"><p className="text-[8px] font-black text-blue-600 uppercase">गाय दूध</p><p className="text-lg font-black">{selectedSupplier.cowMilk?.quantity || 0} L</p></div>
+                <div className="p-3 bg-amber-50 border border-amber-100 rounded-2xl text-center"><p className="text-[8px] font-black text-amber-600 uppercase">म्हेस दूध</p><p className="text-lg font-black">{selectedSupplier.buffaloMilk?.quantity || 0} L</p></div>
+                <div className="p-3 bg-emerald-50 border border-emerald-100 rounded-2xl text-center"><p className="text-[8px] font-black text-emerald-600 uppercase">बर्फ वापर</p><p className="text-lg font-black">{selectedSupplier.iceBlocks || 0}</p></div>
+              </div>
             </div>
           ) : (
-            <div className="hidden lg:flex flex-col items-center gap-3 p-20 justify-center h-full no-print">
-              <div className="p-6 rounded-full bg-primary/5"><User className="h-12 w-12 text-primary/20" /></div>
-              <h4 className="font-black text-muted-foreground/30 text-[11px] uppercase tracking-[0.4em]">सप्लायर निवडा</h4>
-            </div>
+            <div className="flex flex-col items-center justify-center h-full opacity-20 p-20"><User className="h-16 w-16 mb-4" /><h4 className="font-black uppercase tracking-[0.3em]">सप्लायर निवडा</h4></div>
           )}
         </Card>
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-[600px] p-0 overflow-hidden rounded-3xl border-none shadow-2xl bg-white">
-          <DialogHeader className="p-4 bg-primary text-white sticky top-0 z-10">
-            <DialogTitle className="text-base font-black uppercase tracking-widest">{dialogMode === 'add' ? 'नवीन सप्लायर' : 'सप्लायर माहिती अपडेट करा'}</DialogTitle>
-            <DialogDescription className="text-[9px] text-white/70 uppercase">सप्लायरचा सविस्तर तपशील भरा.</DialogDescription>
-          </DialogHeader>
-          <ScrollArea className="max-h-[80vh] p-6">
+        <DialogContent className="max-w-2xl p-0 overflow-hidden rounded-3xl border-none shadow-2xl">
+          <DialogHeader className="p-4 bg-primary text-white"><DialogTitle className="text-base font-black uppercase tracking-widest">{dialogMode === 'add' ? 'नवीन सप्लायर' : 'माहिती अद्ययावत करा'}</DialogTitle></DialogHeader>
+          <ScrollArea className="max-h-[80vh] p-6 bg-white">
             <div className="space-y-6 pb-10">
-              <div className="grid grid-cols-1 gap-6">
-                <div className="space-y-4">
-                  <h4 className="text-[11px] font-black uppercase text-primary border-b pb-1 flex items-center gap-2"><User className="h-4 w-4" /> १) प्राथमिक माहिती</h4>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="col-span-2 space-y-1.5">
-                      <Label className="text-[10px] font-black uppercase text-muted-foreground">सप्लायर प्रकार *</Label>
-                      <Select value={formData.supplierType} onValueChange={(val: SupplierType) => setFormData({...formData, supplierType: val})}>
-                        <SelectTrigger className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl"><SelectValue /></SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Gavali" className="font-bold">गवळी (Gavali)</SelectItem>
-                          <SelectItem value="Gotha" className="font-bold">गोठा (Gotha)</SelectItem>
-                          <SelectItem value="Center" className="font-bold">उत्पादक केंद्र (Center)</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="col-span-2 space-y-1.5"><Label className="text-[10px] font-black uppercase text-muted-foreground">नाव *</Label><Input value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl shadow-inner" /></div>
-                    <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-muted-foreground">सप्लायर आयडी (ID) *</Label><Input value={formData.supplierId} onChange={e => setFormData({...formData, supplierId: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl shadow-inner" /></div>
-                    <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-muted-foreground">ऑपरेटर नाव</Label><Input value={formData.operatorName} onChange={e => setFormData({...formData, operatorName: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl shadow-inner" /></div>
-                    <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-muted-foreground">मोबाईल</Label><Input value={formData.mobile} onChange={e => setFormData({...formData, mobile: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl shadow-inner" /></div>
-                    <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-muted-foreground">पत्ता</Label><Input value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl shadow-inner" /></div>
+              <div className="space-y-4">
+                <h4 className="text-[11px] font-black uppercase text-primary border-b pb-1 flex items-center gap-2"><User className="h-4 w-4" /> १) प्राथमिक माहिती</h4>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="col-span-2 space-y-1.5"><Label className="text-[10px] font-black uppercase text-muted-foreground">सप्लायर प्रकार *</Label>
+                    <Select value={formData.supplierType} onValueChange={(v: SupplierType) => setFormData({...formData, supplierType: v})}><SelectTrigger className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="Gavali">गवळी (Gavali)</SelectItem><SelectItem value="Gotha">गोठा (Gotha)</SelectItem><SelectItem value="Center">उत्पादक केंद्र (Center)</SelectItem></SelectContent></Select>
                   </div>
+                  <div className="col-span-2 space-y-1.5"><Label className="text-[10px] font-black uppercase text-muted-foreground">नाव *</Label><Input value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl" /></div>
+                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-muted-foreground">आयडी (ID) *</Label><Input value={formData.supplierId} onChange={e => setFormData({...formData, supplierId: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl" /></div>
+                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-muted-foreground">ऑपरेटर नाव</Label><Input value={formData.operatorName} onChange={e => setFormData({...formData, operatorName: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl" /></div>
+                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-muted-foreground">मोबाईल</Label><Input value={formData.mobile} onChange={e => setFormData({...formData, mobile: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl" /></div>
+                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-muted-foreground">पत्ता</Label><Input value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl" /></div>
                 </div>
-
-                <div className="space-y-4">
-                  <h4 className="text-[11px] font-black uppercase text-primary border-b pb-1 flex items-center gap-2"><ShieldCheck className="h-4 w-4" /> २) परवाना व तांत्रिक</h4>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-muted-foreground">FSSAI क्र.</Label><Input value={formData.fssaiNumber} onChange={e => setFormData({...formData, fssaiNumber: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl" /></div>
-                    <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-muted-foreground">मुदत तारीख</Label><Input type="date" value={formData.fssaiExpiry} onChange={e => setFormData({...formData, fssaiExpiry: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl" /></div>
-                    <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-muted-foreground">काटा ब्रँड</Label><Input value={formData.scaleBrand} onChange={e => setFormData({...formData, scaleBrand: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl" /></div>
-                    <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-muted-foreground">मशीन ब्रँड</Label><Input value={formData.fatMachineBrand} onChange={e => setFormData({...formData, fatMachineBrand: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl" /></div>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <h4 className="text-[11px] font-black uppercase text-primary border-b pb-1 flex items-center gap-2"><Wallet className="h-4 w-4" /> ३) व्यावसायिक व दूध तपशील</h4>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-muted-foreground">पेमेंट सायकल</Label><Input value={formData.paymentCycle} onChange={e => setFormData({...formData, paymentCycle: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl" /></div>
-                    <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-muted-foreground">जागा (Self/Rented)</Label>
-                      <Select value={formData.spaceOwnership} onValueChange={(v: 'Self' | 'Rented') => setFormData({...formData, spaceOwnership: v})}>
-                        <SelectTrigger className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl"><SelectValue /></SelectTrigger>
-                        <SelectContent><SelectItem value="Self">स्वतःची</SelectItem><SelectItem value="Rented">भाड्याची</SelectItem></SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-muted-foreground">स्वच्छता ग्रेड (A/B/C)</Label><Input value={formData.hygieneGrade} onChange={e => setFormData({...formData, hygieneGrade: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl" /></div>
-                    <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-muted-foreground">बर्फ लाद्या संख्या</Label><Input type="number" value={formData.iceBlocks} onChange={e => setFormData({...formData, iceBlocks: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl" /></div>
-                  </div>
-                  <div className="grid grid-cols-3 gap-2 p-3 bg-blue-50/50 rounded-xl border border-blue-100">
-                    <div className="col-span-3 text-[10px] font-black uppercase text-blue-600 mb-1">गाय दूध (Cow Milk)</div>
-                    <div className="space-y-1"><Label className="text-[8px] font-black uppercase">Qty (L)</Label><Input type="number" value={formData.cowQty} onChange={e => setFormData({...formData, cowQty: e.target.value})} className="h-8 text-[11px] bg-white border-none font-bold rounded-lg" /></div>
-                    <div className="space-y-1"><Label className="text-[8px] font-black uppercase">Fat%</Label><Input type="number" value={formData.cowFat} onChange={e => setFormData({...formData, cowFat: e.target.value})} className="h-8 text-[11px] bg-white border-none font-bold rounded-lg" /></div>
-                    <div className="space-y-1"><Label className="text-[8px] font-black uppercase">SNF%</Label><Input type="number" value={formData.cowSnf} onChange={e => setFormData({...formData, cowSnf: e.target.value})} className="h-8 text-[11px] bg-white border-none font-bold rounded-lg" /></div>
-                  </div>
-                  <div className="grid grid-cols-3 gap-2 p-3 bg-amber-50/50 rounded-xl border border-amber-100">
-                    <div className="col-span-3 text-[10px] font-black uppercase text-amber-600 mb-1">म्हेस दूध (Buf Milk)</div>
-                    <div className="space-y-1"><Label className="text-[8px] font-black uppercase">Qty (L)</Label><Input type="number" value={formData.bufQty} onChange={e => setFormData({...formData, bufQty: e.target.value})} className="h-8 text-[11px] bg-white border-none font-bold rounded-lg" /></div>
-                    <div className="space-y-1"><Label className="text-[8px] font-black uppercase">Fat%</Label><Input type="number" value={formData.bufFat} onChange={e => setFormData({...formData, bufFat: e.target.value})} className="h-8 text-[11px] bg-white border-none font-bold rounded-lg" /></div>
-                    <div className="space-y-1"><Label className="text-[8px] font-black uppercase">SNF%</Label><Input type="number" value={formData.bufSnf} onChange={e => setFormData({...formData, bufSnf: e.target.value})} className="h-8 text-[11px] bg-white border-none font-bold rounded-lg" /></div>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <h4 className="text-[11px] font-black uppercase text-primary border-b pb-1 flex items-center gap-2"><Box className="h-4 w-4" /> ४) साहित्य व स्टेटस</h4>
-                  <div className="grid grid-cols-3 gap-2">
-                    <div className="flex items-center space-x-2 bg-muted/10 p-2 rounded-lg cursor-pointer" onClick={() => setFormData({...formData, computerAvailable: !formData.computerAvailable})}><Checkbox checked={formData.computerAvailable} /><Label className="text-[9px] font-black uppercase cursor-pointer">POP</Label></div>
-                    <div className="flex items-center space-x-2 bg-muted/10 p-2 rounded-lg cursor-pointer" onClick={() => setFormData({...formData, upsInverterAvailable: !formData.upsInverterAvailable})}><Checkbox checked={formData.upsInverterAvailable} /><Label className="text-[9px] font-black uppercase cursor-pointer">UPS</Label></div>
-                    <div className="flex items-center space-x-2 bg-muted/10 p-2 rounded-lg cursor-pointer" onClick={() => setFormData({...formData, solarAvailable: !formData.solarAvailable})}><Checkbox checked={formData.solarAvailable} /><Label className="text-[9px] font-black uppercase cursor-pointer">सोलर</Label></div>
-                  </div>
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between"><Label className="text-[10px] font-black uppercase">साहित्य यादी (Inventory)</Label><Button variant="outline" size="sm" onClick={addEquipmentRow} className="h-7 text-[9px] font-black px-3 rounded-xl border-primary/20 text-primary">जोडा</Button></div>
-                    <div className="space-y-2">
-                      {formData.equipment.map((item) => (
-                        <div key={item.id} className="grid grid-cols-12 gap-2 items-center bg-muted/5 p-2 rounded-xl border border-muted-foreground/5 shadow-inner">
-                          <div className="col-span-6"><Input value={item.name} onChange={e => updateEquipmentRow(item.id, {name: e.target.value})} className="h-8 text-[11px] px-3 bg-white border-none rounded-lg font-bold" placeholder="साहित्य" /></div>
-                          <div className="col-span-2"><Input type="number" value={item.quantity} onChange={e => updateEquipmentRow(item.id, {quantity: Number(e.target.value)})} className="h-8 text-[11px] px-0 text-center bg-white border-none rounded-lg font-black" /></div>
-                          <div className="col-span-3">
-                            <Select value={item.ownership} onValueChange={v => updateEquipmentRow(item.id, {ownership: v as any})}>
-                              <SelectTrigger className="h-8 text-[10px] px-2 bg-white border-none rounded-lg font-black"><SelectValue /></SelectTrigger>
-                              <SelectContent><SelectItem value="Self">स्वतः</SelectItem><SelectItem value="Company">डेअरी</SelectItem></SelectContent>
-                            </Select>
-                          </div>
-                          <div className="col-span-1 flex justify-end"><Button variant="ghost" size="icon" onClick={() => removeEquipmentRow(item.id)} className="h-7 w-7 text-destructive"><X className="h-4 w-4" /></Button></div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-muted-foreground">विशेष शेरा</Label><Textarea value={formData.additionalNotes} onChange={e => setFormData({...formData, additionalNotes: e.target.value})} className="h-20 text-[12px] bg-muted/20 border-none rounded-2xl p-4 shadow-inner" /></div>
               </div>
+              <div className="space-y-4">
+                <h4 className="text-[11px] font-black uppercase text-primary border-b pb-1 flex items-center gap-2"><ShieldCheck className="h-4 w-4" /> २) परवाना व तांत्रिक</h4>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-muted-foreground">FSSAI क्र.</Label><Input value={formData.fssaiNumber} onChange={e => setFormData({...formData, fssaiNumber: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none rounded-xl" /></div>
+                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-muted-foreground">मुदत तारीख</Label><Input type="date" value={formData.fssaiExpiry} onChange={e => setFormData({...formData, fssaiExpiry: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none rounded-xl" /></div>
+                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-muted-foreground">काटा ब्रँड</Label><Input value={formData.scaleBrand} onChange={e => setFormData({...formData, scaleBrand: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none rounded-xl" /></div>
+                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-muted-foreground">मशीन ब्रँड</Label><Input value={formData.fatMachineBrand} onChange={e => setFormData({...formData, fatMachineBrand: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none rounded-xl" /></div>
+                </div>
+              </div>
+              <div className="space-y-4">
+                <h4 className="text-[11px] font-black uppercase text-primary border-b pb-1 flex items-center gap-2"><Wallet className="h-4 w-4" /> ३) व्यावसायिक व दूध तपशील</h4>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-muted-foreground">पेमेंट सायकल</Label><Input value={formData.paymentCycle} onChange={e => setFormData({...formData, paymentCycle: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none rounded-xl" /></div>
+                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-muted-foreground">स्वच्छता ग्रेड (A/B/C)</Label><Input value={formData.hygieneGrade} onChange={e => setFormData({...formData, hygieneGrade: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none rounded-xl" /></div>
+                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-muted-foreground">बर्फ वापर</Label><Input type="number" value={formData.iceBlocks} onChange={e => setFormData({...formData, iceBlocks: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none rounded-xl" /></div>
+                </div>
+                <div className="grid grid-cols-3 gap-2 p-3 bg-blue-50/50 rounded-xl border border-blue-100">
+                  <div className="col-span-3 text-[10px] font-black uppercase text-blue-600 mb-1">गाय दूध (Cow)</div>
+                  <div className="space-y-1"><Label className="text-[8px] font-black">Ltr</Label><Input type="number" value={formData.cowQty} onChange={e => setFormData({...formData, cowQty: e.target.value})} className="h-8 text-[11px] bg-white border-none rounded-lg" /></div>
+                  <div className="space-y-1"><Label className="text-[8px] font-black">F%</Label><Input type="number" value={formData.cowFat} onChange={e => setFormData({...formData, cowFat: e.target.value})} className="h-8 text-[11px] bg-white border-none rounded-lg" /></div>
+                  <div className="space-y-1"><Label className="text-[8px] font-black">S%</Label><Input type="number" value={formData.cowSnf} onChange={e => setFormData({...formData, cowSnf: e.target.value})} className="h-8 text-[11px] bg-white border-none rounded-lg" /></div>
+                </div>
+              </div>
+              <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-muted-foreground">विशेष शेरा</Label><Textarea value={formData.additionalNotes} onChange={e => setFormData({...formData, additionalNotes: e.target.value})} className="h-20 text-[12px] bg-muted/20 border-none rounded-2xl p-4 shadow-inner" /></div>
             </div>
           </ScrollArea>
-          <DialogFooter className="p-4 border-t bg-muted/5">
-            <Button onClick={handleSaveSupplier} className="w-full font-black uppercase text-[11px] h-12 rounded-2xl shadow-xl shadow-primary/20 tracking-widest"><CheckCircle2 className="h-5 w-5 mr-2" /> माहिती जतन करा</Button>
-          </DialogFooter>
+          <DialogFooter className="p-4 border-t bg-muted/5"><Button onClick={handleSaveSupplier} className="w-full font-black uppercase text-[11px] h-12 rounded-2xl shadow-xl shadow-primary/20 tracking-widest"><CheckCircle2 className="h-5 w-5 mr-2" /> माहिती जतन करा</Button></DialogFooter>
         </DialogContent>
       </Dialog>
-
-      <style jsx global>{`
-        @media print {
-          @page { size: A4; margin: 10mm; }
-          html, body { visibility: hidden !important; background: white !important; margin: 0 !important; padding: 0 !important; }
-          body * { visibility: hidden !important; }
-          .printable-report, .printable-report * { visibility: visible !important; opacity: 1 !important; }
-          .printable-report { 
-            position: absolute !important; left: 0 !important; top: 0 !important; 
-            width: 100% !important; max-width: 210mm !important; margin: 0 auto !important; 
-            border: 1.5px solid black !important; padding: 10mm !important; box-shadow: none !important; display: block !important;
-          }
-          .no-print, button, [role="dialog"], .sidebar-trigger, header { display: none !important; }
-          table { width: 100% !important; border-collapse: collapse !important; border: 1.5px solid black !important; }
-          th, td { border: 1px solid black !important; padding: 6pt !important; font-size: 10pt !important; color: black !important; }
-        }
-      `}</style>
     </div>
   )
 }
