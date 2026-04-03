@@ -49,7 +49,6 @@ export default function ReportsPage() {
 
   useEffect(() => setMounted(true), [])
 
-  // 8 Filter Options as per user request
   const reportTypes = [
     { title: "रूट व्हिजिट", type: "Route Visit", icon: Truck, color: "text-blue-600" },
     { title: "क्षेत्र भेट", type: "Field Visit", icon: MapPin, color: "text-emerald-600" },
@@ -130,7 +129,7 @@ export default function ReportsPage() {
       'Route Visit': '/daily-report', 'Field Visit': '/daily-report', 'Daily Office Work': '/daily-report',
       'Transport Breakdown Report': '/reports/entry/breakdown', 'Daily Work Report': '/reports/entry/daily',
       'Seizure & Penalty': '/reports/entry/seizure', 'Collection Center Audit': '/reports/entry/audit',
-      'Daily Task': '/work-log'
+      'Daily Task': '/work-log', 'Official Document': '/form-builder'
     }
     const path = typeMap[report.type] || '/reports'
     router.push(`${path}?edit=${report.id}`)
@@ -158,12 +157,10 @@ export default function ReportsPage() {
     return (
       <div className="bg-white font-sans text-slate-900 border-[1.5px] border-black rounded-sm shadow-none w-full max-w-[210mm] mx-auto p-6 printable-report flex flex-col items-center">
         <ReportHeader title={d.reportHeading || report.type} date={report.date} subName={d.name || profileName} subId={d.idNumber || profileId} />
-        
         <div className="w-full grid grid-cols-2 gap-2 mb-4 font-black text-[9pt] uppercase">
           <div className="p-2 border border-black rounded bg-slate-50 text-left">रूट: {d.routeName || '---'} | वाहन: {d.vehicleNumber || '---'}</div>
           <div className="p-2 border border-black rounded bg-slate-50 text-right">ड्रायव्हर: {d.driverName || '---'} | शिफ्ट: {d.shift || '---'}</div>
         </div>
-
         <div className="w-full border border-black rounded overflow-hidden mb-4">
           <table className="w-full border-collapse">
             <thead>
@@ -194,7 +191,6 @@ export default function ReportsPage() {
             </tbody>
           </table>
         </div>
-
         <div className="w-full grid grid-cols-1 gap-2 text-left mb-6">
           {["achievements", "problems", "actionsTaken", "visitDiscussion"].map(key => d[key] && (
             <div key={key} className="p-2 border border-black rounded bg-slate-50/50">
@@ -203,7 +199,6 @@ export default function ReportsPage() {
             </div>
           ))}
         </div>
-
         <div className="w-full mt-auto pt-8 grid grid-cols-2 gap-12 text-center uppercase font-black text-[9pt] tracking-widest">
           <div className="border-t-[1.5px] border-black pt-2">अधिकारी स्वाक्षरी</div>
           <div className="border-t-[1.5px] border-black pt-2">सुपरवायझर: {d.supervisorName || '---'}</div>
@@ -216,11 +211,9 @@ export default function ReportsPage() {
     const d = report.fullData || {};
     const entries = Object.entries(d).filter(([k, v]) => labelMap[k] && v && !['centerLosses', 'reportHeading', 'name', 'idNumber'].includes(k));
     const losses = d.centerLosses || [];
-    
     return (
       <div className="bg-white font-sans text-slate-900 border-[1.5px] border-black rounded-sm w-full max-w-[210mm] mx-auto p-6 printable-report flex flex-col items-center">
         <ReportHeader title={d.reportHeading || report.type} date={report.date} subName={d.name || profileName} subId={d.idNumber || profileId} />
-        
         <div className="w-full border border-black rounded overflow-hidden mb-4">
           <table className="w-full border-collapse">
             <tbody>
@@ -233,7 +226,6 @@ export default function ReportsPage() {
             </tbody>
           </table>
         </div>
-
         {losses.length > 0 && (
           <div className="w-full border border-black rounded overflow-hidden mb-4">
             <table className="w-full border-collapse">
@@ -258,7 +250,6 @@ export default function ReportsPage() {
             </table>
           </div>
         )}
-
         <div className="w-full mt-auto pt-8 grid grid-cols-2 gap-12 text-center uppercase font-black text-[9pt] tracking-widest">
           <div className="border-t-[1.5px] border-black pt-2">अधिकारी स्वाक्षरी</div>
           <div className="border-t-[1.5px] border-black pt-2">सुपरवायझर स्वाक्षरी</div>
@@ -269,12 +260,11 @@ export default function ReportsPage() {
 
   const GenericLayout = ({ report }: { report: any }) => {
     const d = report.fullData || {};
-    const entries = Object.entries(d).filter(([k, v]) => labelMap[k] && v && !['routeVisitLogs', 'reportHeading', 'name', 'idNumber'].includes(k));
-    
+    const entries = Object.entries(d).filter(([k, v]) => labelMap[k] && v && !['routeVisitLogs', 'reportHeading', 'name', 'idNumber', 'remarkPoints'].includes(k));
+    const remarkPoints = d.remarkPoints || [];
     return (
       <div className="bg-white font-sans text-slate-900 border-[1.5px] border-black rounded-sm w-full max-w-[210mm] mx-auto p-6 printable-report flex flex-col items-center">
         <ReportHeader title={d.reportHeading || report.type} date={report.date} subName={d.name || d.repName || profileName} subId={d.idNumber || d.repId || profileId} />
-        
         <div className="w-full border border-black rounded overflow-hidden mb-4">
           <table className="w-full border-collapse">
             <tbody>
@@ -287,7 +277,16 @@ export default function ReportsPage() {
             </tbody>
           </table>
         </div>
-
+        {remarkPoints.length > 0 && (
+          <div className="w-full p-3 border border-black rounded bg-slate-50 mb-4">
+            <span className="text-[8pt] font-black uppercase block border-b border-black/10 pb-1 mb-2">केलेल्या कामाचा सविस्तर शेरा:</span>
+            <ul className="list-decimal list-inside space-y-1">
+              {remarkPoints.map((p: string, i: number) => (
+                <li key={i} className="text-[9pt] font-bold">{p}</li>
+              ))}
+            </ul>
+          </div>
+        )}
         <div className="w-full mt-auto pt-8 grid grid-cols-2 gap-12 text-center uppercase font-black text-[9pt] tracking-widest">
           <div className="border-t-[1.5px] border-black pt-2">अधिकारी स्वाक्षरी</div>
           <div className="border-t-[1.5px] border-black pt-2">सुपरवायझर स्वाक्षरी</div>
