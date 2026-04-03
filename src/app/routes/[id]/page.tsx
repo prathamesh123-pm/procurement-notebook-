@@ -17,7 +17,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogD
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useToast } from "@/hooks/use-toast"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking } from "@/firebase"
+import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking } from "@/firebase"
 import { collection, doc } from "firebase/firestore"
 import { Textarea } from "@/components/ui/textarea"
 
@@ -127,6 +127,15 @@ export default function RouteDetailsPage() {
     setFormData({ ...formData, equipment: formData.equipment.filter(e => e.id !== id) })
   }
 
+  const deleteSupplier = (id: string) => {
+    if (!db) return
+    if (confirm("तुम्हाला खात्री आहे की हा सप्लायर हटवायचा आहे?")) {
+      deleteDocumentNonBlocking(doc(db, 'suppliers', id))
+      setSelectedSupplier(null)
+      toast({ title: "यशस्वी", description: "सप्लायर हटवला." })
+    }
+  }
+
   const filteredSuppliers = useMemo(() => suppliersList.filter(s => s.name.toLowerCase().includes(searchQuery.toLowerCase())), [suppliersList, searchQuery])
 
   if (!mounted || isLoading) return <div className="p-10 text-center font-black uppercase text-[10px] opacity-50">लोड होत आहे...</div>
@@ -164,6 +173,7 @@ export default function RouteDetailsPage() {
                 <div className="flex gap-2">
                   <Button variant="outline" size="sm" className="h-8 rounded-xl font-black uppercase text-[9px]" onClick={() => window.print()}><Printer className="h-3.5 w-3.5 mr-1" /> प्रिंट</Button>
                   <Button variant="outline" size="sm" className="h-8 rounded-xl font-black uppercase text-[9px]" onClick={() => openEditDialog(selectedSupplier)}><Edit className="h-3.5 w-3.5 mr-1" /> बदल करा</Button>
+                  <Button variant="outline" size="sm" className="h-8 rounded-xl font-black uppercase text-[9px] text-destructive border-destructive/20" onClick={() => deleteSupplier(selectedSupplier.id)}><Trash2 className="h-3.5 w-3.5 mr-1" /> हटवा</Button>
                 </div>
               </div>
 

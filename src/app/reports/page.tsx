@@ -62,7 +62,7 @@ export default function ReportsPage() {
 
   const labelMap: Record<string, string> = {
     reportHeading: "अहवाल शीर्षक",
-    date: "तारीख",
+    date: "अहवाल तारीख",
     reportDate: "अहवाल तारीख",
     shift: "कामाची शिफ्ट",
     slipNo: "स्लिप नंबर",
