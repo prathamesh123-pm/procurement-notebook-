@@ -57,8 +57,17 @@ export default function ReportsPage() {
     { title: "कामकाज नोंद", type: "Daily Task", icon: ListTodo, color: "text-orange-600" },
     { title: "जप्ती व दंड", type: "Seizure & Penalty", icon: ShieldAlert, color: "text-amber-600" },
     { title: "दैनिक कामकाज", type: "Daily Work Report", icon: ClipboardCheck, color: "text-indigo-600" },
-    { title: "वर्ड फॉर्म", type: "Official Document", icon: FileSignature, color: "text-slate-600" },
+    { title: "ऑडिट", type: "Collection Center Audit", icon: Microscope, color: "text-cyan-600" },
   ]
+
+  // Order of fields for generic display
+  const fieldSequence = [
+    "centerName", "centerCode", "ownerName", "supplierName", "supplierId", "mobile", "address",
+    "routeName", "vehicleNo", "vehicleNumber", "driverName", "breakdownTime", "location", "reason", "severity",
+    "morningQty", "eveningQty", "fat", "snf", "result", "licenseStatus", "fineAmount", "seizureQty",
+    "visitPerson", "visitPurpose", "visitDiscussion", "officeTaskSubject", "officeTaskDetails",
+    "achievements", "problems", "actionsTaken", "summary", "actionTaken", "supervisorName"
+  ];
 
   const labelMap: Record<string, string> = {
     reportHeading: "अहवाल शीर्षक",
@@ -76,6 +85,7 @@ export default function ReportsPage() {
     address: "पत्ता",
     routeName: "रूट नाव",
     vehicleNumber: "वाहन क्र.",
+    vehicleNo: "गाडी नंबर",
     driverName: "ड्रायव्हर नाव",
     visitPerson: "कोणाची भेट घेतली?",
     visitPurpose: "भेटीचा मुख्य उद्देश",
@@ -93,13 +103,17 @@ export default function ReportsPage() {
     achievements: "आजची मोठी कामगिरी",
     problems: "महत्त्वाच्या समस्या",
     actionsTaken: "केलेली कार्यवाही",
+    actionTaken: "केलेली कार्यवाही",
     totalLossAmount: "एकूण आर्थिक नुकसान",
     fineAmount: "दंड (₹)",
     seizureQty: "जप्त दूध (L)",
     morningQty: "सकाळ (L)",
     eveningQty: "संध्याकाळ (L)",
     fat: "फॅट (%)",
-    snf: "SNF (%)"
+    snf: "SNF (%)",
+    result: "निकाल",
+    licenseStatus: "परवाना स्थिती",
+    summary: "कामाचा सारांश"
   };
 
   const filteredReports = useMemo(() => {
@@ -155,7 +169,7 @@ export default function ReportsPage() {
     const d = report.fullData || {};
     const logs = d.routeVisitLogs || [];
     return (
-      <div className="bg-white font-sans text-slate-900 border-[1.5px] border-black rounded-sm shadow-none w-full max-w-[210mm] mx-auto p-6 printable-report flex flex-col items-center">
+      <div className="bg-white font-sans text-slate-900 border-[1.5px] border-black rounded-sm w-full max-w-[210mm] mx-auto p-6 printable-report flex flex-col items-center shadow-none">
         <ReportHeader title={d.reportHeading || report.type} date={report.date} subName={d.name || profileName} subId={d.idNumber || profileId} />
         <div className="w-full grid grid-cols-2 gap-2 mb-4 font-black text-[9pt] uppercase">
           <div className="p-2 border border-black rounded bg-slate-50 text-left">रूट: {d.routeName || '---'} | वाहन: {d.vehicleNumber || '---'}</div>
@@ -192,7 +206,7 @@ export default function ReportsPage() {
           </table>
         </div>
         <div className="w-full grid grid-cols-1 gap-2 text-left mb-6">
-          {["achievements", "problems", "actionsTaken", "visitDiscussion"].map(key => d[key] && (
+          {["achievements", "problems", "actionsTaken", "visitDiscussion", "officeTaskDetails"].map(key => d[key] && (
             <div key={key} className="p-2 border border-black rounded bg-slate-50/50">
               <span className="text-[7pt] font-black uppercase text-slate-500 block">{labelMap[key] || key.toUpperCase()}</span>
               <p className="text-[9pt] font-bold">{d[key]}</p>
@@ -207,17 +221,24 @@ export default function ReportsPage() {
     );
   };
 
-  const BreakdownLayout = ({ report }: { report: any }) => {
+  const GenericLayout = ({ report }: { report: any }) => {
     const d = report.fullData || {};
-    const entries = Object.entries(d).filter(([k, v]) => labelMap[k] && v && !['centerLosses', 'reportHeading', 'name', 'idNumber'].includes(k));
+    // Extract entries based on the explicit fieldSequence to ensure order
+    const orderedEntries = fieldSequence
+      .filter(key => d[key] !== undefined && d[key] !== "" && labelMap[key])
+      .map(key => [key, d[key]]);
+
     const losses = d.centerLosses || [];
+    const remarkPoints = d.remarkPoints || [];
+
     return (
-      <div className="bg-white font-sans text-slate-900 border-[1.5px] border-black rounded-sm w-full max-w-[210mm] mx-auto p-6 printable-report flex flex-col items-center">
-        <ReportHeader title={d.reportHeading || report.type} date={report.date} subName={d.name || profileName} subId={d.idNumber || profileId} />
+      <div className="bg-white font-sans text-slate-900 border-[1.5px] border-black rounded-sm w-full max-w-[210mm] mx-auto p-6 printable-report flex flex-col items-center shadow-none">
+        <ReportHeader title={d.reportHeading || report.type} date={report.date} subName={d.name || d.repName || profileName} subId={d.idNumber || d.repId || profileId} />
+        
         <div className="w-full border border-black rounded overflow-hidden mb-4">
           <table className="w-full border-collapse">
             <tbody>
-              {entries.map(([k, v]: any) => (
+              {orderedEntries.map(([k, v]: any) => (
                 <tr key={k} className="border-b border-black last:border-0 text-[9pt] font-bold">
                   <td className="p-2 bg-slate-50 uppercase text-[8pt] font-black border-r border-black w-1/3">{labelMap[k]}</td>
                   <td className="p-2">{String(v)}</td>
@@ -226,8 +247,10 @@ export default function ReportsPage() {
             </tbody>
           </table>
         </div>
+
         {losses.length > 0 && (
           <div className="w-full border border-black rounded overflow-hidden mb-4">
+            <div className="bg-slate-100 p-1 text-[8pt] font-black uppercase text-center border-b border-black">नुकसान तपशील (LOSS LOG)</div>
             <table className="w-full border-collapse">
               <thead>
                 <tr className="bg-black text-white font-black text-[7pt] uppercase text-center">
@@ -250,36 +273,10 @@ export default function ReportsPage() {
             </table>
           </div>
         )}
-        <div className="w-full mt-auto pt-8 grid grid-cols-2 gap-12 text-center uppercase font-black text-[9pt] tracking-widest">
-          <div className="border-t-[1.5px] border-black pt-2">अधिकारी स्वाक्षरी</div>
-          <div className="border-t-[1.5px] border-black pt-2">सुपरवायझर स्वाक्षरी</div>
-        </div>
-      </div>
-    );
-  };
 
-  const GenericLayout = ({ report }: { report: any }) => {
-    const d = report.fullData || {};
-    const entries = Object.entries(d).filter(([k, v]) => labelMap[k] && v && !['routeVisitLogs', 'reportHeading', 'name', 'idNumber', 'remarkPoints'].includes(k));
-    const remarkPoints = d.remarkPoints || [];
-    return (
-      <div className="bg-white font-sans text-slate-900 border-[1.5px] border-black rounded-sm w-full max-w-[210mm] mx-auto p-6 printable-report flex flex-col items-center">
-        <ReportHeader title={d.reportHeading || report.type} date={report.date} subName={d.name || d.repName || profileName} subId={d.idNumber || d.repId || profileId} />
-        <div className="w-full border border-black rounded overflow-hidden mb-4">
-          <table className="w-full border-collapse">
-            <tbody>
-              {entries.map(([k, v]: any) => (
-                <tr key={k} className="border-b border-black last:border-0 text-[9pt] font-bold">
-                  <td className="p-2 bg-slate-50 uppercase text-[8pt] font-black border-r border-black w-1/3">{labelMap[k]}</td>
-                  <td className="p-2">{String(v)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
         {remarkPoints.length > 0 && (
           <div className="w-full p-3 border border-black rounded bg-slate-50 mb-4">
-            <span className="text-[8pt] font-black uppercase block border-b border-black/10 pb-1 mb-2">केलेल्या कामाचा सविस्तर शेरा:</span>
+            <span className="text-[8pt] font-black uppercase block border-b border-black/10 pb-1 mb-2">सविस्तर शेरा:</span>
             <ul className="list-decimal list-inside space-y-1">
               {remarkPoints.map((p: string, i: number) => (
                 <li key={i} className="text-[9pt] font-bold">{p}</li>
@@ -287,6 +284,7 @@ export default function ReportsPage() {
             </ul>
           </div>
         )}
+
         <div className="w-full mt-auto pt-8 grid grid-cols-2 gap-12 text-center uppercase font-black text-[9pt] tracking-widest">
           <div className="border-t-[1.5px] border-black pt-2">अधिकारी स्वाक्षरी</div>
           <div className="border-t-[1.5px] border-black pt-2">सुपरवायझर स्वाक्षरी</div>
@@ -380,7 +378,6 @@ export default function ReportsPage() {
             <div className="w-full flex flex-col items-center">
               {selectedReport && (
                 selectedReport.type === 'Route Visit' ? <RouteSlipLayout report={selectedReport} /> :
-                selectedReport.type === 'Transport Breakdown Report' ? <BreakdownLayout report={selectedReport} /> :
                 <GenericLayout report={selectedReport} />
               )}
             </div>
