@@ -6,9 +6,8 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { 
   Archive, Search, X, Printer, Trash2, FileEdit, Truck, ListTodo, 
-  ShieldAlert, ClipboardCheck, FileSignature, Plus, MapPin, Briefcase, FileText, FileStack
+  ShieldAlert, ClipboardCheck, FileSignature, Plus, MapPin, Briefcase, FileText
 } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
@@ -68,7 +67,7 @@ export default function ReportsPage() {
     repName: "प्रतिनिधी नाव",
     repId: "प्रतिनिधी आयडी",
     idNumber: "अधिकारी आयडी",
-    supervisorName: "सुपरवायझर",
+    supervisorName: "सुपरवायझर नाव",
     supplierName: "पुरवठादार नाव",
     supplierId: "कोड (ID)",
     centerName: "केंद्राचे नाव",
@@ -80,7 +79,7 @@ export default function ReportsPage() {
     taluka: "तालुका",
     visitPerson: "भेटलेली व्यक्ती",
     visitPurpose: "भेटीचा उद्देश",
-    visitDiscussion: "झालेली चर्चा",
+    visitDiscussion: "झालेली सविस्तर चर्चा",
     route: "रूट",
     routeName: "रूट नाव",
     vehicleNo: "वाहन क्र.",
@@ -102,15 +101,15 @@ export default function ReportsPage() {
     officeTaskSubject: "कामाचा विषय",
     officeTaskDetails: "कामाचा तपशील",
     pendingOfficeWork: "उद्याची कामे",
-    achievements: "आजची कामगिरी",
-    problems: "समस्या",
+    achievements: "आजची मोठी कामगिरी",
+    problems: "महत्त्वाच्या समस्या",
+    actionTaken: "केलेली कार्यवाही",
+    actionsTaken: "केलेली कार्यवाही",
     totalLossAmount: "आर्थिक नुकसान (₹)",
     fineAmount: "दंड (₹)",
     seizureQty: "जप्त दूध (L)",
     tempAfterChilling: "तापमान (°C)",
     result: "तपासणी निकाल",
-    actionTaken: "केलेली कार्यवाही",
-    actionsTaken: "केलेली कार्यवाही",
     morningQty: "सकाळचे दूध (L)",
     eveningQty: "संध्याकाळचे दूध (L)",
     fat: "फॅट (%)",
@@ -136,7 +135,7 @@ export default function ReportsPage() {
     "supplierName", "centerName", "supplierId", "centerCode", "ownerName", "mobile", "address", "district", "taluka",
     "visitPerson", "visitPurpose", "visitDiscussion", "travelVehicle", 
     "officeTaskSubject", "officeTaskDetails", "pendingOfficeWork",
-    "actionTaken", "actionsTaken", "achievements", "problems", "supervisorName",
+    "achievements", "problems", "actionsTaken", "actionTaken", "supervisorName",
     "vehicleNumber", "vehicleNo", "driverName", "routeName", "route", "slipNo",
     "breakdownTime", "location", "severity", "detailedReason", "estimatedRepairTime", "estimatedRepairCost", 
     "recoveryVehicleNo", "recoveryArrivalTime", "milkHot", "milkSour", 
@@ -214,7 +213,7 @@ export default function ReportsPage() {
                 <th className="p-1.5 text-left border-r border-white/20">केंद्र व कोड</th>
                 <th className="p-1.5 text-center border-r border-white/20">वेळ</th>
                 <th className="p-1.5 text-center border-r border-white/20">कॅन (E/F)</th>
-                <th className="p-1.5 text-center">बर्फ</th>
+                <th className="p-1.5 text-center">बर्फ वापर</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-900 print:divide-black">
@@ -241,7 +240,7 @@ export default function ReportsPage() {
         <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-2 text-left mb-4">
           {["achievements", "problems", "actionsTaken", "actionTaken"].map(key => d[key] && (
             <div key={key} className="p-2 border border-slate-300 rounded-md print:border-black">
-              <span className="text-[7pt] font-black uppercase text-slate-500 print:text-black block border-b border-slate-100 mb-1">{labelMap[key]}:</span>
+              <span className="text-[7pt] font-black uppercase text-slate-500 print:text-black block border-b border-slate-100 mb-1">{labelMap[key] || key.toUpperCase()}:</span>
               <p className="text-[8pt] font-bold leading-snug">{d[key]}</p>
             </div>
           ))}
@@ -348,7 +347,7 @@ export default function ReportsPage() {
           <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] ml-1">Archive & Record Management</p>
         </div>
         <Button asChild size="sm" className="h-10 px-6 font-black uppercase rounded-2xl shadow-xl shadow-primary/20 transition-all active:scale-95 w-full sm:w-auto">
-          <Link href="/reports/entry/seizure"><Plus className="h-4 w-4 mr-2" /> जप्ती नोंद</Link>
+          <Link href="/reports/entry/daily"><Plus className="h-4 w-4 mr-2" /> नवीन अहवाल</Link>
         </Button>
       </div>
 

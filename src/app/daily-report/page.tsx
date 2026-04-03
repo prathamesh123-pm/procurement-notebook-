@@ -239,7 +239,7 @@ function DailyReportForm() {
                   </div>
                   <div className="space-y-0.5"><Label className="compact-label">वेळ (IN/OUT)</Label><div className="flex gap-1"><Input className="compact-input h-8 text-center" type="time" value={entry.arrivalTime || ""} onChange={e => updateRouteEntry(entry.id, { arrivalTime: e.target.value })} /><Input className="compact-input h-8 text-center" type="time" value={entry.departureTime || ""} onChange={e => updateRouteEntry(entry.id, { departureTime: e.target.value })} /></div></div>
                   <div className="space-y-0.5"><Label className="compact-label">कॅन (E/F)</Label><div className="flex gap-1"><Input className="compact-input h-8 text-center" placeholder="E" value={entry.emptyCans || ""} onChange={e => updateRouteEntry(entry.id, { emptyCans: e.target.value })} /><Input className="compact-input h-8 text-center font-black text-primary" placeholder="F" value={entry.fullCans || ""} onChange={e => updateRouteEntry(entry.id, { fullCans: e.target.value })} /></div></div>
-                  <div className="space-y-0.5 col-span-2"><Label className="compact-label">बर्फ वापरला</Label><Input className="compact-input h-8" value={entry.iceUsed || ""} onChange={e => updateRouteEntry(entry.id, { iceUsed: e.target.value })} /></div>
+                  <div className="space-y-0.5 col-span-2"><Label className="compact-label">बर्फ वापर</Label><Input className="compact-input h-8" value={entry.iceUsed || ""} onChange={e => updateRouteEntry(entry.id, { iceUsed: e.target.value })} /></div>
                 </div>
               </Card>
             ))}
