@@ -5,7 +5,7 @@ import { useState, useEffect, useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { 
-  Warehouse, Plus, Search, MapPin, Edit, X, ChevronRight, Trash2, 
+  Warehouse, Plus, Search, MapPin, Edit, X, ChevronRight,
   Laptop, Zap, Sun, Box, Milk, ShieldCheck, Wallet, User, Printer, CheckCircle2
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
@@ -13,8 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogD
 import { Supplier, EquipmentItem, SupplierType } from "@/lib/types"
 import { useToast } from "@/hooks/use-toast"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Checkbox } from "@/components/ui/checkbox"
-import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking } from "@/firebase"
+import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking } from "@/firebase"
 import { collection, doc, query, where } from "firebase/firestore"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
@@ -196,7 +195,7 @@ export default function CentersPage() {
         </Card>
 
         {selectedCenter && (
-          <div className="bg-white font-sans text-slate-900 border-[1.5px] border-black rounded-sm w-full max-w-[210mm] mx-auto p-6 printable-report flex flex-col items-center shadow-none animate-in slide-in-from-bottom-2 duration-300">
+          <div className="bg-white font-sans text-slate-900 border-[1.5px] border-black rounded-sm w-full max-w-[210mm] mx-auto p-6 printable-report flex flex-col items-center shadow-none mb-4">
             <div className="w-full flex items-center justify-between no-print mb-4 border-b pb-2">
               <Badge className="bg-primary/10 text-primary border-none uppercase text-[10px] font-black">CENTER PROFILE</Badge>
               <div className="flex gap-2">
@@ -215,7 +214,7 @@ export default function CentersPage() {
               <p className="text-[9pt] font-black text-muted-foreground uppercase">ID: {selectedCenter.supplierId} | CENTER</p>
             </div>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full mb-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full mb-4 text-left">
               <div className="space-y-3">
                 <h4 className="text-[10px] font-black uppercase text-primary tracking-widest border-b pb-1 flex items-center gap-2"><User className="h-3.5 w-3.5" /> १) प्राथमिक माहिती</h4>
                 <div className="space-y-1.5 text-[11px] font-bold">
@@ -228,22 +227,22 @@ export default function CentersPage() {
               <div className="space-y-3">
                 <h4 className="text-[10px] font-black uppercase text-primary tracking-widest border-b pb-1 flex items-center gap-2"><ShieldCheck className="h-3.5 w-3.5" /> २) परवाना व तांत्रिक</h4>
                 <div className="space-y-1.5 text-[11px] font-bold">
-                  <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">FSSAI</span><span>{selectedCenter.fssaiNumber || "-"}</span></div>
+                  <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">FSSAI क्र.</span><span>{selectedCenter.fssaiNumber || "-"}</span></div>
                   <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">काटा ब्रँड</span><span>{selectedCenter.scaleBrand || "-"}</span></div>
-                  <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">मशीन</span><span>{selectedCenter.fatMachineBrand || "-"}</span></div>
+                  <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">मशीन ब्रँड</span><span>{selectedCenter.fatMachineBrand || "-"}</span></div>
                   <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">रसायन स्टॉक</span><span>{selectedCenter.chemicalsStock || "-"}</span></div>
-                  <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">बॅटरी</span><span>{selectedCenter.batteryCondition || "-"}</span></div>
+                  <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">बॅटरी स्थिती</span><span>{selectedCenter.batteryCondition || "-"}</span></div>
                 </div>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full mb-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full mb-4 text-left">
               <div className="space-y-3">
                 <h4 className="text-[10px] font-black uppercase text-primary tracking-widest border-b pb-1 flex items-center gap-2"><Wallet className="h-3.5 w-3.5" /> ३) व्यावसायिक माहिती</h4>
                 <div className="space-y-1.5 text-[11px] font-bold">
-                  <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">सायकल</span><span>{selectedCenter.paymentCycle || "10 Days"}</span></div>
+                  <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">पेमेंट सायकल</span><span>{selectedCenter.paymentCycle || "10 Days"}</span></div>
                   <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">जागा</span><span>{selectedCenter.spaceOwnership === 'Self' ? 'स्वतःची' : 'भाड्याची'}</span></div>
-                  <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">ग्रेड</span><Badge className="h-4 px-1 text-[8px] border-none bg-emerald-500">{selectedCenter.hygieneGrade || "A"}</Badge></div>
+                  <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">स्वच्छता ग्रेड</span><Badge className="h-4 px-1 text-[8px] border-none bg-emerald-500">{selectedCenter.hygieneGrade || "A"}</Badge></div>
                   <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">बर्फ लाद्या</span><span>{selectedCenter.iceBlocks || 0}</span></div>
                 </div>
               </div>
@@ -257,13 +256,13 @@ export default function CentersPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-2 w-full mb-4">
+            <div className="grid grid-cols-3 gap-2 w-full mb-4 text-left">
               <div className={`p-2 rounded-xl border border-black/10 flex flex-col items-center gap-1 ${selectedCenter.computerAvailable ? 'bg-emerald-50' : 'bg-muted/20 opacity-40'}`}><Laptop className="h-4 w-4" /><span className="text-[8px] font-black uppercase">POP: {selectedCenter.computerAvailable ? 'हो' : 'नाही'}</span></div>
               <div className={`p-2 rounded-xl border border-black/10 flex flex-col items-center gap-1 ${selectedCenter.upsInverterAvailable ? 'bg-emerald-50' : 'bg-muted/20 opacity-40'}`}><Zap className="h-4 w-4" /><span className="text-[8px] font-black uppercase">UPS: {selectedCenter.upsInverterAvailable ? 'हो' : 'नाही'}</span></div>
               <div className={`p-2 rounded-xl border border-black/10 flex flex-col items-center gap-1 ${selectedCenter.solarAvailable ? 'bg-emerald-50' : 'bg-muted/20 opacity-40'}`}><Sun className="h-4 w-4" /><span className="text-[8px] font-black uppercase">सोलर: {selectedCenter.solarAvailable ? 'हो' : 'नाही'}</span></div>
             </div>
 
-            <div className="space-y-3 w-full">
+            <div className="space-y-3 w-full text-left">
               <h4 className="text-[10px] font-black uppercase text-primary tracking-widest border-b pb-1 flex items-center gap-2"><Box className="h-3.5 w-3.5" /> साहित्याची यादी (INVENTORY)</h4>
               <div className="border border-black rounded-sm overflow-hidden">
                 <table className="w-full text-left text-[9pt] border-collapse">
@@ -395,6 +394,21 @@ export default function CentersPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <style jsx global>{`
+        @media print {
+          @page { size: A4; margin: 10mm; }
+          body * { visibility: hidden !important; background: white !important; }
+          .printable-report, .printable-report * { visibility: visible !important; opacity: 1 !important; color: black !important; }
+          .printable-report { 
+            position: relative !important; margin: 0 auto 20px auto !important; width: 100% !important; max-width: 190mm !important; 
+            border: 1.5px solid black !important; padding: 10mm !important; display: block !important;
+            box-shadow: none !important;
+            page-break-inside: avoid !important;
+          }
+          .no-print, button, header, nav, footer, .sidebar, [role="dialog"] [class*="Close"] { display: none !important; }
+        }
+      `}</style>
     </div>
   )
 }

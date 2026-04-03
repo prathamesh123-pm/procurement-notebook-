@@ -7,13 +7,13 @@ import { Card } from "@/components/ui/card"
 import { 
   Archive, Search, X, Printer, Trash2, FileEdit, Truck, 
   ShieldAlert, ClipboardCheck, Plus, MapPin, FileText,
-  Microscope, Milk, User, Calendar, ClipboardList, Briefcase, ListTodo, LayoutGrid, FileCheck, FileSignature
+  Milk, User, Briefcase, ListTodo, FileSignature, CheckCircle2, Microscope
 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { useUser, useFirestore, useCollection, useDoc, useMemoFirebase, deleteDocumentNonBlocking } from "@/firebase"
+import { useUser, useFirestore, useCollection, useMemoFirebase, deleteDocumentNonBlocking } from "@/firebase"
 import { collection, doc } from "firebase/firestore"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -66,7 +66,7 @@ export default function ReportsPage() {
     reportDate: "अहवाल तारीख",
     shift: "कामाची शिफ्ट",
     slipNo: "स्लिप नंबर",
-    idNumber: "अधिकारी कर्मचारी आयडी",
+    idNumber: "सादरकर्त्याचा अधिकारी आयडी",
     repId: "कर्मचारी आयडी",
     supervisorName: "सुपरवायझरचे नाव",
     centerName: "केंद्राचे पूर्ण नाव",
@@ -89,7 +89,7 @@ export default function ReportsPage() {
     severity: "बिघाडाचे स्वरूप (Severity)",
     detailedReason: "बिघाडाचे सविस्तर वर्णन",
     estimatedRepairTime: "दुरुस्तीसाठी लागणारा वेळ",
-    estimatedRepairCost: "दुरुस्तीसाठी लागणारा खर्च (₹)",
+    estimatedRepairCost: "दुरुस्तीसाठी लागणारा अंदाजे खर्च (₹)",
     recoveryVehicleNo: "पाठवलेली दुसरी पर्यायी गाडी",
     recoveryArrivalTime: "दुसरी गाडी पोहोचण्याची वेळ",
     capacity: "गाडीची दूध क्षमता (Liters)",
@@ -100,7 +100,7 @@ export default function ReportsPage() {
     result: "तपासणीचा अंतिम निकाल",
     milkHot: "दूध गरम झाले होते का?",
     milkSour: "दूध पूर्णपणे खराब झाले का?",
-    licenseStatus: "परवाना स्थिती (License)",
+    licenseStatus: "परवाना स्थिती (License Status)",
     fssaiNo: "FSSAI परवाना क्रमांक",
     validDate: "परवाना मुदत संपण्याची तारीख",
     summary: "केलेल्या कामाचा सविस्तर सारांश",
@@ -184,7 +184,7 @@ export default function ReportsPage() {
     const d = report.fullData || {};
     const logs = d.routeVisitLogs || [];
     return (
-      <div className="bg-white font-sans text-slate-900 border-[1.5px] border-black rounded-sm w-full max-w-[210mm] mx-auto p-6 printable-report flex flex-col items-center shadow-none min-h-[297mm]">
+      <div className="bg-white font-sans text-slate-900 border-[1.5px] border-black rounded-sm w-full max-w-[210mm] mx-auto p-6 printable-report flex flex-col items-center shadow-none mb-4">
         <ReportHeader title={d.reportHeading || report.type} date={report.date} subName={d.name || profileName} subId={d.idNumber || profileId} />
         <div className="w-full grid grid-cols-2 gap-2 mb-4 font-black text-[9pt] uppercase">
           <div className="p-2 border border-black rounded bg-slate-50 text-left">रूट: {d.routeName || '---'} | वाहन: {d.vehicleNumber || '---'}</div>
@@ -241,7 +241,7 @@ export default function ReportsPage() {
     
     if (report.type === 'Official Document') {
       return (
-        <div className="bg-white font-sans text-slate-900 border-[1.5px] border-black rounded-sm w-full max-w-[210mm] mx-auto p-10 printable-report flex flex-col items-center shadow-none min-h-[297mm]">
+        <div className="bg-white font-sans text-slate-900 border-[1.5px] border-black rounded-sm w-full max-w-[210mm] mx-auto p-10 printable-report flex flex-col items-center shadow-none mb-4">
           <div 
             className="w-full prose prose-sm max-w-none text-left"
             dangerouslySetInnerHTML={{ __html: d.content || "" }} 
@@ -263,7 +263,7 @@ export default function ReportsPage() {
     const remarkPoints = d.remarkPoints || [];
 
     return (
-      <div className="bg-white font-sans text-slate-900 border-[1.5px] border-black rounded-sm w-full max-w-[210mm] mx-auto p-6 printable-report flex flex-col items-center shadow-none min-h-[297mm]">
+      <div className="bg-white font-sans text-slate-900 border-[1.5px] border-black rounded-sm w-full max-w-[210mm] mx-auto p-6 printable-report flex flex-col items-center shadow-none mb-4">
         <ReportHeader title={d.reportHeading || report.type} date={report.date} subName={d.name || d.repName || profileName} subId={d.idNumber || d.repId || profileId} />
         
         <div className="w-full border border-black rounded overflow-hidden mb-4">
@@ -423,16 +423,16 @@ export default function ReportsPage() {
 
       <style jsx global>{`
         @media print {
-          @page { size: A4; margin: 5mm; }
+          @page { size: A4; margin: 10mm; }
           body * { visibility: hidden !important; background: white !important; }
           .printable-report, .printable-report * { visibility: visible !important; opacity: 1 !important; color: black !important; }
           .printable-report { 
-            position: absolute !important; left: 0 !important; right: 0 !important; top: 0 !important;
-            margin: 0 auto !important; width: 100% !important; max-width: 210mm !important; 
+            position: relative !important; margin: 0 auto 20px auto !important; width: 100% !important; max-width: 190mm !important; 
             border: 1.5px solid black !important; padding: 10mm !important; display: block !important;
             box-shadow: none !important;
+            page-break-inside: avoid !important;
           }
-          .no-print, button, header, nav, footer, .sidebar, [role="dialog"] [class*="Close"] { display: none !important; }
+          .no-print, button, header, nav, footer, .sidebar, [role="dialog"] [class*="Close"], .h-14, .h-6 { display: none !important; }
           table { width: 100% !important; border-collapse: collapse !important; border: 1.5px solid black !important; }
           th, td { border: 1px solid black !important; padding: 3pt 5pt !important; font-size: 8.5pt !important; line-height: 1.2 !important; }
           th { background-color: #f1f5f9 !important; -webkit-print-color-adjust: exact; }
