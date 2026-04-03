@@ -30,8 +30,8 @@ function SeizureReportForm() {
     date: new Date().toISOString().split('T')[0],
     supplierName: "", supplierId: "", route: "",
     seizureQty: "", milkType: "MIX", 
-    reason: "Adulteration", fineAmount: "",
-    actionTaken: "Destroyed", notes: "",
+    reason: "", fineAmount: "",
+    actionTaken: "", notes: "",
     points: [""]
   })
 
@@ -71,15 +71,14 @@ function SeizureReportForm() {
     }
 
     const filteredPoints = formData.points.filter(p => p.trim())
-    const pointsSummary = filteredPoints.map((p, i) => `${i + 1}. ${p}`).join(' | ')
-
+    
     const reportData = {
       type: 'Seizure & Penalty',
       date: formData.date,
       reportDate: formData.date,
       generatedByUserId: user.uid,
-      summary: `जप्ती: ${formData.supplierName}. दूध: ${formData.seizureQty}L. दंड: ₹${formData.fineAmount}. कारण: ${formData.reason}.`,
-      overallSummary: `जप्ती: ${formData.supplierName}. दूध: ${formData.seizureQty}L. दंड: ₹${formData.fineAmount}. कारण: ${formData.reason}.`,
+      summary: `जप्ती: ${formData.supplierName}. दंड: ₹${formData.fineAmount}.`,
+      overallSummary: `जप्ती: ${formData.supplierName}. दंड: ₹${formData.fineAmount}.`,
       fullData: { 
         ...formData, 
         points: filteredPoints,
@@ -117,7 +116,7 @@ function SeizureReportForm() {
         <Card className="compact-card p-3 border-primary/20 bg-primary/5">
           <div className="space-y-1">
             <Label className="compact-label text-primary">अहवालाचे शीर्षक (Report Heading) *</Label>
-            <Input className="compact-input h-10 border-primary/20 font-black text-primary text-base" value={formData.reportHeading} onChange={e => setFormData({...formData, reportHeading: e.target.value})} placeholder="उदा. जप्ती व दंड अहवाल" />
+            <Input className="compact-input h-10 border-primary/20 font-black text-primary text-base" value={formData.reportHeading} onChange={e => setFormData({...formData, reportHeading: e.target.value})} />
           </div>
         </Card>
 
@@ -127,8 +126,8 @@ function SeizureReportForm() {
             <div className="space-y-1.5">
               <div className="space-y-0.5"><Label className="compact-label">पुरवठादार किंवा केंद्राचे पूर्ण नाव *</Label><Input className="compact-input h-9" value={formData.supplierName || ""} onChange={e => setFormData({...formData, supplierName: e.target.value})} /></div>
               <div className="grid grid-cols-2 gap-2">
-                <div className="space-y-0.5"><Label className="compact-label">पुरवठादार किंवा केंद्राचा आयडी कोड</Label><Input className="compact-input h-9" value={formData.supplierId || ""} onChange={e => setFormData({...formData, supplierId: e.target.value})} /></div>
-                <div className="space-y-0.5"><Label className="compact-label">संबंधित संकलन रूटचे नाव</Label><Input className="compact-input h-9" value={formData.route || ""} onChange={e => setFormData({...formData, route: e.target.value})} /></div>
+                <div className="space-y-0.5"><Label className="compact-label">पुरवठादार कोड (ID)</Label><Input className="compact-input h-9" value={formData.supplierId || ""} onChange={e => setFormData({...formData, supplierId: e.target.value})} /></div>
+                <div className="space-y-0.5"><Label className="compact-label">रूटचे नाव</Label><Input className="compact-input h-9" value={formData.route || ""} onChange={e => setFormData({...formData, route: e.target.value})} /></div>
               </div>
             </div>
           </div>
@@ -138,41 +137,38 @@ function SeizureReportForm() {
           <div className="space-y-2">
             <h3 className="text-[9px] font-black uppercase text-primary border-b pb-0.5 flex items-center gap-1"><AlertCircle className="h-3 w-3" /> २) जप्तीचा तपशील</h3>
             <div className="grid grid-cols-2 gap-2">
-              <div className="space-y-0.5"><Label className="compact-label">जप्त केलेल्या दुधाचे एकूण प्रमाण (Liters)</Label><Input type="number" className="compact-input h-9" value={formData.seizureQty || ""} onChange={e => setFormData({...formData, seizureQty: e.target.value})} /></div>
-              <div className="space-y-0.5"><Label className="compact-label">दूध जप्त करण्याचे कारण</Label><Input className="compact-input h-9" value={formData.reason || ""} onChange={e => setFormData({...formData, reason: e.target.value})} /></div>
+              <div className="space-y-0.5"><Label className="compact-label">जप्त दूध (Liters)</Label><Input type="number" className="compact-input h-9" value={formData.seizureQty || ""} onChange={e => setFormData({...formData, seizureQty: e.target.value})} /></div>
+              <div className="space-y-0.5"><Label className="compact-label">जप्तीचे कारण</Label><Input className="compact-input h-9" value={formData.reason || ""} onChange={e => setFormData({...formData, reason: e.target.value})} /></div>
             </div>
-            <div className="space-y-0.5"><Label className="compact-label">जप्त केलेल्या दुधावर केलेली कारवाई</Label><Input className="compact-input h-9" value={formData.actionTaken || ""} onChange={e => setFormData({...formData, actionTaken: e.target.value})} /></div>
+            <div className="space-y-0.5"><Label className="compact-label">केलेली कारवाई</Label><Input className="compact-input h-9" value={formData.actionTaken || ""} onChange={e => setFormData({...formData, actionTaken: e.target.value})} /></div>
           </div>
         </Card>
 
         <Card className="compact-card p-3 bg-muted/5">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-[9px] font-black uppercase text-primary flex items-center gap-1"><PlusCircle className="h-3 w-3" /> ३) विशेष निरीक्षणे किंवा मुद्दे</h3>
-            <Button type="button" variant="outline" size="sm" onClick={addPoint} className="h-6 text-[8px] font-black uppercase px-2 rounded-lg">मुद्दा जोडा</Button>
+            <h3 className="text-[9px] font-black uppercase text-primary flex items-center gap-1"><PlusCircle className="h-3 w-3" /> ३) विशेष निरीक्षणे (Points)</h3>
+            <Button type="button" variant="outline" size="sm" onClick={addPoint} className="h-6 text-[8px] font-black uppercase px-2 rounded-lg">जोडा</Button>
           </div>
-          <ScrollArea className="max-h-[200px]">
-            <div className="space-y-2">
-              {formData.points.map((p, i) => (
-                <div key={i} className="flex gap-2 items-center">
-                  <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center font-black text-[9px] text-primary shrink-0">{i + 1}</div>
-                  <Input value={p} onChange={e => updatePoint(i, e.target.value)} placeholder="तपशील लिहा..." className="h-8 text-[10px] font-bold bg-white border-none rounded-lg" />
-                  <Button type="button" variant="ghost" size="icon" onClick={() => removePoint(i)} className="h-7 w-7 text-rose-400 shrink-0"><Trash2 className="h-3.5 w-3.5" /></Button>
-                </div>
-              ))}
-            </div>
-          </ScrollArea>
+          <div className="space-y-2">
+            {formData.points.map((p, i) => (
+              <div key={i} className="flex gap-2 items-center">
+                <Input value={p} onChange={e => updatePoint(i, e.target.value)} placeholder="मुद्दा लिहा..." className="h-8 text-[10px] font-bold bg-white border-none rounded-lg" />
+                <Button type="button" variant="ghost" size="icon" onClick={() => removePoint(i)} className="h-7 w-7 text-rose-400 shrink-0"><Trash2 className="h-3.5 w-3.5" /></Button>
+              </div>
+            ))}
+          </div>
         </Card>
 
         <Card className="compact-card p-3 bg-rose-50/30">
           <div className="space-y-1">
-            <Label className="compact-label flex items-center gap-1"><IndianRupee className="h-3 w-3" /> आकारलेली एकूण दंडाची रक्कम (₹)</Label>
+            <Label className="compact-label flex items-center gap-1"><IndianRupee className="h-3 w-3" /> दंडाची एकूण रक्कम (₹)</Label>
             <Input type="number" className="compact-input h-10 border-destructive/20 text-lg text-destructive" value={formData.fineAmount || ""} onChange={e => setFormData({...formData, fineAmount: e.target.value})} placeholder="0.00" />
           </div>
         </Card>
 
         <Button onClick={handleSave} className="compact-button w-full h-12 bg-destructive text-white shadow-xl shadow-destructive/20 mb-10 font-black uppercase tracking-widest transition-all active:scale-95">
           {editId ? <RefreshCw className="h-4 w-4 mr-1.5" /> : <Save className="h-4 w-4 mr-1.5" />}
-          {editId ? 'जप्ती अहवाल अद्ययावत करा' : 'जप्ती अहवाल जतन करा'}
+          {editId ? 'जप्ती अहवाल अपडेट करा' : 'जप्ती अहवाल जतन करा'}
         </Button>
       </div>
     </div>

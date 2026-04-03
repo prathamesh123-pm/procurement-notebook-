@@ -222,8 +222,8 @@ function DailyReportForm() {
             <div className="space-y-0.5"><Label className="compact-label">रूट नाव</Label><Input className="compact-input h-8" value={formData.routeName || ""} onChange={e => setFormData({...formData, routeName: e.target.value})} /></div>
             <div className="space-y-0.5"><Label className="compact-label">वाहन क्र.</Label><Input className="compact-input h-8" value={formData.vehicleNumber || ""} onChange={e => setFormData({...formData, vehicleNumber: e.target.value})} /></div>
             <div className="space-y-0.5"><Label className="compact-label">ड्रायव्हर नाव</Label><Input className="compact-input h-8" value={formData.driverName || ""} onChange={e => setFormData({...formData, driverName: e.target.value})} /></div>
-            <div className="space-y-0.5"><Label className="compact-label text-blue-600">गाडी बाहेर पडली (OUT)</Label><Input className="compact-input h-8 bg-blue-50/50" type="time" value={formData.routeOutTime || ""} onChange={e => setFormData({...formData, routeOutTime: e.target.value})} /></div>
-            <div className="space-y-0.5"><Label className="compact-label text-blue-600">गाडी परत आली (IN)</Label><Input className="compact-input h-8 bg-blue-50/50" type="time" value={formData.routeInTime || ""} onChange={e => setFormData({...formData, routeInTime: e.target.value})} /></div>
+            <div className="space-y-0.5"><Label className="compact-label text-blue-600">OUT वेळ</Label><Input className="compact-input h-8" type="time" value={formData.routeOutTime || ""} onChange={e => setFormData({...formData, routeOutTime: e.target.value})} /></div>
+            <div className="space-y-0.5"><Label className="compact-label text-blue-600">IN वेळ</Label><Input className="compact-input h-8" type="time" value={formData.routeInTime || ""} onChange={e => setFormData({...formData, routeInTime: e.target.value})} /></div>
           </Card>
           <div className="space-y-2">
             <div className="flex items-center justify-between px-1">
@@ -231,12 +231,12 @@ function DailyReportForm() {
               <Button type="button" size="sm" onClick={addRouteEntry} className="h-7 text-[9px] px-3 rounded-lg font-black uppercase tracking-widest"><Plus className="h-3 w-3 mr-1" /> केंद्र जोडा</Button>
             </div>
             {formData.routeVisitLogs.map((entry, index) => (
-              <Card key={entry.id} className="compact-card p-3 relative">
+              <Card key={entry.id} className="compact-card p-3 relative border-primary/10">
                 <div className="flex justify-between items-center mb-2"><span className="text-[9px] font-black text-muted-foreground opacity-40"># {index + 1}</span><Button type="button" variant="ghost" size="icon" onClick={() => removeRouteEntry(entry.id)} className="h-6 w-6 text-rose-400"><Trash2 className="h-3.5 w-3.5" /></Button></div>
                 <div className="grid grid-cols-2 gap-2">
                   <div className="col-span-2 flex gap-2">
-                    <div className="space-y-0.5 w-20 shrink-0"><Label className="text-[8px] font-black uppercase opacity-50">केंद्र कोड</Label><Input className="compact-input h-8" placeholder="कोड" value={entry.centerCode || ""} onChange={e => updateRouteEntry(entry.id, { centerCode: e.target.value })} /></div>
-                    <div className="space-y-0.5 flex-1"><Label className="text-[8px] font-black uppercase opacity-50">केंद्राचे नाव</Label><Input className="compact-input h-8" placeholder="केंद्राचे नाव" value={entry.supplierName || ""} onChange={e => updateRouteEntry(entry.id, { supplierName: e.target.value })} /></div>
+                    <div className="space-y-0.5 w-20 shrink-0"><Label className="text-[8px] font-black uppercase opacity-50">कोड</Label><Input className="compact-input h-8" value={entry.centerCode || ""} onChange={e => updateRouteEntry(entry.id, { centerCode: e.target.value })} /></div>
+                    <div className="space-y-0.5 flex-1"><Label className="text-[8px] font-black uppercase opacity-50">केंद्राचे नाव</Label><Input className="compact-input h-8" value={entry.supplierName || ""} onChange={e => updateRouteEntry(entry.id, { supplierName: e.target.value })} /></div>
                   </div>
                   <div className="space-y-0.5"><Label className="compact-label">वेळ (IN/OUT)</Label><div className="flex gap-1"><Input className="compact-input h-8 text-center" type="time" value={entry.arrivalTime || ""} onChange={e => updateRouteEntry(entry.id, { arrivalTime: e.target.value })} /><Input className="compact-input h-8 text-center" type="time" value={entry.departureTime || ""} onChange={e => updateRouteEntry(entry.id, { departureTime: e.target.value })} /></div></div>
                   <div className="space-y-0.5"><Label className="compact-label">कॅन (E/F)</Label><div className="flex gap-1"><Input className="compact-input h-8 text-center" placeholder="E" value={entry.emptyCans || ""} onChange={e => updateRouteEntry(entry.id, { emptyCans: e.target.value })} /><Input className="compact-input h-8 text-center font-black text-primary" placeholder="F" value={entry.fullCans || ""} onChange={e => updateRouteEntry(entry.id, { fullCans: e.target.value })} /></div></div>
@@ -256,18 +256,9 @@ function DailyReportForm() {
                 <h3 className="text-[10px] font-black uppercase text-primary tracking-widest">१) भेटीचा तपशील</h3>
               </div>
               <div className="space-y-2">
-                <div className="space-y-0.5">
-                  <Label className="compact-label">कोणाची भेट घेतली? (नाव व पद)</Label>
-                  <Input value={formData.visitPerson || ""} onChange={e => setFormData({...formData, visitPerson: e.target.value})} className="compact-input h-9" placeholder="उदा. राहुल पाटील (चेअरमन)" />
-                </div>
-                <div className="space-y-0.5">
-                  <Label className="compact-label">भेटीचा मुख्य उद्देश</Label>
-                  <Input value={formData.visitPurpose || ""} onChange={e => setFormData({...formData, visitPurpose: e.target.value})} className="compact-input h-9" placeholder="उदा. दूध वाढवणे / गुणवत्ता तपासणी" />
-                </div>
-                <div className="space-y-0.5">
-                  <Label className="compact-label">झालेली सविस्तर चर्चा</Label>
-                  <Textarea value={formData.visitDiscussion || ""} onChange={e => setFormData({...formData, visitDiscussion: e.target.value})} className="min-h-[80px] text-[11px] bg-slate-50 border-none font-medium rounded-lg p-2" placeholder="येथे चर्चेचे मुद्दे लिहा..." />
-                </div>
+                <div className="space-y-0.5"><Label className="compact-label">कोणाची भेट घेतली? (नाव व पद)</Label><Input value={formData.visitPerson || ""} onChange={e => setFormData({...formData, visitPerson: e.target.value})} className="compact-input h-9" placeholder="उदा. राहुल पाटील" /></div>
+                <div className="space-y-0.5"><Label className="compact-label">भेटीचा मुख्य उद्देश</Label><Input value={formData.visitPurpose || ""} onChange={e => setFormData({...formData, visitPurpose: e.target.value})} className="compact-input h-9" /></div>
+                <div className="space-y-0.5"><Label className="compact-label">झालेली सविस्तर चर्चा</Label><Textarea value={formData.visitDiscussion || ""} onChange={e => setFormData({...formData, visitDiscussion: e.target.value})} className="min-h-[80px] text-[11px] bg-slate-50 border-none font-medium rounded-lg p-2" /></div>
               </div>
             </div>
 
@@ -277,8 +268,7 @@ function DailyReportForm() {
                 <h3 className="text-[10px] font-black uppercase text-primary tracking-widest">२) प्रवास व लॉजिस्टिक्स</h3>
               </div>
               <div className="space-y-3">
-                <div className="space-y-1.5">
-                  <Label className="compact-label">वापरलेले वाहन</Label>
+                <div className="space-y-1.5"><Label className="compact-label">वापरलेले वाहन</Label>
                   <RadioGroup value={formData.travelVehicle || "स्वतःचे"} onValueChange={v => setFormData({...formData, travelVehicle: v})} className="flex gap-2">
                     <div className="compact-radio-item"><RadioGroupItem value="स्वतःचे" id="vh-self" className="h-3 w-3" /><Label htmlFor="vh-self" className="compact-radio-label">स्वतःचे</Label></div>
                     <div className="compact-radio-item"><RadioGroupItem value="कंपनीचे" id="vh-comp" className="h-3 w-3" /><Label htmlFor="vh-comp" className="compact-radio-label">कंपनीचे</Label></div>
@@ -286,8 +276,8 @@ function DailyReportForm() {
                   </RadioGroup>
                 </div>
                 <div className="grid grid-cols-3 gap-2">
-                  <div className="space-y-0.5"><Label className="compact-label">Start KM</Label><Input value={formData.travelStartKm || ""} onChange={e => setFormData({...formData, travelStartKm: e.target.value})} className="compact-input h-8 text-center" placeholder="0" /></div>
-                  <div className="space-y-0.5"><Label className="compact-label">End KM</Label><Input value={formData.travelEndKm || ""} onChange={e => setFormData({...formData, travelEndKm: e.target.value})} className="compact-input h-8 text-center" placeholder="0" /></div>
+                  <div className="space-y-0.5"><Label className="compact-label">Start KM</Label><Input value={formData.travelStartKm || ""} onChange={e => setFormData({...formData, travelStartKm: e.target.value})} className="compact-input h-8 text-center" /></div>
+                  <div className="space-y-0.5"><Label className="compact-label">End KM</Label><Input value={formData.travelEndKm || ""} onChange={e => setFormData({...formData, travelEndKm: e.target.value})} className="compact-input h-8 text-center" /></div>
                   <div className="space-y-0.5"><Label className="compact-label text-blue-600">Total KM</Label><Input value={formData.travelTotalKm || "0"} readOnly className="compact-input h-8 text-center font-black text-blue-600 bg-blue-50/50" /></div>
                 </div>
               </div>
@@ -305,18 +295,9 @@ function DailyReportForm() {
                 <h3 className="text-[10px] font-black uppercase text-primary tracking-widest">ऑफिस कामाचा तपशील</h3>
               </div>
               <div className="space-y-3">
-                <div className="space-y-0.5">
-                  <Label className="compact-label">आजच्या कामाचा मुख्य विषय</Label>
-                  <Input value={formData.officeTaskSubject || ""} onChange={e => setFormData({...formData, officeTaskSubject: e.target.value})} className="compact-input h-9" placeholder="उदा. मासिक हिशोब जुळवणी" />
-                </div>
-                <div className="space-y-0.5">
-                  <Label className="compact-label">केलेल्या कामाचा सविस्तर गोषवारा</Label>
-                  <Textarea value={formData.officeTaskDetails || ""} onChange={e => setFormData({...formData, officeTaskDetails: e.target.value})} className="min-h-[100px] text-[11px] bg-slate-50 border-none font-medium rounded-lg p-2" placeholder="..." />
-                </div>
-                <div className="space-y-0.5">
-                  <Label className="compact-label text-rose-600">प्रलंबित कामे (उद्यासाठी)</Label>
-                  <Input value={formData.pendingOfficeWork || ""} onChange={e => setFormData({...formData, pendingOfficeWork: e.target.value})} className="compact-input h-9 border-rose-100" placeholder="..." />
-                </div>
+                <div className="space-y-0.5"><Label className="compact-label">कामाचा मुख्य विषय</Label><Input value={formData.officeTaskSubject || ""} onChange={e => setFormData({...formData, officeTaskSubject: e.target.value})} className="compact-input h-9" /></div>
+                <div className="space-y-0.5"><Label className="compact-label">कामाचा सविस्तर गोषवारा</Label><Textarea value={formData.officeTaskDetails || ""} onChange={e => setFormData({...formData, officeTaskDetails: e.target.value})} className="min-h-[100px] text-[11px] bg-slate-50 border-none font-medium rounded-lg p-2" /></div>
+                <div className="space-y-0.5"><Label className="compact-label text-rose-600">प्रलंबित कामे (उद्यासाठी)</Label><Input value={formData.pendingOfficeWork || ""} onChange={e => setFormData({...formData, pendingOfficeWork: e.target.value})} className="compact-input h-9 border-rose-100" /></div>
               </div>
             </div>
           </Card>
