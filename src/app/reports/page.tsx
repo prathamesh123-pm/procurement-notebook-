@@ -451,9 +451,10 @@ export default function ReportsPage() {
           .printable-report, .printable-report * { visibility: visible !important; opacity: 1 !important; color: black !important; }
           .printable-report { 
             position: relative !important; display: flex !important; flex-direction: column !important; align-items: center !important; 
-            margin: 0 auto 10mm auto !important; width: 100% !important; max-width: 210mm !important; 
+            margin: 0 auto 5mm auto !important; width: 100% !important; max-width: 210mm !important; 
             box-shadow: none !important; border: 1.5px solid black !important; background: white !important; 
             z-index: 99999 !important; padding: 10mm !important; break-inside: avoid;
+            min-height: 140mm;
           }
           .no-print, button, header, nav, footer, .sidebar, .sidebar-trigger, [role="dialog"] > button, .h-14, .h-6 { display: none !important; }
           table { width: 100% !important; border-collapse: collapse !important; border: 1.5px solid black !important; }
