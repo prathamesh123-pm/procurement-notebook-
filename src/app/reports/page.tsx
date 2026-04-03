@@ -61,58 +61,81 @@ export default function ReportsPage() {
   ]
 
   const labelMap: Record<string, string> = {
+    // Basic Info
     reportHeading: "अहवाल शीर्षक",
     date: "तारीख",
+    reportDate: "अहवाल तारीख",
     shift: "शिफ्ट",
     slipNo: "स्लिप नंबर",
     idNumber: "अधिकारी आयडी",
+    repId: "अधिकारी आयडी",
     supervisorName: "सुपरवायझर नाव",
-    supplierName: "पुरवठादार नाव",
-    supplierId: "कोड (ID)",
+    
+    // Entity Info
     centerName: "केंद्राचे नाव",
     centerCode: "केंद्राचा कोड",
     ownerName: "मालकाचे नाव",
-    mobile: "मोबाईल",
-    address: "पत्ता",
+    supplierName: "पुरवठादार नाव",
+    supplierId: "पुरवठादार कोड",
+    mobile: "मोबाईल नंबर",
+    address: "पूर्ण पत्ता",
+    district: "जिल्हा",
+    taluka: "तालुका",
+    
+    // Route Info
     routeName: "रूट नाव",
     vehicleNumber: "वाहन क्र.",
-    vehicleNo: "गाडी नंबर",
+    vehicleNo: "वाहन क्र.",
+    vehicleType: "वाहन प्रकार",
     driverName: "ड्रायव्हर नाव",
+    breakdownTime: "बिघाड वेळ",
+    location: "बिघाड ठिकाण",
+    reason: "मुख्य कारण",
+    severity: "बिघाड स्वरूप",
+    detailedReason: "सविस्तर बिघाड कारण",
+    estimatedRepairTime: "दुरुस्ती वेळ",
+    estimatedRepairCost: "दुरुस्ती खर्च (₹)",
+    recoveryVehicleNo: "पर्यायी वाहन",
+    recoveryArrivalTime: "पर्यायी वाहन वेळ",
+    
+    // Quality & Milk
+    capacity: "क्षमता (Ltrs)",
+    morningQty: "सकाळचे दूध (L)",
+    eveningQty: "संध्याकाळचे दूध (L)",
+    fat: "फॅट (%)",
+    snf: "SNF (%)",
+    result: "तपासणी निकाल",
+    milkHot: "दूध गरम?",
+    milkSour: "दूध खराब?",
+    licenseStatus: "परवाना स्थिती",
+    fssaiNo: "FSSAI क्र.",
+    validDate: "मुदत तारीख",
+    
+    // Narrative
+    summary: "कामाचा सारांश",
     visitPerson: "कोणाची भेट घेतली?",
     visitPurpose: "भेटीचा मुख्य उद्देश",
     visitDiscussion: "सविस्तर चर्चा",
     officeTaskSubject: "कामाचा विषय",
     officeTaskDetails: "कामाचा गोषवारा",
-    location: "बिघाड ठिकाण",
-    reason: "बिघाड कारण",
-    severity: "स्वरूप",
-    estimatedRepairTime: "वेळ",
-    estimatedRepairCost: "खर्च (₹)",
-    recoveryVehicleNo: "पर्यायी गाडी",
-    milkHot: "दूध गरम?",
-    milkSour: "दूध खराब?",
     achievements: "आजची मोठी कामगिरी",
     problems: "महत्त्वाच्या समस्या",
     actionsTaken: "केलेली कार्यवाही",
     actionTaken: "केलेली कार्यवाही",
-    totalLossAmount: "एकूण आर्थिक नुकसान",
-    fineAmount: "दंड (₹)",
-    seizureQty: "जप्त दूध (L)",
-    morningQty: "सकाळ (L)",
-    eveningQty: "संध्याकाळ (L)",
-    fat: "फॅट (%)",
-    snf: "SNF (%)",
-    result: "निकाल",
-    licenseStatus: "परवाना स्थिती",
-    summary: "कामाचा सारांश"
+    remark: "विशेष शेरा",
+    otherInfo: "इतर माहिती",
+    notes: "नोंद"
   };
 
   const fieldSequence = [
-    "centerName", "centerCode", "ownerName", "supplierName", "supplierId", "mobile", "address",
-    "routeName", "vehicleNo", "vehicleNumber", "driverName", "breakdownTime", "location", "reason", "severity",
-    "morningQty", "eveningQty", "fat", "snf", "result", "licenseStatus", "fineAmount", "seizureQty",
+    "reportHeading", "date", "shift", "repId", "idNumber", "centerName", "centerCode", "ownerName", 
+    "supplierName", "supplierId", "mobile", "address", "district", "taluka", "routeName", 
+    "vehicleNo", "vehicleNumber", "vehicleType", "driverName", "breakdownTime", "location", 
+    "reason", "severity", "detailedReason", "estimatedRepairTime", "estimatedRepairCost", 
+    "recoveryVehicleNo", "recoveryArrivalTime", "capacity", "morningQty", "eveningQty", 
+    "fat", "snf", "result", "licenseStatus", "fssaiNo", "validDate", "milkHot", "milkSour",
     "visitPerson", "visitPurpose", "visitDiscussion", "officeTaskSubject", "officeTaskDetails",
-    "achievements", "problems", "actionsTaken", "summary", "actionTaken", "supervisorName"
+    "summary", "achievements", "problems", "actionsTaken", "actionTaken", "remark", "otherInfo", "supervisorName"
   ];
 
   const filteredReports = useMemo(() => {
@@ -227,6 +250,7 @@ export default function ReportsPage() {
       .map(key => [key, d[key]]);
 
     const losses = d.centerLosses || [];
+    const points = d.points || [];
     const remarkPoints = d.remarkPoints || [];
 
     return (
@@ -272,11 +296,11 @@ export default function ReportsPage() {
           </div>
         )}
 
-        {remarkPoints.length > 0 && (
+        {(points.length > 0 || remarkPoints.length > 0) && (
           <div className="w-full p-3 border border-black rounded bg-slate-50 mb-4">
-            <span className="text-[8pt] font-black uppercase block border-b border-black/10 pb-1 mb-2">सविस्तर शेरा:</span>
+            <span className="text-[8pt] font-black uppercase block border-b border-black/10 pb-1 mb-2">सविस्तर निरीक्षणे / मुद्दे:</span>
             <ul className="list-decimal list-inside space-y-1">
-              {remarkPoints.map((p: string, i: number) => (
+              {[...points, ...remarkPoints].map((p: string, i: number) => (
                 <li key={i} className="text-[9pt] font-bold">{p}</li>
               ))}
             </ul>
