@@ -7,7 +7,7 @@ import { Card } from "@/components/ui/card"
 import { 
   Archive, Search, X, Printer, Trash2, FileEdit, Truck, 
   ShieldAlert, ClipboardCheck, Plus, MapPin, FileText,
-  Microscope, Milk, User, Calendar, ClipboardList
+  Microscope, Milk, User, Calendar, ClipboardList, Briefcase, ListTodo
 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
@@ -37,7 +37,7 @@ export default function ReportsPage() {
   const { data: firestoreReports, isLoading } = useCollection(reportsQuery)
   const { data: userData } = useDoc(userDocRef)
 
-  const profileName = userData?.displayName || user?.displayName || "सुपरवायझर";
+  const profileName = userData?.displayName || user?.displayName || "सादरकर्ता";
   const profileId = userData?.employeeId || "---";
 
   const [filterDate, setFilterDate] = useState<string>("")
@@ -54,6 +54,10 @@ export default function ReportsPage() {
     { title: "ब्रेकडाऊन", type: "Transport Breakdown Report", icon: Truck, color: "text-rose-600", bg: "bg-rose-50" },
     { title: "जप्ती व दंड", type: "Seizure & Penalty", icon: ShieldAlert, color: "text-amber-600", bg: "bg-amber-50" },
     { title: "केंद्र ऑडिट", type: "Collection Center Audit", icon: Microscope, color: "text-emerald-600", bg: "bg-emerald-50" },
+    { title: "क्षेत्र भेट", type: "Field Visit", icon: MapPin, color: "text-indigo-600", bg: "bg-indigo-50" },
+    { title: "ऑफिस काम", type: "Daily Office Work", icon: Briefcase, color: "text-slate-600", bg: "bg-slate-50" },
+    { title: "दैनिक कामकाज", type: "Daily Work Report", icon: ClipboardList, color: "text-cyan-600", bg: "bg-cyan-50" },
+    { title: "कामकाज नोंद", type: "Daily Task", icon: ListTodo, color: "text-orange-600", bg: "bg-orange-50" },
   ]
 
   const labelMap: Record<string, string> = {
@@ -86,9 +90,9 @@ export default function ReportsPage() {
     recoveryVehicleNo: "पर्यायी गाडी",
     milkHot: "दूध गरम?",
     milkSour: "दूध खराब?",
-    achievements: "मोठी कामगिरी",
-    problems: "समस्या",
-    actionsTaken: "कार्यवाही",
+    achievements: "आजची मोठी कामगिरी",
+    problems: "महत्त्वाच्या समस्या",
+    actionsTaken: "केलेली कार्यवाही",
     totalLossAmount: "नुकसान (₹)",
     fineAmount: "दंड (₹)",
     seizureQty: "जप्त दूध (L)",
@@ -97,7 +101,8 @@ export default function ReportsPage() {
     morningQty: "सकाळ (L)",
     eveningQty: "संध्याकाळ (L)",
     fat: "फॅट (%)",
-    snf: "SNF (%)"
+    snf: "SNF (%)",
+    remark: "कामकाज शेरा"
   };
 
   const filteredReports = useMemo(() => {
@@ -126,7 +131,8 @@ export default function ReportsPage() {
     const typeMap: Record<string, string> = {
       'Route Visit': '/daily-report', 'Field Visit': '/daily-report', 'Daily Office Work': '/daily-report',
       'Transport Breakdown Report': '/reports/entry/breakdown', 'Daily Work Report': '/reports/entry/daily',
-      'Seizure & Penalty': '/reports/entry/seizure', 'Collection Center Audit': '/reports/entry/audit'
+      'Seizure & Penalty': '/reports/entry/seizure', 'Collection Center Audit': '/reports/entry/audit',
+      'Daily Task': '/work-log'
     }
     const path = typeMap[report.type] || '/reports'
     router.push(`${path}?edit=${report.id}`)
@@ -156,31 +162,35 @@ export default function ReportsPage() {
         <ReportHeader title={d.reportHeading || report.type} date={report.date} subName={d.name || profileName} subId={d.idNumber || profileId} />
         
         <div className="w-full grid grid-cols-2 gap-2 mb-4 font-black text-[9pt] uppercase">
-          <div className="p-2 border border-black rounded bg-slate-50">रूट: {d.routeName || '---'} | वाहन: {d.vehicleNumber || '---'}</div>
+          <div className="p-2 border border-black rounded bg-slate-50 text-left">रूट: {d.routeName || '---'} | वाहन: {d.vehicleNumber || '---'}</div>
           <div className="p-2 border border-black rounded bg-slate-50 text-right">ड्रायव्हर: {d.driverName || '---'} | शिफ्ट: {d.shift || '---'}</div>
         </div>
 
         <div className="w-full border border-black rounded overflow-hidden mb-4">
           <table className="w-full border-collapse">
             <thead>
-              <tr className="bg-black text-white font-black text-[7pt] uppercase">
+              <tr className="bg-black text-white font-black text-[7pt] uppercase text-center">
                 <th className="p-1 border-r border-white/20">क्र.</th>
                 <th className="p-1 border-r border-white/20 text-left">केंद्र नाव</th>
                 <th className="p-1 border-r border-white/20">कोड</th>
-                <th className="p-1 border-r border-white/20">IN/OUT</th>
-                <th className="p-1 border-r border-white/20">E/F</th>
+                <th className="p-1 border-r border-white/20">IN</th>
+                <th className="p-1 border-r border-white/20">OUT</th>
+                <th className="p-1 border-r border-white/20">E-Cans</th>
+                <th className="p-1 border-r border-white/20">F-Cans</th>
                 <th className="p-1">बर्फ वापर</th>
               </tr>
             </thead>
             <tbody>
               {logs.map((log: any, idx: number) => (
-                <tr key={idx} className="font-bold text-[8pt] uppercase border-b border-black last:border-0">
-                  <td className="p-1 text-center border-r border-black">{idx + 1}</td>
+                <tr key={idx} className="font-bold text-[8pt] uppercase border-b border-black last:border-0 text-center">
+                  <td className="p-1 border-r border-black">{idx + 1}</td>
                   <td className="p-1 border-r border-black text-left">{log.supplierName}</td>
-                  <td className="p-1 border-r border-black text-center">{log.centerCode}</td>
-                  <td className="p-1 border-r border-black text-center">{log.arrivalTime}-{log.departureTime}</td>
-                  <td className="p-1 border-r border-black text-center">{log.emptyCans}/{log.fullCans}</td>
-                  <td className="p-1 text-center">{log.iceUsed}</td>
+                  <td className="p-1 border-r border-black">{log.centerCode}</td>
+                  <td className="p-1 border-r border-black">{log.arrivalTime}</td>
+                  <td className="p-1 border-r border-black">{log.departureTime}</td>
+                  <td className="p-1 border-r border-black">{log.emptyCans}</td>
+                  <td className="p-1 border-r border-black">{log.fullCans}</td>
+                  <td className="p-1">{log.iceUsed}</td>
                 </tr>
               ))}
             </tbody>
@@ -188,7 +198,7 @@ export default function ReportsPage() {
         </div>
 
         <div className="w-full grid grid-cols-1 gap-2 text-left mb-6">
-          {["achievements", "problems", "actionsTaken"].map(key => d[key] && (
+          {["achievements", "problems", "actionsTaken", "visitDiscussion"].map(key => d[key] && (
             <div key={key} className="p-2 border border-black rounded bg-slate-50/50">
               <span className="text-[7pt] font-black uppercase text-slate-500 block">{labelMap[key] || key.toUpperCase()}</span>
               <p className="text-[9pt] font-bold">{d[key]}</p>
@@ -206,7 +216,7 @@ export default function ReportsPage() {
 
   const GenericLayout = ({ report }: { report: any }) => {
     const d = report.fullData || {};
-    const entries = Object.entries(d).filter(([k, v]) => labelMap[k] && v && !['routeVisitLogs'].includes(k));
+    const entries = Object.entries(d).filter(([k, v]) => labelMap[k] && v && !['routeVisitLogs', 'reportHeading', 'name', 'idNumber'].includes(k));
     
     return (
       <div className="bg-white font-sans text-slate-900 border-[1.5px] border-black rounded-sm w-full max-w-[210mm] mx-auto p-6 printable-report flex flex-col items-center">

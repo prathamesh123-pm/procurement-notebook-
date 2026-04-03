@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { 
   Warehouse, Plus, Search, MapPin, Edit, X, ChevronRight, Trash2, 
-  Laptop, Zap, Sun, Box, Milk, ShieldCheck, Wallet, User, ClipboardList, Printer, CheckCircle2
+  Laptop, Zap, Sun, Box, Milk, ShieldCheck, Wallet, User, ClipboardList, Printer, CheckCircle2, Info
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
@@ -31,13 +31,7 @@ export default function CentersPage() {
     return query(collection(db, 'suppliers'), where('supplierType', '==', 'Center'))
   }, [db, user])
 
-  const userDocRef = useMemoFirebase(() => {
-    if (!db || !user) return null
-    return doc(db, 'users', user.uid)
-  }, [db, user])
-
   const { data: centers, isLoading } = useCollection<Supplier>(centersQuery)
-  const { data: userData } = useDoc(userDocRef)
 
   const [searchQuery, setSearchQuery] = useState("")
   const [mounted, setMounted] = useState(false)
@@ -147,6 +141,18 @@ export default function CentersPage() {
       toast({ title: "यशस्वी", description: "केंद्राची माहिती अपडेट झाली." })
     }
     setIsDialogOpen(false)
+  }
+
+  const addEquipmentRow = () => {
+    setFormData({ ...formData, equipment: [...formData.equipment, { id: crypto.randomUUID(), name: "", quantity: 1, ownership: 'Company' }] })
+  }
+
+  const updateEquipmentRow = (id: string, updates: Partial<EquipmentItem>) => {
+    setFormData({ ...formData, equipment: formData.equipment.map(e => e.id === id ? { ...e, ...updates } : e) })
+  }
+
+  const removeEquipmentRow = (id: string) => {
+    setFormData({ ...formData, equipment: formData.equipment.filter(e => e.id !== id) })
   }
 
   const filteredCenters = useMemo(() => {
@@ -346,7 +352,7 @@ export default function CentersPage() {
                     <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-muted-foreground">केंद्र आयडी (ID) *</Label><Input value={formData.supplierId} onChange={e => setFormData({...formData, supplierId: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl shadow-inner" /></div>
                     <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-muted-foreground">ऑपरेटर नाव</Label><Input value={formData.operatorName} onChange={e => setFormData({...formData, operatorName: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl shadow-inner" /></div>
                     <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-muted-foreground">मोबाईल</Label><Input value={formData.mobile} onChange={e => setFormData({...formData, mobile: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl shadow-inner" /></div>
-                    <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-muted-foreground">पत्ता</Label><Input value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl shadow-inner" /></div>
+                    <div className="space-y-1.5 col-span-2"><Label className="text-[10px] font-black uppercase text-muted-foreground">पत्ता</Label><Input value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl shadow-inner" /></div>
                   </div>
                 </div>
 
@@ -372,10 +378,16 @@ export default function CentersPage() {
                     <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-muted-foreground">बर्फ लाद्या संख्या</Label><Input type="number" value={formData.iceBlocks} onChange={e => setFormData({...formData, iceBlocks: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl" /></div>
                   </div>
                   <div className="grid grid-cols-3 gap-2 p-3 bg-blue-50/50 rounded-xl border border-blue-100">
-                    <div className="col-span-3 text-[10px] font-black uppercase text-blue-600 mb-1">दूध संकलन (Qty/Fat/SNF)</div>
+                    <div className="col-span-3 text-[10px] font-black uppercase text-blue-600 mb-1">गाय (Qty/F/S)</div>
                     <Input type="number" value={formData.cowQty} onChange={e => setFormData({...formData, cowQty: e.target.value})} className="h-8 text-[11px] bg-white border-none font-bold rounded-lg" placeholder="Qty" />
                     <Input type="number" value={formData.cowFat} onChange={e => setFormData({...formData, cowFat: e.target.value})} className="h-8 text-[11px] bg-white border-none font-bold rounded-lg" placeholder="Fat" />
                     <Input type="number" value={formData.cowSnf} onChange={e => setFormData({...formData, cowSnf: e.target.value})} className="h-8 text-[11px] bg-white border-none font-bold rounded-lg" placeholder="SNF" />
+                  </div>
+                  <div className="grid grid-cols-3 gap-2 p-3 bg-amber-50/50 rounded-xl border border-amber-100">
+                    <div className="col-span-3 text-[10px] font-black uppercase text-amber-600 mb-1">म्हेस (Qty/F/S)</div>
+                    <Input type="number" value={formData.bufQty} onChange={e => setFormData({...formData, bufQty: e.target.value})} className="h-8 text-[11px] bg-white border-none font-bold rounded-lg" placeholder="Qty" />
+                    <Input type="number" value={formData.bufFat} onChange={e => setFormData({...formData, bufFat: e.target.value})} className="h-8 text-[11px] bg-white border-none font-bold rounded-lg" placeholder="Fat" />
+                    <Input type="number" value={formData.bufSnf} onChange={e => setFormData({...formData, bufSnf: e.target.value})} className="h-8 text-[11px] bg-white border-none font-bold rounded-lg" placeholder="SNF" />
                   </div>
                 </div>
 
@@ -385,6 +397,24 @@ export default function CentersPage() {
                     <div className="flex items-center space-x-2 bg-muted/10 p-2 rounded-lg cursor-pointer" onClick={() => setFormData({...formData, computerAvailable: !formData.computerAvailable})}><Checkbox checked={formData.computerAvailable} /><Label className="text-[9px] font-black uppercase cursor-pointer">POP</Label></div>
                     <div className="flex items-center space-x-2 bg-muted/10 p-2 rounded-lg cursor-pointer" onClick={() => setFormData({...formData, upsInverterAvailable: !formData.upsInverterAvailable})}><Checkbox checked={formData.upsInverterAvailable} /><Label className="text-[9px] font-black uppercase cursor-pointer">UPS</Label></div>
                     <div className="flex items-center space-x-2 bg-muted/10 p-2 rounded-lg cursor-pointer" onClick={() => setFormData({...formData, solarAvailable: !formData.solarAvailable})}><Checkbox checked={formData.solarAvailable} /><Label className="text-[9px] font-black uppercase cursor-pointer">सोलर</Label></div>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between"><h4 className="text-[11px] font-black uppercase tracking-widest">साहित्य यादी</h4><Button variant="outline" size="sm" onClick={addEquipmentRow} className="h-7 text-[9px] font-black px-3 rounded-xl">जोडा</Button></div>
+                    <div className="space-y-2">
+                      {formData.equipment.map((item) => (
+                        <div key={item.id} className="grid grid-cols-12 gap-2 items-center bg-muted/10 p-2 rounded-xl">
+                          <div className="col-span-6"><Input value={item.name} onChange={e => updateEquipmentRow(item.id, {name: e.target.value})} className="h-8 text-[11px] px-3 bg-white border-none rounded-lg font-bold" placeholder="साहित्य" /></div>
+                          <div className="col-span-2"><Input type="number" value={item.quantity} onChange={e => updateEquipmentRow(item.id, {quantity: Number(e.target.value)})} className="h-8 text-[11px] px-0 text-center bg-white border-none rounded-lg font-black" /></div>
+                          <div className="col-span-3">
+                            <Select value={item.ownership} onValueChange={v => updateEquipmentRow(item.id, {ownership: v as any})}>
+                              <SelectTrigger className="h-8 text-[10px] px-2 bg-white border-none rounded-lg font-black"><SelectValue /></SelectTrigger>
+                              <SelectContent><SelectItem value="Self" className="font-bold">स्वतः</SelectItem><SelectItem value="Company" className="font-bold">डेअरी</SelectItem></SelectContent>
+                            </Select>
+                          </div>
+                          <div className="col-span-1 flex justify-end"><Button variant="ghost" size="icon" onClick={() => removeEquipmentRow(item.id)} className="h-7 w-7 text-destructive"><X className="h-4 w-4" /></Button></div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
 
@@ -397,23 +427,6 @@ export default function CentersPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
-      <style jsx global>{`
-        @media print {
-          @page { size: A4; margin: 10mm; }
-          html, body { visibility: hidden !important; background: white !important; margin: 0 !important; padding: 0 !important; }
-          body * { visibility: hidden !important; }
-          .printable-report, .printable-report * { visibility: visible !important; opacity: 1 !important; }
-          .printable-report { 
-            position: absolute !important; left: 0 !important; top: 0 !important; 
-            width: 100% !important; max-width: 210mm !important; margin: 0 auto !important; 
-            border: 1.5px solid black !important; padding: 10mm !important; box-shadow: none !important; display: block !important;
-          }
-          .no-print, button, [role="dialog"], .sidebar-trigger, header { display: none !important; }
-          table { width: 100% !important; border-collapse: collapse !important; border: 1.5px solid black !important; }
-          th, td { border: 1px solid black !important; padding: 6pt !important; font-size: 10pt !important; color: black !important; }
-        }
-      `}</style>
     </div>
   )
 }
