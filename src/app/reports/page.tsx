@@ -400,8 +400,8 @@ export default function ReportsPage() {
       </div>
 
       <Dialog open={isViewOpen} onOpenChange={setIsViewOpen}>
-        <DialogContent className="max-w-[850px] w-[95vw] p-0 rounded-3xl overflow-hidden border-none shadow-2xl bg-slate-100">
-          <DialogHeader className="p-4 bg-white border-b flex flex-row items-center justify-between no-print">
+        <DialogContent className="max-w-[850px] w-[95vw] p-0 rounded-3xl overflow-hidden border-none shadow-2xl bg-slate-100 flex flex-col items-center">
+          <DialogHeader className="p-4 bg-white border-b flex flex-row items-center justify-between no-print w-full">
             <DialogTitle className="text-[11px] font-black uppercase tracking-widest flex items-center gap-2">
               <FileText className="h-4 w-4 text-primary" /> अहवाल प्रीव्ह्यू (PREVIEW)
             </DialogTitle>
@@ -410,7 +410,7 @@ export default function ReportsPage() {
               <Button size="icon" variant="ghost" onClick={() => setIsViewOpen(false)} className="h-9 w-9 text-slate-400 hover:bg-slate-100 rounded-full"><X className="h-5 w-5" /></Button>
             </div>
           </DialogHeader>
-          <ScrollArea className="max-h-[85vh] p-4 bg-slate-100">
+          <ScrollArea className="max-h-[85vh] p-4 bg-slate-100 w-full flex flex-col items-center">
             <div className="w-full flex flex-col items-center">
               {selectedReport && (
                 selectedReport.type === 'Route Visit' ? <RouteSlipLayout report={selectedReport} /> :
@@ -423,16 +423,25 @@ export default function ReportsPage() {
 
       <style jsx global>{`
         @media print {
-          @page { size: A4; margin: 5mm 10mm; }
-          body * { visibility: hidden !important; background: white !important; }
+          @page { size: A4; margin: 0mm; }
+          body { visibility: hidden !important; background: white !important; margin: 0 !important; padding: 0 !important; }
           .printable-report, .printable-report * { visibility: visible !important; opacity: 1 !important; color: black !important; }
           .printable-report { 
-            position: relative !important; margin: 0 auto !important; width: 100% !important; max-width: 190mm !important; 
-            border: 1.5px solid black !important; padding: 10mm !important; display: block !important;
+            position: absolute !important; 
+            top: 0 !important; 
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            width: 100% !important; 
+            max-width: 190mm !important; 
+            border: 1.5px solid black !important; 
+            padding: 10mm !important; 
+            display: block !important;
             box-shadow: none !important;
             page-break-inside: avoid !important;
-            top: 0 !important;
+            background: white !important;
+            margin: 0 !important;
           }
+          [role="dialog"] { position: absolute !important; top: 0 !important; left: 0 !important; transform: none !important; width: 100% !important; max-width: none !important; background: transparent !important; box-shadow: none !important; }
           .no-print, button, header, nav, footer, .sidebar, [role="dialog"] [class*="Close"], .h-14, .h-6 { display: none !important; }
           table { width: 100% !important; border-collapse: collapse !important; border: 1.5px solid black !important; }
           th, td { border: 1px solid black !important; padding: 3pt 5pt !important; font-size: 8.5pt !important; line-height: 1.2 !important; }
