@@ -7,7 +7,7 @@ import { useEffect, useState, useMemo } from "react"
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
 import { useUser, useFirestore, useCollection, useMemoFirebase, useDoc } from "@/firebase"
-import { collection, doc } from "firebase/firestore"
+import { collection, doc, query, where } from "firebase/firestore"
 
 export default function DashboardOverview() {
   const { user } = useUser()
