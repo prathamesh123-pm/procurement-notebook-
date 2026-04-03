@@ -61,72 +61,63 @@ export default function ReportsPage() {
   ]
 
   const labelMap: Record<string, string> = {
-    // Basic Info
     reportHeading: "अहवाल शीर्षक",
     date: "तारीख",
     reportDate: "अहवाल तारीख",
-    shift: "शिफ्ट",
+    shift: "कामाची शिफ्ट",
     slipNo: "स्लिप नंबर",
-    idNumber: "अधिकारी आयडी",
-    repId: "अधिकारी आयडी",
-    supervisorName: "सुपरवायझर नाव",
-    
-    // Entity Info
-    centerName: "केंद्राचे नाव",
-    centerCode: "केंद्राचा कोड",
+    idNumber: "अधिकारी कर्मचारी आयडी",
+    repId: "कर्मचारी आयडी",
+    supervisorName: "सुपरवायझरचे नाव",
+    centerName: "केंद्राचे पूर्ण नाव",
+    centerCode: "केंद्राचा कोड (ID)",
     ownerName: "मालकाचे नाव",
-    supplierName: "पुरवठादार नाव",
+    supplierName: "पुरवठादार / केंद्राचे नाव",
     supplierId: "पुरवठादार कोड",
-    mobile: "मोबाईल नंबर",
-    address: "पूर्ण पत्ता",
+    mobile: "संपर्क मोबाईल नंबर",
+    address: "पूर्ण पत्ता / लोकेशन",
     district: "जिल्हा",
     taluka: "तालुका",
-    
-    // Route Info
-    routeName: "रूट नाव",
-    vehicleNumber: "वाहन क्र.",
-    vehicleNo: "वाहन क्र.",
-    vehicleType: "वाहन प्रकार",
-    driverName: "ड्रायव्हर नाव",
-    breakdownTime: "बिघाड वेळ",
-    location: "बिघाड ठिकाण",
-    reason: "मुख्य कारण",
-    severity: "बिघाड स्वरूप",
-    detailedReason: "सविस्तर बिघाड कारण",
-    estimatedRepairTime: "दुरुस्ती वेळ",
-    estimatedRepairCost: "दुरुस्ती खर्च (₹)",
-    recoveryVehicleNo: "पर्यायी वाहन",
-    recoveryArrivalTime: "पर्यायी वाहन वेळ",
-    
-    // Quality & Milk
-    capacity: "क्षमता (Ltrs)",
-    morningQty: "सकाळचे दूध (L)",
-    eveningQty: "संध्याकाळचे दूध (L)",
-    fat: "फॅट (%)",
-    snf: "SNF (%)",
-    result: "तपासणी निकाल",
-    milkHot: "दूध गरम?",
-    milkSour: "दूध खराब?",
-    licenseStatus: "परवाना स्थिती",
-    fssaiNo: "FSSAI क्र.",
-    validDate: "मुदत तारीख",
-    
-    // Narrative
-    summary: "कामाचा सारांश",
+    routeName: "दुध संकलन रूटचे नाव",
+    vehicleNumber: "गाडीचा नंबर (MH...)",
+    vehicleNo: "गाडीचा नंबर (MH...)",
+    vehicleType: "गाडीचा प्रकार",
+    driverName: "ड्रायव्हरचे नाव",
+    breakdownTime: "गाडी बिघाड झाल्याची वेळ",
+    location: "बिघाड झालेल्या ठिकाणाचे नाव",
+    reason: "बिघाड होण्याचे मुख्य कारण",
+    severity: "बिघाडाचे स्वरूप (Severity)",
+    detailedReason: "बिघाडाचे सविस्तर वर्णन",
+    estimatedRepairTime: "दुरुस्तीसाठी लागणारा वेळ",
+    estimatedRepairCost: "दुरुस्तीसाठी लागणारा खर्च (₹)",
+    recoveryVehicleNo: "पाठवलेली दुसरी पर्यायी गाडी",
+    recoveryArrivalTime: "दुसरी गाडी पोहोचण्याची वेळ",
+    capacity: "गाडीची दूध क्षमता (Liters)",
+    morningQty: "सकाळचे दूध संकलन (L)",
+    eveningQty: "संध्याकाळचे दूध संकलन (L)",
+    fat: "दूध फॅट प्रमाण (%)",
+    snf: "दूध SNF प्रमाण (%)",
+    result: "तपासणीचा अंतिम निकाल",
+    milkHot: "दूध गरम झाले होते का?",
+    milkSour: "दूध पूर्णपणे खराब झाले का?",
+    licenseStatus: "परवाना स्थिती (License)",
+    fssaiNo: "FSSAI परवाना क्र.",
+    validDate: "परवाना मुदत संपण्याची तारीख",
+    summary: "केलेल्या कामाचा सविस्तर सारांश",
     visitPerson: "कोणाची भेट घेतली?",
     visitPurpose: "भेटीचा मुख्य उद्देश",
-    visitDiscussion: "सविस्तर चर्चा",
-    officeTaskSubject: "कामाचा विषय",
-    officeTaskDetails: "कामाचा गोषवारा",
+    visitDiscussion: "झालेली सविस्तर चर्चा",
+    officeTaskSubject: "ऑफिस कामाचा मुख्य विषय",
+    officeTaskDetails: "कामाचा सविस्तर गोषवारा",
     achievements: "आजची मोठी कामगिरी",
-    problems: "महत्त्वाच्या समस्या",
-    actionsTaken: "केलेली कार्यवाही",
-    actionTaken: "केलेली कार्यवाही",
-    remark: "विशेष शेरा",
-    otherInfo: "इतर माहिती",
-    notes: "नोंद",
-    title: "डॉक्युमेंट शीर्षक",
-    totalLossAmount: "एकूण नुकसान (₹)"
+    problems: "कामात आलेल्या महत्त्वाच्या समस्या",
+    actionsTaken: "समस्येवर केलेली कार्यवाही",
+    actionTaken: "केलेली अंतिम कार्यवाही",
+    remark: "विशेष शेरा / टिपणी",
+    otherInfo: "इतर काही विशेष माहिती",
+    notes: "महत्त्वाची नोंद",
+    title: "दस्तऐवज शीर्षक",
+    totalLossAmount: "एकूण आर्थिक नुकसान रक्कम (₹)"
   };
 
   const fieldSequence = [
@@ -248,7 +239,6 @@ export default function ReportsPage() {
   const GenericLayout = ({ report }: { report: any }) => {
     const d = report.fullData || {};
     
-    // Word Document Handling
     if (report.type === 'Official Document') {
       return (
         <div className="bg-white font-sans text-slate-900 border-[1.5px] border-black rounded-sm w-full max-w-[210mm] mx-auto p-10 printable-report flex flex-col items-center shadow-none min-h-[297mm]">
@@ -313,11 +303,16 @@ export default function ReportsPage() {
                 ))}
               </tbody>
             </table>
+            {d.totalLossAmount && (
+              <div className="bg-slate-50 p-2 text-right border-t border-black font-black text-[9pt]">
+                एकूण नुकसान रक्कम: ₹{d.totalLossAmount}
+              </div>
+            )}
           </div>
         )}
 
         {(points.length > 0 || remarkPoints.length > 0) && (
-          <div className="w-full p-3 border border-black rounded bg-slate-50 mb-4">
+          <div className="w-full p-3 border border-black rounded bg-slate-50 mb-4 text-left">
             <span className="text-[8pt] font-black uppercase block border-b border-black/10 pb-1 mb-2">सविस्तर निरीक्षणे / मुद्दे:</span>
             <ul className="list-decimal list-inside space-y-1">
               {[...points, ...remarkPoints].map((p: string, i: number) => (

@@ -133,7 +133,7 @@ export default function RouteDetailsPage() {
   if (!mounted || isLoading) return <div className="p-10 text-center font-black uppercase text-[10px] opacity-50">लोड होत आहे...</div>
 
   return (
-    <div className="space-y-4 max-w-6xl mx-auto w-full pb-10 px-2 animate-in fade-in duration-500">
+    <div className="space-y-4 max-w-6xl mx-auto w-full pb-10 px-2 animate-in fade-in duration-500 text-left">
       <div className="flex items-center justify-between border-b pb-3 no-print">
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="icon" onClick={() => router.push('/routes')} className="rounded-full"><ArrowLeft className="h-5 w-5" /></Button>
@@ -177,7 +177,7 @@ export default function RouteDetailsPage() {
                 <p className="text-[9pt] font-black text-muted-foreground uppercase">ID: {selectedSupplier.supplierId} | {selectedSupplier.supplierType}</p>
               </div>
               
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full text-left">
                 <div className="space-y-3">
                   <h4 className="text-[10px] font-black uppercase text-primary tracking-widest border-b pb-1 flex items-center gap-2"><User className="h-3.5 w-3.5" /> १) प्राथमिक माहिती</h4>
                   <div className="space-y-1.5 text-[11px] font-bold">
@@ -199,7 +199,7 @@ export default function RouteDetailsPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full text-left">
                 <div className="space-y-3">
                   <h4 className="text-[10px] font-black uppercase text-primary tracking-widest border-b pb-1 flex items-center gap-2"><Wallet className="h-3.5 w-3.5" /> ३) व्यावसायिक माहिती</h4>
                   <div className="space-y-1.5 text-[11px] font-bold">
@@ -219,13 +219,13 @@ export default function RouteDetailsPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-2 w-full">
+              <div className="grid grid-cols-3 gap-2 w-full text-left">
                 <div className={`p-2 rounded-xl border border-muted-foreground/10 flex flex-col items-center gap-1 ${selectedSupplier.computerAvailable ? 'bg-emerald-50' : 'bg-muted/20 opacity-40'}`}><Laptop className="h-4 w-4" /><span className="text-[8px] font-black uppercase">POP: {selectedSupplier.computerAvailable ? 'हो' : 'नाही'}</span></div>
                 <div className={`p-2 rounded-xl border border-muted-foreground/10 flex flex-col items-center gap-1 ${selectedSupplier.upsInverterAvailable ? 'bg-emerald-50' : 'bg-muted/20 opacity-40'}`}><Zap className="h-4 w-4" /><span className="text-[8px] font-black uppercase">UPS: {selectedSupplier.upsInverterAvailable ? 'हो' : 'नाही'}</span></div>
                 <div className={`p-2 rounded-xl border border-muted-foreground/10 flex flex-col items-center gap-1 ${selectedSupplier.solarAvailable ? 'bg-emerald-50' : 'bg-muted/20 opacity-40'}`}><Sun className="h-4 w-4" /><span className="text-[8px] font-black uppercase">सोलर: {selectedSupplier.solarAvailable ? 'हो' : 'नाही'}</span></div>
               </div>
 
-              <div className="space-y-3 w-full">
+              <div className="space-y-3 w-full text-left">
                 <h4 className="text-[10px] font-black uppercase text-primary tracking-widest border-b pb-1 flex items-center gap-2"><Box className="h-3.5 w-3.5" /> साहित्याची यादी (INVENTORY)</h4>
                 <div className="border border-muted-foreground/10 rounded-xl overflow-hidden shadow-sm">
                   <table className="w-full text-left text-[10px] border-collapse">
