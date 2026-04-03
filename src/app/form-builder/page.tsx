@@ -144,7 +144,8 @@ function EditorContent() {
       fullData: { 
         title: docTitle, 
         content: content,
-        isWordDoc: true
+        isWordDoc: true,
+        name: user.displayName || "सुपरवायझर"
       },
       updatedAt: new Date().toISOString()
     }
@@ -383,9 +384,6 @@ function EditorContent() {
             suppressContentEditableWarning={true}
             className="w-full h-full min-h-[1000px] text-[12px] prose prose-sm max-w-none focus:outline-none font-body"
           >
-            <h1 className="text-center" style={{margin: '0 0 10px 0', fontSize: '18px', fontWeight: '900', textTransform: 'uppercase'}}>संकलन नोंदवही (Official Report)</h1>
-            <p className="text-center text-muted-foreground text-[8px] uppercase font-black tracking-[0.3em]" style={{margin: '0 0 15px 0'}}>दैनिक अहवाल व मार्गदर्शिका - Procurement Document</p>
-            <hr style={{margin: '10px 0', border: 'none', borderTop: '2px solid #333'}} />
             <p>येथे मजकूर लिहिण्यास सुरुवात करा...</p>
           </div>
         </div>

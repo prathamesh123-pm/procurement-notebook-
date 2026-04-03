@@ -101,7 +101,7 @@ export default function ReportsPage() {
     milkHot: "दूध गरम झाले होते का?",
     milkSour: "दूध पूर्णपणे खराब झाले का?",
     licenseStatus: "परवाना स्थिती (License)",
-    fssaiNo: "FSSAI परवाना क्र.",
+    fssaiNo: "FSSAI परवाना क्रमांक",
     validDate: "परवाना मुदत संपण्याची तारीख",
     summary: "केलेल्या कामाचा सविस्तर सारांश",
     visitPerson: "कोणाची भेट घेतली?",
@@ -111,7 +111,7 @@ export default function ReportsPage() {
     officeTaskDetails: "कामाचा सविस्तर गोषवारा",
     achievements: "आजची मोठी कामगिरी",
     problems: "कामात आलेल्या महत्त्वाच्या समस्या",
-    actionsTaken: "समस्येवर केलेली कार्यवाही",
+    actionsTaken: "महत्त्वाच्या समस्यांवर केलेली कार्यवाही",
     actionTaken: "केलेली अंतिम कार्यवाही",
     remark: "विशेष शेरा / टिपणी",
     otherInfo: "इतर काही विशेष माहिती",
@@ -128,7 +128,7 @@ export default function ReportsPage() {
     "recoveryVehicleNo", "recoveryArrivalTime", "capacity", "morningQty", "eveningQty", 
     "fat", "snf", "result", "licenseStatus", "fssaiNo", "validDate", "milkHot", "milkSour",
     "visitPerson", "visitPurpose", "visitDiscussion", "officeTaskSubject", "officeTaskDetails",
-    "summary", "achievements", "problems", "actionsTaken", "actionTaken", "remark", "otherInfo", "supervisorName"
+    "summary", "achievements", "problems", "actionsTaken", "actionTaken", "remark", "otherInfo", "totalLossAmount", "supervisorName"
   ];
 
   const filteredReports = useMemo(() => {
@@ -242,9 +242,8 @@ export default function ReportsPage() {
     if (report.type === 'Official Document') {
       return (
         <div className="bg-white font-sans text-slate-900 border-[1.5px] border-black rounded-sm w-full max-w-[210mm] mx-auto p-10 printable-report flex flex-col items-center shadow-none min-h-[297mm]">
-          <ReportHeader title={d.title || report.type} date={report.date} subName={d.name || profileName} subId={d.idNumber || profileId} />
           <div 
-            className="w-full prose prose-sm max-w-none text-left mt-4"
+            className="w-full prose prose-sm max-w-none text-left"
             dangerouslySetInnerHTML={{ __html: d.content || "" }} 
           />
           <div className="w-full mt-auto pt-8 grid grid-cols-2 gap-12 text-center uppercase font-black text-[9pt] tracking-widest">
@@ -303,9 +302,9 @@ export default function ReportsPage() {
                 ))}
               </tbody>
             </table>
-            {d.totalLossAmount && (
+            {d.totalLossAmount !== undefined && (
               <div className="bg-slate-50 p-2 text-right border-t border-black font-black text-[9pt]">
-                एकूण नुकसान रक्कम: ₹{d.totalLossAmount}
+                एकूण आर्थिक नुकसान रक्कम: ₹{d.totalLossAmount}
               </div>
             )}
           </div>
