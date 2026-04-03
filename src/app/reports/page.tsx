@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { 
   Archive, Search, X, Printer, Trash2, FileEdit, Truck, ListTodo, 
-  ShieldAlert, ClipboardCheck, FileSignature, Plus, MapPin, Briefcase, FileText
+  ShieldAlert, ClipboardCheck, FileSignature, Plus, MapPin, Briefcase, FileText,
+  Microscope, Thermometer
 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
@@ -56,6 +57,8 @@ export default function ReportsPage() {
     { title: "कामकाज नोंद", type: "Daily Task", icon: ListTodo, color: "text-orange-600", bg: "bg-orange-50" },
     { title: "जप्ती व दंड", type: "Seizure & Penalty", icon: ShieldAlert, color: "text-amber-600", bg: "bg-amber-50" },
     { title: "दैनिक कामकाज", type: "Daily Work Report", icon: ClipboardCheck, color: "text-indigo-600", bg: "bg-indigo-50" },
+    { title: "ऑडिट", type: "Collection Center Audit", icon: Microscope, color: "text-emerald-600", bg: "bg-emerald-50" },
+    { title: "चिलिंग", type: "Chilling Report", icon: Thermometer, color: "text-blue-600", bg: "bg-blue-50" },
     { title: "वर्ड फॉर्म", type: "Official Document", icon: FileSignature, color: "text-slate-600", bg: "bg-slate-50" },
   ]
 
@@ -172,7 +175,8 @@ export default function ReportsPage() {
     const typeMap: Record<string, string> = {
       'Route Visit': '/daily-report', 'Field Visit': '/daily-report', 'Daily Office Work': '/daily-report',
       'Transport Breakdown Report': '/reports/entry/breakdown', 'Daily Work Report': '/reports/entry/daily',
-      'Seizure & Penalty': '/reports/entry/seizure', 'Daily Task': '/work-log', 'Official Document': '/form-builder'
+      'Seizure & Penalty': '/reports/entry/seizure', 'Daily Task': '/work-log', 'Official Document': '/form-builder',
+      'Collection Center Audit': '/reports/entry/audit', 'Chilling Report': '/reports/entry/chilling'
     }
     const path = typeMap[report.type] || '/reports'
     router.push(`${path}?edit=${report.id}`)
@@ -352,7 +356,7 @@ export default function ReportsPage() {
         </Button>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-8">
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 mb-8">
         {reportTypes.map((rt) => (
           <button key={rt.title} onClick={() => setTypeFilter(typeFilter === rt.type ? null : rt.type)} className={`h-16 flex flex-col items-center justify-center p-1 rounded-xl border transition-all hover:shadow-md active:scale-95 ${typeFilter === rt.type ? 'bg-primary text-white border-primary shadow-primary/20' : 'bg-white text-slate-900 border-slate-100 shadow-sm'}`}>
             <rt.icon className={`h-4 w-4 mb-1 ${typeFilter === rt.type ? 'text-white' : rt.color}`} />
@@ -454,7 +458,7 @@ export default function ReportsPage() {
             margin: 0 auto 5mm auto !important; width: 100% !important; max-width: 210mm !important; 
             box-shadow: none !important; border: 1.5px solid black !important; background: white !important; 
             z-index: 99999 !important; padding: 10mm !important; break-inside: avoid;
-            min-height: 140mm;
+            min-height: 100mm;
           }
           .no-print, button, header, nav, footer, .sidebar, .sidebar-trigger, [role="dialog"] > button, .h-14, .h-6 { display: none !important; }
           table { width: 100% !important; border-collapse: collapse !important; border: 1.5px solid black !important; }

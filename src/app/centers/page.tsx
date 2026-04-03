@@ -499,20 +499,18 @@ export default function CentersPage() {
 
       <style jsx global>{`
         @media print {
-          @page { size: A4; margin: 15mm; }
+          @page { size: A4; margin: 10mm; }
           html, body { visibility: hidden !important; background: white !important; margin: 0 !important; padding: 0 !important; }
           body * { visibility: hidden !important; }
           .printable-report, .printable-report * { visibility: visible !important; opacity: 1 !important; }
           .printable-report { 
             position: absolute !important; left: 0 !important; top: 0 !important; 
             width: 100% !important; max-width: 210mm !important; margin: 0 auto !important; 
-            border: 1.5px solid black !important; padding: 10mm !important; 
-            box-shadow: none !important; display: block !important;
+            border: 1.5px solid black !important; padding: 10mm !important; box-shadow: none !important; display: block !important;
           }
           .no-print, button, [role="dialog"], .sidebar-trigger, header { display: none !important; }
-          .printable-report * { color: black !important; }
           table { width: 100% !important; border-collapse: collapse !important; border: 1.5px solid black !important; }
-          th, td { border: 1px solid black !important; padding: 8pt !important; font-size: 10pt !important; }
+          th, td { border: 1px solid black !important; padding: 6pt !important; font-size: 10pt !important; color: black !important; }
         }
       `}</style>
     </div>
