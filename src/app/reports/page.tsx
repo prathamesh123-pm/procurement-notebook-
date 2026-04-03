@@ -11,7 +11,7 @@ import {
 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { useUser, useFirestore, useCollection, useDoc, useMemoFirebase, deleteDocumentNonBlocking } from "@/firebase"
 import { collection, doc } from "firebase/firestore"
@@ -351,6 +351,10 @@ export default function ReportsPage() {
 
       <Dialog open={isViewOpen} onOpenChange={setIsViewOpen}>
         <DialogContent className="max-w-[850px] w-[95vw] p-0 rounded-[1.5rem] overflow-hidden border-none shadow-2xl bg-slate-100">
+          <DialogHeader className="sr-only">
+            <DialogTitle>अहवाल तपशील</DialogTitle>
+            <DialogDescription>अहवालाची सविस्तर माहिती आणि प्रिंट पर्याय.</DialogDescription>
+          </DialogHeader>
           <div className="p-3 bg-white border-b flex flex-row items-center justify-between no-print">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-primary/10 text-primary rounded-xl"><FileText className="h-5 w-5" /></div>
@@ -380,7 +384,7 @@ export default function ReportsPage() {
             border: 1.5px solid black !important; padding: 10mm !important; display: flex !important;
             flex-direction: column !important; align-items: center !important;
           }
-          .no-print, button, header, nav, footer, .sidebar { display: none !important; }
+          .no-print, button, header, nav, footer, .sidebar, [role="dialog"] > button { display: none !important; }
           table { width: 100% !important; border-collapse: collapse !important; border: 1.2px solid black !important; }
           th, td { border: 1.2px solid black !important; padding: 4pt 6pt !important; font-size: 9pt !important; }
         }
