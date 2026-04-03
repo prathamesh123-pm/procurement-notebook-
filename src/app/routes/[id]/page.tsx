@@ -225,7 +225,7 @@ export default function RouteDetailsPage() {
           </ScrollArea>
         </Card>
 
-        <Card className={`lg:col-span-8 border shadow-2xl bg-white rounded-3xl min-h-[500px] border-muted-foreground/10 print:border-none print:shadow-none ${!selectedSupplier ? 'hidden lg:flex' : 'block'}`} id="printable-area">
+        <Card className={`lg:col-span-8 border shadow-2xl bg-white rounded-3xl min-h-[500px] border-muted-foreground/10 print:border-none print:shadow-none ${!selectedSupplier ? 'hidden lg:flex' : 'block'} printable-report`} id="printable-area">
           {selectedSupplier ? (
             <div className="flex flex-col h-full items-center">
               <div className="p-3 border-b flex items-center justify-between bg-primary/5 sticky top-0 z-10 print:bg-white print:border-black print:border-b-[3px] w-full">
@@ -388,11 +388,11 @@ export default function RouteDetailsPage() {
 
           body * { visibility: hidden !important; }
 
-          #printable-area, #printable-area * {
+          .printable-report, .printable-report * {
             visibility: visible !important;
           }
 
-          #printable-area {
+          .printable-report {
             position: relative !important;
             display: block !important;
             margin: 0 auto !important;
@@ -415,20 +415,25 @@ export default function RouteDetailsPage() {
             overflow: visible !important;
           }
 
-          #printable-area * {
+          .printable-report * {
             color: black !important;
           }
           
-          #printable-area h3 {
+          .printable-report h3 {
             font-size: 20pt !important;
             font-weight: 900 !important;
+            text-align: center !important;
+            border-bottom: 3px solid black;
+            padding-bottom: 10pt;
+            margin-bottom: 15pt;
           }
 
-          #printable-area h4 {
+          .printable-report h4 {
             font-size: 13pt !important;
             font-weight: 900 !important;
             border-bottom: 2px solid black !important;
             margin-bottom: 10px !important;
+            margin-top: 20pt !important;
           }
 
           table {
@@ -443,8 +448,6 @@ export default function RouteDetailsPage() {
             padding: 10pt !important;
             font-size: 11pt !important;
           }
-          h3 { font-size: 20pt !important; font-weight: 900 !important; color: black !important; text-align: center !important; border-bottom: 3px solid black; padding-bottom: 10pt; }
-          h4 { border-bottom: 2px solid black !important; margin-top: 20pt !important; font-size: 13pt !important; }
         }
       `}</style>
     </div>

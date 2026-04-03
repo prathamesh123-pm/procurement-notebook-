@@ -232,7 +232,7 @@ export default function CentersPage() {
         </Card>
 
         {selectedCenter && (
-          <Card className="border shadow-2xl bg-white rounded-3xl overflow-hidden border-muted-foreground/10 animate-in slide-in-from-bottom-2 duration-300 print:border-none print:shadow-none w-full mx-auto" id="printable-area">
+          <Card className="border shadow-2xl bg-white rounded-3xl overflow-hidden border-muted-foreground/10 animate-in slide-in-from-bottom-2 duration-300 print:border-none print:shadow-none w-full mx-auto printable-report" id="printable-area">
             <div className="p-3 border-b flex items-center justify-between bg-primary/5 sticky top-0 z-10 print:bg-white print:border-black print:border-b-[3px] w-full">
               <div className="min-w-0">
                 <h3 className="text-[13px] font-black truncate uppercase text-slate-900 print:text-[18pt]">{selectedCenter.name}</h3>
@@ -415,11 +415,11 @@ export default function CentersPage() {
 
           body * { visibility: hidden !important; }
 
-          #printable-area, #printable-area * {
+          .printable-report, .printable-report * {
             visibility: visible !important;
           }
 
-          #printable-area {
+          .printable-report {
             position: relative !important;
             display: block !important;
             margin: 0 auto !important;
@@ -442,20 +442,25 @@ export default function CentersPage() {
             overflow: visible !important;
           }
 
-          #printable-area * {
+          .printable-report * {
             color: black !important;
           }
           
-          #printable-area h3 {
+          .printable-report h3 {
             font-size: 20pt !important;
             font-weight: 900 !important;
+            text-align: center !important;
+            border-bottom: 3px solid black;
+            padding-bottom: 10pt;
+            margin-bottom: 15pt;
           }
 
-          #printable-area h4 {
+          .printable-report h4 {
             font-size: 13pt !important;
             font-weight: 900 !important;
             border-bottom: 2px solid black !important;
             margin-bottom: 10px !important;
+            margin-top: 20pt !important;
           }
 
           table {
@@ -470,9 +475,6 @@ export default function CentersPage() {
             padding: 10pt !important;
             font-size: 11pt !important;
           }
-
-          h3 { font-size: 20pt !important; font-weight: 900 !important; margin-bottom: 10pt !important; text-align: center !important; border-bottom: 3px solid black; padding-bottom: 5pt; }
-          h4 { border-bottom: 2px solid black !important; margin-top: 20pt !important; font-size: 13pt !important; }
         }
       `}</style>
     </div>

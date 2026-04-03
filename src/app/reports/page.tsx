@@ -115,9 +115,9 @@ export default function ReportsPage() {
     supplierId: "पुरवठादार किंवा केंद्राचा आयडी कोड",
     route: "संबंधित संकलन रूटचे नाव",
     seizureQty: "जप्त केलेल्या दुधाचे एकूण प्रमाण (Liters)",
-    reason: "दूध जप्त करण्याचे कारण",
-    fineAmount: "आकारलेली दंडाची रक्कम (₹)",
-    actionTaken: "जप्त केलेल्या दुधावर केलेली कारवाई",
+    reason: "दूध जप्त करण्याचे मुख्य कारण",
+    fineAmount: "आकारलेली एकूण दंडाची रक्कम (₹)",
+    actionTaken: "जप्त केलेल्या दुधावर केलेली कार्यवाही",
     routeName: "दुध संकलन रूटचे नाव",
     vehicleNo: "गाडीचा नंबर (MH...)",
     vehicleNumber: "गाडीचा नंबर (MH...)",
@@ -166,7 +166,7 @@ export default function ReportsPage() {
 
   const orderedKeys = [
     "supplierName", "supplierId", "route",
-    "visitPerson", "visitPurpose", "visitDiscussion", "travelVehicle", "travelStartKm", "travelEndKm", "travelTotalKm",
+    "visitPerson", "visitPurpose", "visitDiscussion", "travelVehicle", 
     "officeTaskSubject", "officeTaskDetails", "pendingOfficeWork",
     "title", "remark", "actionTaken", "actionsTaken", "achievements", "problems",
     "summary", "supervisorName",
@@ -198,7 +198,7 @@ export default function ReportsPage() {
       <div className="bg-white p-6 font-sans text-slate-900 border-[2px] border-slate-900 rounded-sm shadow-none w-full mx-auto print:border-black printable-report">
         <div className="flex justify-between items-center border-b-[2px] border-slate-900 pb-3 mb-6 print:border-black">
           <div className="space-y-1 text-left">
-            <h1 className="font-black uppercase text-[18pt] leading-tight tracking-tighter">{d.reportHeading || 'रूट व्हिजिट रिपोर्ट'}</h1>
+            <h1 className="font-black uppercase text-[18pt] leading-tight tracking-tighter">{d.reportHeading || 'रूट व्हिजिट अहवाल'}</h1>
             <p className="text-[9pt] font-black uppercase text-slate-500 tracking-[0.1em]">सादरकर्ता: {profileName} (ID: {profileId})</p>
           </div>
           <div className="text-right font-black uppercase text-[10pt]">तारीख: {d.reportDate || '---'}</div>
@@ -221,7 +221,7 @@ export default function ReportsPage() {
                 <th className="p-2 text-left border-r border-white/20">केंद्र व कोड</th>
                 <th className="p-2 text-center border-r border-white/20">वेळ (IN/OUT)</th>
                 <th className="p-2 text-center border-r border-white/20">कॅन (E/F)</th>
-                <th className="p-2 text-center border-r border-white/20">बर्फ (दिला/वापरला)</th>
+                <th className="p-2 text-center border-r border-white/20">बर्फ (Kg)</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-900 print:divide-black">
@@ -246,7 +246,6 @@ export default function ReportsPage() {
           </table>
         </div>
 
-        {/* Restore Achievements Section for Route Visit */}
         <div className="space-y-4 mt-6 text-left">
           {d.achievements && (
             <div className="p-3 border border-slate-900 rounded-xl print:border-black">
@@ -288,7 +287,7 @@ export default function ReportsPage() {
     
     const entriesToShow = orderedKeys.filter(key => {
       const val = d[key];
-      return val !== undefined && val !== "" && val !== null && !kmKeys.includes(key);
+      return val !== undefined && val !== "" && val !== null;
     });
 
     return (
@@ -320,20 +319,11 @@ export default function ReportsPage() {
                 {(d.travelStartKm || d.travelEndKm || d.travelTotalKm) && (
                   <tr className="font-bold text-[10pt] text-left">
                     <td className="p-3 bg-slate-50 uppercase text-[9pt] font-black border-r border-slate-900 print:bg-white print:border-black">प्रवासाचे किलोमीटर (START/END/TOTAL)</td>
-                    <td className="p-0">
-                      <div className="flex divide-x divide-slate-900 h-full print:divide-black">
-                        <div className="flex-1 p-3 flex flex-col items-center justify-center">
-                          <span className="text-[8pt] text-slate-400 font-black">START</span>
-                          <span className="text-[11pt]">{d.travelStartKm || '0'}</span>
-                        </div>
-                        <div className="flex-1 p-3 flex flex-col items-center justify-center">
-                          <span className="text-[8pt] text-slate-400 font-black">END</span>
-                          <span className="text-[11pt]">{d.travelEndKm || '0'}</span>
-                        </div>
-                        <div className="flex-1 p-3 flex flex-col items-center justify-center bg-blue-50/50 print:bg-white">
-                          <span className="text-[8pt] text-primary font-black">TOTAL</span>
-                          <span className="text-[11pt] font-black text-primary print:text-black">{d.travelTotalKm || '0'}</span>
-                        </div>
+                    <td className="p-3">
+                      <div className="flex gap-6 items-center">
+                        <div className="flex flex-col"><span className="text-[7pt] text-slate-400 font-black uppercase">सुरुवात</span><span className="text-[11pt]">{d.travelStartKm || '0'}</span></div>
+                        <div className="flex flex-col"><span className="text-[7pt] text-slate-400 font-black uppercase">शेवट</span><span className="text-[11pt]">{d.travelEndKm || '0'}</span></div>
+                        <div className="flex flex-col bg-blue-50 px-3 py-1 rounded-lg border border-blue-100 print:bg-white print:border-black"><span className="text-[7pt] text-primary font-black uppercase print:text-black">एकूण किलोमीटर</span><span className="text-[12pt] font-black text-primary print:text-black">{d.travelTotalKm || '0'} KM</span></div>
                       </div>
                     </td>
                   </tr>
@@ -544,7 +534,7 @@ export default function ReportsPage() {
             color: black !important;
           }
 
-          .no-print, button, header, nav, footer, .sidebar, .sidebar-trigger, [role="dialog"] > button {
+          .no-print, button, header, nav, footer, .sidebar, .sidebar-trigger, [role="dialog"] > button, .h-9, .pr-2 {
             display: none !important;
           }
 
@@ -575,7 +565,7 @@ export default function ReportsPage() {
           h3, h4 { font-size: 13pt !important; font-weight: 900 !important; color: black !important; }
           
           .text-primary, .text-rose-600, .text-blue-600 { color: black !important; font-weight: 900 !important; }
-          .bg-slate-50, .bg-muted, .bg-primary\/5 { background-color: white !important; border: 1px solid black !important; }
+          .bg-slate-50, .bg-muted, .bg-primary\/5, .bg-blue-50 { background-color: white !important; border: 1px solid black !important; }
         }
       `}</style>
     </div>
