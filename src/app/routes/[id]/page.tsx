@@ -165,9 +165,9 @@ export default function RouteDetailsPage() {
           </ScrollArea>
         </Card>
 
-        <Card className="lg:col-span-8 border shadow-2xl bg-white rounded-3xl overflow-hidden min-h-[500px]">
+        <Card className="lg:col-span-8 border shadow-2xl bg-white rounded-3xl overflow-hidden min-h-[500px] flex flex-col items-center">
           {selectedSupplier ? (
-            <div className="p-6 space-y-6 animate-in slide-in-from-right-2 duration-300 printable-report flex flex-col items-center shadow-none">
+            <div className="p-6 space-y-6 animate-in slide-in-from-right-2 duration-300 printable-report flex flex-col items-center shadow-none w-full max-w-[210mm] mx-auto">
               <div className="w-full flex items-center justify-between no-print mb-4 border-b pb-2">
                 <Badge className="bg-primary/10 text-primary border-none uppercase text-[10px] font-black">{selectedSupplier.supplierType} PROFILE</Badge>
                 <div className="flex gap-2">
@@ -375,14 +375,15 @@ export default function RouteDetailsPage() {
 
       <style jsx global>{`
         @media print {
-          @page { size: A4; margin: 10mm; }
+          @page { size: A4; margin: 5mm 10mm; }
           body * { visibility: hidden !important; background: white !important; }
           .printable-report, .printable-report * { visibility: visible !important; opacity: 1 !important; color: black !important; }
           .printable-report { 
-            position: relative !important; margin: 0 auto 20px auto !important; width: 100% !important; max-width: 190mm !important; 
+            position: relative !important; margin: 0 auto !important; width: 100% !important; max-width: 190mm !important; 
             border: 1.5px solid black !important; padding: 10mm !important; display: block !important;
             box-shadow: none !important;
             page-break-inside: avoid !important;
+            top: 0 !important;
           }
           .no-print, button, header, nav, footer, .sidebar, [role="dialog"] [class*="Close"] { display: none !important; }
         }

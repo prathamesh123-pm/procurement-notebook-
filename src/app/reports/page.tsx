@@ -423,14 +423,15 @@ export default function ReportsPage() {
 
       <style jsx global>{`
         @media print {
-          @page { size: A4; margin: 10mm; }
+          @page { size: A4; margin: 5mm 10mm; }
           body * { visibility: hidden !important; background: white !important; }
           .printable-report, .printable-report * { visibility: visible !important; opacity: 1 !important; color: black !important; }
           .printable-report { 
-            position: relative !important; margin: 0 auto 20px auto !important; width: 100% !important; max-width: 190mm !important; 
+            position: relative !important; margin: 0 auto !important; width: 100% !important; max-width: 190mm !important; 
             border: 1.5px solid black !important; padding: 10mm !important; display: block !important;
             box-shadow: none !important;
             page-break-inside: avoid !important;
+            top: 0 !important;
           }
           .no-print, button, header, nav, footer, .sidebar, [role="dialog"] [class*="Close"], .h-14, .h-6 { display: none !important; }
           table { width: 100% !important; border-collapse: collapse !important; border: 1.5px solid black !important; }
