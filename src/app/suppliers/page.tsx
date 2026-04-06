@@ -8,14 +8,14 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Supplier, Route, EquipmentItem, SupplierType } from "@/lib/types"
-import { Plus, Search, Filter, Phone, MapPin, Trash2, Milk, X, Laptop, Zap, Sun, ShieldAlert, History, Edit, CheckCircle2, Box, UserCheck, Wallet, User, ShieldCheck, Battery, FlaskConical } from "lucide-react"
+import { Plus, Search, Filter, Phone, MapPin, Trash2, Milk, X, Laptop, Zap, Sun, ShieldAlert, History, Edit, CheckCircle2, Box, UserCheck, Wallet, User, ShieldCheck, Battery, FlaskConical, Truck } from "lucide-react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogDescription } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking } from "@/firebase"
+import { useUser, useFirestore, useCollection, useDoc, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking } from "@/firebase"
 import { collection, doc } from "firebase/firestore"
 import { useToast } from "@/hooks/use-toast"
 import { Textarea } from "@/components/ui/textarea"
@@ -92,7 +92,8 @@ function SuppliersContent() {
     }
     const newSupp = {
       supplierId: formData.supplierId, name: formData.name, address: formData.address, 
-      mobile: formData.mobile, routeId: formData.routeId, supplierType: formData.supplierType,
+      mobile: formData.mobile, routeId: formData.routeId === "none" ? "" : formData.routeId, 
+      supplierType: formData.supplierType,
       competition: formData.competition, additionalInfo: formData.additionalInfo,
       additionalNotes: formData.additionalInfo,
       iceBlocks: Number(formData.iceBlocks), scaleBrand: formData.scaleBrand,
@@ -121,7 +122,8 @@ function SuppliersContent() {
     if (!selectedSupplier || !db) return
     const updateData = { 
       supplierId: formData.supplierId, name: formData.name, address: formData.address, 
-      mobile: formData.mobile, routeId: formData.routeId, supplierType: formData.supplierType,
+      mobile: formData.mobile, routeId: formData.routeId === "none" ? "" : formData.routeId, 
+      supplierType: formData.supplierType,
       competition: formData.competition, additionalInfo: formData.additionalInfo,
       additionalNotes: formData.additionalInfo,
       iceBlocks: Number(formData.iceBlocks), scaleBrand: formData.scaleBrand,
@@ -170,7 +172,7 @@ function SuppliersContent() {
     return (suppliers || []).filter(s => {
       const q = searchQuery.toLowerCase();
       const matchesSearch = s.name?.toLowerCase().includes(q) || s.mobile?.includes(q) || s.supplierId?.toString().includes(q);
-      const matchesRoute = routeFilter === 'all' || s.routeId === routeFilter;
+      const matchesRoute = routeFilter === 'all' || (routeFilter === 'none' ? !s.routeId : s.routeId === routeFilter);
       return matchesSearch && matchesRoute;
     })
   }, [suppliers, searchQuery, routeFilter])
@@ -179,7 +181,7 @@ function SuppliersContent() {
     setSelectedSupplier(supp)
     setFormData({
       supplierId: supp.supplierId || "", name: supp.name || "", address: supp.address || "",
-      mobile: supp.mobile || "", routeId: supp.routeId || "", supplierType: supp.supplierType || "Gavali",
+      mobile: supp.mobile || "", routeId: supp.routeId || "none", supplierType: supp.supplierType || "Gavali",
       competition: supp.competition || "", additionalInfo: supp.additionalInfo || supp.additionalNotes || "",
       iceBlocks: String(supp.iceBlocks || 0), scaleBrand: supp.scaleBrand || "",
       fatMachineBrand: supp.fatMachineBrand || "", cattleFeedBrand: supp.cattleFeedBrand || "",
@@ -199,14 +201,20 @@ function SuppliersContent() {
     setIsEditing(true)
   }
 
+  const getRouteName = (rid: string) => {
+    return routes?.find(r => r.id === rid)?.name || "रूट जोडला नाही"
+  }
+
   if (!mounted) return null
 
   return (
-    <div className="space-y-4 max-w-[800px] mx-auto w-full pb-10 px-2 animate-in fade-in duration-500">
+    <div className="space-y-4 max-w-[900px] mx-auto w-full pb-10 px-2 animate-in fade-in duration-500">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b pb-4 text-center md:text-left">
         <div>
-          <h2 className="text-xl font-black text-foreground uppercase tracking-tight">सप्लायर (SUPPLIERS)</h2>
-          <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] ml-1">Profiles & Inventory</p>
+          <h2 className="text-xl font-black text-foreground uppercase tracking-tight flex items-center gap-2">
+            <Users className="h-6 w-6 text-primary" /> सप्लायर मास्टर (MASTER)
+          </h2>
+          <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] ml-1">Route Assignment & Profile</p>
         </div>
         <Button onClick={() => setIsAdding(true)} className="gap-2 shadow-xl shadow-primary/20 h-10 px-6 rounded-xl font-black uppercase text-[11px] w-full md:w-auto">
           <Plus className="h-4 w-4" /> नवीन सप्लायर
@@ -220,11 +228,12 @@ function SuppliersContent() {
             <Input placeholder="नाव किंवा कोडने शोधा..." className="pl-10 h-11 rounded-2xl bg-muted/20 border-none font-bold shadow-inner" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
           </div>
           <Select value={routeFilter} onValueChange={setRouteFilter}>
-            <SelectTrigger className="w-full sm:w-[180px] h-11 rounded-2xl bg-muted/20 border-none font-black text-[10px] uppercase shadow-inner">
+            <SelectTrigger className="w-full sm:w-[200px] h-11 rounded-2xl bg-muted/20 border-none font-black text-[10px] uppercase shadow-inner">
               <Filter className="h-4 w-4 mr-2" /><SelectValue placeholder="रूट निवडा" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">सर्व रूट</SelectItem>
+              <SelectItem value="all" className="font-bold">सर्व सप्लायर (All)</SelectItem>
+              <SelectItem value="none" className="font-bold text-rose-600">रूट नसलेले (Unassigned)</SelectItem>
               {routes?.map(r => <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>)}
             </SelectContent>
           </Select>
@@ -236,7 +245,7 @@ function SuppliersContent() {
           <TableHeader>
             <TableRow className="bg-muted/30">
               <TableHead className="font-black text-[10px] uppercase px-6">सप्लायर तपशील</TableHead>
-              <TableHead className="font-black text-[10px] uppercase text-center">दूध (L)</TableHead>
+              <TableHead className="font-black text-[10px] uppercase text-center">वर्तमान रूट (ROUTE)</TableHead>
               <TableHead className="font-black text-[10px] uppercase text-right px-6">क्रिया</TableHead>
             </TableRow>
           </TableHeader>
@@ -252,8 +261,10 @@ function SuppliersContent() {
                     </span>
                   </div>
                 </TableCell>
-                <TableCell className="text-center font-black text-[13px] text-primary">
-                  {((supp.cowMilk?.quantity || 0) + (supp.buffaloMilk?.quantity || 0)).toFixed(1)}
+                <TableCell className="text-center">
+                  <Badge className={cn("h-5 px-2 text-[8px] font-black uppercase border-none", supp.routeId ? "bg-emerald-100 text-emerald-700" : "bg-rose-100 text-rose-700")}>
+                    <Truck className="h-2.5 w-2.5 mr-1" /> {getRouteName(supp.routeId)}
+                  </Badge>
                 </TableCell>
                 <TableCell className="text-right px-6">
                   <div className="flex gap-1 justify-end opacity-0 group-hover:opacity-100 transition-opacity">
@@ -270,14 +281,26 @@ function SuppliersContent() {
       <Dialog open={isAdding || isEditing} onOpenChange={(open) => { if(!open) { setIsAdding(false); setIsEditing(false); resetFormData(); } }}>
         <DialogContent className="max-w-[600px] p-0 overflow-hidden rounded-3xl border-none shadow-2xl bg-white">
           <DialogHeader className="p-4 bg-primary text-white sticky top-0 z-10">
-            <DialogTitle className="text-base font-black uppercase tracking-widest">{isAdding ? 'नवीन सप्लायर' : 'माहिती अद्ययावत करा'}</DialogTitle>
-            <DialogDescription className="text-[9px] text-white/70 uppercase">सविस्तर तपशील भरा.</DialogDescription>
+            <DialogTitle className="text-base font-black uppercase tracking-widest">{isAdding ? 'नवीन सप्लायर' : 'माहिती बदला / रूट ट्रान्सफर'}</DialogTitle>
+            <DialogDescription className="text-[9px] text-white/70 uppercase">सप्लायरची माहिती आणि रूट मॅनेजमेंट.</DialogDescription>
           </DialogHeader>
           <ScrollArea className="max-h-[80vh] p-6">
             <div className="space-y-6 pb-10">
               <div className="space-y-4">
-                <h4 className="text-[11px] font-black uppercase text-primary border-b pb-1 flex items-center gap-2"><User className="h-4 w-4" /> १) प्राथमिक माहिती</h4>
+                <h4 className="text-[11px] font-black uppercase text-primary border-b pb-1 flex items-center gap-2"><User className="h-4 w-4" /> १) प्राथमिक माहिती व रूट असाइनमेंट</h4>
                 <div className="grid grid-cols-2 gap-3">
+                  <div className="col-span-2 space-y-1.5">
+                    <Label className="text-[10px] font-black uppercase text-rose-600">वर्तमान रूट बदला (TRANSFER ROUTE)</Label>
+                    <Select value={formData.routeId} onValueChange={v => setFormData({...formData, routeId: v})}>
+                      <SelectTrigger className="h-11 text-[12px] bg-rose-50 border border-rose-100 rounded-xl font-black shadow-inner">
+                        <Truck className="h-4 w-4 mr-2 text-rose-600" /><SelectValue placeholder="रूट निवडा" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none" className="font-bold text-rose-600">कोणताही रूट नाही (Unassigned)</SelectItem>
+                        {routes?.map(r => <SelectItem key={r.id} value={r.id} className="font-bold">{r.name}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                  </div>
                   <div className="col-span-2 space-y-1.5"><Label className="text-[10px] font-black uppercase">सप्लायर प्रकार</Label>
                     <Select value={formData.supplierType} onValueChange={(v: any) => setFormData({...formData, supplierType: v})}>
                       <SelectTrigger className="h-10 text-[12px] bg-muted/20 border-none rounded-xl font-black"><SelectValue /></SelectTrigger>
