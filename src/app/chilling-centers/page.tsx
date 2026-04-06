@@ -1,0 +1,357 @@
+"use client"
+
+import { useState, useEffect, useMemo } from "react"
+import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
+import { 
+  Plus, Search, Thermometer, Edit, X, ChevronRight,
+  Printer, Milk, ShieldCheck, Box, Truck, Clock, 
+  Zap, Warehouse, User, Phone, MapPin, CheckCircle2,
+  Trash2, Info
+} from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
+import { ChillingCenter } from "@/lib/types"
+import { useToast } from "@/hooks/use-toast"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking } from "@/firebase"
+import { collection, doc } from "firebase/firestore"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Textarea } from "@/components/ui/textarea"
+
+export default function ChillingCentersPage() {
+  const { user } = useUser()
+  const db = useFirestore()
+  const { toast } = useToast()
+
+  const centersQuery = useMemoFirebase(() => {
+    if (!db || !user) return null
+    return collection(db, 'chillingCenters')
+  }, [db, user])
+
+  const { data: centers, isLoading } = useCollection<ChillingCenter>(centersQuery)
+
+  const [searchQuery, setSearchQuery] = useState("")
+  const [mounted, setMounted] = useState(false)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [dialogMode, setDialogMode] = useState<'add' | 'edit'>('add')
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [selectedCenter, setSelectedCenter] = useState<ChillingCenter | null>(null)
+  
+  const [formData, setFormData] = useState({
+    name: "", code: "", address: "", mobile: "",
+    cowQty: "0", cowFat: "0", cowSnf: "0",
+    bufQty: "0", bufFat: "0", bufSnf: "0",
+    hasBmc: false, hasIbt: false,
+    tankCount: "0", tankCapacity: "",
+    morningTime: "", eveningTime: "",
+    supplierCount: "0", fatMachineBrand: "",
+    tankerCapacity: "", tankerFrequency: "", tankerArrivalTimes: "",
+    otherDairySupply: ""
+  })
+
+  useEffect(() => setMounted(true), [])
+
+  const handleOpenAdd = () => {
+    setDialogMode('add'); setEditingId(null);
+    setFormData({
+      name: "", code: "", address: "", mobile: "",
+      cowQty: "0", cowFat: "0", cowSnf: "0",
+      bufQty: "0", bufFat: "0", bufSnf: "0",
+      hasBmc: false, hasIbt: false,
+      tankCount: "0", tankCapacity: "",
+      morningTime: "", eveningTime: "",
+      supplierCount: "0", fatMachineBrand: "",
+      tankerCapacity: "", tankerFrequency: "", tankerArrivalTimes: "",
+      otherDairySupply: ""
+    })
+    setIsDialogOpen(true)
+  }
+
+  const handleOpenEdit = (center: ChillingCenter) => {
+    setDialogMode('edit'); setEditingId(center.id);
+    setFormData({
+      name: center.name || "", code: center.code || "", address: center.address || "", mobile: center.mobile || "",
+      cowQty: String(center.cowMilk?.quantity || 0), cowFat: String(center.cowMilk?.fat || 0), cowSnf: String(center.cowMilk?.snf || 0),
+      bufQty: String(center.buffaloMilk?.quantity || 0), bufFat: String(center.buffaloMilk?.fat || 0), bufSnf: String(center.buffaloMilk?.snf || 0),
+      hasBmc: center.hasBmc || false, hasIbt: center.hasIbt || false,
+      tankCount: String(center.tankCount || 0), tankCapacity: center.tankCapacity || "",
+      morningTime: center.morningTime || "", eveningTime: center.eveningTime || "",
+      supplierCount: String(center.supplierCount || 0), fatMachineBrand: center.fatMachineBrand || "",
+      tankerCapacity: center.tankerCapacity || "", tankerFrequency: center.tankerFrequency || "",
+      tankerArrivalTimes: center.tankerArrivalTimes || "",
+      otherDairySupply: center.otherDairySupply || ""
+    })
+    setIsDialogOpen(true)
+  }
+
+  const handleSave = () => {
+    if (!formData.name || !formData.code || !db || !user) {
+      toast({ title: "त्रुटी", description: "नाव आणि कोड आवश्यक आहे.", variant: "destructive" })
+      return
+    }
+
+    const data = {
+      ...formData,
+      cowMilk: { quantity: Number(formData.cowQty), fat: Number(formData.cowFat), snf: Number(formData.cowSnf) },
+      buffaloMilk: { quantity: Number(formData.bufQty), fat: Number(formData.bufFat), snf: Number(formData.bufSnf) },
+      updatedAt: new Date().toISOString()
+    }
+
+    if (dialogMode === 'add') {
+      addDocumentNonBlocking(collection(db, 'chillingCenters'), data)
+      toast({ title: "यशस्वी", description: "चिलिंग सेंटर जोडले गेले." })
+    } else if (editingId) {
+      updateDocumentNonBlocking(doc(db, 'chillingCenters', editingId), data)
+      toast({ title: "यशस्वी", description: "माहिती अद्ययावत झाली." })
+    }
+    setIsDialogOpen(false)
+  }
+
+  const handleDelete = (id: string) => {
+    if (!db) return
+    if (confirm("हे सेंटर हटवायचे आहे का?")) {
+      deleteDocumentNonBlocking(doc(db, 'chillingCenters', id))
+      setSelectedCenter(null)
+      toast({ title: "यशस्वी", description: "सेंटर हटवण्यात आले." })
+    }
+  }
+
+  const filteredCenters = useMemo(() => {
+    return (centers || []).filter(c => 
+      c.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      c.code.toString().includes(searchQuery)
+    )
+  }, [centers, searchQuery])
+
+  if (!mounted || isLoading) return <div className="p-10 text-center font-black uppercase text-[10px] opacity-50">लोड होत आहे...</div>
+
+  return (
+    <div className="space-y-4 max-w-6xl mx-auto w-full pb-10 px-2 animate-in fade-in duration-500">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 border-b pb-4 no-print">
+        <div className="min-w-0">
+          <h2 className="text-xl font-black text-foreground flex items-center gap-2 uppercase tracking-tight">
+            <Thermometer className="h-6 w-6 text-primary" /> चिलिंग सेंटर माहिती (CHILLING)
+          </h2>
+          <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Logistics & Infrastructure</p>
+        </div>
+        <Button onClick={handleOpenAdd} className="w-full sm:w-auto font-black h-10 text-[10px] rounded-xl px-6 uppercase shadow-lg shadow-primary/20">
+          <Plus className="h-4 w-4 mr-1.5" /> नवीन चिलिंग सेंटर
+        </Button>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+        <Card className="lg:col-span-4 border shadow-2xl bg-white rounded-2xl overflow-hidden no-print">
+          <div className="p-3 border-b bg-muted/5">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
+              <input placeholder="शोधा..." className="w-full pl-9 h-10 text-[12px] bg-white border border-muted-foreground/10 rounded-xl font-black uppercase outline-none focus:ring-1 focus:ring-primary shadow-inner" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
+            </div>
+          </div>
+          <ScrollArea className="h-[450px]">
+            <div className="divide-y">
+              {filteredCenters.map(center => (
+                <div key={center.id} className={`p-3 cursor-pointer hover:bg-primary/5 transition-colors ${selectedCenter?.id === center.id ? 'bg-primary/5 border-l-4 border-primary' : ''}`} onClick={() => setSelectedCenter(center)}>
+                  <h4 className="font-black text-[12px] text-slate-900 truncate uppercase">{center.name}</h4>
+                  <div className="flex items-center gap-3 mt-1">
+                    <Badge variant="secondary" className="text-[8px] font-black h-4 px-1.5 rounded-md">ID: {center.code}</Badge>
+                    <span className="text-[9px] text-muted-foreground flex items-center gap-1 font-bold">
+                      <MapPin className="h-3 w-3" /> {center.address || "---"}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </ScrollArea>
+        </Card>
+
+        <Card className="lg:col-span-8 border shadow-2xl bg-white rounded-3xl overflow-hidden min-h-[500px] flex flex-col items-center">
+          {selectedCenter ? (
+            <div className="p-6 space-y-6 animate-in slide-in-from-right-2 duration-300 printable-report flex flex-col items-center shadow-none w-full max-w-[210mm] mx-auto">
+              <div className="w-full flex items-center justify-between no-print mb-4 border-b pb-2">
+                <Badge className="bg-primary/10 text-primary border-none uppercase text-[10px] font-black">CHILLING CENTER PROFILE</Badge>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm" className="h-8 rounded-xl font-black uppercase text-[9px]" onClick={() => window.print()}><Printer className="h-3.5 w-3.5 mr-1" /> प्रिंट</Button>
+                  <Button variant="outline" size="sm" className="h-8 rounded-xl font-black uppercase text-[9px]" onClick={() => handleOpenEdit(selectedCenter)}><Edit className="h-3.5 w-3.5 mr-1" /> बदल करा</Button>
+                  <Button variant="outline" size="sm" className="h-8 rounded-xl font-black uppercase text-[9px] text-destructive border-destructive/20" onClick={() => handleDelete(selectedCenter.id)}><Trash2 className="h-3.5 w-3.5 mr-1" /> हटवा</Button>
+                </div>
+              </div>
+
+              <div className="w-full border-b-2 border-black pb-2 mb-4 text-center">
+                <div className="flex items-center justify-center gap-2 mb-1">
+                  <div className="h-8 w-8 bg-black rounded-lg flex items-center justify-center"><Milk className="h-5 w-5 text-white" /></div>
+                  <h1 className="text-[18pt] font-black uppercase tracking-tight leading-none">संकलन नोंदवही</h1>
+                </div>
+                <h3 className="text-[13pt] font-black uppercase text-primary tracking-widest">{selectedCenter.name}</h3>
+                <p className="text-[9pt] font-black text-muted-foreground uppercase">ID: {selectedCenter.code} | चिलिंग सेंटर</p>
+              </div>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full text-left">
+                <div className="space-y-3">
+                  <h4 className="text-[10px] font-black uppercase text-primary tracking-widest border-b pb-1 flex items-center gap-2"><User className="h-3.5 w-3.5" /> १) प्राथमिक माहिती</h4>
+                  <div className="space-y-1.5 text-[11px] font-bold">
+                    <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">संपर्क</span><span>{selectedCenter.mobile || "-"}</span></div>
+                    <div className="flex flex-col gap-0.5"><span className="text-muted-foreground uppercase text-[9px]">पत्ता</span><span className="leading-tight">{selectedCenter.address || "-"}</span></div>
+                    <div className="flex justify-between border-b border-dashed pb-1 pt-2"><span className="text-muted-foreground uppercase text-[9px]">एकूण सप्लायर्स</span><span>{selectedCenter.supplierCount || "0"}</span></div>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <h4 className="text-[10px] font-black uppercase text-primary tracking-widest border-b pb-1 flex items-center gap-2"><Box className="h-3.5 w-3.5" /> २) पायाभूत सुविधा & मशिन्स</h4>
+                  <div className="space-y-1.5 text-[11px] font-bold">
+                    <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">BMC सुविधा</span><span>{selectedCenter.hasBmc ? "होय" : "नाही"}</span></div>
+                    <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">IBT सुविधा</span><span>{selectedCenter.hasIbt ? "होय" : "नाही"}</span></div>
+                    <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">टाक्यांची संख्या</span><span>{selectedCenter.tankCount || "0"}</span></div>
+                    <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">टाकी क्षमता</span><span>{selectedCenter.tankCapacity || "-"}</span></div>
+                    <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">मशीन ब्रँड</span><span>{selectedCenter.fatMachineBrand || "-"}</span></div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full text-left">
+                <div className="space-y-3">
+                  <h4 className="text-[10px] font-black uppercase text-rose-600 tracking-widest border-b pb-1 flex items-center gap-2"><Truck className="h-3.5 w-3.5" /> ३) टँकर & संकलन वेळ</h4>
+                  <div className="space-y-1.5 text-[11px] font-bold">
+                    <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">संकलन वेळ (सकाळ)</span><span>{selectedCenter.morningTime || "-"}</span></div>
+                    <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">संकलन वेळ (संध्या)</span><span>{selectedCenter.eveningTime || "-"}</span></div>
+                    <div className="flex justify-between border-b border-dashed pb-1 pt-2"><span className="text-muted-foreground uppercase text-[9px]">टँकर क्षमता</span><span>{selectedCenter.tankerCapacity || "-"}</span></div>
+                    <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">टँकर वारंवारता</span><span>{selectedCenter.tankerFrequency ? `${selectedCenter.tankerFrequency} वेळा/दिवस` : "-"}</span></div>
+                    <div className="flex flex-col gap-0.5"><span className="text-muted-foreground uppercase text-[9px]">टँकर येण्याच्या वेळा</span><span className="leading-tight">{selectedCenter.tankerArrivalTimes || "-"}</span></div>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <h4 className="text-[10px] font-black uppercase text-blue-600 tracking-widest border-b pb-1 flex items-center gap-2"><Milk className="h-3.5 w-3.5" /> ४) दूध सारांश</h4>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="p-3 rounded-2xl bg-blue-50 text-center border border-blue-100">
+                      <p className="text-[8px] font-black uppercase text-blue-500">गाय (COW)</p>
+                      <p className="text-sm font-black">{selectedCenter.cowMilk?.quantity || 0}L</p>
+                      <p className="text-[7px] font-bold text-blue-400">F: {selectedCenter.cowMilk?.fat} | S: {selectedCenter.cowMilk?.snf}</p>
+                    </div>
+                    <div className="p-3 rounded-2xl bg-amber-50 text-center border border-amber-100">
+                      <p className="text-[8px] font-black uppercase text-amber-500">म्हेस (BUFF)</p>
+                      <p className="text-sm font-black">{selectedCenter.buffaloMilk?.quantity || 0}L</p>
+                      <p className="text-[7px] font-bold text-amber-400">F: {selectedCenter.buffaloMilk?.fat} | S: {selectedCenter.buffaloMilk?.snf}</p>
+                    </div>
+                  </div>
+                  <div className="p-3 rounded-2xl bg-slate-50 border border-slate-100 mt-2">
+                    <p className="text-[8px] font-black uppercase text-slate-500 mb-1">इतर डेअरीला पुरवठा</p>
+                    <p className="text-[10px] font-bold">{selectedCenter.otherDairySupply || "नाही"}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="w-full mt-auto pt-12 grid grid-cols-2 gap-12 text-center uppercase font-black text-[9pt] tracking-widest hidden print:grid">
+                <div className="border-t-[1.5px] border-black pt-2">अधिकारी स्वाक्षरी</div>
+                <div className="border-t-[1.5px] border-black pt-2">चिलिंग इन्चार्ज स्वाक्षरी</div>
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center h-full opacity-20 p-20 text-center">
+              <Warehouse className="h-16 w-16 mb-4" />
+              <h4 className="font-black uppercase tracking-[0.3em] text-sm">चिलिंग सेंटर निवडा</h4>
+              <p className="text-[10px] font-bold uppercase mt-2">Select a chilling unit to view details</p>
+            </div>
+          )}
+        </Card>
+      </div>
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="max-w-2xl p-0 overflow-hidden rounded-3xl border-none shadow-2xl bg-white">
+          <DialogHeader className="p-4 bg-primary text-white sticky top-0 z-10">
+            <DialogTitle className="text-base font-black uppercase tracking-widest">{dialogMode === 'add' ? 'नवीन चिलिंग सेंटर' : 'माहिती अद्ययावत करा'}</DialogTitle>
+            <DialogDescription className="text-[9px] text-white/70 uppercase">पायाभूत सुविधा, टँकर आणि दूध तपशील भरा.</DialogDescription>
+          </DialogHeader>
+          <ScrollArea className="max-h-[80vh] p-6">
+            <div className="space-y-6 pb-10">
+              <div className="space-y-4">
+                <h4 className="text-[11px] font-black uppercase text-primary border-b pb-1 flex items-center gap-2"><Warehouse className="h-4 w-4" /> १) प्राथमिक माहिती</h4>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="col-span-2 space-y-1.5"><Label className="text-[10px] font-black uppercase">सेंटरचे नाव *</Label><Input value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl shadow-inner" /></div>
+                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">कोड नंबर *</Label><Input value={formData.code} onChange={e => setFormData({...formData, code: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl shadow-inner" /></div>
+                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">मोबाईल</Label><Input value={formData.mobile} onChange={e => setFormData({...formData, mobile: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl shadow-inner" /></div>
+                  <div className="col-span-2 space-y-1.5"><Label className="text-[10px] font-black uppercase">पत्ता</Label><Input value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl shadow-inner" /></div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h4 className="text-[11px] font-black uppercase text-primary border-b pb-1 flex items-center gap-2"><Box className="h-4 w-4" /> २) पायाभूत सुविधा (INFRA)</h4>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex items-center space-x-3 bg-muted/10 p-3 rounded-xl border border-muted-foreground/5 cursor-pointer" onClick={() => setFormData({...formData, hasBmc: !formData.hasBmc})}>
+                    <Checkbox checked={formData.hasBmc} />
+                    <Label className="text-[10px] font-black uppercase cursor-pointer">BMC उपलब्ध आहे का?</Label>
+                  </div>
+                  <div className="flex items-center space-x-3 bg-muted/10 p-3 rounded-xl border border-muted-foreground/5 cursor-pointer" onClick={() => setFormData({...formData, hasIbt: !formData.hasIbt})}>
+                    <Checkbox checked={formData.hasIbt} />
+                    <Label className="text-[10px] font-black uppercase cursor-pointer">IBT उपलब्ध आहे का?</Label>
+                  </div>
+                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">टाक्यांची संख्या</Label><Input type="number" value={formData.tankCount} onChange={e => setFormData({...formData, tankCount: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl" /></div>
+                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">टाकी क्षमता (Ltrs)</Label><Input value={formData.tankCapacity} onChange={e => setFormData({...formData, tankCapacity: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl" placeholder="उदा. १०००० L" /></div>
+                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">फॅट मशीन ब्रँड</Label><Input value={formData.fatMachineBrand} onChange={e => setFormData({...formData, fatMachineBrand: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl" /></div>
+                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">एकूण सप्लायर्स</Label><Input type="number" value={formData.supplierCount} onChange={e => setFormData({...formData, supplierCount: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl" /></div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h4 className="text-[11px] font-black uppercase text-rose-600 border-b pb-1 flex items-center gap-2"><Truck className="h-4 w-4" /> ३) टँकर & वेळ</h4>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">संकलन वेळ (सकाळ)</Label><Input type="time" value={formData.morningTime} onChange={e => setFormData({...formData, morningTime: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none rounded-xl" /></div>
+                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">संकलन वेळ (संध्या)</Label><Input type="time" value={formData.eveningTime} onChange={e => setFormData({...formData, eveningTime: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none rounded-xl" /></div>
+                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">टँकर क्षमता (Ltrs)</Label><Input value={formData.tankerCapacity} onChange={e => setFormData({...formData, tankerCapacity: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none rounded-xl" /></div>
+                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">येण्याची वारंवारता (वेळा)</Label><Input type="number" value={formData.tankerFrequency} onChange={e => setFormData({...formData, tankerFrequency: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none rounded-xl" placeholder="दिवसातून किती वेळा" /></div>
+                  <div className="col-span-2 space-y-1.5"><Label className="text-[10px] font-black uppercase">टँकर येण्याच्या वेळा</Label><Input value={formData.tankerArrivalTimes} onChange={e => setFormData({...formData, tankerArrivalTimes: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none rounded-xl" placeholder="उदा. सकाळी ८:००, संध्याकाळी ७:३०" /></div>
+                  <div className="col-span-2 space-y-1.5"><Label className="text-[10px] font-black uppercase">इतर डेअरीला पुरवठा</Label><Input value={formData.otherDairySupply} onChange={e => setFormData({...formData, otherDairySupply: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none rounded-xl" placeholder="नाही / हो असल्यास डेअरीचे नाव" /></div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h4 className="text-[11px] font-black uppercase text-blue-600 border-b pb-1 flex items-center gap-2"><Milk className="h-4 w-4" /> ४) दूध सारांश</h4>
+                <div className="grid grid-cols-3 gap-2 p-3 bg-blue-50/50 rounded-xl border border-blue-100">
+                  <div className="col-span-3 text-[10px] font-black uppercase text-blue-600 mb-1">गाय (Cow Q/F/S)</div>
+                  <Input type="number" value={formData.cowQty} onChange={e => setFormData({...formData, cowQty: e.target.value})} className="h-8 text-[11px] bg-white border-none font-bold rounded-lg" placeholder="L" />
+                  <Input type="number" value={formData.cowFat} onChange={e => setFormData({...formData, cowFat: e.target.value})} className="h-8 text-[11px] bg-white border-none font-bold rounded-lg" placeholder="F" />
+                  <Input type="number" value={formData.cowSnf} onChange={e => setFormData({...formData, cowSnf: e.target.value})} className="h-8 text-[11px] bg-white border-none font-bold rounded-lg" placeholder="S" />
+                </div>
+                <div className="grid grid-cols-3 gap-2 p-3 bg-amber-50/50 rounded-xl border border-amber-100">
+                  <div className="col-span-3 text-[10px] font-black uppercase text-amber-600 mb-1">म्हेस (Buf Q/F/S)</div>
+                  <Input type="number" value={formData.bufQty} onChange={e => setFormData({...formData, bufQty: e.target.value})} className="h-8 text-[11px] bg-white border-none font-bold rounded-lg" placeholder="L" />
+                  <Input type="number" value={formData.bufFat} onChange={e => setFormData({...formData, bufFat: e.target.value})} className="h-8 text-[11px] bg-white border-none font-bold rounded-lg" placeholder="F" />
+                  <Input type="number" value={formData.bufSnf} onChange={e => setFormData({...formData, bufSnf: e.target.value})} className="h-8 text-[11px] bg-white border-none font-bold rounded-lg" placeholder="S" />
+                </div>
+              </div>
+            </div>
+          </ScrollArea>
+          <DialogFooter className="p-4 border-t bg-muted/5">
+            <Button onClick={handleSave} className="w-full font-black uppercase text-[11px] h-12 rounded-2xl shadow-xl shadow-primary/20 tracking-widest transition-all active:scale-95"><CheckCircle2 className="h-5 w-5 mr-2" /> माहिती जतन करा</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <style jsx global>{`
+        @media print {
+          @page { size: A4; margin: 0mm; }
+          body { visibility: hidden !important; background: white !important; margin: 0 !important; padding: 0 !important; }
+          .printable-report, .printable-report * { visibility: visible !important; opacity: 1 !important; color: black !important; }
+          .printable-report { 
+            position: absolute !important; 
+            top: 0 !important; 
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            width: 100% !important; 
+            max-width: 190mm !important; 
+            border: 1.5px solid black !important; 
+            padding: 10mm !important; 
+            display: block !important;
+            box-shadow: none !important;
+            page-break-inside: avoid !important;
+            background: white !important;
+            margin: 0 !important;
+          }
+          .no-print, button, header, nav, footer, .sidebar, [role="dialog"] [class*="Close"] { display: none !important; }
+        }
+      `}</style>
+    </div>
+  )
+}

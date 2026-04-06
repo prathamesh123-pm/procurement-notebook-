@@ -69,20 +69,27 @@ export interface Supplier {
   updatedAt: string;
 }
 
-export interface CenterMaterial {
-  weighingScaleBrand?: string;
-  fatMachineBrand?: string;
-  milkCansCount?: number;
-  computerAvailable?: boolean;
-  upsInverterAvailable?: boolean;
-  solarAvailable?: boolean;
-  chemicalsStock?: string;
-  batteryCondition?: string;
-  equipment?: EquipmentItem[];
-}
-
-export interface CollectionCenter extends Supplier {
-  // Inherits from Supplier
+export interface ChillingCenter {
+  id: string;
+  name: string;
+  code: string;
+  address: string;
+  mobile: string;
+  cowMilk: MilkMetrics;
+  buffaloMilk: MilkMetrics;
+  hasBmc: boolean;
+  hasIbt: boolean;
+  tankCount: string;
+  tankCapacity: string;
+  morningTime: string;
+  eveningTime: string;
+  supplierCount: string;
+  fatMachineBrand: string;
+  tankerCapacity: string;
+  tankerFrequency: string; // how many times a day
+  tankerArrivalTimes: string;
+  otherDairySupply: string;
+  updatedAt: string;
 }
 
 export interface Route {
@@ -96,31 +103,7 @@ export interface Route {
   updatedAt?: string;
 }
 
-export interface BreakdownLoss {
-  id: string;
-  supplierCode: string;
-  supplierName: string;
-  bufMilkLossLiters: string;
-  cowMilkLossLiters: string;
-  lossAmount: string;
-}
-
-export interface BreakdownRecord {
-  id: string;
-  routeName: string;
-  vehicleType: string;
-  vehicleNumber: string;
-  driverName: string;
-  location: string;
-  reason: string;
-  losses: BreakdownLoss[];
-  date: string;
-  totalLossAmount: number;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export type ReportType = 'Daily Office Work' | 'Field Visit' | 'Route Visit' | 'Daily Task' | 'Breakdown' | 'Custom Form' | 'Collection Center Audit' | 'FSSAI Center Inspection' | 'Seizure & Penalty' | 'Milk Procurement Survey' | 'Chilling Report' | 'Transport Breakdown Report' | 'Daily Work Report';
+export type ReportType = 'Daily Office Work' | 'Field Visit' | 'Route Visit' | 'Daily Task' | 'Breakdown' | 'Custom Form' | 'Collection Center Audit' | 'FSSAI Center Inspection' | 'Seizure & Penalty' | 'Milk Procurement Survey' | 'Chilling Report' | 'Transport Breakdown Report' | 'Daily Work Report' | 'Official Document';
 
 export interface Report {
   id: string;
@@ -135,7 +118,6 @@ export interface Report {
   updatedAt?: string;
 }
 
-// Form Builder Types
 export type FieldType = 'text' | 'number' | 'date' | 'textarea';
 
 export interface FormField {
