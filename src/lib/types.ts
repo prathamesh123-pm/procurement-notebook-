@@ -79,6 +79,12 @@ export interface ChillingCenter {
   buffaloMilk: MilkMetrics;
   hasBmc: boolean;
   hasIbt: boolean;
+  hasEtp: boolean;
+  hasSolar: boolean;
+  hasHotWater: boolean;
+  hasDrainage: boolean;
+  hasLab: boolean;
+  staffUniform: boolean;
   tankCount: string;
   tankCapacity: string;
   morningTime: string;
@@ -86,9 +92,14 @@ export interface ChillingCenter {
   supplierCount: string;
   fatMachineBrand: string;
   tankerCapacity: string;
-  tankerFrequency: string; // how many times a day
+  tankerFrequency: string;
   tankerArrivalTimes: string;
   otherDairySupply: string;
+  fssaiNumber?: string;
+  fssaiExpiry?: string;
+  waterSource?: string;
+  powerBackup?: string;
+  hygieneGrade?: string;
   updatedAt: string;
 }
 

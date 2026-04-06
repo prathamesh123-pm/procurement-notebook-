@@ -7,7 +7,7 @@ import {
   Plus, Search, Thermometer, Edit, X, ChevronRight,
   Printer, Milk, ShieldCheck, Box, Truck, Clock, 
   Zap, Warehouse, User, Phone, MapPin, CheckCircle2,
-  Trash2, Info
+  Trash2, Droplets, Sun, Waves, Wind
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
@@ -20,6 +20,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Textarea } from "@/components/ui/textarea"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 export default function ChillingCentersPage() {
   const { user } = useUser()
@@ -45,11 +46,15 @@ export default function ChillingCentersPage() {
     cowQty: "0", cowFat: "0", cowSnf: "0",
     bufQty: "0", bufFat: "0", bufSnf: "0",
     hasBmc: false, hasIbt: false,
+    hasEtp: false, hasSolar: false, hasHotWater: false, hasDrainage: false,
+    hasLab: false, staffUniform: false,
     tankCount: "0", tankCapacity: "",
     morningTime: "", eveningTime: "",
     supplierCount: "0", fatMachineBrand: "",
     tankerCapacity: "", tankerFrequency: "", tankerArrivalTimes: "",
-    otherDairySupply: ""
+    otherDairySupply: "",
+    fssaiNumber: "", fssaiExpiry: "",
+    waterSource: "Borewell", powerBackup: "Generator", hygieneGrade: "A"
   })
 
   useEffect(() => setMounted(true), [])
@@ -61,11 +66,15 @@ export default function ChillingCentersPage() {
       cowQty: "0", cowFat: "0", cowSnf: "0",
       bufQty: "0", bufFat: "0", bufSnf: "0",
       hasBmc: false, hasIbt: false,
+      hasEtp: false, hasSolar: false, hasHotWater: false, hasDrainage: false,
+      hasLab: false, staffUniform: false,
       tankCount: "0", tankCapacity: "",
       morningTime: "", eveningTime: "",
       supplierCount: "0", fatMachineBrand: "",
       tankerCapacity: "", tankerFrequency: "", tankerArrivalTimes: "",
-      otherDairySupply: ""
+      otherDairySupply: "",
+      fssaiNumber: "", fssaiExpiry: "",
+      waterSource: "Borewell", powerBackup: "Generator", hygieneGrade: "A"
     })
     setIsDialogOpen(true)
   }
@@ -77,12 +86,18 @@ export default function ChillingCentersPage() {
       cowQty: String(center.cowMilk?.quantity || 0), cowFat: String(center.cowMilk?.fat || 0), cowSnf: String(center.cowMilk?.snf || 0),
       bufQty: String(center.buffaloMilk?.quantity || 0), bufFat: String(center.buffaloMilk?.fat || 0), bufSnf: String(center.buffaloMilk?.snf || 0),
       hasBmc: center.hasBmc || false, hasIbt: center.hasIbt || false,
+      hasEtp: center.hasEtp || false, hasSolar: center.hasSolar || false,
+      hasHotWater: center.hasHotWater || false, hasDrainage: center.hasDrainage || false,
+      hasLab: center.hasLab || false, staffUniform: center.staffUniform || false,
       tankCount: String(center.tankCount || 0), tankCapacity: center.tankCapacity || "",
       morningTime: center.morningTime || "", eveningTime: center.eveningTime || "",
       supplierCount: String(center.supplierCount || 0), fatMachineBrand: center.fatMachineBrand || "",
       tankerCapacity: center.tankerCapacity || "", tankerFrequency: center.tankerFrequency || "",
       tankerArrivalTimes: center.tankerArrivalTimes || "",
-      otherDairySupply: center.otherDairySupply || ""
+      otherDairySupply: center.otherDairySupply || "",
+      fssaiNumber: center.fssaiNumber || "", fssaiExpiry: center.fssaiExpiry || "",
+      waterSource: center.waterSource || "Borewell", powerBackup: center.powerBackup || "Generator", 
+      hygieneGrade: center.hygieneGrade || "A"
     })
     setIsDialogOpen(true)
   }
@@ -135,7 +150,7 @@ export default function ChillingCentersPage() {
           <h2 className="text-xl font-black text-foreground flex items-center gap-2 uppercase tracking-tight">
             <Thermometer className="h-6 w-6 text-primary" /> चिलिंग सेंटर माहिती (CHILLING)
           </h2>
-          <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Logistics & Infrastructure</p>
+          <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Logistics & Audit Infrastructure</p>
         </div>
         <Button onClick={handleOpenAdd} className="w-full sm:w-auto font-black h-10 text-[10px] rounded-xl px-6 uppercase shadow-lg shadow-primary/20">
           <Plus className="h-4 w-4 mr-1.5" /> नवीन चिलिंग सेंटर
@@ -150,7 +165,7 @@ export default function ChillingCentersPage() {
               <input placeholder="शोधा..." className="w-full pl-9 h-10 text-[12px] bg-white border border-muted-foreground/10 rounded-xl font-black uppercase outline-none focus:ring-1 focus:ring-primary shadow-inner" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
             </div>
           </div>
-          <ScrollArea className="h-[450px]">
+          <ScrollArea className="h-[500px]">
             <div className="divide-y">
               {filteredCenters.map(center => (
                 <div key={center.id} className={`p-3 cursor-pointer hover:bg-primary/5 transition-colors ${selectedCenter?.id === center.id ? 'bg-primary/5 border-l-4 border-primary' : ''}`} onClick={() => setSelectedCenter(center)}>
@@ -167,7 +182,7 @@ export default function ChillingCentersPage() {
           </ScrollArea>
         </Card>
 
-        <Card className="lg:col-span-8 border shadow-2xl bg-white rounded-3xl overflow-hidden min-h-[500px] flex flex-col items-center">
+        <Card className="lg:col-span-8 border shadow-2xl bg-white rounded-3xl overflow-hidden min-h-[600px] flex flex-col items-center">
           {selectedCenter ? (
             <div className="p-6 space-y-6 animate-in slide-in-from-right-2 duration-300 printable-report flex flex-col items-center shadow-none w-full max-w-[210mm] mx-auto">
               <div className="w-full flex items-center justify-between no-print mb-4 border-b pb-2">
@@ -195,30 +210,38 @@ export default function ChillingCentersPage() {
                     <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">संपर्क</span><span>{selectedCenter.mobile || "-"}</span></div>
                     <div className="flex flex-col gap-0.5"><span className="text-muted-foreground uppercase text-[9px]">पत्ता</span><span className="leading-tight">{selectedCenter.address || "-"}</span></div>
                     <div className="flex justify-between border-b border-dashed pb-1 pt-2"><span className="text-muted-foreground uppercase text-[9px]">एकूण सप्लायर्स</span><span>{selectedCenter.supplierCount || "0"}</span></div>
+                    <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">FSSAI क्र.</span><span>{selectedCenter.fssaiNumber || "-"}</span></div>
+                    <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">FSSAI मुदत</span><span>{selectedCenter.fssaiExpiry || "-"}</span></div>
                   </div>
                 </div>
 
                 <div className="space-y-3">
                   <h4 className="text-[10px] font-black uppercase text-primary tracking-widest border-b pb-1 flex items-center gap-2"><Box className="h-3.5 w-3.5" /> २) पायाभूत सुविधा & मशिन्स</h4>
                   <div className="space-y-1.5 text-[11px] font-bold">
-                    <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">BMC सुविधा</span><span>{selectedCenter.hasBmc ? "होय" : "नाही"}</span></div>
-                    <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">IBT सुविधा</span><span>{selectedCenter.hasIbt ? "होय" : "नाही"}</span></div>
-                    <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">टाक्यांची संख्या</span><span>{selectedCenter.tankCount || "0"}</span></div>
-                    <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">टाकी क्षमता</span><span>{selectedCenter.tankCapacity || "-"}</span></div>
-                    <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">मशीन ब्रँड</span><span>{selectedCenter.fatMachineBrand || "-"}</span></div>
+                    <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">BMC | IBT</span><span>{selectedCenter.hasBmc ? "BMC" : ""} {selectedCenter.hasIbt ? "| IBT" : ""}</span></div>
+                    <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">टाके | क्षमता</span><span>{selectedCenter.tankCount} टाके ({selectedCenter.tankCapacity} L)</span></div>
+                    <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">फॅट मशीन</span><span>{selectedCenter.fatMachineBrand || "-"}</span></div>
+                    <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">पाणी स्रोत</span><span>{selectedCenter.waterSource || "-"}</span></div>
+                    <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">स्वच्छता ग्रेड</span><Badge className="h-4 px-1 text-[8px] border-none bg-emerald-500">{selectedCenter.hygieneGrade || "A"}</Badge></div>
                   </div>
                 </div>
               </div>
 
+              <div className="grid grid-cols-4 gap-2 w-full mb-4">
+                <div className={`p-2 rounded-xl border border-black/10 flex flex-col items-center gap-1 ${selectedCenter.hasEtp ? 'bg-emerald-50' : 'bg-muted/20 opacity-40'}`}><Waves className="h-4 w-4" /><span className="text-[7px] font-black uppercase text-center">ETP: {selectedCenter.hasEtp ? 'हो' : 'नाही'}</span></div>
+                <div className={`p-2 rounded-xl border border-black/10 flex flex-col items-center gap-1 ${selectedCenter.hasSolar ? 'bg-emerald-50' : 'bg-muted/20 opacity-40'}`}><Sun className="h-4 w-4" /><span className="text-[7px] font-black uppercase text-center">सोलर: {selectedCenter.hasSolar ? 'हो' : 'नाही'}</span></div>
+                <div className={`p-2 rounded-xl border border-black/10 flex flex-col items-center gap-1 ${selectedCenter.hasHotWater ? 'bg-emerald-50' : 'bg-muted/20 opacity-40'}`}><Droplets className="h-4 w-4" /><span className="text-[7px] font-black uppercase text-center">गरम पाणी: {selectedCenter.hasHotWater ? 'हो' : 'नाही'}</span></div>
+                <div className={`p-2 rounded-xl border border-black/10 flex flex-col items-center gap-1 ${selectedCenter.hasDrainage ? 'bg-emerald-50' : 'bg-muted/20 opacity-40'}`}><Wind className="h-4 w-4" /><span className="text-[7px] font-black uppercase text-center">ड्रेनेज: {selectedCenter.hasDrainage ? 'हो' : 'नाही'}</span></div>
+              </div>
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full text-left">
                 <div className="space-y-3">
-                  <h4 className="text-[10px] font-black uppercase text-rose-600 tracking-widest border-b pb-1 flex items-center gap-2"><Truck className="h-3.5 w-3.5" /> ३) टँकर & संकलन वेळ</h4>
+                  <h4 className="text-[10px] font-black uppercase text-rose-600 tracking-widest border-b pb-1 flex items-center gap-2"><Truck className="h-3.5 w-3.5" /> ३) टँकर & लॉजिस्टिक</h4>
                   <div className="space-y-1.5 text-[11px] font-bold">
-                    <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">संकलन वेळ (सकाळ)</span><span>{selectedCenter.morningTime || "-"}</span></div>
-                    <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">संकलन वेळ (संध्या)</span><span>{selectedCenter.eveningTime || "-"}</span></div>
-                    <div className="flex justify-between border-b border-dashed pb-1 pt-2"><span className="text-muted-foreground uppercase text-[9px]">टँकर क्षमता</span><span>{selectedCenter.tankerCapacity || "-"}</span></div>
-                    <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">टँकर वारंवारता</span><span>{selectedCenter.tankerFrequency ? `${selectedCenter.tankerFrequency} वेळा/दिवस` : "-"}</span></div>
-                    <div className="flex flex-col gap-0.5"><span className="text-muted-foreground uppercase text-[9px]">टँकर येण्याच्या वेळा</span><span className="leading-tight">{selectedCenter.tankerArrivalTimes || "-"}</span></div>
+                    <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">टँकर क्षमता</span><span>{selectedCenter.tankerCapacity || "-"}</span></div>
+                    <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">वारंवारता</span><span>{selectedCenter.tankerFrequency ? `${selectedCenter.tankerFrequency} वेळा/दिवस` : "-"}</span></div>
+                    <div className="flex flex-col gap-0.5"><span className="text-muted-foreground uppercase text-[9px]">येण्याच्या वेळा</span><span className="leading-tight">{selectedCenter.tankerArrivalTimes || "-"}</span></div>
+                    <div className="flex justify-between border-b border-dashed pb-1 pt-1"><span className="text-muted-foreground uppercase text-[9px]">पॉवर बॅकअप</span><span>{selectedCenter.powerBackup || "-"}</span></div>
                   </div>
                 </div>
 
@@ -262,47 +285,67 @@ export default function ChillingCentersPage() {
         <DialogContent className="max-w-2xl p-0 overflow-hidden rounded-3xl border-none shadow-2xl bg-white">
           <DialogHeader className="p-4 bg-primary text-white sticky top-0 z-10">
             <DialogTitle className="text-base font-black uppercase tracking-widest">{dialogMode === 'add' ? 'नवीन चिलिंग सेंटर' : 'माहिती अद्ययावत करा'}</DialogTitle>
-            <DialogDescription className="text-[9px] text-white/70 uppercase">पायाभूत सुविधा, टँकर आणि दूध तपशील भरा.</DialogDescription>
+            <DialogDescription className="text-[9px] text-white/70 uppercase">पायाभूत सुविधा, तांत्रिक आणि ऑडिट तपशील भरा.</DialogDescription>
           </DialogHeader>
           <ScrollArea className="max-h-[80vh] p-6">
             <div className="space-y-6 pb-10">
               <div className="space-y-4">
-                <h4 className="text-[11px] font-black uppercase text-primary border-b pb-1 flex items-center gap-2"><Warehouse className="h-4 w-4" /> १) प्राथमिक माहिती</h4>
+                <h4 className="text-[11px] font-black uppercase text-primary border-b pb-1 flex items-center gap-2"><Warehouse className="h-4 w-4" /> १) प्राथमिक माहिती & परवाना</h4>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="col-span-2 space-y-1.5"><Label className="text-[10px] font-black uppercase">सेंटरचे नाव *</Label><Input value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl shadow-inner" /></div>
                   <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">कोड नंबर *</Label><Input value={formData.code} onChange={e => setFormData({...formData, code: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl shadow-inner" /></div>
                   <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">मोबाईल</Label><Input value={formData.mobile} onChange={e => setFormData({...formData, mobile: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl shadow-inner" /></div>
                   <div className="col-span-2 space-y-1.5"><Label className="text-[10px] font-black uppercase">पत्ता</Label><Input value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl shadow-inner" /></div>
+                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">FSSAI क्रमांक</Label><Input value={formData.fssaiNumber} onChange={e => setFormData({...formData, fssaiNumber: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl shadow-inner" /></div>
+                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">FSSAI मुदत तारीख</Label><Input type="date" value={formData.fssaiExpiry} onChange={e => setFormData({...formData, fssaiExpiry: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl shadow-inner" /></div>
                 </div>
               </div>
 
               <div className="space-y-4">
                 <h4 className="text-[11px] font-black uppercase text-primary border-b pb-1 flex items-center gap-2"><Box className="h-4 w-4" /> २) पायाभूत सुविधा (INFRA)</h4>
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="flex items-center space-x-3 bg-muted/10 p-3 rounded-xl border border-muted-foreground/5 cursor-pointer" onClick={() => setFormData({...formData, hasBmc: !formData.hasBmc})}>
-                    <Checkbox checked={formData.hasBmc} />
-                    <Label className="text-[10px] font-black uppercase cursor-pointer">BMC उपलब्ध आहे का?</Label>
-                  </div>
-                  <div className="flex items-center space-x-3 bg-muted/10 p-3 rounded-xl border border-muted-foreground/5 cursor-pointer" onClick={() => setFormData({...formData, hasIbt: !formData.hasIbt})}>
-                    <Checkbox checked={formData.hasIbt} />
-                    <Label className="text-[10px] font-black uppercase cursor-pointer">IBT उपलब्ध आहे का?</Label>
-                  </div>
-                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">टाक्यांची संख्या</Label><Input type="number" value={formData.tankCount} onChange={e => setFormData({...formData, tankCount: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl" /></div>
-                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">टाकी क्षमता (Ltrs)</Label><Input value={formData.tankCapacity} onChange={e => setFormData({...formData, tankCapacity: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl" placeholder="उदा. १०००० L" /></div>
-                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">फॅट मशीन ब्रँड</Label><Input value={formData.fatMachineBrand} onChange={e => setFormData({...formData, fatMachineBrand: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl" /></div>
-                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">एकूण सप्लायर्स</Label><Input type="number" value={formData.supplierCount} onChange={e => setFormData({...formData, supplierCount: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl" /></div>
+                  <div className="flex items-center space-x-3 bg-muted/10 p-3 rounded-xl border border-muted-foreground/5 cursor-pointer" onClick={() => setFormData({...formData, hasBmc: !formData.hasBmc})}><Checkbox checked={formData.hasBmc} /><Label className="text-[10px] font-black uppercase cursor-pointer">BMC उपलब्ध</Label></div>
+                  <div className="flex items-center space-x-3 bg-muted/10 p-3 rounded-xl border border-muted-foreground/5 cursor-pointer" onClick={() => setFormData({...formData, hasIbt: !formData.hasIbt})}><Checkbox checked={formData.hasIbt} /><Label className="text-[10px] font-black uppercase cursor-pointer">IBT उपलब्ध</Label></div>
+                  <div className="flex items-center space-x-3 bg-muted/10 p-3 rounded-xl border border-muted-foreground/5 cursor-pointer" onClick={() => setFormData({...formData, hasEtp: !formData.hasEtp})}><Checkbox checked={formData.hasEtp} /><Label className="text-[10px] font-black uppercase cursor-pointer">ETP सोय</Label></div>
+                  <div className="flex items-center space-x-3 bg-muted/10 p-3 rounded-xl border border-muted-foreground/5 cursor-pointer" onClick={() => setFormData({...formData, hasSolar: !formData.hasSolar})}><Checkbox checked={formData.hasSolar} /><Label className="text-[10px] font-black uppercase cursor-pointer">सोलर पॅनल</Label></div>
+                  <div className="flex items-center space-x-3 bg-muted/10 p-3 rounded-xl border border-muted-foreground/5 cursor-pointer" onClick={() => setFormData({...formData, hasHotWater: !formData.hasHotWater})}><Checkbox checked={formData.hasHotWater} /><Label className="text-[10px] font-black uppercase cursor-pointer">गरम पाणी सोय</Label></div>
+                  <div className="flex items-center space-x-3 bg-muted/10 p-3 rounded-xl border border-muted-foreground/5 cursor-pointer" onClick={() => setFormData({...formData, hasDrainage: !formData.hasDrainage})}><Checkbox checked={formData.hasDrainage} /><Label className="text-[10px] font-black uppercase cursor-pointer">ड्रेनेज सिस्टीम</Label></div>
+                  <div className="flex items-center space-x-3 bg-muted/10 p-3 rounded-xl border border-muted-foreground/5 cursor-pointer" onClick={() => setFormData({...formData, hasLab: !formData.hasLab})}><Checkbox checked={formData.hasLab} /><Label className="text-[10px] font-black uppercase cursor-pointer">प्रयोगशाळा (LAB)</Label></div>
+                  <div className="flex items-center space-x-3 bg-muted/10 p-3 rounded-xl border border-muted-foreground/5 cursor-pointer" onClick={() => setFormData({...formData, staffUniform: !formData.staffUniform})}><Checkbox checked={formData.staffUniform} /><Label className="text-[10px] font-black uppercase cursor-pointer">स्टाफ गणवेश</Label></div>
+                </div>
+                <div className="grid grid-cols-2 gap-3 mt-4">
+                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">टाक्यांची संख्या</Label><Input type="number" value={formData.tankCount} onChange={e => setFormData({...formData, tankCount: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none rounded-xl" /></div>
+                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">टाकी क्षमता (Ltrs)</Label><Input value={formData.tankCapacity} onChange={e => setFormData({...formData, tankCapacity: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none rounded-xl" /></div>
+                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">फॅट मशीन ब्रँड</Label><Input value={formData.fatMachineBrand} onChange={e => setFormData({...formData, fatMachineBrand: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none rounded-xl" /></div>
+                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">एकूण सप्लायर्स</Label><Input type="number" value={formData.supplierCount} onChange={e => setFormData({...formData, supplierCount: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none rounded-xl" /></div>
                 </div>
               </div>
 
               <div className="space-y-4">
-                <h4 className="text-[11px] font-black uppercase text-rose-600 border-b pb-1 flex items-center gap-2"><Truck className="h-4 w-4" /> ३) टँकर & वेळ</h4>
+                <h4 className="text-[11px] font-black uppercase text-rose-600 border-b pb-1 flex items-center gap-2"><Truck className="h-4 w-4" /> ३) टँकर, पाणी & ऑडिट</h4>
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">संकलन वेळ (सकाळ)</Label><Input type="time" value={formData.morningTime} onChange={e => setFormData({...formData, morningTime: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none rounded-xl" /></div>
-                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">संकलन वेळ (संध्या)</Label><Input type="time" value={formData.eveningTime} onChange={e => setFormData({...formData, eveningTime: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none rounded-xl" /></div>
+                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">पाणी स्रोत</Label>
+                    <Select value={formData.waterSource} onValueChange={v => setFormData({...formData, waterSource: v})}>
+                      <SelectTrigger className="h-10 text-[12px] bg-muted/20 border-none rounded-xl font-bold"><SelectValue /></SelectTrigger>
+                      <SelectContent><SelectItem value="Borewell" className="font-bold">बोअरवेल</SelectItem><SelectItem value="Well" className="font-bold">विहीर</SelectItem><SelectItem value="Municipal" className="font-bold">नगरपालिका</SelectItem></SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">पॉवर बॅकअप</Label>
+                    <Select value={formData.powerBackup} onValueChange={v => setFormData({...formData, powerBackup: v})}>
+                      <SelectTrigger className="h-10 text-[12px] bg-muted/20 border-none rounded-xl font-bold"><SelectValue /></SelectTrigger>
+                      <SelectContent><SelectItem value="Generator" className="font-bold">जनरेटर</SelectItem><SelectItem value="UPS/Inverter" className="font-bold">UPS/इन्व्हर्टर</SelectItem><SelectItem value="None" className="font-bold">काहीही नाही</SelectItem></SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">स्वच्छता ग्रेड</Label>
+                    <Select value={formData.hygieneGrade} onValueChange={v => setFormData({...formData, hygieneGrade: v})}>
+                      <SelectTrigger className="h-10 text-[12px] bg-muted/20 border-none rounded-xl font-bold"><SelectValue /></SelectTrigger>
+                      <SelectContent><SelectItem value="A" className="font-bold">A Grade (उत्कृष्ट)</SelectItem><SelectItem value="B" className="font-bold">B Grade (मध्यम)</SelectItem><SelectItem value="C" className="font-bold">C Grade (सुधारणा हवी)</SelectItem></SelectContent>
+                    </Select>
+                  </div>
                   <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">टँकर क्षमता (Ltrs)</Label><Input value={formData.tankerCapacity} onChange={e => setFormData({...formData, tankerCapacity: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none rounded-xl" /></div>
-                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">येण्याची वारंवारता (वेळा)</Label><Input type="number" value={formData.tankerFrequency} onChange={e => setFormData({...formData, tankerFrequency: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none rounded-xl" placeholder="दिवसातून किती वेळा" /></div>
+                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">टँकर वारंवारता</Label><Input type="number" value={formData.tankerFrequency} onChange={e => setFormData({...formData, tankerFrequency: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none rounded-xl" /></div>
                   <div className="col-span-2 space-y-1.5"><Label className="text-[10px] font-black uppercase">टँकर येण्याच्या वेळा</Label><Input value={formData.tankerArrivalTimes} onChange={e => setFormData({...formData, tankerArrivalTimes: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none rounded-xl" placeholder="उदा. सकाळी ८:००, संध्याकाळी ७:३०" /></div>
-                  <div className="col-span-2 space-y-1.5"><Label className="text-[10px] font-black uppercase">इतर डेअरीला पुरवठा</Label><Input value={formData.otherDairySupply} onChange={e => setFormData({...formData, otherDairySupply: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none rounded-xl" placeholder="नाही / हो असल्यास डेअरीचे नाव" /></div>
+                  <div className="col-span-2 space-y-1.5"><Label className="text-[10px] font-black uppercase">इतर डेअरीला पुरवठा</Label><Input value={formData.otherDairySupply} onChange={e => setFormData({...formData, otherDairySupply: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none rounded-xl" /></div>
                 </div>
               </div>
 
