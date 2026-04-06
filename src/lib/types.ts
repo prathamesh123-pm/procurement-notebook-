@@ -28,6 +28,20 @@ export interface EquipmentItem {
   ownership: 'Self' | 'Company';
 }
 
+export interface TankItem {
+  id: string;
+  label: string;
+  capacity: string;
+}
+
+export interface TankerLogItem {
+  id: string;
+  tankerNo: string;
+  arrivalTime: string;
+  departureTime: string;
+  qtyFilled: string;
+}
+
 export type SupplierType = 'Gavali' | 'Gotha' | 'Center';
 
 export interface Supplier {
@@ -85,21 +99,24 @@ export interface ChillingCenter {
   hasDrainage: boolean;
   hasLab: boolean;
   staffUniform: boolean;
-  tankCount: string;
-  tankCapacity: string;
+  tanks: TankItem[];
+  tankerLogs: TankerLogItem[];
   morningTime: string;
   eveningTime: string;
   supplierCount: string;
   fatMachineBrand: string;
-  tankerCapacity: string;
-  tankerFrequency: string;
-  tankerArrivalTimes: string;
   otherDairySupply: string;
   fssaiNumber?: string;
   fssaiExpiry?: string;
   waterSource?: string;
   powerBackup?: string;
   hygieneGrade?: string;
+  // Audit points
+  hasTransportLicenses: boolean;
+  pestControlDone: boolean;
+  staffHealthCheckDone: boolean;
+  calibrationDone: boolean;
+  fireSafetyOk: boolean;
   updatedAt: string;
 }
 

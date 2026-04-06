@@ -7,11 +7,11 @@ import {
   Plus, Search, Thermometer, Edit, X, ChevronRight,
   Printer, Milk, ShieldCheck, Box, Truck, Clock, 
   Zap, Warehouse, User, Phone, MapPin, CheckCircle2,
-  Trash2, Droplets, Sun, Waves, Wind
+  Trash2, Droplets, Sun, Waves, Wind, PlusCircle, Scale, Flame
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
-import { ChillingCenter } from "@/lib/types"
+import { ChillingCenter, TankItem, TankerLogItem } from "@/lib/types"
 import { useToast } from "@/hooks/use-toast"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking } from "@/firebase"
@@ -19,7 +19,6 @@ import { collection, doc } from "firebase/firestore"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 export default function ChillingCentersPage() {
@@ -48,13 +47,15 @@ export default function ChillingCentersPage() {
     hasBmc: false, hasIbt: false,
     hasEtp: false, hasSolar: false, hasHotWater: false, hasDrainage: false,
     hasLab: false, staffUniform: false,
-    tankCount: "0", tankCapacity: "",
+    tanks: [] as TankItem[],
+    tankerLogs: [] as TankerLogItem[],
     morningTime: "", eveningTime: "",
     supplierCount: "0", fatMachineBrand: "",
-    tankerCapacity: "", tankerFrequency: "", tankerArrivalTimes: "",
     otherDairySupply: "",
     fssaiNumber: "", fssaiExpiry: "",
-    waterSource: "Borewell", powerBackup: "Generator", hygieneGrade: "A"
+    waterSource: "Borewell", powerBackup: "Generator", hygieneGrade: "A",
+    hasTransportLicenses: false, pestControlDone: false, 
+    staffHealthCheckDone: false, calibrationDone: false, fireSafetyOk: false
   })
 
   useEffect(() => setMounted(true), [])
@@ -68,13 +69,14 @@ export default function ChillingCentersPage() {
       hasBmc: false, hasIbt: false,
       hasEtp: false, hasSolar: false, hasHotWater: false, hasDrainage: false,
       hasLab: false, staffUniform: false,
-      tankCount: "0", tankCapacity: "",
+      tanks: [], tankerLogs: [],
       morningTime: "", eveningTime: "",
       supplierCount: "0", fatMachineBrand: "",
-      tankerCapacity: "", tankerFrequency: "", tankerArrivalTimes: "",
       otherDairySupply: "",
       fssaiNumber: "", fssaiExpiry: "",
-      waterSource: "Borewell", powerBackup: "Generator", hygieneGrade: "A"
+      waterSource: "Borewell", powerBackup: "Generator", hygieneGrade: "A",
+      hasTransportLicenses: false, pestControlDone: false, 
+      staffHealthCheckDone: false, calibrationDone: false, fireSafetyOk: false
     })
     setIsDialogOpen(true)
   }
@@ -89,15 +91,18 @@ export default function ChillingCentersPage() {
       hasEtp: center.hasEtp || false, hasSolar: center.hasSolar || false,
       hasHotWater: center.hasHotWater || false, hasDrainage: center.hasDrainage || false,
       hasLab: center.hasLab || false, staffUniform: center.staffUniform || false,
-      tankCount: String(center.tankCount || 0), tankCapacity: center.tankCapacity || "",
+      tanks: center.tanks || [], tankerLogs: center.tankerLogs || [],
       morningTime: center.morningTime || "", eveningTime: center.eveningTime || "",
       supplierCount: String(center.supplierCount || 0), fatMachineBrand: center.fatMachineBrand || "",
-      tankerCapacity: center.tankerCapacity || "", tankerFrequency: center.tankerFrequency || "",
-      tankerArrivalTimes: center.tankerArrivalTimes || "",
       otherDairySupply: center.otherDairySupply || "",
       fssaiNumber: center.fssaiNumber || "", fssaiExpiry: center.fssaiExpiry || "",
       waterSource: center.waterSource || "Borewell", powerBackup: center.powerBackup || "Generator", 
-      hygieneGrade: center.hygieneGrade || "A"
+      hygieneGrade: center.hygieneGrade || "A",
+      hasTransportLicenses: center.hasTransportLicenses || false,
+      pestControlDone: center.pestControlDone || false,
+      staffHealthCheckDone: center.staffHealthCheckDone || false,
+      calibrationDone: center.calibrationDone || false,
+      fireSafetyOk: center.fireSafetyOk || false
     })
     setIsDialogOpen(true)
   }
@@ -125,6 +130,30 @@ export default function ChillingCentersPage() {
     setIsDialogOpen(false)
   }
 
+  const addTankRow = () => {
+    setFormData({ ...formData, tanks: [...formData.tanks, { id: crypto.randomUUID(), label: `टाकी ${formData.tanks.length + 1}`, capacity: "" }] })
+  }
+
+  const updateTankRow = (id: string, capacity: string) => {
+    setFormData({ ...formData, tanks: formData.tanks.map(t => t.id === id ? { ...t, capacity } : t) })
+  }
+
+  const removeTankRow = (id: string) => {
+    setFormData({ ...formData, tanks: formData.tanks.filter(t => t.id !== id) })
+  }
+
+  const addTankerLogRow = () => {
+    setFormData({ ...formData, tankerLogs: [...formData.tankerLogs, { id: crypto.randomUUID(), tankerNo: "", arrivalTime: "", departureTime: "", qtyFilled: "" }] })
+  }
+
+  const updateTankerLogRow = (id: string, updates: Partial<TankerLogItem>) => {
+    setFormData({ ...formData, tankerLogs: formData.tankerLogs.map(tl => tl.id === id ? { ...tl, ...updates } : tl) })
+  }
+
+  const removeTankerLogRow = (id: string) => {
+    setFormData({ ...formData, tankerLogs: formData.tankerLogs.filter(tl => tl.id !== id) })
+  }
+
   const handleDelete = (id: string) => {
     if (!db) return
     if (confirm("हे सेंटर हटवायचे आहे का?")) {
@@ -144,13 +173,13 @@ export default function ChillingCentersPage() {
   if (!mounted || isLoading) return <div className="p-10 text-center font-black uppercase text-[10px] opacity-50">लोड होत आहे...</div>
 
   return (
-    <div className="space-y-4 max-w-6xl mx-auto w-full pb-10 px-2 animate-in fade-in duration-500">
+    <div className="space-y-4 max-w-7xl mx-auto w-full pb-10 px-2 animate-in fade-in duration-500">
       <div className="flex flex-col sm:flex-row items-center justify-between gap-3 border-b pb-4 no-print">
         <div className="min-w-0">
           <h2 className="text-xl font-black text-foreground flex items-center gap-2 uppercase tracking-tight">
-            <Thermometer className="h-6 w-6 text-primary" /> चिलिंग सेंटर माहिती (CHILLING)
+            <Thermometer className="h-6 w-6 text-primary" /> चिलिंग सेंटर मॅनेजमेंट (CHILLING)
           </h2>
-          <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Logistics & Audit Infrastructure</p>
+          <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Logistics, Tanks & Audit Records</p>
         </div>
         <Button onClick={handleOpenAdd} className="w-full sm:w-auto font-black h-10 text-[10px] rounded-xl px-6 uppercase shadow-lg shadow-primary/20">
           <Plus className="h-4 w-4 mr-1.5" /> नवीन चिलिंग सेंटर
@@ -165,7 +194,7 @@ export default function ChillingCentersPage() {
               <input placeholder="शोधा..." className="w-full pl-9 h-10 text-[12px] bg-white border border-muted-foreground/10 rounded-xl font-black uppercase outline-none focus:ring-1 focus:ring-primary shadow-inner" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
             </div>
           </div>
-          <ScrollArea className="h-[500px]">
+          <ScrollArea className="h-[600px]">
             <div className="divide-y">
               {filteredCenters.map(center => (
                 <div key={center.id} className={`p-3 cursor-pointer hover:bg-primary/5 transition-colors ${selectedCenter?.id === center.id ? 'bg-primary/5 border-l-4 border-primary' : ''}`} onClick={() => setSelectedCenter(center)}>
@@ -219,11 +248,40 @@ export default function ChillingCentersPage() {
                   <h4 className="text-[10px] font-black uppercase text-primary tracking-widest border-b pb-1 flex items-center gap-2"><Box className="h-3.5 w-3.5" /> २) पायाभूत सुविधा & मशिन्स</h4>
                   <div className="space-y-1.5 text-[11px] font-bold">
                     <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">BMC | IBT</span><span>{selectedCenter.hasBmc ? "BMC" : ""} {selectedCenter.hasIbt ? "| IBT" : ""}</span></div>
-                    <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">टाके | क्षमता</span><span>{selectedCenter.tankCount} टाके ({selectedCenter.tankCapacity} L)</span></div>
                     <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">फॅट मशीन</span><span>{selectedCenter.fatMachineBrand || "-"}</span></div>
                     <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">पाणी स्रोत</span><span>{selectedCenter.waterSource || "-"}</span></div>
+                    <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">पॉवर बॅकअप</span><span>{selectedCenter.powerBackup || "-"}</span></div>
                     <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">स्वच्छता ग्रेड</span><Badge className="h-4 px-1 text-[8px] border-none bg-emerald-500">{selectedCenter.hygieneGrade || "A"}</Badge></div>
                   </div>
+                </div>
+              </div>
+
+              <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
+                <div className="space-y-3">
+                  <h4 className="text-[10px] font-black uppercase text-primary tracking-widest border-b pb-1 flex items-center gap-2"><Box className="h-3.5 w-3.5" /> टाक्यांची यादी (TANKS)</h4>
+                  <table className="w-full text-[10px] border border-black rounded-sm overflow-hidden">
+                    <thead className="bg-slate-100 border-b border-black">
+                      <tr className="font-black uppercase"><th className="p-1.5 text-left">टाकी क्रमांक</th><th className="p-1.5 text-right">क्षमता (L)</th></tr>
+                    </thead>
+                    <tbody>
+                      {(selectedCenter.tanks || []).map((t, idx) => (
+                        <tr key={idx} className="border-b border-black last:border-0 font-bold"><td className="p-1.5">{t.label}</td><td className="p-1.5 text-right">{t.capacity} L</td></tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <div className="space-y-3">
+                  <h4 className="text-[10px] font-black uppercase text-rose-600 tracking-widest border-b pb-1 flex items-center gap-2"><Truck className="h-3.5 w-3.5" /> टँकर संकलन (TANKER LOG)</h4>
+                  <table className="w-full text-[9px] border border-black rounded-sm overflow-hidden">
+                    <thead className="bg-slate-100 border-b border-black">
+                      <tr className="font-black uppercase"><th className="p-1.5 text-left">टँकर क्र.</th><th className="p-1.5 text-center">IN/OUT</th><th className="p-1.5 text-right">Qty</th></tr>
+                    </thead>
+                    <tbody>
+                      {(selectedCenter.tankerLogs || []).map((tl, idx) => (
+                        <tr key={idx} className="border-b border-black last:border-0 font-bold"><td className="p-1.5">{tl.tankerNo}</td><td className="p-1.5 text-center">{tl.arrivalTime} - {tl.departureTime}</td><td className="p-1.5 text-right">{tl.qtyFilled} L</td></tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               </div>
 
@@ -236,12 +294,13 @@ export default function ChillingCentersPage() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full text-left">
                 <div className="space-y-3">
-                  <h4 className="text-[10px] font-black uppercase text-rose-600 tracking-widest border-b pb-1 flex items-center gap-2"><Truck className="h-3.5 w-3.5" /> ३) टँकर & लॉजिस्टिक</h4>
+                  <h4 className="text-[10px] font-black uppercase text-amber-600 tracking-widest border-b pb-1 flex items-center gap-2"><ShieldCheck className="h-3.5 w-3.5" /> ३) ऑडिट व परवाना स्थिती</h4>
                   <div className="space-y-1.5 text-[11px] font-bold">
-                    <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">टँकर क्षमता</span><span>{selectedCenter.tankerCapacity || "-"}</span></div>
-                    <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">वारंवारता</span><span>{selectedCenter.tankerFrequency ? `${selectedCenter.tankerFrequency} वेळा/दिवस` : "-"}</span></div>
-                    <div className="flex flex-col gap-0.5"><span className="text-muted-foreground uppercase text-[9px]">येण्याच्या वेळा</span><span className="leading-tight">{selectedCenter.tankerArrivalTimes || "-"}</span></div>
-                    <div className="flex justify-between border-b border-dashed pb-1 pt-1"><span className="text-muted-foreground uppercase text-[9px]">पॉवर बॅकअप</span><span>{selectedCenter.powerBackup || "-"}</span></div>
+                    <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">वाहतूक परवाने</span><span>{selectedCenter.hasTransportLicenses ? "उपलब्ध" : "नाही"}</span></div>
+                    <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">पेस्ट कंट्रोल</span><span>{selectedCenter.pestControlDone ? "पूर्ण" : "नाही"}</span></div>
+                    <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">स्टाफ हेल्थ चेक</span><span>{selectedCenter.staffHealthCheckDone ? "पूर्ण" : "नाही"}</span></div>
+                    <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">काटा कॅलिब्रेशन</span><span>{selectedCenter.calibrationDone ? "पूर्ण" : "नाही"}</span></div>
+                    <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">अग्निशमन यंत्रणा</span><span>{selectedCenter.fireSafetyOk ? "Ok" : "नाही"}</span></div>
                   </div>
                 </div>
 
@@ -282,10 +341,10 @@ export default function ChillingCentersPage() {
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-2xl p-0 overflow-hidden rounded-3xl border-none shadow-2xl bg-white">
+        <DialogContent className="max-w-3xl p-0 overflow-hidden rounded-3xl border-none shadow-2xl bg-white">
           <DialogHeader className="p-4 bg-primary text-white sticky top-0 z-10">
             <DialogTitle className="text-base font-black uppercase tracking-widest">{dialogMode === 'add' ? 'नवीन चिलिंग सेंटर' : 'माहिती अद्ययावत करा'}</DialogTitle>
-            <DialogDescription className="text-[9px] text-white/70 uppercase">पायाभूत सुविधा, तांत्रिक आणि ऑडिट तपशील भरा.</DialogDescription>
+            <DialogDescription className="text-[9px] text-white/70 uppercase">पायाभूत सुविधा, तांत्रिक आणि टँकर लॉग भरा.</DialogDescription>
           </DialogHeader>
           <ScrollArea className="max-h-[80vh] p-6">
             <div className="space-y-6 pb-10">
@@ -302,28 +361,45 @@ export default function ChillingCentersPage() {
               </div>
 
               <div className="space-y-4">
-                <h4 className="text-[11px] font-black uppercase text-primary border-b pb-1 flex items-center gap-2"><Box className="h-4 w-4" /> २) पायाभूत सुविधा (INFRA)</h4>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="flex items-center space-x-3 bg-muted/10 p-3 rounded-xl border border-muted-foreground/5 cursor-pointer" onClick={() => setFormData({...formData, hasBmc: !formData.hasBmc})}><Checkbox checked={formData.hasBmc} /><Label className="text-[10px] font-black uppercase cursor-pointer">BMC उपलब्ध</Label></div>
-                  <div className="flex items-center space-x-3 bg-muted/10 p-3 rounded-xl border border-muted-foreground/5 cursor-pointer" onClick={() => setFormData({...formData, hasIbt: !formData.hasIbt})}><Checkbox checked={formData.hasIbt} /><Label className="text-[10px] font-black uppercase cursor-pointer">IBT उपलब्ध</Label></div>
-                  <div className="flex items-center space-x-3 bg-muted/10 p-3 rounded-xl border border-muted-foreground/5 cursor-pointer" onClick={() => setFormData({...formData, hasEtp: !formData.hasEtp})}><Checkbox checked={formData.hasEtp} /><Label className="text-[10px] font-black uppercase cursor-pointer">ETP सोय</Label></div>
-                  <div className="flex items-center space-x-3 bg-muted/10 p-3 rounded-xl border border-muted-foreground/5 cursor-pointer" onClick={() => setFormData({...formData, hasSolar: !formData.hasSolar})}><Checkbox checked={formData.hasSolar} /><Label className="text-[10px] font-black uppercase cursor-pointer">सोलर पॅनल</Label></div>
-                  <div className="flex items-center space-x-3 bg-muted/10 p-3 rounded-xl border border-muted-foreground/5 cursor-pointer" onClick={() => setFormData({...formData, hasHotWater: !formData.hasHotWater})}><Checkbox checked={formData.hasHotWater} /><Label className="text-[10px] font-black uppercase cursor-pointer">गरम पाणी सोय</Label></div>
-                  <div className="flex items-center space-x-3 bg-muted/10 p-3 rounded-xl border border-muted-foreground/5 cursor-pointer" onClick={() => setFormData({...formData, hasDrainage: !formData.hasDrainage})}><Checkbox checked={formData.hasDrainage} /><Label className="text-[10px] font-black uppercase cursor-pointer">ड्रेनेज सिस्टीम</Label></div>
-                  <div className="flex items-center space-x-3 bg-muted/10 p-3 rounded-xl border border-muted-foreground/5 cursor-pointer" onClick={() => setFormData({...formData, hasLab: !formData.hasLab})}><Checkbox checked={formData.hasLab} /><Label className="text-[10px] font-black uppercase cursor-pointer">प्रयोगशाळा (LAB)</Label></div>
-                  <div className="flex items-center space-x-3 bg-muted/10 p-3 rounded-xl border border-muted-foreground/5 cursor-pointer" onClick={() => setFormData({...formData, staffUniform: !formData.staffUniform})}><Checkbox checked={formData.staffUniform} /><Label className="text-[10px] font-black uppercase cursor-pointer">स्टाफ गणवेश</Label></div>
-                </div>
-                <div className="grid grid-cols-2 gap-3 mt-4">
-                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">टाक्यांची संख्या</Label><Input type="number" value={formData.tankCount} onChange={e => setFormData({...formData, tankCount: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none rounded-xl" /></div>
-                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">टाकी क्षमता (Ltrs)</Label><Input value={formData.tankCapacity} onChange={e => setFormData({...formData, tankCapacity: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none rounded-xl" /></div>
-                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">फॅट मशीन ब्रँड</Label><Input value={formData.fatMachineBrand} onChange={e => setFormData({...formData, fatMachineBrand: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none rounded-xl" /></div>
-                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">एकूण सप्लायर्स</Label><Input type="number" value={formData.supplierCount} onChange={e => setFormData({...formData, supplierCount: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none rounded-xl" /></div>
+                <div className="flex items-center justify-between border-b pb-1"><h4 className="text-[11px] font-black uppercase text-primary flex items-center gap-2"><Box className="h-4 w-4" /> २) टाक्यांची माहिती (TANKS)</h4><Button variant="outline" size="sm" onClick={addTankRow} className="h-7 text-[9px] font-black px-3 rounded-lg">जोडा</Button></div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {formData.tanks.map((tank) => (
+                    <div key={tank.id} className="flex items-center gap-2 bg-muted/10 p-2 rounded-xl border border-muted-foreground/5">
+                      <div className="flex-1 space-y-1">
+                        <Label className="text-[8px] font-black uppercase opacity-50">{tank.label}</Label>
+                        <Input value={tank.capacity} onChange={e => updateTankRow(tank.id, e.target.value)} className="h-8 text-[11px] bg-white border-none font-bold" placeholder="क्षमता (L)" />
+                      </div>
+                      <Button variant="ghost" size="icon" onClick={() => removeTankRow(tank.id)} className="h-8 w-8 text-destructive"><X className="h-4 w-4" /></Button>
+                    </div>
+                  ))}
                 </div>
               </div>
 
               <div className="space-y-4">
-                <h4 className="text-[11px] font-black uppercase text-rose-600 border-b pb-1 flex items-center gap-2"><Truck className="h-4 w-4" /> ३) टँकर, पाणी & ऑडिट</h4>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="flex items-center justify-between border-b pb-1"><h4 className="text-[11px] font-black uppercase text-rose-600 flex items-center gap-2"><Truck className="h-4 w-4" /> ३) टँकर लॉग (TANKER LOG)</h4><Button variant="outline" size="sm" onClick={addTankerLogRow} className="h-7 text-[9px] font-black px-3 rounded-lg border-rose-200 text-rose-600">जोडा</Button></div>
+                <div className="space-y-2">
+                  {formData.tankerLogs.map((tl) => (
+                    <div key={tl.id} className="grid grid-cols-12 gap-2 items-center bg-rose-50/30 p-2 rounded-xl border border-rose-100">
+                      <div className="col-span-3"><Input value={tl.tankerNo} onChange={e => updateTankerLogRow(tl.id, { tankerNo: e.target.value })} className="h-8 text-[10px] bg-white font-bold" placeholder="टँकर क्र." /></div>
+                      <div className="col-span-3 flex gap-1"><Input type="time" value={tl.arrivalTime} onChange={e => updateTankerLogRow(tl.id, { arrivalTime: e.target.value })} className="h-8 text-[10px] bg-white p-1" /><Input type="time" value={tl.departureTime} onChange={e => updateTankerLogRow(tl.id, { departureTime: e.target.value })} className="h-8 text-[10px] bg-white p-1" /></div>
+                      <div className="col-span-4"><Input value={tl.qtyFilled} onChange={e => updateTankerLogRow(tl.id, { qtyFilled: e.target.value })} className="h-8 text-[10px] bg-white font-black" placeholder="भरलेले दूध (L)" /></div>
+                      <div className="col-span-2 flex justify-end"><Button variant="ghost" size="icon" onClick={() => removeTankerLogRow(tl.id)} className="h-7 w-7 text-destructive"><Trash2 className="h-4 w-4" /></Button></div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h4 className="text-[11px] font-black uppercase text-amber-600 border-b pb-1 flex items-center gap-2"><ShieldCheck className="h-4 w-4" /> ४) तांत्रिक, स्वच्छता & ऑडिट</h4>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex items-center space-x-3 bg-muted/10 p-3 rounded-xl border border-muted-foreground/5 cursor-pointer" onClick={() => setFormData({...formData, hasTransportLicenses: !formData.hasTransportLicenses})}><Checkbox checked={formData.hasTransportLicenses} /><Label className="text-[10px] font-black uppercase cursor-pointer">वाहतूक परवाने उपलब्ध</Label></div>
+                  <div className="flex items-center space-x-3 bg-muted/10 p-3 rounded-xl border border-muted-foreground/5 cursor-pointer" onClick={() => setFormData({...formData, pestControlDone: !formData.pestControlDone})}><Checkbox checked={formData.pestControlDone} /><Label className="text-[10px] font-black uppercase cursor-pointer">पेस्ट कंट्रोल (Pest Control)</Label></div>
+                  <div className="flex items-center space-x-3 bg-muted/10 p-3 rounded-xl border border-muted-foreground/5 cursor-pointer" onClick={() => setFormData({...formData, staffHealthCheckDone: !formData.staffHealthCheckDone})}><Checkbox checked={formData.staffHealthCheckDone} /><Label className="text-[10px] font-black uppercase cursor-pointer">स्टाफ हेल्थ चेकअप</Label></div>
+                  <div className="flex items-center space-x-3 bg-muted/10 p-3 rounded-xl border border-muted-foreground/5 cursor-pointer" onClick={() => setFormData({...formData, calibrationDone: !formData.calibrationDone})}><Checkbox checked={formData.calibrationDone} /><Label className="text-[10px] font-black uppercase cursor-pointer">काटा कॅलिब्रेशन (Weight)</Label></div>
+                  <div className="flex items-center space-x-3 bg-muted/10 p-3 rounded-xl border border-muted-foreground/5 cursor-pointer" onClick={() => setFormData({...formData, fireSafetyOk: !formData.fireSafetyOk})}><Checkbox checked={formData.fireSafetyOk} /><Label className="text-[10px] font-black uppercase cursor-pointer">अग्निशमन यंत्रणा Ok</Label></div>
+                  <div className="flex items-center space-x-3 bg-muted/10 p-3 rounded-xl border border-muted-foreground/5 cursor-pointer" onClick={() => setFormData({...formData, hasLab: !formData.hasLab})}><Checkbox checked={formData.hasLab} /><Label className="text-[10px] font-black uppercase cursor-pointer">प्रयोगशाळा (LAB)</Label></div>
+                </div>
+                <div className="grid grid-cols-2 gap-3 mt-4">
                   <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">पाणी स्रोत</Label>
                     <Select value={formData.waterSource} onValueChange={v => setFormData({...formData, waterSource: v})}>
                       <SelectTrigger className="h-10 text-[12px] bg-muted/20 border-none rounded-xl font-bold"><SelectValue /></SelectTrigger>
@@ -342,15 +418,16 @@ export default function ChillingCentersPage() {
                       <SelectContent><SelectItem value="A" className="font-bold">A Grade (उत्कृष्ट)</SelectItem><SelectItem value="B" className="font-bold">B Grade (मध्यम)</SelectItem><SelectItem value="C" className="font-bold">C Grade (सुधारणा हवी)</SelectItem></SelectContent>
                     </Select>
                   </div>
-                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">टँकर क्षमता (Ltrs)</Label><Input value={formData.tankerCapacity} onChange={e => setFormData({...formData, tankerCapacity: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none rounded-xl" /></div>
-                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">टँकर वारंवारता</Label><Input type="number" value={formData.tankerFrequency} onChange={e => setFormData({...formData, tankerFrequency: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none rounded-xl" /></div>
-                  <div className="col-span-2 space-y-1.5"><Label className="text-[10px] font-black uppercase">टँकर येण्याच्या वेळा</Label><Input value={formData.tankerArrivalTimes} onChange={e => setFormData({...formData, tankerArrivalTimes: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none rounded-xl" placeholder="उदा. सकाळी ८:००, संध्याकाळी ७:३०" /></div>
-                  <div className="col-span-2 space-y-1.5"><Label className="text-[10px] font-black uppercase">इतर डेअरीला पुरवठा</Label><Input value={formData.otherDairySupply} onChange={e => setFormData({...formData, otherDairySupply: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none rounded-xl" /></div>
+                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">फॅट मशीन ब्रँड</Label><Input value={formData.fatMachineBrand} onChange={e => setFormData({...formData, fatMachineBrand: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none rounded-xl" /></div>
                 </div>
               </div>
 
               <div className="space-y-4">
-                <h4 className="text-[11px] font-black uppercase text-blue-600 border-b pb-1 flex items-center gap-2"><Milk className="h-4 w-4" /> ४) दूध सारांश</h4>
+                <h4 className="text-[11px] font-black uppercase text-blue-600 border-b pb-1 flex items-center gap-2"><Milk className="h-4 w-4" /> ५) दूध सारांश & पुरवठा</h4>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="col-span-2 space-y-1.5"><Label className="text-[10px] font-black uppercase">इतर डेअरीला पुरवठा</Label><Input value={formData.otherDairySupply} onChange={e => setFormData({...formData, otherDairySupply: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none rounded-xl" placeholder="उदा. नाही / चितळे डेअरी" /></div>
+                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">एकूण सप्लायर्स</Label><Input type="number" value={formData.supplierCount} onChange={e => setFormData({...formData, supplierCount: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none rounded-xl" /></div>
+                </div>
                 <div className="grid grid-cols-3 gap-2 p-3 bg-blue-50/50 rounded-xl border border-blue-100">
                   <div className="col-span-3 text-[10px] font-black uppercase text-blue-600 mb-1">गाय (Cow Q/F/S)</div>
                   <Input type="number" value={formData.cowQty} onChange={e => setFormData({...formData, cowQty: e.target.value})} className="h-8 text-[11px] bg-white border-none font-bold rounded-lg" placeholder="L" />
