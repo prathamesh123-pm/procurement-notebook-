@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
-import { Supplier, EquipmentItem, SupplierType } from "@/lib/types"
+import { Supplier, EquipmentItem, SupplierType, Route } from "@/lib/types"
 import { 
   Plus, Search, User, 
   Truck, Edit, ChevronRight, ArrowLeft, X, Laptop, Zap, Sun, Trash2, Milk, Box, Wallet, ShieldCheck, Printer, CheckCircle2, FlaskConical, Battery
@@ -24,7 +24,7 @@ import { Textarea } from "@/components/ui/textarea"
 export default function RouteDetailsPage() {
   const params = useParams()
   const router = useRouter()
-  const routeId = params.id as string
+  const currentRouteId = params.id as string
   const { toast } = useToast()
   const { user } = useUser()
   const db = useFirestore()
@@ -39,11 +39,11 @@ export default function RouteDetailsPage() {
     return collection(db, 'suppliers')
   }, [db, user])
 
-  const { data: allRoutes } = useCollection(routesQuery)
+  const { data: allRoutes } = useCollection<Route>(routesQuery)
   const { data: allSuppliers, isLoading } = useCollection<Supplier>(suppliersQuery)
 
-  const route = useMemo(() => allRoutes?.find(r => r.id === routeId), [allRoutes, routeId])
-  const suppliersList = useMemo(() => allSuppliers?.filter(s => s.routeId === routeId) || [], [allSuppliers, routeId])
+  const route = useMemo(() => allRoutes?.find(r => r.id === currentRouteId), [allRoutes, currentRouteId])
+  const suppliersList = useMemo(() => allSuppliers?.filter(s => s.routeId === currentRouteId) || [], [allSuppliers, currentRouteId])
 
   const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(null)
   const [searchQuery, setSearchQuery] = useState("")
@@ -54,6 +54,7 @@ export default function RouteDetailsPage() {
 
   const [formData, setFormData] = useState({
     name: "", supplierId: "", address: "", mobile: "", operatorName: "",
+    routeId: currentRouteId, // Default to current route
     supplierType: "Gavali" as SupplierType, fssaiNumber: "", fssaiExpiry: "",
     scaleBrand: "", fatMachineBrand: "", chemicalsStock: "", batteryCondition: "",
     paymentCycle: "10 Days", spaceOwnership: "Self" as 'Self' | 'Rented', hygieneGrade: "A",
@@ -69,6 +70,7 @@ export default function RouteDetailsPage() {
     setDialogMode('add'); setEditingId(null);
     setFormData({
       name: "", supplierId: "", address: "", mobile: "", operatorName: "",
+      routeId: currentRouteId,
       supplierType: "Gavali", fssaiNumber: "", fssaiExpiry: "", scaleBrand: "", fatMachineBrand: "",
       chemicalsStock: "", batteryCondition: "", paymentCycle: "10 Days", spaceOwnership: "Self",
       hygieneGrade: "A", competition: "", cattleFeedBrand: "", iceBlocks: "0",
@@ -84,6 +86,7 @@ export default function RouteDetailsPage() {
     setFormData({
       name: s.name || "", supplierId: s.supplierId || "", address: s.address || "",
       mobile: s.mobile || "", operatorName: s.operatorName || "",
+      routeId: s.routeId || "none",
       supplierType: s.supplierType || "Gavali", fssaiNumber: s.fssaiNumber || "",
       fssaiExpiry: s.fssaiExpiry || "", scaleBrand: s.scaleBrand || "",
       fatMachineBrand: s.fatMachineBrand || "", chemicalsStock: s.chemicalsStock || "",
@@ -104,7 +107,8 @@ export default function RouteDetailsPage() {
   const handleSaveSupplier = () => {
     if (!formData.name || !formData.supplierId || !db) return;
     const data = {
-      ...formData, routeId,
+      ...formData,
+      routeId: formData.routeId === "none" ? "" : formData.routeId,
       cowMilk: { quantity: Number(formData.cowQty), fat: Number(formData.cowFat), snf: Number(formData.cowSnf) },
       buffaloMilk: { quantity: Number(formData.bufQty), fat: Number(formData.bufFat), snf: Number(formData.bufSnf) },
       iceBlocks: Number(formData.iceBlocks), milkCansCount: Number(formData.milkCansCount),
@@ -265,14 +269,26 @@ export default function RouteDetailsPage() {
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-2xl p-0 overflow-hidden rounded-3xl border-none shadow-2xl bg-white">
           <DialogHeader className="p-4 bg-primary text-white">
-            <DialogTitle className="text-base font-black uppercase tracking-widest">{dialogMode === 'add' ? 'नवीन सप्लायर' : 'माहिती अद्ययावत करा'}</DialogTitle>
+            <DialogTitle className="text-base font-black uppercase tracking-widest">{dialogMode === 'add' ? 'नवीन सप्लायर' : 'माहिती बदला / रूट ट्रान्सफर'}</DialogTitle>
             <DialogDescription className="text-[9px] text-white/70 uppercase">सविस्तर तपशील भरा.</DialogDescription>
           </DialogHeader>
           <ScrollArea className="max-h-[80vh] p-6">
             <div className="space-y-6 pb-10">
               <div className="space-y-4">
-                <h4 className="text-[11px] font-black uppercase text-primary border-b pb-1 flex items-center gap-2"><User className="h-4 w-4" /> १) प्राथमिक माहिती</h4>
+                <h4 className="text-[11px] font-black uppercase text-primary border-b pb-1 flex items-center gap-2"><User className="h-4 w-4" /> १) प्राथमिक माहिती व रूट असाइनमेंट</h4>
                 <div className="grid grid-cols-2 gap-3">
+                  <div className="col-span-2 space-y-1.5">
+                    <Label className="text-[10px] font-black uppercase text-rose-600">वर्तमान रूट बदला (TRANSFER ROUTE)</Label>
+                    <Select value={formData.routeId} onValueChange={v => setFormData({...formData, routeId: v})}>
+                      <SelectTrigger className="h-11 text-[12px] bg-rose-50 border border-rose-100 rounded-xl font-black shadow-inner">
+                        <Truck className="h-4 w-4 mr-2 text-rose-600" /><SelectValue placeholder="रूट निवडा" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none" className="font-bold text-rose-600">कोणताही रूट नाही (Unassigned)</SelectItem>
+                        {allRoutes?.map(r => <SelectItem key={r.id} value={r.id} className="font-bold">{r.name}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                  </div>
                   <div className="col-span-2 space-y-1.5"><Label className="text-[10px] font-black uppercase">सप्लायर प्रकार *</Label>
                     <Select value={formData.supplierType} onValueChange={(v: any) => setFormData({...formData, supplierType: v})}>
                       <SelectTrigger className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl font-black"><SelectValue /></SelectTrigger>

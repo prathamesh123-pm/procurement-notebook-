@@ -8,9 +8,12 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Supplier, Route, EquipmentItem, SupplierType } from "@/lib/types"
-import { Plus, Search, Filter, Phone, MapPin, Trash2, Milk, X, Laptop, Zap, Sun, ShieldAlert, History, Edit, CheckCircle2, Box, UserCheck, Wallet, User, ShieldCheck, Battery, FlaskConical, Truck, Users } from "lucide-react"
+import { 
+  Plus, Search, Filter, Phone, Trash2, Milk, X, Laptop, Zap, Sun, 
+  Edit, CheckCircle2, Box, Wallet, User, ShieldCheck, Users, Truck 
+} from "lucide-react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogDescription } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -49,7 +52,7 @@ function SuppliersContent() {
   const [mounted, setMounted] = useState(false)
 
   const [formData, setFormData] = useState({
-    supplierId: "", name: "", address: "", mobile: "", routeId: "", 
+    supplierId: "", name: "", address: "", mobile: "", routeId: "none", 
     supplierType: "Gavali" as SupplierType, competition: "", additionalInfo: "",
     iceBlocks: "0", scaleBrand: "", fatMachineBrand: "", cattleFeedBrand: "", 
     fssaiNumber: "", fssaiExpiry: "", milkCansCount: "0", 
@@ -69,7 +72,7 @@ function SuppliersContent() {
 
   const resetFormData = () => {
     setFormData({ 
-      supplierId: "", name: "", address: "", mobile: "", routeId: "", 
+      supplierId: "", name: "", address: "", mobile: "", routeId: "none", 
       supplierType: "Gavali", competition: "", additionalInfo: "",
       iceBlocks: "0", scaleBrand: "", fatMachineBrand: "", cattleFeedBrand: "", 
       fssaiNumber: "", fssaiExpiry: "", milkCansCount: "0", 
@@ -92,26 +95,12 @@ function SuppliersContent() {
       return
     }
     const newSupp = {
-      supplierId: formData.supplierId, name: formData.name, address: formData.address, 
-      mobile: formData.mobile, routeId: formData.routeId === "none" ? "" : formData.routeId, 
-      supplierType: formData.supplierType,
-      competition: formData.competition, additionalInfo: formData.additionalInfo,
-      additionalNotes: formData.additionalInfo,
-      iceBlocks: Number(formData.iceBlocks), scaleBrand: formData.scaleBrand,
-      fatMachineBrand: formData.fatMachineBrand, cattleFeedBrand: formData.cattleFeedBrand,
-      fssaiNumber: formData.fssaiNumber, fssaiExpiry: formData.fssaiExpiry,
-      milkCansCount: Number(formData.milkCansCount), computerAvailable: formData.computerAvailable,
-      upsInverterAvailable: formData.upsInverterAvailable, solarAvailable: formData.solarAvailable,
-      adulterationKitInfo: formData.adulterationKitInfo,
+      ...formData,
+      routeId: formData.routeId === "none" ? "" : formData.routeId,
+      iceBlocks: Number(formData.iceBlocks),
+      milkCansCount: Number(formData.milkCansCount),
       cowMilk: { quantity: Number(formData.cowQty), fat: Number(formData.cowFat), snf: Number(formData.cowSnf) },
       buffaloMilk: { quantity: Number(formData.bufQty), fat: Number(formData.bufFat), snf: Number(formData.bufSnf) },
-      equipment: formData.equipment,
-      operatorName: formData.operatorName,
-      village: formData.address,
-      spaceOwnership: formData.spaceOwnership,
-      hygieneGrade: formData.hygieneGrade,
-      chemicalsStock: formData.chemicalsStock,
-      batteryCondition: formData.batteryCondition,
       updatedAt: new Date().toISOString()
     }
     addDocumentNonBlocking(collection(db, 'suppliers'), newSupp)
@@ -122,36 +111,22 @@ function SuppliersContent() {
   const handleUpdateSupplier = () => {
     if (!selectedSupplier || !db) return
     const updateData = { 
-      supplierId: formData.supplierId, name: formData.name, address: formData.address, 
-      mobile: formData.mobile, routeId: formData.routeId === "none" ? "" : formData.routeId, 
-      supplierType: formData.supplierType,
-      competition: formData.competition, additionalInfo: formData.additionalInfo,
-      additionalNotes: formData.additionalInfo,
-      iceBlocks: Number(formData.iceBlocks), scaleBrand: formData.scaleBrand,
-      fatMachineBrand: formData.fatMachineBrand, cattleFeedBrand: formData.cattleFeedBrand,
-      fssaiNumber: formData.fssaiNumber, fssaiExpiry: formData.fssaiExpiry,
-      milkCansCount: Number(formData.milkCansCount), computerAvailable: formData.computerAvailable,
-      upsInverterAvailable: formData.upsInverterAvailable, solarAvailable: formData.solarAvailable,
-      adulterationKitInfo: formData.adulterationKitInfo,
+      ...formData,
+      routeId: formData.routeId === "none" ? "" : formData.routeId,
+      iceBlocks: Number(formData.iceBlocks),
+      milkCansCount: Number(formData.milkCansCount),
       cowMilk: { quantity: Number(formData.cowQty), fat: Number(formData.cowFat), snf: Number(formData.cowSnf) },
       buffaloMilk: { quantity: Number(formData.bufQty), fat: Number(formData.bufFat), snf: Number(formData.bufSnf) },
-      equipment: formData.equipment,
-      operatorName: formData.operatorName,
-      village: formData.address,
-      spaceOwnership: formData.spaceOwnership,
-      hygieneGrade: formData.hygieneGrade,
-      chemicalsStock: formData.chemicalsStock,
-      batteryCondition: formData.batteryCondition,
       updatedAt: new Date().toISOString() 
     }
     updateDocumentNonBlocking(doc(db, 'suppliers', selectedSupplier.id), updateData)
     setIsEditing(false); setSelectedSupplier(null);
-    toast({ title: "यशस्वी", description: "माहिती अद्ययावत झाली." })
+    toast({ title: "यशस्वी", description: "माहिती अद्ययावत झाली आणि रूट बदलला गेला." })
   }
 
   const deleteSupplier = (id: string) => {
     if (!db) return
-    if (confirm("हटवायचे आहे का?")) {
+    if (confirm("तुम्हाला खात्री आहे की हा सप्लायर हटवायचा आहे?")) {
       deleteDocumentNonBlocking(doc(db, 'suppliers', id))
       toast({ title: "यशस्वी", description: "सप्लायर हटवला." })
     }
@@ -203,10 +178,11 @@ function SuppliersContent() {
   }
 
   const getRouteName = (rid: string) => {
-    return routes?.find(r => r.id === rid)?.name || "रूट जोडला नाही"
+    if (!rid) return "रूट नाही (None)";
+    return routes?.find(r => r.id === rid)?.name || "रूट सापडला नाही"
   }
 
-  if (!mounted) return null
+  if (!mounted) return <div className="p-10 text-center font-black uppercase text-[10px] opacity-50">लोड होत आहे...</div>
 
   return (
     <div className="space-y-4 max-w-[900px] mx-auto w-full pb-10 px-2 animate-in fade-in duration-500">
@@ -215,9 +191,9 @@ function SuppliersContent() {
           <h2 className="text-xl font-black text-foreground uppercase tracking-tight flex items-center gap-2">
             <Users className="h-6 w-6 text-primary" /> सप्लायर मास्टर (MASTER)
           </h2>
-          <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] ml-1">Route Assignment & Profile</p>
+          <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] ml-1">Route Transfer & Profiles</p>
         </div>
-        <Button onClick={() => setIsAdding(true)} className="gap-2 shadow-xl shadow-primary/20 h-10 px-6 rounded-xl font-black uppercase text-[11px] w-full md:w-auto">
+        <Button onClick={() => { resetFormData(); setIsAdding(true); }} className="gap-2 shadow-xl shadow-primary/20 h-10 px-6 rounded-xl font-black uppercase text-[11px] w-full md:w-auto">
           <Plus className="h-4 w-4" /> नवीन सप्लायर
         </Button>
       </div>
@@ -233,7 +209,7 @@ function SuppliersContent() {
               <Filter className="h-4 w-4 mr-2" /><SelectValue placeholder="रूट निवडा" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all" className="font-bold">सर्व सप्लायर (All)</SelectItem>
+              <SelectItem value="all" className="font-bold">सर्व (All)</SelectItem>
               <SelectItem value="none" className="font-bold text-rose-600">रूट नसलेले (Unassigned)</SelectItem>
               {routes?.map(r => <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>)}
             </SelectContent>
@@ -312,7 +288,7 @@ function SuppliersContent() {
                   <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">आयडी (ID) *</Label><Input value={formData.supplierId} onChange={e => setFormData({...formData, supplierId: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl shadow-inner" /></div>
                   <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">ऑपरेटर नाव</Label><Input value={formData.operatorName} onChange={e => setFormData({...formData, operatorName: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl shadow-inner" /></div>
                   <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">मोबाईल</Label><Input value={formData.mobile} onChange={e => setFormData({...formData, mobile: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl shadow-inner" /></div>
-                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">पत्ता</Label><Input value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl shadow-inner" /></div>
+                  <div className="col-span-2 space-y-1.5"><Label className="text-[10px] font-black uppercase">पत्ता</Label><Input value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl shadow-inner" /></div>
                 </div>
               </div>
 
