@@ -9,7 +9,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Supplier, Route, EquipmentItem, SupplierType } from "@/lib/types"
 import { 
-  Plus, Search, Filter, Phone, Trash2, Milk, X, Laptop, Zap, Sun, 
+  Search, Filter, Phone, Trash2, Milk, X, Laptop, Zap, Sun, 
   Edit, CheckCircle2, Box, Wallet, User, ShieldCheck, Users, Truck 
 } from "lucide-react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -18,7 +18,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking } from "@/firebase"
+import { useUser, useFirestore, useCollection, useMemoFirebase, updateDocumentNonBlocking, deleteDocumentNonBlocking } from "@/firebase"
 import { collection, doc } from "firebase/firestore"
 import { useToast } from "@/hooks/use-toast"
 import { Textarea } from "@/components/ui/textarea"
@@ -48,7 +48,6 @@ function SuppliersContent() {
   const [routeFilter, setRouteFilter] = useState(initialRouteFilter)
   const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(null)
   const [isEditing, setIsEditing] = useState(false)
-  const [isAdding, setIsAdding] = useState(false)
   const [mounted, setMounted] = useState(false)
 
   const [formData, setFormData] = useState({
@@ -87,25 +86,6 @@ function SuppliersContent() {
       chemicalsStock: "",
       batteryCondition: ""
     })
-  }
-
-  const handleAddSupplier = () => {
-    if (!formData.name || !formData.supplierId || !db || !user) {
-      toast({ title: "त्रुटी", description: "नाव आणि आयडी आवश्यक आहे.", variant: "destructive" })
-      return
-    }
-    const newSupp = {
-      ...formData,
-      routeId: formData.routeId === "none" ? "" : formData.routeId,
-      iceBlocks: Number(formData.iceBlocks),
-      milkCansCount: Number(formData.milkCansCount),
-      cowMilk: { quantity: Number(formData.cowQty), fat: Number(formData.cowFat), snf: Number(formData.cowSnf) },
-      buffaloMilk: { quantity: Number(formData.bufQty), fat: Number(formData.bufFat), snf: Number(formData.bufSnf) },
-      updatedAt: new Date().toISOString()
-    }
-    addDocumentNonBlocking(collection(db, 'suppliers'), newSupp)
-    toast({ title: "यशस्वी", description: "सप्लायर प्रोफाइल जतन झाले." })
-    setIsAdding(false); resetFormData();
   }
 
   const handleUpdateSupplier = () => {
@@ -193,9 +173,6 @@ function SuppliersContent() {
           </h2>
           <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] ml-1">Route Transfer & Profiles</p>
         </div>
-        <Button onClick={() => { resetFormData(); setIsAdding(true); }} className="gap-2 shadow-xl shadow-primary/20 h-10 px-6 rounded-xl font-black uppercase text-[11px] w-full md:w-auto">
-          <Plus className="h-4 w-4" /> नवीन सप्लायर
-        </Button>
       </div>
 
       <Card className="border shadow-2xl rounded-3xl overflow-hidden bg-white border-muted-foreground/10 p-3">
@@ -251,14 +228,21 @@ function SuppliersContent() {
                 </TableCell>
               </TableRow>
             ))}
+            {filteredSuppliers.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={3} className="p-20 text-center text-muted-foreground font-black uppercase text-[11px] opacity-20 tracking-[0.3em] italic">
+                  सप्लायर सापडले नाहीत.
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </div>
 
-      <Dialog open={isAdding || isEditing} onOpenChange={(open) => { if(!open) { setIsAdding(false); setIsEditing(false); resetFormData(); } }}>
+      <Dialog open={isEditing} onOpenChange={(open) => { if(!open) { setIsEditing(false); resetFormData(); } }}>
         <DialogContent className="max-w-[600px] p-0 overflow-hidden rounded-3xl border-none shadow-2xl bg-white">
           <DialogHeader className="p-4 bg-primary text-white sticky top-0 z-10">
-            <DialogTitle className="text-base font-black uppercase tracking-widest">{isAdding ? 'नवीन सप्लायर' : 'माहिती बदला / रूट ट्रान्सफर'}</DialogTitle>
+            <DialogTitle className="text-base font-black uppercase tracking-widest">माहिती बदला / रूट ट्रान्सफर</DialogTitle>
             <DialogDescription className="text-[9px] text-white/70 uppercase">सप्लायरची माहिती आणि रूट मॅनेजमेंट.</DialogDescription>
           </DialogHeader>
           <ScrollArea className="max-h-[80vh] p-6">
@@ -377,7 +361,7 @@ function SuppliersContent() {
             </div>
           </ScrollArea>
           <DialogFooter className="p-4 border-t bg-muted/5">
-            <Button onClick={isAdding ? handleAddSupplier : handleUpdateSupplier} className="w-full font-black uppercase text-[11px] h-12 rounded-2xl shadow-xl shadow-primary/20 tracking-widest transition-all active:scale-95"><CheckCircle2 className="h-5 w-5 mr-2" /> माहिती जतन करा</Button>
+            <Button onClick={handleUpdateSupplier} className="w-full font-black uppercase text-[11px] h-12 rounded-2xl shadow-xl shadow-primary/20 tracking-widest transition-all active:scale-95"><CheckCircle2 className="h-5 w-5 mr-2" /> माहिती जतन करा</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
