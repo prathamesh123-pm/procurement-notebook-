@@ -8,11 +8,12 @@ import { Input } from "@/components/ui/input"
 import { Card } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { 
-  ArrowLeft, Save, Truck, Plus, Trash2, CheckCircle2, RefreshCw, Layers, CopyCheck, LayoutList
+  ArrowLeft, Save, Truck, Plus, Trash2, CheckCircle2, RefreshCw, Layers, CopyCheck, LayoutList, Settings2
 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { useUser, useFirestore, addDocumentNonBlocking, useDoc, useMemoFirebase, updateDocumentNonBlocking, setDocumentNonBlocking } from "@/firebase"
 import { collection, doc } from "firebase/firestore"
+import { cn } from "@/lib/utils"
 
 interface AllocationEntry {
   id: string;
@@ -31,6 +32,8 @@ function RouteAllocationForm() {
   const editId = searchParams.get('edit')
 
   const [mounted, setMounted] = useState(false)
+  const [isManageMode, setIsManageMode] = useState(false) // Toggle between Edit and List mode
+  
   const [formData, setFormData] = useState({
     reportHeading: "Daily Tanker & Can Route Request & Allocation Report",
     date: new Date().toISOString().split('T')[0],
@@ -116,6 +119,7 @@ function RouteAllocationForm() {
     }
     setDocumentNonBlocking(templateRef!, template, { merge: true })
     toast({ title: "टेम्पलेट जतन झाले", description: "पुढच्या वेळी हे रूट्स आपोआप येतील." })
+    setIsManageMode(false)
   }
 
   const handleSave = () => {
@@ -154,34 +158,54 @@ function RouteAllocationForm() {
         <h3 className={`text-[10px] font-black uppercase ${color} tracking-widest flex items-center gap-1.5`}>
           <Layers className="h-3 w-3" /> {title}
         </h3>
-        <Button size="sm" variant="outline" onClick={() => addEntry(section)} className="h-6 text-[8px] font-black uppercase px-2 rounded-lg">
-          <Plus className="h-3 w-3 mr-1" /> जोडा
-        </Button>
+        {isManageMode && (
+          <Button size="sm" variant="outline" onClick={() => addEntry(section)} className="h-6 text-[8px] font-black uppercase px-2 rounded-lg">
+            <Plus className="h-3 w-3 mr-1" /> जोडा
+          </Button>
+        )}
       </div>
       <div className="space-y-2">
         <div className="grid grid-cols-12 gap-1 px-1 text-[7px] font-black uppercase text-muted-foreground">
           <div className="col-span-2">ID</div>
           <div className="col-span-6">Route Name</div>
           <div className="col-span-2 text-center">Req</div>
-          <div className="col-span-2 text-center">Alloc</div>
+          <div className={cn(isManageMode ? "col-span-1 text-center" : "col-span-2 text-center")}>Alloc</div>
+          {isManageMode && <div className="col-span-1"></div>}
         </div>
         {(formData[section] as AllocationEntry[]).map((entry) => (
           <div key={entry.id} className="grid grid-cols-12 gap-1 items-center bg-muted/5 p-1 rounded-lg border border-muted-foreground/5">
-            <Input value={entry.routeId} onChange={e => updateEntry(section, entry.id, { routeId: e.target.value })} className="col-span-2 h-7 text-[10px] p-1 bg-white border-none font-black" />
-            <Input value={entry.routeName} onChange={e => updateEntry(section, entry.id, { routeName: e.target.value })} className="col-span-6 h-7 text-[10px] p-1 bg-white border-none font-bold" />
+            {isManageMode ? (
+              <>
+                <Input value={entry.routeId} onChange={e => updateEntry(section, entry.id, { routeId: e.target.value })} className="col-span-2 h-7 text-[10px] p-1 bg-white border-none font-black" />
+                <Input value={entry.routeName} onChange={e => updateEntry(section, entry.id, { routeName: e.target.value })} className="col-span-6 h-7 text-[10px] p-1 bg-white border-none font-bold" />
+              </>
+            ) : (
+              <>
+                <div className="col-span-2 text-[9px] font-black truncate px-1">{entry.routeId || "---"}</div>
+                <div className="col-span-6 text-[10px] font-bold truncate px-1 uppercase">{entry.routeName || "---"}</div>
+              </>
+            )}
+            
             <div className="col-span-2 flex justify-center">
               <input type="checkbox" checked={entry.requested} onChange={e => updateEntry(section, entry.id, { requested: e.target.checked })} className="h-4 w-4 accent-primary cursor-pointer" />
             </div>
-            <div className="col-span-1 flex justify-center">
+            
+            <div className={cn(isManageMode ? "col-span-1 flex justify-center" : "col-span-2 flex justify-center")}>
               <input type="checkbox" checked={entry.allocated} onChange={e => updateEntry(section, entry.id, { allocated: e.target.checked })} className="h-4 w-4 accent-primary cursor-pointer" />
             </div>
-            <div className="col-span-1 flex justify-end">
-              <Button variant="ghost" size="icon" onClick={() => removeEntry(section, entry.id)} className="h-6 w-6 text-rose-400 hover:bg-rose-50 rounded-md">
-                <Trash2 className="h-3.5 w-3.5" />
-              </Button>
-            </div>
+
+            {isManageMode && (
+              <div className="col-span-1 flex justify-end">
+                <Button variant="ghost" size="icon" onClick={() => removeEntry(section, entry.id)} className="h-6 w-6 text-rose-400 hover:bg-rose-50 rounded-md">
+                  <Trash2 className="h-3.5 w-3.5" />
+                </Button>
+              </div>
+            )}
           </div>
         ))}
+        {(formData[section] as AllocationEntry[]).length === 0 && (
+          <p className="text-[8px] text-center italic opacity-30 py-2">रूट यादी कोरी आहे.</p>
+        )}
       </div>
     </Card>
   )
@@ -196,6 +220,23 @@ function RouteAllocationForm() {
         </div>
       </div>
 
+      <div className="flex gap-2 mb-4 bg-white p-1 rounded-xl border border-muted-foreground/10 shadow-sm">
+        <Button 
+          variant={!isManageMode ? "default" : "ghost"} 
+          className="flex-1 h-9 font-black uppercase text-[9px] rounded-lg gap-1.5"
+          onClick={() => setIsManageMode(false)}
+        >
+          <LayoutList className="h-3.5 w-3.5" /> रूट लिस्ट पहा
+        </Button>
+        <Button 
+          variant={isManageMode ? "default" : "ghost"} 
+          className="flex-1 h-9 font-black uppercase text-[9px] rounded-lg gap-1.5"
+          onClick={() => setIsManageMode(true)}
+        >
+          <Settings2 className="h-3.5 w-3.5" /> लिस्ट बदल करा
+        </Button>
+      </div>
+
       <div className="space-y-3">
         <Card className="compact-card p-3 border-primary/20 bg-primary/5">
           <div className="space-y-1">
@@ -206,20 +247,22 @@ function RouteAllocationForm() {
 
         <Card className="compact-card p-3"><div className="space-y-0.5"><Label className="compact-label">तारीख</Label><Input type="date" className="compact-input h-9" value={formData.date} onChange={e => setFormData({...formData, date: e.target.value})} /></div></Card>
 
-        <Section title="Can Route Morning" section="morningRoutes" color="text-blue-600" />
-        <Section title="Can Route Evening" section="eveningRoutes" color="text-indigo-600" />
+        <Section title="Can Route Morning (Internal)" section="morningRoutes" color="text-blue-600" />
+        <Section title="Can Route Evening (Internal)" section="eveningRoutes" color="text-indigo-600" />
         <Section title="Internal Tanker Route" section="tankerRoutes" color="text-rose-600" />
         <Section title="External Can Route" section="extCanRoutes" color="text-emerald-600" />
         <Section title="External Tanker Route" section="extTankerRoutes" color="text-amber-600" />
 
         <div className="flex flex-col gap-2 pt-4">
-          <Button type="button" variant="outline" onClick={saveAsTemplate} className="w-full h-11 font-black uppercase text-[10px] tracking-widest border-primary/30 text-primary hover:bg-primary/5 rounded-xl">
-            <CopyCheck className="h-4 w-4 mr-2" /> हे रूट टेम्पलेट म्हणून जतन करा (Fill Once)
-          </Button>
-          
-          <Button onClick={handleSave} className="w-full bg-primary text-white shadow-xl shadow-primary/20 h-12 uppercase font-black tracking-widest rounded-xl transition-all active:scale-95">
-            {editId ? <RefreshCw className="h-4 w-4 mr-2" /> : <Save className="h-4 w-4 mr-2" />} {editId ? 'अहवाल अद्ययावत करा' : 'अहवाल जतन करा (SUBMIT)'}
-          </Button>
+          {isManageMode ? (
+            <Button type="button" onClick={saveAsTemplate} className="w-full h-11 font-black uppercase text-[10px] tracking-widest bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl">
+              <CopyCheck className="h-4 w-4 mr-2" /> ही यादी टेम्पलेट म्हणून जतन करा
+            </Button>
+          ) : (
+            <Button onClick={handleSave} className="w-full bg-primary text-white shadow-xl shadow-primary/20 h-12 uppercase font-black tracking-widest rounded-xl transition-all active:scale-95">
+              {editId ? <RefreshCw className="h-4 w-4 mr-2" /> : <Save className="h-4 w-4 mr-2" />} {editId ? 'अहवाल अद्ययावत करा' : 'अहवाल जतन करा (SUBMIT)'}
+            </Button>
+          )}
         </div>
       </div>
     </div>
