@@ -16,6 +16,13 @@ import { useToast } from "@/hooks/use-toast"
 import { useUser, useFirestore, addDocumentNonBlocking, useDoc, useMemoFirebase, updateDocumentNonBlocking } from "@/firebase"
 import { collection, doc } from "firebase/firestore"
 
+const SectionTitle = ({ icon: Icon, title }: any) => (
+  <div className="flex items-center gap-1 border-b border-primary/10 pb-0.5 mb-1.5">
+    <Icon className="h-2.5 w-2.5 text-primary" />
+    <h3 className="text-[9px] font-black uppercase text-primary tracking-widest">{title}</h3>
+  </div>
+)
+
 function SurveyForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -90,13 +97,6 @@ function SurveyForm() {
   }
 
   if (!mounted || isLoading) return <div className="p-20 text-center font-black uppercase text-[10px] opacity-50">लोड होत आहे...</div>
-
-  const SectionTitle = ({ icon: Icon, title }: any) => (
-    <div className="flex items-center gap-1 border-b border-primary/10 pb-0.5 mb-1.5">
-      <Icon className="h-2.5 w-2.5 text-primary" />
-      <h3 className="text-[9px] font-black uppercase text-primary tracking-widest">{title}</h3>
-    </div>
-  )
 
   return (
     <div className="compact-form-container">

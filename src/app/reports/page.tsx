@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
@@ -17,6 +18,237 @@ import { collection, doc } from "firebase/firestore"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
+
+const labelMap: Record<string, string> = {
+  reportHeading: "अहवाल शीर्षक",
+  date: "अहवाल तारीख",
+  reportDate: "अहवाल तारीख",
+  shift: "कामाची शिफ्ट",
+  slipNo: "स्लिप नंबर",
+  idNumber: "अधिकारी आयडी",
+  repId: "कर्मचारी आयडी",
+  supervisorName: "सुपरवायझरचे नाव",
+  centerName: "केंद्राचे पूर्ण नाव",
+  centerCode: "केंद्राचा कोड (ID)",
+  ownerName: "मालकाचे नाव",
+  supplierName: "पुरवठादार / केंद्राचे नाव",
+  supplierId: "पुरवठादार कोड",
+  mobile: "संपर्क मोबाईल नंबर",
+  address: "पूर्ण पत्ता / लोकेशन",
+  district: "जिल्हा",
+  taluka: "तालुका",
+  routeName: "दुध संकलन रूटचे नाव",
+  vehicleNo: "गाडीचा नंबर (MH...)",
+  vehicleNumber: "गाडीचा नंबर (MH...)",
+  vehicleType: "गाडीचा प्रकार",
+  driverName: "ड्रायव्हरचे नाव",
+  breakdownTime: "गाडी बिघाड झाल्याची वेळ",
+  location: "बिघाड झालेले ठिकाण",
+  reason: "बिघाड होण्याचे मुख्य कारण",
+  severity: "बिघाडाचे स्वरूप",
+  detailedReason: "बिघाडाचे सविस्तर वर्णन",
+  estimatedRepairTime: "दुरुस्तीसाठी लागणारा वेळ",
+  estimatedRepairCost: "अंदाजे खर्च (₹)",
+  recoveryVehicleNo: "पर्यायी गाडी नंबर",
+  recoveryArrivalTime: "पर्यायी गाडी पोहोचण्याची वेळ",
+  capacity: "गाडीची दूध क्षमता (L)",
+  morningQty: "सकाळचे दूध संकलन (L)",
+  eveningQty: "संध्याकाळचे दूध संकलन (L)",
+  fat: "दूध फॅट प्रमाण (%)",
+  snf: "दूध SNF प्रमाण (%)",
+  result: "तपासणीचा अंतिम निकाल",
+  milkHot: "दूध गरम झाले होते का?",
+  milkSour: "दूध पूर्णपणे खराब झाले का?",
+  licenseStatus: "परवाना स्थिती",
+  fssaiNo: "FSSAI परवाना क्रमांक",
+  validDate: "परवाना मुदत संपण्याची तारीख",
+  summary: "कामाचा सविस्तर सारांश",
+  visitPerson: "कोणाची भेट घेतली?",
+  visitPurpose: "भेटीचा मुख्य उद्देश",
+  visitDiscussion: "झालेली सविस्तर चर्चा",
+  officeTaskSubject: "ऑफिस कामाचा मुख्य विषय",
+  officeTaskDetails: "कामाचा सविस्तर गोषवारा",
+  achievements: "आजची मोठी कामगिरी",
+  problems: "कामात आलेल्या समस्या",
+  actionsTaken: "केलेली कार्यवाही",
+  actionTaken: "केलेली अंतिम कार्यवाही",
+  remark: "विशेष शेरा",
+  otherInfo: "इतर माहिती",
+  notes: "महत्त्वाची नोंद",
+  title: "दस्तऐवज शीर्षक",
+  totalLossAmount: "एकूण आर्थिक नुकसान (₹)"
+};
+
+const fieldSequence = [
+  "reportHeading", "date", "shift", "repId", "idNumber", "centerName", "centerCode", "ownerName", 
+  "supplierName", "supplierId", "mobile", "address", "district", "taluka", "routeName", 
+  "vehicleNo", "vehicleNumber", "vehicleType", "driverName", "breakdownTime", "location", 
+  "reason", "severity", "detailedReason", "estimatedRepairTime", "estimatedRepairCost", 
+  "recoveryVehicleNo", "recoveryArrivalTime", "capacity", "morningQty", "eveningQty", 
+  "fat", "snf", "result", "licenseStatus", "fssaiNo", "validDate", "milkHot", "milkSour",
+  "visitPerson", "visitPurpose", "visitDiscussion", "officeTaskSubject", "officeTaskDetails",
+  "summary", "achievements", "problems", "actionsTaken", "actionTaken", "remark", "otherInfo", "totalLossAmount", "supervisorName"
+];
+
+const ReportHeader = ({ title, date, subName, subId }: any) => (
+  <div className="w-full border-b-2 border-black pb-1.5 mb-3 text-center">
+    <div className="flex items-center justify-center gap-2 mb-1">
+      <div className="h-7 w-7 bg-black rounded flex items-center justify-center">
+        <Milk className="h-4 w-4 text-white" />
+      </div>
+      <div className="text-left">
+        <h1 className="text-[11pt] font-black uppercase tracking-tight leading-none">संकलन नोंदवही (Management Report)</h1>
+        <p className="text-[7pt] font-bold uppercase">{title || "अहवाल तपशील"}</p>
+      </div>
+    </div>
+    <div className="flex justify-between text-[7pt] font-black uppercase text-slate-500 tracking-wider mt-1.5 border-t pt-1">
+      <span>सादरकर्ता: {subName} ({subId})</span>
+      <span>दिनांक: {date}</span>
+    </div>
+  </div>
+)
+
+const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any, profileName: string, profileId: string }) => {
+  const d = report.fullData || {};
+  const TableSection = ({ title, data }: { title: string, data: any[] }) => (
+    <div className="w-full mb-3">
+      <div className="bg-slate-100 p-0.5 text-[8pt] font-black uppercase text-center border border-black">{title}</div>
+      <table className="w-full border-collapse border border-black">
+        <thead>
+          <tr className="bg-slate-50 text-[6pt] font-black uppercase">
+            <th className="p-0.5 border border-black w-8">Sr.No</th>
+            <th className="p-0.5 border border-black w-20">Route ID</th>
+            <th className="p-0.5 border border-black text-left">Route Name</th>
+            <th className="p-0.5 border border-black w-16">Req</th>
+            <th className="p-0.5 border border-black w-16">Alloc</th>
+          </tr>
+        </thead>
+        <tbody>
+          {(data || []).map((entry, idx) => (
+            <tr key={idx} className="text-[7pt] font-bold uppercase text-center h-6">
+              <td className="p-0.5 border border-black">{idx + 1}</td>
+              <td className="p-0.5 border border-black">{entry.routeId}</td>
+              <td className="p-0.5 border border-black text-left">{entry.routeName}</td>
+              <td className="p-0.5 border border-black font-black">{entry.requested ? 'YES' : '-'}</td>
+              <td className="p-0.5 border border-black font-black">{entry.allocated ? 'YES' : '-'}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )
+
+  return (
+    <div className="bg-white font-sans text-slate-900 border-[1.2px] border-black rounded-sm w-full max-w-[210mm] mx-auto p-5 printable-report flex flex-col items-center shadow-none mb-4">
+      <ReportHeader title={d.reportHeading} date={report.date} subName={d.name || profileName} subId={d.idNumber || profileId} />
+      
+      <TableSection title="Type : Can Route Morning (Internal)" data={d.morningRoutes} />
+      <TableSection title="Type : Can Route Evening (Internal)" data={d.eveningRoutes} />
+      <TableSection title="Type : Internal Tanker Route" data={d.tankerRoutes} />
+      <TableSection title="Type : External Can Route" data={d.extCanRoutes} />
+      <TableSection title="Type : External Tanker Route" data={d.extTankerRoutes} />
+
+      <div className="w-full mt-auto pt-6 grid grid-cols-2 gap-12 text-center uppercase font-black text-[8pt] tracking-widest">
+        <div className="border-t-[1.2px] border-black pt-1.5">1) Supervisor Sign :</div>
+        <div className="border-t-[1.2px] border-black pt-1.5">2) Manager Sign :</div>
+      </div>
+    </div>
+  )
+}
+
+const GenericLayout = ({ report, profileName, profileId }: { report: any, profileName: string, profileId: string }) => {
+  const d = report.fullData || {};
+  
+  if (report.type === 'Official Document') {
+    return (
+      <div className="bg-white font-sans text-slate-900 border-none w-full max-w-[210mm] mx-auto p-0 printable-report flex flex-col shadow-none mb-4">
+        <div className="w-full text-center mb-8">
+           <h1 className="text-[18pt] font-black uppercase tracking-tight border-b-2 border-black pb-2 inline-block min-w-[200px]">
+             {d.title || "अधिकृत दस्तऐवज"}
+           </h1>
+        </div>
+        <div 
+          className="w-full prose prose-sm max-w-none text-left text-[10pt] leading-relaxed"
+          dangerouslySetInnerHTML={{ __html: d.content || "" }} 
+        />
+      </div>
+    );
+  }
+
+  const orderedEntries = fieldSequence
+    .filter(key => d[key] !== undefined && d[key] !== "" && labelMap[key])
+    .map(key => [key, d[key]]);
+
+  const losses = d.centerLosses || [];
+  const points = d.points || [];
+  const remarkPoints = d.remarkPoints || [];
+
+  return (
+    <div className="bg-white font-sans text-slate-900 border-[1.2px] border-black rounded-sm w-full max-w-[210mm] mx-auto p-5 printable-report flex flex-col items-center shadow-none mb-4">
+      <ReportHeader title={d.reportHeading || report.type} date={report.date} subName={d.name || d.repName || profileName} subId={d.idNumber || d.repId || profileId} />
+      
+      <div className="w-full border border-black rounded overflow-hidden mb-3">
+        <table className="w-full border-collapse">
+          <tbody>
+            {orderedEntries.map(([k, v]: any) => (
+              <tr key={k} className="border-b border-black last:border-0 text-[8pt] font-bold">
+                <td className="p-1.5 bg-slate-50 uppercase text-[7pt] font-black border-r border-black w-1/3">{labelMap[k]}</td>
+                <td className="p-1.5">{String(v)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {losses.length > 0 && (
+        <div className="w-full border border-black rounded overflow-hidden mb-3">
+          <div className="bg-slate-100 p-0.5 text-[7pt] font-black uppercase text-center border-b border-black">नुकसान तपशील (LOSS LOG)</div>
+          <table className="w-full border-collapse">
+            <thead>
+              <tr className="bg-black text-white font-black text-[6pt] uppercase text-center">
+                <th className="p-1 border-r border-white/20 text-left">कोड/गवळी नाव</th>
+                <th className="p-1 border-r border-white/20">प्रकार</th>
+                <th className="p-1 border-r border-white/20">Ltr</th>
+                <th className="p-1">रक्कम (₹)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {losses.map((loss: any, idx: number) => (
+                <tr key={idx} className="font-bold text-[7pt] uppercase border-b border-black last:border-0 text-center">
+                  <td className="p-1 border-r border-black text-left">{loss.centerCode} {loss.centerName}</td>
+                  <td className="p-1 border-r border-black">{loss.milkType}</td>
+                  <td className="p-1 border-r border-black">{loss.qtyLiters}</td>
+                  <td className="p-1">{loss.lossAmount}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {d.totalLossAmount !== undefined && (
+            <div className="bg-slate-50 p-1.5 text-right border-t border-black font-black text-[8pt]">
+              एकूण नुकसान: ₹{d.totalLossAmount}
+            </div>
+          )}
+        </div>
+      )}
+
+      {(points.length > 0 || remarkPoints.length > 0) && (
+        <div className="w-full p-2.5 border border-black rounded bg-slate-50 mb-3 text-left">
+          <span className="text-[7pt] font-black uppercase block border-b border-black/10 pb-0.5 mb-1.5">सविस्तर निरीक्षणे / मुद्दे:</span>
+          <ul className="list-decimal list-inside space-y-0.5">
+            {[...points, ...remarkPoints].map((p: string, i: number) => (
+              <li key={i} className="text-[8pt] font-bold">{p}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <div className="w-full mt-auto pt-6 grid grid-cols-2 gap-12 text-center uppercase font-black text-[8pt] tracking-widest">
+        <div className="border-t-[1.2px] border-black pt-1.5">अधिकारी स्वाक्षरी</div>
+        <div className="border-t-[1.2px] border-black pt-1.5">सुपरवायझर स्वाक्षरी</div>
+      </div>
+    </div>
+  );
+};
 
 export default function ReportsPage() {
   const { user } = useUser()
@@ -60,77 +292,6 @@ export default function ReportsPage() {
     { title: "वर्ड फॉर्म", type: "Official Document", icon: FileSignature, color: "text-slate-600" },
   ]
 
-  const labelMap: Record<string, string> = {
-    reportHeading: "अहवाल शीर्षक",
-    date: "अहवाल तारीख",
-    reportDate: "अहवाल तारीख",
-    shift: "कामाची शिफ्ट",
-    slipNo: "स्लिप नंबर",
-    idNumber: "अधिकारी आयडी",
-    repId: "कर्मचारी आयडी",
-    supervisorName: "सुपरवायझरचे नाव",
-    centerName: "केंद्राचे पूर्ण नाव",
-    centerCode: "केंद्राचा कोड (ID)",
-    ownerName: "मालकाचे नाव",
-    supplierName: "पुरवठादार / केंद्राचे नाव",
-    supplierId: "पुरवठादार कोड",
-    mobile: "संपर्क मोबाईल नंबर",
-    address: "पूर्ण पत्ता / लोकेशन",
-    district: "जिल्हा",
-    taluka: "तालुका",
-    routeName: "दुध संकलन रूटचे नाव",
-    vehicleNumber: "गाडीचा नंबर (MH...)",
-    vehicleNo: "गाडीचा नंबर (MH...)",
-    vehicleType: "गाडीचा प्रकार",
-    driverName: "ड्रायव्हरचे नाव",
-    breakdownTime: "गाडी बिघाड झाल्याची वेळ",
-    location: "बिघाड झालेले ठिकाण",
-    reason: "बिघाड होण्याचे मुख्य कारण",
-    severity: "बिघाडाचे स्वरूप",
-    detailedReason: "बिघाडाचे सविस्तर वर्णन",
-    estimatedRepairTime: "दुरुस्तीसाठी लागणारा वेळ",
-    estimatedRepairCost: "अंदाजे खर्च (₹)",
-    recoveryVehicleNo: "पर्यायी गाडी नंबर",
-    recoveryArrivalTime: "पर्यायी गाडी पोहोचण्याची वेळ",
-    capacity: "गाडीची दूध क्षमता (L)",
-    morningQty: "सकाळचे दूध संकलन (L)",
-    eveningQty: "संध्याकाळचे दूध संकलन (L)",
-    fat: "दूध फॅट प्रमाण (%)",
-    snf: "दूध SNF प्रमाण (%)",
-    result: "तपासणीचा अंतिम निकाल",
-    milkHot: "दूध गरम झाले होते का?",
-    milkSour: "दूध पूर्णपणे खराब झाले का?",
-    licenseStatus: "परवाना स्थिती",
-    fssaiNo: "FSSAI परवाना क्रमांक",
-    validDate: "परवाना मुदत संपण्याची तारीख",
-    summary: "कामाचा सविस्तर सारांश",
-    visitPerson: "कोणाची भेट घेतली?",
-    visitPurpose: "भेटीचा मुख्य उद्देश",
-    visitDiscussion: "झालेली सविस्तर चर्चा",
-    officeTaskSubject: "ऑफिस कामाचा मुख्य विषय",
-    officeTaskDetails: "कामाचा सविस्तर गोषवारा",
-    achievements: "आजची मोठी कामगिरी",
-    problems: "कामात आलेल्या समस्या",
-    actionsTaken: "केलेली कार्यवाही",
-    actionTaken: "केलेली अंतिम कार्यवाही",
-    remark: "विशेष शेरा",
-    otherInfo: "इतर माहिती",
-    notes: "महत्त्वाची नोंद",
-    title: "दस्तऐवज शीर्षक",
-    totalLossAmount: "एकूण आर्थिक नुकसान (₹)"
-  };
-
-  const fieldSequence = [
-    "reportHeading", "date", "shift", "repId", "idNumber", "centerName", "centerCode", "ownerName", 
-    "supplierName", "supplierId", "mobile", "address", "district", "taluka", "routeName", 
-    "vehicleNo", "vehicleNumber", "vehicleType", "driverName", "breakdownTime", "location", 
-    "reason", "severity", "detailedReason", "estimatedRepairTime", "estimatedRepairCost", 
-    "recoveryVehicleNo", "recoveryArrivalTime", "capacity", "morningQty", "eveningQty", 
-    "fat", "snf", "result", "licenseStatus", "fssaiNo", "validDate", "milkHot", "milkSour",
-    "visitPerson", "visitPurpose", "visitDiscussion", "officeTaskSubject", "officeTaskDetails",
-    "summary", "achievements", "problems", "actionsTaken", "actionTaken", "remark", "otherInfo", "totalLossAmount", "supervisorName"
-  ];
-
   const filteredReports = useMemo(() => {
     const list = firestoreReports || []
     return list.filter(r => {
@@ -163,166 +324,6 @@ export default function ReportsPage() {
     const path = typeMap[report.type] || '/reports'
     router.push(`${path}?edit=${report.id}`)
   }
-
-  const ReportHeader = ({ title, date, subName, subId }: any) => (
-    <div className="w-full border-b-2 border-black pb-1.5 mb-3 text-center">
-      <div className="flex items-center justify-center gap-2 mb-1">
-        <div className="h-7 w-7 bg-black rounded flex items-center justify-center">
-          <Milk className="h-4 w-4 text-white" />
-        </div>
-        <div className="text-left">
-          <h1 className="text-[11pt] font-black uppercase tracking-tight leading-none">संकलन नोंदवही (Management Report)</h1>
-          <p className="text-[7pt] font-bold uppercase">{title || "अहवाल तपशील"}</p>
-        </div>
-      </div>
-      <div className="flex justify-between text-[7pt] font-black uppercase text-slate-500 tracking-wider mt-1.5 border-t pt-1">
-        <span>सादरकर्ता: {subName} ({subId})</span>
-        <span>दिनांक: {date}</span>
-      </div>
-    </div>
-  )
-
-  const RouteAllocationLayout = ({ report }: { report: any }) => {
-    const d = report.fullData || {};
-    const TableSection = ({ title, data }: { title: string, data: any[] }) => (
-      <div className="w-full mb-3">
-        <div className="bg-slate-100 p-0.5 text-[8pt] font-black uppercase text-center border border-black">{title}</div>
-        <table className="w-full border-collapse border border-black">
-          <thead>
-            <tr className="bg-slate-50 text-[6pt] font-black uppercase">
-              <th className="p-0.5 border border-black w-8">Sr.No</th>
-              <th className="p-0.5 border border-black w-20">Route ID</th>
-              <th className="p-0.5 border border-black text-left">Route Name</th>
-              <th className="p-0.5 border border-black w-16">Req</th>
-              <th className="p-0.5 border border-black w-16">Alloc</th>
-            </tr>
-          </thead>
-          <tbody>
-            {(data || []).map((entry, idx) => (
-              <tr key={idx} className="text-[7pt] font-bold uppercase text-center h-6">
-                <td className="p-0.5 border border-black">{idx + 1}</td>
-                <td className="p-0.5 border border-black">{entry.routeId}</td>
-                <td className="p-0.5 border border-black text-left">{entry.routeName}</td>
-                <td className="p-0.5 border border-black font-black">{entry.requested ? 'YES' : '-'}</td>
-                <td className="p-0.5 border border-black font-black">{entry.allocated ? 'YES' : '-'}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    )
-
-    return (
-      <div className="bg-white font-sans text-slate-900 border-[1.2px] border-black rounded-sm w-full max-w-[210mm] mx-auto p-5 printable-report flex flex-col items-center shadow-none mb-4">
-        <ReportHeader title={d.reportHeading} date={report.date} subName={d.name || profileName} subId={d.idNumber || profileId} />
-        
-        <TableSection title="Type : Can Route Morning (Internal)" data={d.morningRoutes} />
-        <TableSection title="Type : Can Route Evening (Internal)" data={d.eveningRoutes} />
-        <TableSection title="Type : Internal Tanker Route" data={d.tankerRoutes} />
-        <TableSection title="Type : External Can Route" data={d.extCanRoutes} />
-        <TableSection title="Type : External Tanker Route" data={d.extTankerRoutes} />
-
-        <div className="w-full mt-auto pt-6 grid grid-cols-2 gap-12 text-center uppercase font-black text-[8pt] tracking-widest">
-          <div className="border-t-[1.2px] border-black pt-1.5">1) Supervisor Sign :</div>
-          <div className="border-t-[1.2px] border-black pt-1.5">2) Manager Sign :</div>
-        </div>
-      </div>
-    )
-  }
-
-  const GenericLayout = ({ report }: { report: any }) => {
-    const d = report.fullData || {};
-    
-    if (report.type === 'Official Document') {
-      return (
-        <div className="bg-white font-sans text-slate-900 border-none w-full max-w-[210mm] mx-auto p-0 printable-report flex flex-col shadow-none mb-4">
-          <div className="w-full text-center mb-8">
-             <h1 className="text-[18pt] font-black uppercase tracking-tight border-b-2 border-black pb-2 inline-block min-w-[200px]">
-               {d.title || "अधिकृत दस्तऐवज"}
-             </h1>
-          </div>
-          <div 
-            className="w-full prose prose-sm max-w-none text-left text-[10pt] leading-relaxed"
-            dangerouslySetInnerHTML={{ __html: d.content || "" }} 
-          />
-        </div>
-      );
-    }
-
-    const orderedEntries = fieldSequence
-      .filter(key => d[key] !== undefined && d[key] !== "" && labelMap[key])
-      .map(key => [key, d[key]]);
-
-    const losses = d.centerLosses || [];
-    const points = d.points || [];
-    const remarkPoints = d.remarkPoints || [];
-
-    return (
-      <div className="bg-white font-sans text-slate-900 border-[1.2px] border-black rounded-sm w-full max-w-[210mm] mx-auto p-5 printable-report flex flex-col items-center shadow-none mb-4">
-        <ReportHeader title={d.reportHeading || report.type} date={report.date} subName={d.name || d.repName || profileName} subId={d.idNumber || d.repId || profileId} />
-        
-        <div className="w-full border border-black rounded overflow-hidden mb-3">
-          <table className="w-full border-collapse">
-            <tbody>
-              {orderedEntries.map(([k, v]: any) => (
-                <tr key={k} className="border-b border-black last:border-0 text-[8pt] font-bold">
-                  <td className="p-1.5 bg-slate-50 uppercase text-[7pt] font-black border-r border-black w-1/3">{labelMap[k]}</td>
-                  <td className="p-1.5">{String(v)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {losses.length > 0 && (
-          <div className="w-full border border-black rounded overflow-hidden mb-3">
-            <div className="bg-slate-100 p-0.5 text-[7pt] font-black uppercase text-center border-b border-black">नुकसान तपशील (LOSS LOG)</div>
-            <table className="w-full border-collapse">
-              <thead>
-                <tr className="bg-black text-white font-black text-[6pt] uppercase text-center">
-                  <th className="p-1 border-r border-white/20 text-left">कोड/गवळी नाव</th>
-                  <th className="p-1 border-r border-white/20">प्रकार</th>
-                  <th className="p-1 border-r border-white/20">Ltr</th>
-                  <th className="p-1">रक्कम (₹)</th>
-                </tr>
-              </thead>
-              <tbody>
-                {losses.map((loss: any, idx: number) => (
-                  <tr key={idx} className="font-bold text-[7pt] uppercase border-b border-black last:border-0 text-center">
-                    <td className="p-1 border-r border-black text-left">{loss.centerCode} {loss.centerName}</td>
-                    <td className="p-1 border-r border-black">{loss.milkType}</td>
-                    <td className="p-1 border-r border-black">{loss.qtyLiters}</td>
-                    <td className="p-1">{loss.lossAmount}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            {d.totalLossAmount !== undefined && (
-              <div className="bg-slate-50 p-1.5 text-right border-t border-black font-black text-[8pt]">
-                एकूण नुकसान: ₹{d.totalLossAmount}
-              </div>
-            )}
-          </div>
-        )}
-
-        {(points.length > 0 || remarkPoints.length > 0) && (
-          <div className="w-full p-2.5 border border-black rounded bg-slate-50 mb-3 text-left">
-            <span className="text-[7pt] font-black uppercase block border-b border-black/10 pb-0.5 mb-1.5">सविस्तर निरीक्षणे / मुद्दे:</span>
-            <ul className="list-decimal list-inside space-y-0.5">
-              {[...points, ...remarkPoints].map((p: string, i: number) => (
-                <li key={i} className="text-[8pt] font-bold">{p}</li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        <div className="w-full mt-auto pt-6 grid grid-cols-2 gap-12 text-center uppercase font-black text-[8pt] tracking-widest">
-          <div className="border-t-[1.2px] border-black pt-1.5">अधिकारी स्वाक्षरी</div>
-          <div className="border-t-[1.2px] border-black pt-1.5">सुपरवायझर स्वाक्षरी</div>
-        </div>
-      </div>
-    );
-  };
 
   if (!mounted) return <div className="p-20 text-center font-black uppercase text-[10px] opacity-50">लोड होत आहे...</div>
 
@@ -460,8 +461,8 @@ export default function ReportsPage() {
           <ScrollArea className="max-h-[80vh] p-2 sm:p-4 bg-slate-100 w-full">
             <div className="w-full flex flex-col items-center pb-10">
               {selectedReport && (
-                selectedReport.type === 'Route Allocation Report' ? <RouteAllocationLayout report={selectedReport} /> :
-                <GenericLayout report={selectedReport} />
+                selectedReport.type === 'Route Allocation Report' ? <RouteAllocationLayout report={selectedReport} profileName={profileName} profileId={profileId} /> :
+                <GenericLayout report={selectedReport} profileName={profileName} profileId={profileId} />
               )}
             </div>
           </ScrollArea>

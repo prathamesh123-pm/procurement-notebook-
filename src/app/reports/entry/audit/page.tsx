@@ -15,6 +15,15 @@ import { useToast } from "@/hooks/use-toast"
 import { useUser, useFirestore, addDocumentNonBlocking, useDoc, useMemoFirebase, updateDocumentNonBlocking } from "@/firebase"
 import { collection, doc } from "firebase/firestore"
 
+const SectionTitle = ({ icon: Icon, title, color = "text-primary" }: any) => {
+  return (
+    <div className={`flex items-center gap-1.5 border-b pb-1 mb-2 ${color === 'text-primary' ? 'border-primary/10' : 'border-current/10'}`}>
+      <Icon className={`h-3 w-3 ${color}`} />
+      <h3 className={`text-[9px] font-black uppercase ${color} tracking-widest`}>{title}</h3>
+    </div>
+  )
+}
+
 function AuditForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -140,15 +149,6 @@ function AuditForm() {
           {editId ? 'ऑडिट अपडेट करा' : 'ऑडिट जतन करा'}
         </Button>
       </div>
-    </div>
-  )
-}
-
-function SectionTitle({ icon: Icon, title, color = "text-primary" }: any) {
-  return (
-    <div className={`flex items-center gap-1.5 border-b pb-1 mb-2 ${color === 'text-primary' ? 'border-primary/10' : 'border-current/10'}`}>
-      <Icon className={`h-3 w-3 ${color}`} />
-      <h3 className={`text-[9px] font-black uppercase ${color} tracking-widest`}>{title}</h3>
     </div>
   )
 }
