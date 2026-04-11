@@ -214,123 +214,114 @@ export default function ChillingCentersPage() {
 
         <Card className="lg:col-span-8 border shadow-2xl bg-white rounded-3xl overflow-hidden min-h-[600px] flex flex-col items-center">
           {selectedCenter ? (
-            <div className="p-6 space-y-6 animate-in slide-in-from-right-2 duration-300 printable-report flex flex-col items-center shadow-none w-full max-w-[210mm] mx-auto">
-              <div className="w-full flex items-center justify-between no-print mb-4 border-b pb-2">
-                <Badge className="bg-primary/10 text-primary border-none uppercase text-[10px] font-black">CHILLING CENTER PROFILE</Badge>
+            <div className="p-5 space-y-5 animate-in slide-in-from-right-2 duration-300 printable-report flex flex-col items-center shadow-none w-full max-w-[210mm] mx-auto">
+              <div className="w-full flex items-center justify-between no-print mb-3 border-b pb-1.5">
+                <Badge className="bg-primary/10 text-primary border-none uppercase text-[9px] font-black">CHILLING CENTER PROFILE</Badge>
                 <div className="flex gap-2">
-                  <Button variant="outline" size="sm" className="h-8 rounded-xl font-black uppercase text-[9px]" onClick={() => window.print()}><Printer className="h-3.5 w-3.5 mr-1" /> प्रिंट</Button>
-                  <Button variant="outline" size="sm" className="h-8 rounded-xl font-black uppercase text-[9px]" onClick={() => handleOpenEdit(selectedCenter)}><Edit className="h-3.5 w-3.5 mr-1" /> बदल करा</Button>
-                  <Button variant="outline" size="sm" className="h-8 rounded-xl font-black uppercase text-[9px] text-destructive border-destructive/20" onClick={() => handleDelete(selectedCenter.id)}><Trash2 className="h-3.5 w-3.5 mr-1" /> हटवा</Button>
+                  <Button variant="outline" size="sm" className="h-7 rounded-xl font-black uppercase text-[8px]" onClick={() => window.print()}><Printer className="h-3 w-3 mr-1" /> प्रिंट</Button>
+                  <Button variant="outline" size="sm" className="h-7 rounded-xl font-black uppercase text-[8px]" onClick={() => handleOpenEdit(selectedCenter)}><Edit className="h-3 w-3 mr-1" /> बदल करा</Button>
+                  <Button variant="outline" size="sm" className="h-7 rounded-xl font-black uppercase text-[8px] text-destructive border-destructive/20" onClick={() => handleDelete(selectedCenter.id)}><Trash2 className="h-3 w-3 mr-1" /> हटवा</Button>
                 </div>
               </div>
 
-              <div className="w-full border-b-2 border-black pb-2 mb-4 text-center">
+              <div className="w-full border-b-2 border-black pb-1.5 mb-3 text-center">
                 <div className="flex items-center justify-center gap-2 mb-1">
-                  <div className="h-8 w-8 bg-black rounded-lg flex items-center justify-center"><Milk className="h-5 w-5 text-white" /></div>
-                  <h1 className="text-[18pt] font-black uppercase tracking-tight leading-none">संकलन नोंदवही</h1>
+                  <div className="h-7 w-7 bg-black rounded flex items-center justify-center"><Milk className="h-4 w-4 text-white" /></div>
+                  <h1 className="text-[14pt] font-black uppercase tracking-tight leading-none">संकलन नोंदवही</h1>
                 </div>
-                <h3 className="text-[13pt] font-black uppercase text-primary tracking-widest">{selectedCenter.name}</h3>
-                <p className="text-[9pt] font-black text-muted-foreground uppercase">ID: {selectedCenter.code} | चिलिंग सेंटर</p>
+                <h3 className="text-[11pt] font-black uppercase text-primary tracking-widest">{selectedCenter.name}</h3>
+                <p className="text-[8pt] font-black text-muted-foreground uppercase">ID: {selectedCenter.code} | चिलिंग सेंटर</p>
               </div>
               
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full text-left">
-                <div className="space-y-3">
-                  <h4 className="text-[10px] font-black uppercase text-primary tracking-widest border-b pb-1 flex items-center gap-2"><User className="h-3.5 w-3.5" /> १) प्राथमिक माहिती</h4>
-                  <div className="space-y-1.5 text-[11px] font-bold">
-                    <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">संपर्क</span><span>{selectedCenter.mobile || "-"}</span></div>
-                    <div className="flex flex-col gap-0.5"><span className="text-muted-foreground uppercase text-[9px]">पत्ता</span><span className="leading-tight">{selectedCenter.address || "-"}</span></div>
-                    <div className="flex justify-between border-b border-dashed pb-1 pt-2"><span className="text-muted-foreground uppercase text-[9px]">एकूण सप्लायर्स</span><span>{selectedCenter.supplierCount || "0"}</span></div>
-                    <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">FSSAI क्र.</span><span>{selectedCenter.fssaiNumber || "-"}</span></div>
-                    <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">FSSAI मुदत</span><span>{selectedCenter.fssaiExpiry || "-"}</span></div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full text-left">
+                <div className="space-y-2">
+                  <h4 className="text-[9px] font-black uppercase text-primary tracking-widest border-b pb-0.5 flex items-center gap-1.5"><User className="h-3 w-3" /> १) प्राथमिक माहिती</h4>
+                  <div className="space-y-1 text-[10px] font-bold">
+                    <div className="flex justify-between border-b border-dashed pb-0.5"><span className="text-muted-foreground uppercase text-[8px]">संपर्क</span><span>{selectedCenter.mobile || "-"}</span></div>
+                    <div className="flex flex-col gap-0.5"><span className="text-muted-foreground uppercase text-[8px]">पत्ता</span><span className="leading-tight">{selectedCenter.address || "-"}</span></div>
+                    <div className="flex justify-between border-b border-dashed pb-0.5 pt-1"><span className="text-muted-foreground uppercase text-[8px]">एकूण सप्लायर्स</span><span>{selectedCenter.supplierCount || "0"}</span></div>
+                    <div className="flex justify-between border-b border-dashed pb-0.5"><span className="text-muted-foreground uppercase text-[8px]">FSSAI क्र.</span><span>{selectedCenter.fssaiNumber || "-"}</span></div>
                   </div>
                 </div>
 
-                <div className="space-y-3">
-                  <h4 className="text-[10px] font-black uppercase text-primary tracking-widest border-b pb-1 flex items-center gap-2"><Box className="h-3.5 w-3.5" /> २) पायाभूत सुविधा & मशिन्स</h4>
-                  <div className="space-y-1.5 text-[11px] font-bold">
-                    <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">BMC | IBT</span><span>{selectedCenter.hasBmc ? "BMC" : ""} {selectedCenter.hasIbt ? "| IBT" : ""}</span></div>
-                    <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">फॅट मशीन</span><span>{selectedCenter.fatMachineBrand || "-"}</span></div>
-                    <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">पाणी स्रोत</span><span>{selectedCenter.waterSource || "-"}</span></div>
-                    <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">पॉवर बॅकअप</span><span>{selectedCenter.powerBackup || "-"}</span></div>
-                    <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">स्वच्छता ग्रेड</span><Badge className="h-4 px-1 text-[8px] border-none bg-emerald-500">{selectedCenter.hygieneGrade || "A"}</Badge></div>
+                <div className="space-y-2">
+                  <h4 className="text-[9px] font-black uppercase text-primary tracking-widest border-b pb-0.5 flex items-center gap-1.5"><Box className="h-3 w-3" /> २) सुविधा & मशिन्स</h4>
+                  <div className="space-y-1 text-[10px] font-bold">
+                    <div className="flex justify-between border-b border-dashed pb-0.5"><span className="text-muted-foreground uppercase text-[8px]">BMC | IBT</span><span>{selectedCenter.hasBmc ? "BMC" : ""} {selectedCenter.hasIbt ? "| IBT" : ""}</span></div>
+                    <div className="flex justify-between border-b border-dashed pb-0.5"><span className="text-muted-foreground uppercase text-[8px]">फॅट मशीन</span><span>{selectedCenter.fatMachineBrand || "-"}</span></div>
+                    <div className="flex justify-between border-b border-dashed pb-0.5"><span className="text-muted-foreground uppercase text-[8px]">पाणी स्रोत</span><span>{selectedCenter.waterSource || "-"}</span></div>
+                    <div className="flex justify-between border-b border-dashed pb-0.5"><span className="text-muted-foreground uppercase text-[8px]">स्वच्छता ग्रेड</span><Badge className="h-3.5 px-1 text-[7px] border-none bg-emerald-500">{selectedCenter.hygieneGrade || "A"}</Badge></div>
                   </div>
                 </div>
               </div>
 
-              <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
-                <div className="space-y-3">
-                  <h4 className="text-[10px] font-black uppercase text-primary tracking-widest border-b pb-1 flex items-center gap-2"><Box className="h-3.5 w-3.5" /> टाक्यांची यादी (TANKS)</h4>
-                  <table className="w-full text-[10px] border border-black rounded-sm overflow-hidden">
+              <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
+                <div className="space-y-2">
+                  <h4 className="text-[9px] font-black uppercase text-primary tracking-widest border-b pb-0.5 flex items-center gap-1.5"><Box className="h-3 w-3" /> टाक्यांची यादी (TANKS)</h4>
+                  <table className="w-full text-[9px] border border-black rounded-sm overflow-hidden">
                     <thead className="bg-slate-100 border-b border-black">
-                      <tr className="font-black uppercase"><th className="p-1.5 text-left">टाकी क्रमांक</th><th className="p-1.5 text-right">क्षमता (L)</th></tr>
+                      <tr className="font-black uppercase"><th className="p-1 text-left">टाकी क्रमांक</th><th className="p-1 text-right">क्षमता (L)</th></tr>
                     </thead>
                     <tbody>
                       {(selectedCenter.tanks || []).map((t, idx) => (
-                        <tr key={idx} className="border-b border-black last:border-0 font-bold"><td className="p-1.5">{t.label}</td><td className="p-1.5 text-right">{t.capacity} L</td></tr>
+                        <tr key={idx} className="border-b border-black last:border-0 font-bold"><td className="p-1">{t.label}</td><td className="p-1 text-right">{t.capacity} L</td></tr>
                       ))}
                     </tbody>
                   </table>
                 </div>
-                <div className="space-y-3">
-                  <h4 className="text-[10px] font-black uppercase text-rose-600 tracking-widest border-b pb-1 flex items-center gap-2"><Truck className="h-3.5 w-3.5" /> टँकर संकलन (TANKER LOG)</h4>
-                  <table className="w-full text-[9px] border border-black rounded-sm overflow-hidden">
+                <div className="space-y-2">
+                  <h4 className="text-[9px] font-black uppercase text-rose-600 tracking-widest border-b pb-0.5 flex items-center gap-1.5"><Truck className="h-3 w-3" /> टँकर संकलन (LOG)</h4>
+                  <table className="w-full text-[8px] border border-black rounded-sm overflow-hidden">
                     <thead className="bg-slate-100 border-b border-black">
-                      <tr className="font-black uppercase"><th className="p-1.5 text-left">टँकर क्र.</th><th className="p-1.5 text-center">IN/OUT</th><th className="p-1.5 text-right">Qty</th></tr>
+                      <tr className="font-black uppercase"><th className="p-1 text-left">टँकर क्र.</th><th className="p-1 text-center">IN/OUT</th><th className="p-1 text-right">Qty</th></tr>
                     </thead>
                     <tbody>
                       {(selectedCenter.tankerLogs || []).map((tl, idx) => (
-                        <tr key={idx} className="border-b border-black last:border-0 font-bold"><td className="p-1.5">{tl.tankerNo}</td><td className="p-1.5 text-center">{tl.arrivalTime} - {tl.departureTime}</td><td className="p-1.5 text-right">{tl.qtyFilled} L</td></tr>
+                        <tr key={idx} className="border-b border-black last:border-0 font-bold"><td className="p-1">{tl.tankerNo}</td><td className="p-1 text-center">{tl.arrivalTime}-{tl.departureTime}</td><td className="p-1 text-right">{tl.qtyFilled} L</td></tr>
                       ))}
                     </tbody>
                   </table>
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 w-full mb-4">
-                <div className={`p-2 rounded-xl border border-black/10 flex flex-col items-center gap-1 ${selectedCenter.hasEtp ? 'bg-emerald-50' : 'bg-muted/20 opacity-40'}`}><Waves className="h-4 w-4" /><span className="text-[7px] font-black uppercase text-center">ETP: {selectedCenter.hasEtp ? 'हो' : 'नाही'}</span></div>
-                <div className={`p-2 rounded-xl border border-black/10 flex flex-col items-center gap-1 ${selectedCenter.hasSolar ? 'bg-emerald-50' : 'bg-muted/20 opacity-40'}`}><Sun className="h-4 w-4" /><span className="text-[7px] font-black uppercase text-center">सोलर: {selectedCenter.hasSolar ? 'हो' : 'नाही'}</span></div>
-                <div className={`p-2 rounded-xl border border-black/10 flex flex-col items-center gap-1 ${selectedCenter.hasHotWater ? 'bg-emerald-50' : 'bg-muted/20 opacity-40'}`}><Droplets className="h-4 w-4" /><span className="text-[7px] font-black uppercase text-center">गरम पाणी: {selectedCenter.hasHotWater ? 'हो' : 'नाही'}</span></div>
-                <div className={`p-2 rounded-xl border border-black/10 flex flex-col items-center gap-1 ${selectedCenter.hasDrainage ? 'bg-emerald-50' : 'bg-muted/20 opacity-40'}`}><Wind className="h-4 w-4" /><span className="text-[7px] font-black uppercase text-center">ड्रेनेज: {selectedCenter.hasDrainage ? 'हो' : 'नाही'}</span></div>
-                <div className={`p-2 rounded-xl border border-black/10 flex flex-col items-center gap-1 ${selectedCenter.hasLab ? 'bg-emerald-50' : 'bg-muted/20 opacity-40'}`}><FlaskConical className="h-4 w-4" /><span className="text-[7px] font-black uppercase text-center">प्रयोगशाळा: {selectedCenter.hasLab ? 'हो' : 'नाही'}</span></div>
-                <div className={`p-2 rounded-xl border border-black/10 flex flex-col items-center gap-1 ${selectedCenter.staffUniform ? 'bg-emerald-50' : 'bg-muted/20 opacity-40'}`}><Shirt className="h-4 w-4" /><span className="text-[7px] font-black uppercase text-center">गणवेश: {selectedCenter.staffUniform ? 'हो' : 'नाही'}</span></div>
+              <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5 w-full mb-2">
+                <div className={`p-1.5 rounded-lg border border-black/10 flex flex-col items-center gap-0.5 ${selectedCenter.hasEtp ? 'bg-emerald-50' : 'bg-muted/20 opacity-40'}`}><Waves className="h-3 w-3" /><span className="text-[6px] font-black uppercase text-center">ETP: {selectedCenter.hasEtp ? 'हो' : 'नाही'}</span></div>
+                <div className={`p-1.5 rounded-lg border border-black/10 flex flex-col items-center gap-0.5 ${selectedCenter.hasSolar ? 'bg-emerald-50' : 'bg-muted/20 opacity-40'}`}><Sun className="h-3 w-3" /><span className="text-[6px] font-black uppercase text-center">सोलर: {selectedCenter.hasSolar ? 'हो' : 'नाही'}</span></div>
+                <div className={`p-1.5 rounded-lg border border-black/10 flex flex-col items-center gap-0.5 ${selectedCenter.hasHotWater ? 'bg-emerald-50' : 'bg-muted/20 opacity-40'}`}><Droplets className="h-3 w-3" /><span className="text-[6px] font-black uppercase text-center">गरम पाणी: {selectedCenter.hasHotWater ? 'हो' : 'नाही'}</span></div>
+                <div className={`p-1.5 rounded-lg border border-black/10 flex flex-col items-center gap-0.5 ${selectedCenter.hasDrainage ? 'bg-emerald-50' : 'bg-muted/20 opacity-40'}`}><Wind className="h-3 w-3" /><span className="text-[6px] font-black uppercase text-center">ड्रेनेज: {selectedCenter.hasDrainage ? 'हो' : 'नाही'}</span></div>
+                <div className={`p-1.5 rounded-lg border border-black/10 flex flex-col items-center gap-0.5 ${selectedCenter.hasLab ? 'bg-emerald-50' : 'bg-muted/20 opacity-40'}`}><FlaskConical className="h-3 w-3" /><span className="text-[6px] font-black uppercase text-center">LAB: {selectedCenter.hasLab ? 'हो' : 'नाही'}</span></div>
+                <div className={`p-1.5 rounded-lg border border-black/10 flex flex-col items-center gap-0.5 ${selectedCenter.staffUniform ? 'bg-emerald-50' : 'bg-muted/20 opacity-40'}`}><Shirt className="h-3 w-3" /><span className="text-[6px] font-black uppercase text-center">गणवेश: {selectedCenter.staffUniform ? 'हो' : 'नाही'}</span></div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full text-left">
-                <div className="space-y-3">
-                  <h4 className="text-[10px] font-black uppercase text-amber-600 tracking-widest border-b pb-1 flex items-center gap-2"><ShieldCheck className="h-3.5 w-3.5" /> ३) ऑडिट व परवाना स्थिती</h4>
-                  <div className="space-y-1.5 text-[11px] font-bold">
-                    <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">वाहतूक परवाने</span><span>{selectedCenter.hasTransportLicenses ? "उपलब्ध" : "नाही"}</span></div>
-                    <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">पेस्ट कंट्रोल</span><span>{selectedCenter.pestControlDone ? "पूर्ण" : "नाही"}</span></div>
-                    <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">स्टाफ हेल्थ चेक</span><span>{selectedCenter.staffHealthCheckDone ? "पूर्ण" : "नाही"}</span></div>
-                    <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">काटा कॅलिब्रेशन</span><span>{selectedCenter.calibrationDone ? "पूर्ण" : "नाही"}</span></div>
-                    <div className="flex justify-between border-b border-dashed pb-1"><span className="text-muted-foreground uppercase text-[9px]">अग्निशमन यंत्रणा</span><span>{selectedCenter.fireSafetyOk ? "Ok" : "नाही"}</span></div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full text-left">
+                <div className="space-y-2">
+                  <h4 className="text-[9px] font-black uppercase text-amber-600 tracking-widest border-b pb-0.5 flex items-center gap-1.5"><ShieldCheck className="h-3 w-3" /> ३) ऑडिट व परवाना स्थिती</h4>
+                  <div className="space-y-1 text-[10px] font-bold">
+                    <div className="flex justify-between border-b border-dashed pb-0.5"><span className="text-muted-foreground uppercase text-[8px]">वाहतूक परवाने</span><span>{selectedCenter.hasTransportLicenses ? "उपलब्ध" : "नाही"}</span></div>
+                    <div className="flex justify-between border-b border-dashed pb-0.5"><span className="text-muted-foreground uppercase text-[8px]">पेस्ट कंट्रोल</span><span>{selectedCenter.pestControlDone ? "पूर्ण" : "नाही"}</span></div>
+                    <div className="flex justify-between border-b border-dashed pb-0.5"><span className="text-muted-foreground uppercase text-[8px]">काटा कॅलिब्रेशन</span><span>{selectedCenter.calibrationDone ? "पूर्ण" : "नाही"}</span></div>
+                    <div className="flex justify-between border-b border-dashed pb-0.5"><span className="text-muted-foreground uppercase text-[8px]">अग्निशमन यंत्रणा</span><span>{selectedCenter.fireSafetyOk ? "Ok" : "नाही"}</span></div>
                   </div>
                 </div>
 
-                <div className="space-y-3">
-                  <h4 className="text-[10px] font-black uppercase text-blue-600 tracking-widest border-b pb-1 flex items-center gap-2"><Milk className="h-3.5 w-3.5" /> ४) दूध सारांश</h4>
+                <div className="space-y-2">
+                  <h4 className="text-[9px] font-black uppercase text-blue-600 tracking-widest border-b pb-0.5 flex items-center gap-1.5"><Milk className="h-3 w-3" /> ४) दूध सारांश</h4>
                   <div className="grid grid-cols-2 gap-2">
-                    <div className="p-3 rounded-2xl bg-blue-50 text-center border border-blue-100">
-                      <p className="text-[8px] font-black uppercase text-blue-500">गाय (COW)</p>
-                      <p className="text-sm font-black">{selectedCenter.cowMilk?.quantity || 0}L</p>
-                      <p className="text-[7px] font-bold text-blue-400">F: {selectedCenter.cowMilk?.fat} | S: {selectedCenter.cowMilk?.snf}</p>
+                    <div className="p-2 rounded-lg bg-blue-50 text-center border border-blue-100">
+                      <p className="text-[7px] font-black uppercase text-blue-500">गाय (COW)</p>
+                      <p className="text-[11px] font-black">{selectedCenter.cowMilk?.quantity || 0}L</p>
                     </div>
-                    <div className="p-3 rounded-2xl bg-amber-50 text-center border border-amber-100">
-                      <p className="text-[8px] font-black uppercase text-amber-500">म्हेस (BUFF)</p>
-                      <p className="text-sm font-black">{selectedCenter.buffaloMilk?.quantity || 0}L</p>
-                      <p className="text-[7px] font-bold text-amber-400">F: {selectedCenter.buffaloMilk?.fat} | S: {selectedCenter.buffaloMilk?.snf}</p>
+                    <div className="p-2 rounded-lg bg-amber-50 text-center border border-amber-100">
+                      <p className="text-[7px] font-black uppercase text-amber-500">म्हेस (BUFF)</p>
+                      <p className="text-[11px] font-black">{selectedCenter.buffaloMilk?.quantity || 0}L</p>
                     </div>
-                  </div>
-                  <div className="p-3 rounded-2xl bg-slate-50 border border-slate-100 mt-2">
-                    <p className="text-[8px] font-black uppercase text-slate-500 mb-1">इतर डेअरीला पुरवठा</p>
-                    <p className="text-[10px] font-bold">{selectedCenter.otherDairySupply || "नाही"}</p>
                   </div>
                 </div>
               </div>
 
-              <div className="w-full mt-auto pt-12 grid grid-cols-2 gap-12 text-center uppercase font-black text-[9pt] tracking-widest hidden print:grid">
-                <div className="border-t-[1.5px] border-black pt-2">अधिकारी स्वाक्षरी</div>
-                <div className="border-t-[1.5px] border-black pt-2">चिलिंग इन्चार्ज स्वाक्षरी</div>
+              <div className="w-full mt-auto pt-8 grid grid-cols-2 gap-12 text-center uppercase font-black text-[8pt] tracking-widest hidden print:grid">
+                <div className="border-t-[1.2px] border-black pt-1.5">अधिकारी स्वाक्षरी</div>
+                <div className="border-t-[1.2px] border-black pt-1.5">चिलिंग इन्चार्ज स्वाक्षरी</div>
               </div>
             </div>
           ) : (
@@ -460,7 +451,7 @@ export default function ChillingCentersPage() {
 
       <style jsx global>{`
         @media print {
-          @page { size: A4; margin: 0mm; }
+          @page { size: A4; margin: 5mm; }
           body { visibility: hidden !important; background: white !important; margin: 0 !important; padding: 0 !important; }
           .printable-report, .printable-report * { visibility: visible !important; opacity: 1 !important; color: black !important; }
           .printable-report { 
@@ -470,8 +461,8 @@ export default function ChillingCentersPage() {
             transform: translateX(-50%) !important;
             width: 100% !important; 
             max-width: 190mm !important; 
-            border: 1.5px solid black !important; 
-            padding: 10mm !important; 
+            border: 1.2px solid black !important; 
+            padding: 8mm !important; 
             display: block !important;
             box-shadow: none !important;
             page-break-inside: avoid !important;

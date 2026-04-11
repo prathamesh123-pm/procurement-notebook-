@@ -66,7 +66,7 @@ export default function ReportsPage() {
     reportDate: "अहवाल तारीख",
     shift: "कामाची शिफ्ट",
     slipNo: "स्लिप नंबर",
-    idNumber: "सादरकर्त्याचा अधिकारी आयडी",
+    idNumber: "अधिकारी आयडी",
     repId: "कर्मचारी आयडी",
     supervisorName: "सुपरवायझरचे नाव",
     centerName: "केंद्राचे पूर्ण नाव",
@@ -84,15 +84,15 @@ export default function ReportsPage() {
     vehicleType: "गाडीचा प्रकार",
     driverName: "ड्रायव्हरचे नाव",
     breakdownTime: "गाडी बिघाड झाल्याची वेळ",
-    location: "बिघाड झालेल्या ठिकाणाचे नाव",
+    location: "बिघाड झालेले ठिकाण",
     reason: "बिघाड होण्याचे मुख्य कारण",
-    severity: "बिघाडाचे स्वरूप (Severity)",
+    severity: "बिघाडाचे स्वरूप",
     detailedReason: "बिघाडाचे सविस्तर वर्णन",
     estimatedRepairTime: "दुरुस्तीसाठी लागणारा वेळ",
-    estimatedRepairCost: "दुरुस्तीसाठी लागणारा अंदाजे खर्च (₹)",
-    recoveryVehicleNo: "पाठवलेली दुसरी पर्यायी गाडी",
-    recoveryArrivalTime: "दुसरी गाडी पोहोचण्याची वेळ",
-    capacity: "गाडीची दूध क्षमता (Liters)",
+    estimatedRepairCost: "अंदाजे खर्च (₹)",
+    recoveryVehicleNo: "पर्यायी गाडी नंबर",
+    recoveryArrivalTime: "पर्यायी गाडी पोहोचण्याची वेळ",
+    capacity: "गाडीची दूध क्षमता (L)",
     morningQty: "सकाळचे दूध संकलन (L)",
     eveningQty: "संध्याकाळचे दूध संकलन (L)",
     fat: "दूध फॅट प्रमाण (%)",
@@ -100,24 +100,24 @@ export default function ReportsPage() {
     result: "तपासणीचा अंतिम निकाल",
     milkHot: "दूध गरम झाले होते का?",
     milkSour: "दूध पूर्णपणे खराब झाले का?",
-    licenseStatus: "परवाना स्थिती (License Status)",
+    licenseStatus: "परवाना स्थिती",
     fssaiNo: "FSSAI परवाना क्रमांक",
     validDate: "परवाना मुदत संपण्याची तारीख",
-    summary: "केलेल्या कामाचा सविस्तर सारांश",
+    summary: "कामाचा सविस्तर सारांश",
     visitPerson: "कोणाची भेट घेतली?",
     visitPurpose: "भेटीचा मुख्य उद्देश",
     visitDiscussion: "झालेली सविस्तर चर्चा",
     officeTaskSubject: "ऑफिस कामाचा मुख्य विषय",
     officeTaskDetails: "कामाचा सविस्तर गोषवारा",
     achievements: "आजची मोठी कामगिरी",
-    problems: "कामात आलेल्या महत्त्वाच्या समस्या",
-    actionsTaken: "महत्त्वाच्या समस्यांवर केलेली कार्यवाही",
+    problems: "कामात आलेल्या समस्या",
+    actionsTaken: "केलेली कार्यवाही",
     actionTaken: "केलेली अंतिम कार्यवाही",
-    remark: "विशेष शेरा / टिपणी",
-    otherInfo: "इतर काही विशेष माहिती",
+    remark: "विशेष शेरा",
+    otherInfo: "इतर माहिती",
     notes: "महत्त्वाची नोंद",
     title: "दस्तऐवज शीर्षक",
-    totalLossAmount: "एकूण आर्थिक नुकसान रक्कम (₹)"
+    totalLossAmount: "एकूण आर्थिक नुकसान (₹)"
   };
 
   const fieldSequence = [
@@ -165,17 +165,17 @@ export default function ReportsPage() {
   }
 
   const ReportHeader = ({ title, date, subName, subId }: any) => (
-    <div className="w-full border-b-2 border-black pb-2 mb-4 text-center">
+    <div className="w-full border-b-2 border-black pb-1.5 mb-3 text-center">
       <div className="flex items-center justify-center gap-2 mb-1">
-        <div className="h-8 w-8 bg-black rounded-lg flex items-center justify-center">
-          <Milk className="h-5 w-5 text-white" />
+        <div className="h-7 w-7 bg-black rounded flex items-center justify-center">
+          <Milk className="h-4 w-4 text-white" />
         </div>
         <div className="text-left">
-          <h1 className="text-[12pt] font-black uppercase tracking-tight leading-none">M/s B.G. Chitale Dairy Bhilawadi Station 416303</h1>
-          <p className="text-[8pt] font-bold">Daily Tanker & Can Route Request & Allocation Report</p>
+          <h1 className="text-[11pt] font-black uppercase tracking-tight leading-none">संकलन नोंदवही (Management Report)</h1>
+          <p className="text-[7pt] font-bold uppercase">{title || "अहवाल तपशील"}</p>
         </div>
       </div>
-      <div className="flex justify-between text-[8pt] font-black uppercase text-slate-500 tracking-wider mt-2 border-t pt-1">
+      <div className="flex justify-between text-[7pt] font-black uppercase text-slate-500 tracking-wider mt-1.5 border-t pt-1">
         <span>सादरकर्ता: {subName} ({subId})</span>
         <span>दिनांक: {date}</span>
       </div>
@@ -185,26 +185,26 @@ export default function ReportsPage() {
   const RouteAllocationLayout = ({ report }: { report: any }) => {
     const d = report.fullData || {};
     const TableSection = ({ title, data }: { title: string, data: any[] }) => (
-      <div className="w-full mb-6">
-        <div className="bg-slate-100 p-1 text-[9pt] font-black uppercase text-center border border-black">{title}</div>
+      <div className="w-full mb-3">
+        <div className="bg-slate-100 p-0.5 text-[8pt] font-black uppercase text-center border border-black">{title}</div>
         <table className="w-full border-collapse border border-black">
           <thead>
-            <tr className="bg-slate-50 text-[7pt] font-black uppercase">
-              <th className="p-1 border border-black w-10">Sr.No</th>
-              <th className="p-1 border border-black w-24">Route ID</th>
-              <th className="p-1 border border-black text-left">Route Name</th>
-              <th className="p-1 border border-black w-24">Requested (V)</th>
-              <th className="p-1 border border-black w-24">Allocated (V)</th>
+            <tr className="bg-slate-50 text-[6pt] font-black uppercase">
+              <th className="p-0.5 border border-black w-8">Sr.No</th>
+              <th className="p-0.5 border border-black w-20">Route ID</th>
+              <th className="p-0.5 border border-black text-left">Route Name</th>
+              <th className="p-0.5 border border-black w-16">Req</th>
+              <th className="p-0.5 border border-black w-16">Alloc</th>
             </tr>
           </thead>
           <tbody>
             {(data || []).map((entry, idx) => (
-              <tr key={idx} className="text-[8pt] font-bold uppercase text-center h-8">
-                <td className="p-1 border border-black">{idx + 1}</td>
-                <td className="p-1 border border-black">{entry.routeId}</td>
-                <td className="p-1 border border-black text-left">{entry.routeName}</td>
-                <td className="p-1 border border-black font-black text-lg">{entry.requested ? '✓' : ''}</td>
-                <td className="p-1 border border-black font-black text-lg">{entry.allocated ? '✓' : ''}</td>
+              <tr key={idx} className="text-[7pt] font-bold uppercase text-center h-6">
+                <td className="p-0.5 border border-black">{idx + 1}</td>
+                <td className="p-0.5 border border-black">{entry.routeId}</td>
+                <td className="p-0.5 border border-black text-left">{entry.routeName}</td>
+                <td className="p-0.5 border border-black font-black">{entry.requested ? 'YES' : '-'}</td>
+                <td className="p-0.5 border border-black font-black">{entry.allocated ? 'YES' : '-'}</td>
               </tr>
             ))}
           </tbody>
@@ -213,7 +213,7 @@ export default function ReportsPage() {
     )
 
     return (
-      <div className="bg-white font-sans text-slate-900 border-[1.5px] border-black rounded-sm w-full max-w-[210mm] mx-auto p-6 printable-report flex flex-col items-center shadow-none mb-4">
+      <div className="bg-white font-sans text-slate-900 border-[1.2px] border-black rounded-sm w-full max-w-[210mm] mx-auto p-5 printable-report flex flex-col items-center shadow-none mb-4">
         <ReportHeader title={d.reportHeading} date={report.date} subName={d.name || profileName} subId={d.idNumber || profileId} />
         
         <TableSection title="Type : Can Route Morning (Internal)" data={d.morningRoutes} />
@@ -222,9 +222,9 @@ export default function ReportsPage() {
         <TableSection title="Type : External Can Route" data={d.extCanRoutes} />
         <TableSection title="Type : External Tanker Route" data={d.extTankerRoutes} />
 
-        <div className="w-full mt-auto pt-12 grid grid-cols-2 gap-12 text-center uppercase font-black text-[9pt] tracking-widest">
-          <div className="border-t-[1.5px] border-black pt-2">1) Procurement Supervisor :</div>
-          <div className="border-t-[1.5px] border-black pt-2">2) Procurement Supervisor :</div>
+        <div className="w-full mt-auto pt-6 grid grid-cols-2 gap-12 text-center uppercase font-black text-[8pt] tracking-widest">
+          <div className="border-t-[1.2px] border-black pt-1.5">1) Supervisor Sign :</div>
+          <div className="border-t-[1.2px] border-black pt-1.5">2) Manager Sign :</div>
         </div>
       </div>
     )
@@ -235,14 +235,14 @@ export default function ReportsPage() {
     
     if (report.type === 'Official Document') {
       return (
-        <div className="bg-white font-sans text-slate-900 border-[1.5px] border-black rounded-sm w-full max-w-[210mm] mx-auto p-10 printable-report flex flex-col items-center shadow-none mb-4">
+        <div className="bg-white font-sans text-slate-900 border-[1.2px] border-black rounded-sm w-full max-w-[210mm] mx-auto p-8 printable-report flex flex-col items-center shadow-none mb-4">
           <div 
-            className="w-full prose prose-sm max-w-none text-left"
+            className="w-full prose prose-sm max-w-none text-left text-[9pt]"
             dangerouslySetInnerHTML={{ __html: d.content || "" }} 
           />
-          <div className="w-full mt-auto pt-8 grid grid-cols-2 gap-12 text-center uppercase font-black text-[9pt] tracking-widest">
-            <div className="border-t-[1.5px] border-black pt-2">अधिकारी स्वाक्षरी</div>
-            <div className="border-t-[1.5px] border-black pt-2">दिनांक: {report.date}</div>
+          <div className="w-full mt-auto pt-6 grid grid-cols-2 gap-12 text-center uppercase font-black text-[8pt] tracking-widest">
+            <div className="border-t-[1.2px] border-black pt-1.5">अधिकारी स्वाक्षरी</div>
+            <div className="border-t-[1.2px] border-black pt-1.5">दिनांक: {report.date}</div>
           </div>
         </div>
       );
@@ -257,16 +257,16 @@ export default function ReportsPage() {
     const remarkPoints = d.remarkPoints || [];
 
     return (
-      <div className="bg-white font-sans text-slate-900 border-[1.5px] border-black rounded-sm w-full max-w-[210mm] mx-auto p-6 printable-report flex flex-col items-center shadow-none mb-4">
+      <div className="bg-white font-sans text-slate-900 border-[1.2px] border-black rounded-sm w-full max-w-[210mm] mx-auto p-5 printable-report flex flex-col items-center shadow-none mb-4">
         <ReportHeader title={d.reportHeading || report.type} date={report.date} subName={d.name || d.repName || profileName} subId={d.idNumber || d.repId || profileId} />
         
-        <div className="w-full border border-black rounded overflow-hidden mb-4">
+        <div className="w-full border border-black rounded overflow-hidden mb-3">
           <table className="w-full border-collapse">
             <tbody>
               {orderedEntries.map(([k, v]: any) => (
-                <tr key={k} className="border-b border-black last:border-0 text-[9pt] font-bold">
-                  <td className="p-2 bg-slate-50 uppercase text-[8pt] font-black border-r border-black w-1/3">{labelMap[k]}</td>
-                  <td className="p-2">{String(v)}</td>
+                <tr key={k} className="border-b border-black last:border-0 text-[8pt] font-bold">
+                  <td className="p-1.5 bg-slate-50 uppercase text-[7pt] font-black border-r border-black w-1/3">{labelMap[k]}</td>
+                  <td className="p-1.5">{String(v)}</td>
                 </tr>
               ))}
             </tbody>
@@ -274,11 +274,11 @@ export default function ReportsPage() {
         </div>
 
         {losses.length > 0 && (
-          <div className="w-full border border-black rounded overflow-hidden mb-4">
-            <div className="bg-slate-100 p-1 text-[8pt] font-black uppercase text-center border-b border-black">नुकसान तपशील (LOSS LOG)</div>
+          <div className="w-full border border-black rounded overflow-hidden mb-3">
+            <div className="bg-slate-100 p-0.5 text-[7pt] font-black uppercase text-center border-b border-black">नुकसान तपशील (LOSS LOG)</div>
             <table className="w-full border-collapse">
               <thead>
-                <tr className="bg-black text-white font-black text-[7pt] uppercase text-center">
+                <tr className="bg-black text-white font-black text-[6pt] uppercase text-center">
                   <th className="p-1 border-r border-white/20 text-left">कोड/गवळी नाव</th>
                   <th className="p-1 border-r border-white/20">प्रकार</th>
                   <th className="p-1 border-r border-white/20">Ltr</th>
@@ -287,7 +287,7 @@ export default function ReportsPage() {
               </thead>
               <tbody>
                 {losses.map((loss: any, idx: number) => (
-                  <tr key={idx} className="font-bold text-[8pt] uppercase border-b border-black last:border-0 text-center">
+                  <tr key={idx} className="font-bold text-[7pt] uppercase border-b border-black last:border-0 text-center">
                     <td className="p-1 border-r border-black text-left">{loss.centerCode} {loss.centerName}</td>
                     <td className="p-1 border-r border-black">{loss.milkType}</td>
                     <td className="p-1 border-r border-black">{loss.qtyLiters}</td>
@@ -297,27 +297,27 @@ export default function ReportsPage() {
               </tbody>
             </table>
             {d.totalLossAmount !== undefined && (
-              <div className="bg-slate-50 p-2 text-right border-t border-black font-black text-[9pt]">
-                एकूण आर्थिक नुकसान रक्कम: ₹{d.totalLossAmount}
+              <div className="bg-slate-50 p-1.5 text-right border-t border-black font-black text-[8pt]">
+                एकूण नुकसान: ₹{d.totalLossAmount}
               </div>
             )}
           </div>
         )}
 
         {(points.length > 0 || remarkPoints.length > 0) && (
-          <div className="w-full p-3 border border-black rounded bg-slate-50 mb-4 text-left">
-            <span className="text-[8pt] font-black uppercase block border-b border-black/10 pb-1 mb-2">सविस्तर निरीक्षणे / मुद्दे:</span>
-            <ul className="list-decimal list-inside space-y-1">
+          <div className="w-full p-2.5 border border-black rounded bg-slate-50 mb-3 text-left">
+            <span className="text-[7pt] font-black uppercase block border-b border-black/10 pb-0.5 mb-1.5">सविस्तर निरीक्षणे / मुद्दे:</span>
+            <ul className="list-decimal list-inside space-y-0.5">
               {[...points, ...remarkPoints].map((p: string, i: number) => (
-                <li key={i} className="text-[9pt] font-bold">{p}</li>
+                <li key={i} className="text-[8pt] font-bold">{p}</li>
               ))}
             </ul>
           </div>
         )}
 
-        <div className="w-full mt-auto pt-8 grid grid-cols-2 gap-12 text-center uppercase font-black text-[9pt] tracking-widest">
-          <div className="border-t-[1.5px] border-black pt-2">अधिकारी स्वाक्षरी</div>
-          <div className="border-t-[1.5px] border-black pt-2">सुपरवायझर स्वाक्षरी</div>
+        <div className="w-full mt-auto pt-6 grid grid-cols-2 gap-12 text-center uppercase font-black text-[8pt] tracking-widest">
+          <div className="border-t-[1.2px] border-black pt-1.5">अधिकारी स्वाक्षरी</div>
+          <div className="border-t-[1.2px] border-black pt-1.5">सुपरवायझर स्वाक्षरी</div>
         </div>
       </div>
     );
@@ -422,7 +422,7 @@ export default function ReportsPage() {
 
       <style jsx global>{`
         @media print {
-          @page { size: A4; margin: 0mm; }
+          @page { size: A4; margin: 5mm; }
           body { visibility: hidden !important; background: white !important; margin: 0 !important; padding: 0 !important; }
           .printable-report, .printable-report * { visibility: visible !important; opacity: 1 !important; color: black !important; }
           .printable-report { 
@@ -432,8 +432,8 @@ export default function ReportsPage() {
             transform: translateX(-50%) !important;
             width: 100% !important; 
             max-width: 190mm !important; 
-            border: 1.5px solid black !important; 
-            padding: 10mm !important; 
+            border: 1.2px solid black !important; 
+            padding: 8mm !important; 
             display: block !important;
             box-shadow: none !important;
             page-break-inside: avoid !important;
@@ -442,8 +442,8 @@ export default function ReportsPage() {
           }
           [role="dialog"] { position: absolute !important; top: 0 !important; left: 0 !important; transform: none !important; width: 100% !important; max-width: none !important; background: transparent !important; box-shadow: none !important; }
           .no-print, button, header, nav, footer, .sidebar, [role="dialog"] [class*="Close"], .h-14, .h-6 { display: none !important; }
-          table { width: 100% !important; border-collapse: collapse !important; border: 1.2px solid black !important; margin-bottom: 10pt; }
-          th, td { border: 1px solid black !important; padding: 3pt 5pt !important; font-size: 8pt !important; line-height: 1.2 !important; }
+          table { width: 100% !important; border-collapse: collapse !important; border: 1px solid black !important; margin-bottom: 8pt; }
+          th, td { border: 1px solid black !important; padding: 2pt 4pt !important; font-size: 7.5pt !important; line-height: 1.1 !important; }
           th { background-color: #f8fafc !important; -webkit-print-color-adjust: exact; }
         }
       `}</style>
