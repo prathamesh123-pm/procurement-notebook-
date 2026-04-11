@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card"
 import { 
   Archive, Search, X, Printer, Trash2, FileEdit, Truck, 
   ShieldAlert, ClipboardCheck, Plus, MapPin, FileText,
-  Milk, User, Briefcase, ListTodo, FileSignature, CheckCircle2, Microscope, Layers, Calendar
+  Milk, User, Briefcase, FileSignature, CheckCircle2, Microscope, Layers, Calendar
 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
@@ -467,34 +467,6 @@ export default function ReportsPage() {
           </ScrollArea>
         </DialogContent>
       </Dialog>
-
-      <style jsx global>{`
-        @media print {
-          @page { size: A4; margin: 5mm; }
-          body { visibility: hidden !important; background: white !important; margin: 0 !important; padding: 0 !important; }
-          .printable-report, .printable-report * { visibility: visible !important; opacity: 1 !important; color: black !important; }
-          .printable-report { 
-            position: absolute !important; 
-            top: 0 !important; 
-            left: 50% !important;
-            transform: translateX(-50%) !important;
-            width: 100% !important; 
-            max-width: 190mm !important; 
-            border: 1.2px solid black !important; 
-            padding: 8mm !important; 
-            display: block !important;
-            box-shadow: none !important;
-            page-break-inside: avoid !important;
-            background: white !important;
-            margin: 0 !important;
-          }
-          [role="dialog"] { position: absolute !important; top: 0 !important; left: 0 !important; transform: none !important; width: 100% !important; max-width: none !important; background: transparent !important; box-shadow: none !important; }
-          .no-print, button, header, nav, footer, .sidebar, [role="dialog"] [class*="Close"], .h-14, .h-6 { display: none !important; }
-          table { width: 100% !important; border-collapse: collapse !important; border: 1px solid black !important; margin-bottom: 8pt; }
-          th, td { border: 1px solid black !important; padding: 2pt 4pt !important; font-size: 7.5pt !important; line-height: 1.1 !important; }
-          th { background-color: #f8fafc !important; -webkit-print-color-adjust: exact; }
-        }
-      `}</style>
     </div>
   )
 }

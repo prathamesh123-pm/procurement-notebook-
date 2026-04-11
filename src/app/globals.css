@@ -77,3 +77,66 @@ h1, h2, h3, h4 {
 ::-webkit-scrollbar { width: 2px; height: 2px; }
 ::-webkit-scrollbar-track { @apply bg-transparent; }
 ::-webkit-scrollbar-thumb { @apply bg-slate-200 rounded-full; }
+
+/* Robust Global Print Engine */
+@media print {
+  @page {
+    size: A4;
+    margin: 5mm;
+  }
+  
+  html, body {
+    height: auto !important;
+    overflow: visible !important;
+    background: white !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  body * {
+    visibility: hidden !important;
+  }
+
+  .printable-report, .printable-report * {
+    visibility: visible !important;
+    opacity: 1 !important;
+    color: black !important;
+  }
+
+  .printable-report {
+    position: absolute !important;
+    top: 0 !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: 190mm !important;
+    max-width: 190mm !important;
+    border: 1px solid black !important;
+    padding: 8mm !important;
+    display: block !important;
+    background: white !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    page-break-after: always;
+  }
+
+  .no-print, button, header, nav, footer, .sidebar, [role="dialog"] [class*="Close"], .h-14, .h-6 {
+    display: none !important;
+  }
+
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    border: 1px solid black !important;
+  }
+
+  th, td {
+    border: 1px solid black !important;
+    padding: 3pt 5pt !important;
+    font-size: 8pt !important;
+  }
+
+  th {
+    background-color: #f1f5f9 !important;
+    -webkit-print-color-adjust: exact;
+  }
+}
