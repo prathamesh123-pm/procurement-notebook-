@@ -228,7 +228,7 @@ export default function RouteDetailsPage() {
               <div className="w-full border-b-2 border-black pb-1.5 mb-3 text-center">
                 <div className="flex items-center justify-center gap-2 mb-1">
                   <div className="h-7 w-7 bg-black rounded flex items-center justify-center"><Milk className="h-4 w-4 text-white" /></div>
-                  <h1 className="text-[14pt] font-black uppercase tracking-tight leading-none">संकलन नोंदवही</h1>
+                  <h1 className="text-[14pt] font-black uppercase tracking-tight leading-none">अहवाल तपशील</h1>
                 </div>
                 <h3 className="text-[11pt] font-black uppercase text-primary tracking-widest">{selectedSupplier.name}</h3>
                 <p className="text-[8pt] font-black text-muted-foreground uppercase">ID: {selectedSupplier.supplierId} | {selectedSupplier.supplierType}</p>

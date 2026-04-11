@@ -42,7 +42,7 @@ export default function ChillingCentersPage() {
   const [selectedCenter, setSelectedCenter] = useState<ChillingCenter | null>(null)
   
   const [formData, setFormData] = useState({
-    name: "", code: "", address: "", mobile: "",
+    name: "", ownerName: "", code: "", address: "", mobile: "",
     cowQty: "0", cowFat: "0", cowSnf: "0",
     bufQty: "0", bufFat: "0", bufSnf: "0",
     hasBmc: false, hasIbt: false,
@@ -64,7 +64,7 @@ export default function ChillingCentersPage() {
   const handleOpenAdd = () => {
     setDialogMode('add'); setEditingId(null);
     setFormData({
-      name: "", code: "", address: "", mobile: "",
+      name: "", ownerName: "", code: "", address: "", mobile: "",
       cowQty: "0", cowFat: "0", cowSnf: "0",
       bufQty: "0", bufFat: "0", bufSnf: "0",
       hasBmc: false, hasIbt: false,
@@ -85,7 +85,7 @@ export default function ChillingCentersPage() {
   const handleOpenEdit = (center: ChillingCenter) => {
     setDialogMode('edit'); setEditingId(center.id);
     setFormData({
-      name: center.name || "", code: center.code || "", address: center.address || "", mobile: center.mobile || "",
+      name: center.name || "", ownerName: center.ownerName || "", code: center.code || "", address: center.address || "", mobile: center.mobile || "",
       cowQty: String(center.cowMilk?.quantity || 0), cowFat: String(center.cowMilk?.fat || 0), cowSnf: String(center.cowMilk?.snf || 0),
       bufQty: String(center.buffaloMilk?.quantity || 0), bufFat: String(center.buffaloMilk?.fat || 0), bufSnf: String(center.buffaloMilk?.snf || 0),
       hasBmc: center.hasBmc || false, hasIbt: center.hasIbt || false,
@@ -227,7 +227,7 @@ export default function ChillingCentersPage() {
               <div className="w-full border-b-2 border-black pb-1.5 mb-3 text-center">
                 <div className="flex items-center justify-center gap-2 mb-1">
                   <div className="h-7 w-7 bg-black rounded flex items-center justify-center"><Milk className="h-4 w-4 text-white" /></div>
-                  <h1 className="text-[14pt] font-black uppercase tracking-tight leading-none">संकलन नोंदवही</h1>
+                  <h1 className="text-[14pt] font-black uppercase tracking-tight leading-none">अहवाल तपशील</h1>
                 </div>
                 <h3 className="text-[11pt] font-black uppercase text-primary tracking-widest">{selectedCenter.name}</h3>
                 <p className="text-[8pt] font-black text-muted-foreground uppercase">ID: {selectedCenter.code} | चिलिंग सेंटर</p>
@@ -237,6 +237,7 @@ export default function ChillingCentersPage() {
                 <div className="space-y-2">
                   <h4 className="text-[9px] font-black uppercase text-primary tracking-widest border-b pb-0.5 flex items-center gap-1.5"><User className="h-3 w-3" /> १) प्राथमिक माहिती</h4>
                   <div className="space-y-1 text-[10px] font-bold">
+                    <div className="flex justify-between border-b border-dashed pb-0.5"><span className="text-muted-foreground uppercase text-[8px]">मालक</span><span>{selectedCenter.ownerName || "-"}</span></div>
                     <div className="flex justify-between border-b border-dashed pb-0.5"><span className="text-muted-foreground uppercase text-[8px]">संपर्क</span><span>{selectedCenter.mobile || "-"}</span></div>
                     <div className="flex flex-col gap-0.5"><span className="text-muted-foreground uppercase text-[8px]">पत्ता</span><span className="leading-tight">{selectedCenter.address || "-"}</span></div>
                     <div className="flex justify-between border-b border-dashed pb-0.5 pt-1"><span className="text-muted-foreground uppercase text-[8px]">एकूण सप्लायर्स</span><span>{selectedCenter.supplierCount || "0"}</span></div>
@@ -345,7 +346,8 @@ export default function ChillingCentersPage() {
               <div className="space-y-4">
                 <h4 className="text-[11px] font-black uppercase text-primary border-b pb-1 flex items-center gap-2"><Warehouse className="h-4 w-4" /> १) प्राथमिक माहिती & परवाना</h4>
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="col-span-2 space-y-1.5"><Label className="text-[10px] font-black uppercase">सेंटरचे नाव *</Label><Input value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl shadow-inner" /></div>
+                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">सेंटरचे नाव *</Label><Input value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl shadow-inner" /></div>
+                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">मालकाचे नाव</Label><Input value={formData.ownerName} onChange={e => setFormData({...formData, ownerName: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl shadow-inner" /></div>
                   <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">कोड नंबर *</Label><Input value={formData.code} onChange={e => setFormData({...formData, code: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl shadow-inner" /></div>
                   <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">मोबाईल</Label><Input value={formData.mobile} onChange={e => setFormData({...formData, mobile: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl shadow-inner" /></div>
                   <div className="col-span-2 space-y-1.5"><Label className="text-[10px] font-black uppercase">पत्ता</Label><Input value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl shadow-inner" /></div>

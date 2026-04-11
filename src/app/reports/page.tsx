@@ -97,7 +97,7 @@ const ReportHeader = ({ title, date, subName, subId }: any) => (
         <Milk className="h-3.5 w-3.5 text-white" />
       </div>
       <div className="text-left">
-        <h1 className="text-[10pt] font-black uppercase tracking-tight leading-none">संकलन नोंदवही (Management Report)</h1>
+        <h1 className="text-[10pt] font-black uppercase tracking-tight leading-none">अहवाल तपशील (Management Report)</h1>
         <p className="text-[7pt] font-bold uppercase opacity-70">{title || "अहवाल तपशील"}</p>
       </div>
     </div>
@@ -467,7 +467,7 @@ export default function ReportsPage() {
         {filteredReports.length === 0 && (
           <div className="p-20 text-center bg-white rounded-2xl border-2 border-dashed border-slate-100 flex flex-col items-center gap-3">
             <Archive className="h-10 w-10 text-slate-200" />
-            <p className="text-muted-foreground font-black uppercase text-[11px] opacity-40 tracking-[0.2em] italic">एकही अहवाल सापडला नाही.</p>
+            <p className="text-muted-foreground font-black uppercase text-[11px] opacity-40 tracking-[0.2em] italic">एकही अहवाल सापडल नाही.</p>
           </div>
         )}
       </div>

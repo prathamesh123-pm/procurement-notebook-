@@ -86,6 +86,7 @@ export interface Supplier {
 export interface ChillingCenter {
   id: string;
   name: string;
+  ownerName?: string;
   code: string;
   address: string;
   mobile: string;
