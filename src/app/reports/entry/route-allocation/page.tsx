@@ -23,10 +23,6 @@ interface AllocationEntry {
   allocated: boolean;
 }
 
-/**
- * Define UI sub-components OUTSIDE the main render function
- * to prevent focus loss during typing.
- */
 const AllocationSection = ({ 
   title, 
   section, 

@@ -7,7 +7,7 @@ import { Card } from "@/components/ui/card"
 import { 
   Archive, Search, X, Printer, Trash2, FileEdit, Truck, 
   ShieldAlert, ClipboardCheck, Plus, MapPin, FileText,
-  Milk, User, Briefcase, FileSignature, CheckCircle2, Microscope, Layers, Calendar
+  Milk, User, Briefcase, FileSignature, CheckCircle2, Microscope, Layers, Calendar, ChevronRight
 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
@@ -394,9 +394,11 @@ export default function ReportsPage() {
         </div>
       </Card>
 
-      <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-2xl w-full">
-        <div className="overflow-x-auto w-full">
-          <table className="w-full text-left border-collapse min-w-[600px] md:min-w-0">
+      {/* Responsive List / Table Container */}
+      <div className="w-full space-y-3">
+        {/* Desktop View Table */}
+        <div className="hidden md:block bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-2xl">
+          <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-100">
                 <th className="p-4 text-[10px] font-black uppercase text-slate-400 tracking-widest w-24">तारीख</th>
@@ -415,16 +417,16 @@ export default function ReportsPage() {
                   </td>
                   <td className="p-4">
                     <div className="flex flex-col min-w-0">
-                      <span className="font-black text-[12px] text-primary uppercase group-hover:translate-x-1 transition-transform truncate max-w-[200px] md:max-w-md">
+                      <span className="font-black text-[12px] text-primary uppercase group-hover:translate-x-1 transition-transform truncate max-w-md">
                         {report.fullData?.reportHeading || report.fullData?.title || report.type}
                       </span>
-                      <span className="text-[10px] text-slate-400 italic truncate max-w-[200px] md:max-w-md">
+                      <span className="text-[10px] text-slate-400 italic truncate max-w-md">
                         {report.summary}
                       </span>
                     </div>
                   </td>
                   <td className="p-4 text-right">
-                    <div className="flex justify-end gap-1.5">
+                    <div className="flex justify-end gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
                       <Button variant="ghost" size="icon" className="h-8 w-8 text-primary hover:bg-primary/10 rounded-lg" onClick={(e) => handleEditReport(report, e)}>
                         <FileEdit className="h-3.5 w-3.5" />
                       </Button>
@@ -435,16 +437,39 @@ export default function ReportsPage() {
                   </td>
                 </tr>
               ))}
-              {filteredReports.length === 0 && (
-                <tr>
-                  <td colSpan={3} className="p-20 text-center text-muted-foreground font-black uppercase text-[11px] opacity-20 tracking-[0.3em] italic">
-                    एकही अहवाल सापडला नाही.
-                  </td>
-                </tr>
-              )}
             </tbody>
           </table>
         </div>
+
+        {/* Mobile View Cards */}
+        <div className="md:hidden space-y-3">
+          {filteredReports.map((report) => (
+            <Card key={report.id} className="p-4 bg-white border-none shadow-md rounded-2xl relative active:scale-[0.98] transition-all" onClick={() => { setSelectedReport(report); setIsViewOpen(true); }}>
+              <div className="flex justify-between items-start mb-2">
+                <div className="space-y-0.5">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{report.date?.split('-').reverse().join('/')}</span>
+                    <Badge variant="outline" className="h-4 px-1.5 text-[7px] font-black uppercase bg-primary/5 text-primary border-none">{report.fullData?.shift || "All Day"}</Badge>
+                  </div>
+                  <h4 className="font-black text-[13px] text-primary uppercase tracking-tight line-clamp-1">{report.fullData?.reportHeading || report.fullData?.title || report.type}</h4>
+                </div>
+                <div className="flex gap-1">
+                  <Button variant="ghost" size="icon" className="h-8 w-8 text-primary" onClick={(e) => handleEditReport(report, e)}><FileEdit className="h-4 w-4" /></Button>
+                  <Button variant="ghost" size="icon" className="h-8 w-8 text-rose-500" onClick={(e) => handleDeleteReport(report.id, e)}><Trash2 className="h-4 w-4" /></Button>
+                </div>
+              </div>
+              <p className="text-[11px] text-slate-500 italic line-clamp-2 pr-6">{report.summary}</p>
+              <div className="absolute bottom-4 right-4 text-slate-300"><ChevronRight className="h-4 w-4" /></div>
+            </Card>
+          ))}
+        </div>
+
+        {filteredReports.length === 0 && (
+          <div className="p-20 text-center bg-white rounded-2xl border-2 border-dashed border-slate-100 flex flex-col items-center gap-3">
+            <Archive className="h-10 w-10 text-slate-200" />
+            <p className="text-muted-foreground font-black uppercase text-[11px] opacity-40 tracking-[0.2em] italic">एकही अहवाल सापडला नाही.</p>
+          </div>
+        )}
       </div>
 
       <Dialog open={isViewOpen} onOpenChange={setIsViewOpen}>
