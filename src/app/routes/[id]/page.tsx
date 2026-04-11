@@ -129,7 +129,7 @@ export default function RouteDetailsPage() {
     });
     toast({ title: "यशस्वी", description: `${supplier.name} या रूटमध्ये समाविष्ट झाला.` });
     setIsMasterDialogOpen(false);
-    setSelectedSupplier(supplier); // Automatically select transferred supplier to show info
+    setSelectedSupplier(supplier);
   }
 
   const addEquipmentRow = () => {
@@ -226,11 +226,7 @@ export default function RouteDetailsPage() {
               </div>
 
               <div className="w-full border-b-2 border-black pb-1.5 mb-3 text-center">
-                <div className="flex items-center justify-center gap-2 mb-1">
-                  <div className="h-7 w-7 bg-black rounded flex items-center justify-center"><Milk className="h-4 w-4 text-white" /></div>
-                  <h1 className="text-[14pt] font-black uppercase tracking-tight leading-none">अहवाल तपशील</h1>
-                </div>
-                <h3 className="text-[11pt] font-black uppercase text-primary tracking-widest">{selectedSupplier.name}</h3>
+                <h3 className="text-[14pt] font-black uppercase text-primary tracking-widest">{selectedSupplier.name}</h3>
                 <p className="text-[8pt] font-black text-muted-foreground uppercase">ID: {selectedSupplier.supplierId} | {selectedSupplier.supplierType}</p>
               </div>
               
@@ -310,7 +306,6 @@ export default function RouteDetailsPage() {
         </Card>
       </div>
 
-      {/* Add New Supplier Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-[600px] p-0 overflow-hidden rounded-3xl border-none shadow-2xl bg-white">
           <DialogHeader className="p-4 bg-primary text-white sticky top-0 z-10">
@@ -423,47 +418,6 @@ export default function RouteDetailsPage() {
           <DialogFooter className="p-4 border-t bg-muted/5">
             <Button onClick={handleSaveSupplier} className="w-full font-black uppercase text-[11px] h-12 rounded-2xl shadow-xl shadow-primary/20 tracking-widest transition-all active:scale-95"><CheckCircle2 className="h-5 w-5 mr-2" /> माहिती जतन करा</Button>
           </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Master List Dialog */}
-      <Dialog open={isMasterDialogOpen} onOpenChange={setIsMasterDialogOpen}>
-        <DialogContent className="max-w-[600px] p-0 overflow-hidden rounded-3xl border-none shadow-2xl bg-white">
-          <DialogHeader className="p-4 bg-primary text-white">
-            <DialogTitle className="text-base font-black uppercase tracking-widest">मास्टर लिस्ट मधून निवडा</DialogTitle>
-            <DialogDescription className="text-[9px] text-white/70 uppercase">दुसऱ्या रूटमधील सप्लायर या रूटमध्ये ट्रान्सफर करा.</DialogDescription>
-          </DialogHeader>
-          <div className="p-4 border-b bg-muted/5">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
-              <input 
-                placeholder="नाव किंवा कोडने शोधा..." 
-                className="w-full pl-9 h-11 text-[13px] bg-white border border-muted-foreground/10 rounded-2xl font-bold uppercase outline-none focus:ring-2 focus:ring-primary shadow-inner" 
-                value={masterSearchQuery} 
-                onChange={e => setMasterSearchQuery(e.target.value)} 
-              />
-            </div>
-          </div>
-          <ScrollArea className="max-h-[400px]">
-            <div className="divide-y divide-muted-foreground/5">
-              {masterSuppliersList.map(s => (
-                <div key={s.id} className="p-4 flex items-center justify-between hover:bg-muted/30 transition-colors">
-                  <div className="min-w-0 flex-1">
-                    <h4 className="font-black text-[13px] uppercase truncate text-slate-900">{s.name}</h4>
-                    <div className="flex items-center gap-2 mt-1">
-                      <Badge variant="outline" className="h-4 px-1.5 text-[7px] font-black bg-primary/5 text-primary border-none">ID: {s.supplierId}</Badge>
-                      <span className="text-[9px] font-bold text-muted-foreground uppercase">रूट: {allRoutes?.find(r => r.id === s.routeId)?.name || '---'}</span>
-                    </div>
-                  </div>
-                  <Button onClick={() => transferFromMaster(s)} size="sm" className="h-8 rounded-xl font-black uppercase text-[9px] px-4 shadow-md">येथे जोडा</Button>
-                </div>
-              ))}
-              {masterSuppliersList.length === 0 && <div className="p-20 text-center text-[11px] font-black uppercase opacity-20 italic">कोणतेही सप्लायर सापडले नाहीत.</div>}
-            </div>
-          </ScrollArea>
-          <div className="p-4 border-t bg-muted/5 text-center">
-            <Button variant="ghost" onClick={() => setIsMasterDialogOpen(false)} className="font-black uppercase text-[10px] tracking-widest text-muted-foreground">रद्द</Button>
-          </div>
         </DialogContent>
       </Dialog>
 

@@ -94,14 +94,8 @@ const fieldSequence = [
 
 const ReportHeader = ({ title, date, subName, subId, shift }: any) => (
   <div className="w-full border-b-2 border-black pb-1 mb-2 text-center">
-    <div className="flex items-center justify-center gap-2">
-      <div className="h-6 w-6 bg-black rounded flex items-center justify-center">
-        <Milk className="h-3.5 w-3.5 text-white" />
-      </div>
-      <div className="text-left">
-        <h1 className="text-[10pt] font-black uppercase tracking-tight leading-none">अहवाल तपशील</h1>
-        <p className="text-[7pt] font-bold uppercase opacity-70">{title || "माहिती अहवाल"}</p>
-      </div>
+    <div className="text-center mb-1">
+      <h1 className="text-[12pt] font-black uppercase tracking-tight">{title || "माहिती अहवाल"}</h1>
     </div>
     <div className="flex justify-between text-[6pt] font-black uppercase text-slate-500 tracking-wider mt-1 border-t pt-0.5">
       <div className="flex gap-2">

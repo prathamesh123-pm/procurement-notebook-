@@ -206,11 +206,7 @@ export default function CentersPage() {
             </div>
 
             <div className="w-full border-b-2 border-black pb-1.5 mb-3 text-center">
-              <div className="flex items-center justify-center gap-2 mb-1">
-                <div className="h-7 w-7 bg-black rounded flex items-center justify-center"><Milk className="h-4 w-4 text-white" /></div>
-                <h1 className="text-[14pt] font-black uppercase tracking-tight leading-none">अहवाल तपशील</h1>
-              </div>
-              <h3 className="text-[11pt] font-black uppercase text-primary tracking-widest">{selectedCenter.name}</h3>
+              <h3 className="text-[14pt] font-black uppercase text-primary tracking-widest">{selectedCenter.name}</h3>
               <p className="text-[8pt] font-black text-muted-foreground uppercase">ID: {selectedCenter.supplierId} | CENTER</p>
             </div>
             
@@ -327,7 +323,7 @@ export default function CentersPage() {
                     </div>
                     <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-muted-foreground">स्वच्छता ग्रेड</Label>
                       <Select value={formData.hygieneGrade} onValueChange={(v: string) => setFormData({...formData, hygieneGrade: v})}>
-                        <SelectTrigger className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl font-black"><SelectValue /></SelectTrigger>
+                        <SelectTrigger className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl"><SelectValue /></SelectTrigger>
                         <SelectContent><SelectItem value="A" className="font-bold">A Grade</SelectItem><SelectItem value="B" className="font-bold">B Grade</SelectItem><SelectItem value="C" className="font-bold">C Grade</SelectItem></SelectContent>
                       </Select>
                     </div>

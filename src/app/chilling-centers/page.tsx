@@ -187,7 +187,7 @@ export default function ChillingCentersPage() {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 grid-cols-1 lg:grid-cols-12 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
         <Card className="lg:col-span-4 border shadow-2xl bg-white rounded-2xl overflow-hidden no-print">
           <div className="p-3 border-b bg-muted/5">
             <div className="relative">
@@ -225,11 +225,7 @@ export default function ChillingCentersPage() {
               </div>
 
               <div className="w-full border-b-2 border-black pb-1.5 mb-3 text-center">
-                <div className="flex items-center justify-center gap-2 mb-1">
-                  <div className="h-7 w-7 bg-black rounded flex items-center justify-center"><Milk className="h-4 w-4 text-white" /></div>
-                  <h1 className="text-[14pt] font-black uppercase tracking-tight leading-none">अहवाल तपशील</h1>
-                </div>
-                <h3 className="text-[11pt] font-black uppercase text-primary tracking-widest">{selectedCenter.name}</h3>
+                <h3 className="text-[14pt] font-black uppercase text-primary tracking-widest">{selectedCenter.name}</h3>
                 <p className="text-[8pt] font-black text-muted-foreground uppercase">ID: {selectedCenter.code} | चिलिंग सेंटर</p>
               </div>
               
@@ -287,16 +283,16 @@ export default function ChillingCentersPage() {
 
               <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5 w-full mb-2">
                 <div className={`p-1.5 rounded-lg border border-black/10 flex flex-col items-center gap-0.5 ${selectedCenter.hasEtp ? 'bg-emerald-50' : 'bg-muted/20 opacity-40'}`}><Waves className="h-3 w-3" /><span className="text-[6px] font-black uppercase text-center">ETP: {selectedCenter.hasEtp ? 'हो' : 'नाही'}</span></div>
-                <div className={`p-1.5 rounded-lg border border-black/10 flex flex-col items-center gap-0.5 ${selectedCenter.hasSolar ? 'bg-emerald-50' : 'bg-muted/20 opacity-40'}`}><Sun className="h-3 w-3" /><span className="text-[6px] font-black uppercase text-center">सोलर: {selectedCenter.hasSolar ? 'हो' : 'नाही'}</span></div>
-                <div className={`p-1.5 rounded-lg border border-black/10 flex flex-col items-center gap-0.5 ${selectedCenter.hasHotWater ? 'bg-emerald-50' : 'bg-muted/20 opacity-40'}`}><Droplets className="h-3 w-3" /><span className="text-[6px] font-black uppercase text-center">गरम पाणी: {selectedCenter.hasHotWater ? 'हो' : 'नाही'}</span></div>
-                <div className={`p-1.5 rounded-lg border border-black/10 flex flex-col items-center gap-0.5 ${selectedCenter.hasDrainage ? 'bg-emerald-50' : 'bg-muted/20 opacity-40'}`}><Wind className="h-3 w-3" /><span className="text-[6px] font-black uppercase text-center">ड्रेनेज: {selectedCenter.hasDrainage ? 'हो' : 'नाही'}</span></div>
-                <div className={`p-1.5 rounded-lg border border-black/10 flex flex-col items-center gap-0.5 ${selectedCenter.hasLab ? 'bg-emerald-50' : 'bg-muted/20 opacity-40'}`}><FlaskConical className="h-3 w-3" /><span className="text-[6px] font-black uppercase text-center">LAB: {selectedCenter.hasLab ? 'हो' : 'नाही'}</span></div>
-                <div className={`p-1.5 rounded-lg border border-black/10 flex flex-col items-center gap-0.5 ${selectedCenter.staffUniform ? 'bg-emerald-50' : 'bg-muted/20 opacity-40'}`}><Shirt className="h-3 w-3" /><span className="text-[6px] font-black uppercase text-center">गणवेश: {selectedCenter.staffUniform ? 'हो' : 'नाही'}</span></div>
+                <div className={`p-1.5 rounded-lg border border-black/10 flex flex-col items-center gap-0.5 ${selectedCenter.hasSolar ? 'bg-emerald-50' : 'bg-muted/20 opacity-40'}`}><Sun className="h-3.5 w-3.5" /><span className="text-[6px] font-black uppercase text-center">सोलर: {selectedCenter.hasSolar ? 'हो' : 'नाही'}</span></div>
+                <div className={`p-1.5 rounded-lg border border-black/10 flex flex-col items-center gap-0.5 ${selectedCenter.hasHotWater ? 'bg-emerald-50' : 'bg-muted/20 opacity-40'}`}><Droplets className="h-3.5 w-3.5" /><span className="text-[6px] font-black uppercase text-center">गरम पाणी: {selectedCenter.hasHotWater ? 'हो' : 'नाही'}</span></div>
+                <div className={`p-1.5 rounded-lg border border-black/10 flex flex-col items-center gap-0.5 ${selectedCenter.hasDrainage ? 'bg-emerald-50' : 'bg-muted/20 opacity-40'}`}><Wind className="h-3.5 w-3.5" /><span className="text-[6px] font-black uppercase text-center">ड्रेनेज: {selectedCenter.hasDrainage ? 'हो' : 'नाही'}</span></div>
+                <div className={`p-1.5 rounded-lg border border-black/10 flex flex-col items-center gap-0.5 ${selectedCenter.hasLab ? 'bg-emerald-50' : 'bg-muted/20 opacity-40'}`}><FlaskConical className="h-3.5 w-3.5" /><span className="text-[6px] font-black uppercase text-center">LAB: {selectedCenter.hasLab ? 'हो' : 'नाही'}</span></div>
+                <div className={`p-1.5 rounded-lg border border-black/10 flex flex-col items-center gap-0.5 ${selectedCenter.staffUniform ? 'bg-emerald-50' : 'bg-muted/20 opacity-40'}`}><Shirt className="h-3.5 w-3.5" /><span className="text-[6px] font-black uppercase text-center">गणवेश: {selectedCenter.staffUniform ? 'हो' : 'नाही'}</span></div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full text-left">
                 <div className="space-y-2">
-                  <h4 className="text-[9px] font-black uppercase text-amber-600 tracking-widest border-b pb-0.5 flex items-center gap-1.5"><ShieldCheck className="h-3 w-3" /> ३) ऑडिट व परवाना स्थिती</h4>
+                  <h4 className="text-[9px] font-black uppercase text-amber-600 tracking-widest border-b pb-0.5 flex items-center gap-1.5"><ShieldCheck className="h-3.5 w-3.5" /> ३) ऑडिट व परवाना स्थिती</h4>
                   <div className="space-y-1 text-[10px] font-bold">
                     <div className="flex justify-between border-b border-dashed pb-0.5"><span className="text-muted-foreground uppercase text-[8px]">वाहतूक परवाने</span><span>{selectedCenter.hasTransportLicenses ? "उपलब्ध" : "नाही"}</span></div>
                     <div className="flex justify-between border-b border-dashed pb-0.5"><span className="text-muted-foreground uppercase text-[8px]">पेस्ट कंट्रोल</span><span>{selectedCenter.pestControlDone ? "पूर्ण" : "नाही"}</span></div>
@@ -306,7 +302,7 @@ export default function ChillingCentersPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <h4 className="text-[9px] font-black uppercase text-blue-600 tracking-widest border-b pb-0.5 flex items-center gap-1.5"><Milk className="h-3 w-3" /> ४) दूध सारांश</h4>
+                  <h4 className="text-[9px] font-black uppercase text-blue-600 tracking-widest border-b pb-0.5 flex items-center gap-1.5"><Milk className="h-3.5 w-3.5" /> ४) दूध सारांश</h4>
                   <div className="grid grid-cols-2 gap-2">
                     <div className="p-2 rounded-lg bg-blue-50 text-center border border-blue-100">
                       <p className="text-[7px] font-black uppercase text-blue-500">गाय (COW)</p>
