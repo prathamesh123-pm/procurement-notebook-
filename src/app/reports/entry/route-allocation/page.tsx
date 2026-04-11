@@ -1,7 +1,7 @@
 
 "use client"
 
-import { useState, useEffect, Suspense } from "react"
+import { useState, useEffect, Suspense, useCallback } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -23,11 +23,14 @@ interface AllocationEntry {
   allocated: boolean;
 }
 
+/** 
+ * Memoized section component to prevent keyboard focus loss during typing.
+ */
 const AllocationSection = ({ 
   title, 
   section, 
   color, 
-  formData, 
+  data, 
   isManageMode, 
   onAdd, 
   onUpdate, 
@@ -36,7 +39,7 @@ const AllocationSection = ({
   title: string, 
   section: string, 
   color: string, 
-  formData: any, 
+  data: AllocationEntry[], 
   isManageMode: boolean,
   onAdd: (s: string) => void,
   onUpdate: (s: string, id: string, u: Partial<AllocationEntry>) => void,
@@ -61,7 +64,7 @@ const AllocationSection = ({
         <div className={cn(isManageMode ? "col-span-1 text-center" : "col-span-2 text-center")}>Alloc</div>
         {isManageMode && <div className="col-span-1"></div>}
       </div>
-      {(formData[section] as AllocationEntry[]).map((entry) => (
+      {data.map((entry) => (
         <div key={entry.id} className="grid grid-cols-12 gap-1 items-center bg-muted/5 p-1 rounded-lg border border-muted-foreground/5">
           {isManageMode ? (
             <>
@@ -92,7 +95,7 @@ const AllocationSection = ({
           )}
         </div>
       ))}
-      {(formData[section] as AllocationEntry[]).length === 0 && (
+      {data.length === 0 && (
         <p className="text-[8px] text-center italic opacity-30 py-2">रूट यादी कोरी आहे.</p>
       )}
     </div>
@@ -156,7 +159,7 @@ function RouteAllocationForm() {
     }
   }, [existingReport])
 
-  const handleAddEntry = (section: string) => {
+  const handleAddEntry = useCallback((section: string) => {
     const newEntry: AllocationEntry = {
       id: crypto.randomUUID(),
       routeId: "",
@@ -165,21 +168,21 @@ function RouteAllocationForm() {
       allocated: false
     }
     setFormData(prev => ({ ...prev, [section]: [...(prev[section as keyof typeof prev] as AllocationEntry[]), newEntry] }))
-  }
+  }, [])
 
-  const handleUpdateEntry = (section: string, id: string, updates: Partial<AllocationEntry>) => {
+  const handleUpdateEntry = useCallback((section: string, id: string, updates: Partial<AllocationEntry>) => {
     setFormData(prev => ({
       ...prev,
       [section]: (prev[section as keyof typeof prev] as AllocationEntry[]).map(e => e.id === id ? { ...e, ...updates } : e)
     }))
-  }
+  }, [])
 
-  const handleRemoveEntry = (section: string, id: string) => {
+  const handleRemoveEntry = useCallback((section: string, id: string) => {
     setFormData(prev => ({
       ...prev,
       [section]: (prev[section as keyof typeof prev] as AllocationEntry[]).filter(e => e.id !== id)
     }))
-  }
+  }, [])
 
   const saveAsTemplate = () => {
     if (!db || !user) return
@@ -263,11 +266,11 @@ function RouteAllocationForm() {
 
         <Card className="compact-card p-3"><div className="space-y-0.5"><Label className="compact-label">तारीख</Label><Input type="date" className="compact-input h-9" value={formData.date} onChange={e => setFormData({...formData, date: e.target.value})} /></div></Card>
 
-        <AllocationSection title="Can Route Morning (Internal)" section="morningRoutes" color="text-blue-600" formData={formData} isManageMode={isManageMode} onAdd={handleAddEntry} onUpdate={handleUpdateEntry} onRemove={handleRemoveEntry} />
-        <AllocationSection title="Can Route Evening (Internal)" section="eveningRoutes" color="text-indigo-600" formData={formData} isManageMode={isManageMode} onAdd={handleAddEntry} onUpdate={handleUpdateEntry} onRemove={handleRemoveEntry} />
-        <AllocationSection title="Internal Tanker Route" section="tankerRoutes" color="text-rose-600" formData={formData} isManageMode={isManageMode} onAdd={handleAddEntry} onUpdate={handleUpdateEntry} onRemove={handleRemoveEntry} />
-        <AllocationSection title="External Can Route" section="extCanRoutes" color="text-emerald-600" formData={formData} isManageMode={isManageMode} onAdd={handleAddEntry} onUpdate={handleUpdateEntry} onRemove={handleRemoveEntry} />
-        <AllocationSection title="External Tanker Route" section="extTankerRoutes" color="text-amber-600" formData={formData} isManageMode={isManageMode} onAdd={handleAddEntry} onUpdate={handleUpdateEntry} onRemove={handleRemoveEntry} />
+        <AllocationSection title="Can Route Morning (Internal)" section="morningRoutes" color="text-blue-600" data={formData.morningRoutes} isManageMode={isManageMode} onAdd={handleAddEntry} onUpdate={handleUpdateEntry} onRemove={handleRemoveEntry} />
+        <AllocationSection title="Can Route Evening (Internal)" section="eveningRoutes" color="text-indigo-600" data={formData.eveningRoutes} isManageMode={isManageMode} onAdd={handleAddEntry} onUpdate={handleUpdateEntry} onRemove={handleRemoveEntry} />
+        <AllocationSection title="Internal Tanker Route" section="tankerRoutes" color="text-rose-600" data={formData.tankerRoutes} isManageMode={isManageMode} onAdd={handleAddEntry} onUpdate={handleUpdateEntry} onRemove={handleRemoveEntry} />
+        <AllocationSection title="External Can Route" section="extCanRoutes" color="text-emerald-600" data={formData.extCanRoutes} isManageMode={isManageMode} onAdd={handleAddEntry} onUpdate={handleUpdateEntry} onRemove={handleRemoveEntry} />
+        <AllocationSection title="External Tanker Route" section="extTankerRoutes" color="text-amber-600" data={formData.extTankerRoutes} isManageMode={isManageMode} onAdd={handleAddEntry} onUpdate={handleUpdateEntry} onRemove={handleRemoveEntry} />
 
         <div className="flex flex-col gap-2 pt-4">
           {isManageMode ? (
