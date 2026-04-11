@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
@@ -192,8 +193,8 @@ export default function ReportsPage() {
               <th className="p-1 border border-black w-10">Sr.No</th>
               <th className="p-1 border border-black w-24">Route ID</th>
               <th className="p-1 border border-black text-left">Route Name</th>
-              <th className="p-1 border border-black w-24">Requested Route (V)</th>
-              <th className="p-1 border border-black w-24">Allocated Route (V)</th>
+              <th className="p-1 border border-black w-24">Requested (V)</th>
+              <th className="p-1 border border-black w-24">Allocated (V)</th>
             </tr>
           </thead>
           <tbody>
@@ -215,9 +216,11 @@ export default function ReportsPage() {
       <div className="bg-white font-sans text-slate-900 border-[1.5px] border-black rounded-sm w-full max-w-[210mm] mx-auto p-6 printable-report flex flex-col items-center shadow-none mb-4">
         <ReportHeader title={d.reportHeading} date={report.date} subName={d.name || profileName} subId={d.idNumber || profileId} />
         
-        <TableSection title="Type : Can Route Morning" data={d.morningRoutes} />
-        <TableSection title="Type : Can Route Evening" data={d.eveningRoutes} />
-        <TableSection title="Type : Tanker Route" data={d.tankerRoutes} />
+        <TableSection title="Type : Can Route Morning (Internal)" data={d.morningRoutes} />
+        <TableSection title="Type : Can Route Evening (Internal)" data={d.eveningRoutes} />
+        <TableSection title="Type : Internal Tanker Route" data={d.tankerRoutes} />
+        <TableSection title="Type : External Can Route" data={d.extCanRoutes} />
+        <TableSection title="Type : External Tanker Route" data={d.extTankerRoutes} />
 
         <div className="w-full mt-auto pt-12 grid grid-cols-2 gap-12 text-center uppercase font-black text-[9pt] tracking-widest">
           <div className="border-t-[1.5px] border-black pt-2">1) Procurement Supervisor :</div>
@@ -410,7 +413,6 @@ export default function ReportsPage() {
             <div className="w-full flex flex-col items-center">
               {selectedReport && (
                 selectedReport.type === 'Route Allocation Report' ? <RouteAllocationLayout report={selectedReport} /> :
-                selectedReport.type === 'Route Visit' ? <GenericLayout report={selectedReport} /> :
                 <GenericLayout report={selectedReport} />
               )}
             </div>
