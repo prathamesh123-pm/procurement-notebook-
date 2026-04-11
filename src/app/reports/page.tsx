@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
@@ -7,7 +6,7 @@ import { Card } from "@/components/ui/card"
 import { 
   Archive, Search, X, Printer, Trash2, FileEdit, Truck, 
   ShieldAlert, ClipboardCheck, Plus, MapPin, FileText,
-  Milk, User, Briefcase, ListTodo, FileSignature, CheckCircle2, Microscope
+  Milk, User, Briefcase, ListTodo, FileSignature, CheckCircle2, Microscope, Layers
 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
@@ -54,7 +53,7 @@ export default function ReportsPage() {
     { title: "क्षेत्र भेट", type: "Field Visit", icon: MapPin, color: "text-emerald-600" },
     { title: "ऑफिस काम", type: "Daily Office Work", icon: Briefcase, color: "text-purple-600" },
     { title: "ब्रेकडाऊन", type: "Transport Breakdown Report", icon: Truck, color: "text-rose-600" },
-    { title: "कामकाज नोंद", type: "Daily Task", icon: ListTodo, color: "text-orange-600" },
+    { title: "रूट मागणी", type: "Route Allocation Report", icon: Layers, color: "text-indigo-600" },
     { title: "जप्ती व दंड", type: "Seizure & Penalty", icon: ShieldAlert, color: "text-amber-600" },
     { title: "दैनिक कामकाज", type: "Daily Work Report", icon: ClipboardCheck, color: "text-indigo-600" },
     { title: "वर्ड फॉर्म", type: "Official Document", icon: FileSignature, color: "text-slate-600" },
@@ -158,7 +157,7 @@ export default function ReportsPage() {
       'Route Visit': '/daily-report', 'Field Visit': '/daily-report', 'Daily Office Work': '/daily-report',
       'Transport Breakdown Report': '/reports/entry/breakdown', 'Daily Work Report': '/reports/entry/daily',
       'Seizure & Penalty': '/reports/entry/seizure', 'Collection Center Audit': '/reports/entry/audit',
-      'Daily Task': '/work-log', 'Official Document': '/form-builder'
+      'Daily Task': '/work-log', 'Official Document': '/form-builder', 'Route Allocation Report': '/reports/entry/route-allocation'
     }
     const path = typeMap[report.type] || '/reports'
     router.push(`${path}?edit=${report.id}`)
@@ -170,71 +169,63 @@ export default function ReportsPage() {
         <div className="h-8 w-8 bg-black rounded-lg flex items-center justify-center">
           <Milk className="h-5 w-5 text-white" />
         </div>
-        <h1 className="text-[18pt] font-black uppercase tracking-tight leading-none">संकलन नोंदवही</h1>
+        <div className="text-left">
+          <h1 className="text-[12pt] font-black uppercase tracking-tight leading-none">M/s B.G. Chitale Dairy Bhilawadi Station 416303</h1>
+          <p className="text-[8pt] font-bold">Daily Tanker & Can Route Request & Allocation Report</p>
+        </div>
       </div>
-      <h2 className="text-[12pt] font-black uppercase text-slate-700 tracking-widest border-y border-slate-200 py-1 mb-2">{title}</h2>
-      <div className="flex justify-between text-[8pt] font-black uppercase text-slate-500 tracking-wider">
+      <div className="flex justify-between text-[8pt] font-black uppercase text-slate-500 tracking-wider mt-2 border-t pt-1">
         <span>सादरकर्ता: {subName} ({subId})</span>
-        <span>तारीख: {date}</span>
+        <span>दिनांक: {date}</span>
       </div>
     </div>
   )
 
-  const RouteSlipLayout = ({ report }: { report: any }) => {
+  const RouteAllocationLayout = ({ report }: { report: any }) => {
     const d = report.fullData || {};
-    const logs = d.routeVisitLogs || [];
+    const TableSection = ({ title, data }: { title: string, data: any[] }) => (
+      <div className="w-full mb-6">
+        <div className="bg-slate-100 p-1 text-[9pt] font-black uppercase text-center border border-black">{title}</div>
+        <table className="w-full border-collapse border border-black">
+          <thead>
+            <tr className="bg-slate-50 text-[7pt] font-black uppercase">
+              <th className="p-1 border border-black w-10">Sr.No</th>
+              <th className="p-1 border border-black w-24">Route ID</th>
+              <th className="p-1 border border-black text-left">Route Name</th>
+              <th className="p-1 border border-black w-24">Requested Route (V)</th>
+              <th className="p-1 border border-black w-24">Allocated Route (V)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {(data || []).map((entry, idx) => (
+              <tr key={idx} className="text-[8pt] font-bold uppercase text-center h-8">
+                <td className="p-1 border border-black">{idx + 1}</td>
+                <td className="p-1 border border-black">{entry.routeId}</td>
+                <td className="p-1 border border-black text-left">{entry.routeName}</td>
+                <td className="p-1 border border-black font-black text-lg">{entry.requested ? '✓' : ''}</td>
+                <td className="p-1 border border-black font-black text-lg">{entry.allocated ? '✓' : ''}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    )
+
     return (
       <div className="bg-white font-sans text-slate-900 border-[1.5px] border-black rounded-sm w-full max-w-[210mm] mx-auto p-6 printable-report flex flex-col items-center shadow-none mb-4">
-        <ReportHeader title={d.reportHeading || report.type} date={report.date} subName={d.name || profileName} subId={d.idNumber || profileId} />
-        <div className="w-full grid grid-cols-2 gap-2 mb-4 font-black text-[9pt] uppercase">
-          <div className="p-2 border border-black rounded bg-slate-50 text-left">रूट: {d.routeName || '---'} | वाहन: {d.vehicleNumber || '---'}</div>
-          <div className="p-2 border border-black rounded bg-slate-50 text-right">ड्रायव्हर: {d.driverName || '---'} | शिफ्ट: {d.shift || '---'}</div>
-        </div>
-        <div className="w-full border border-black rounded overflow-hidden mb-4">
-          <table className="w-full border-collapse">
-            <thead>
-              <tr className="bg-black text-white font-black text-[7pt] uppercase text-center">
-                <th className="p-1 border-r border-white/20">क्र.</th>
-                <th className="p-1 border-r border-white/20 text-left">केंद्र नाव</th>
-                <th className="p-1 border-r border-white/20">कोड</th>
-                <th className="p-1 border-r border-white/20">IN</th>
-                <th className="p-1 border-r border-white/20">OUT</th>
-                <th className="p-1 border-r border-white/20">E-Cans</th>
-                <th className="p-1 border-r border-white/20">F-Cans</th>
-                <th className="p-1">बर्फ वापर</th>
-              </tr>
-            </thead>
-            <tbody>
-              {logs.map((log: any, idx: number) => (
-                <tr key={idx} className="font-bold text-[8pt] uppercase border-b border-black last:border-0 text-center">
-                  <td className="p-1 border-r border-black">{idx + 1}</td>
-                  <td className="p-1 border-r border-black text-left">{log.supplierName}</td>
-                  <td className="p-1 border-r border-black">{log.centerCode}</td>
-                  <td className="p-1 border-r border-black">{log.arrivalTime}</td>
-                  <td className="p-1 border-r border-black">{log.departureTime}</td>
-                  <td className="p-1 border-r border-black">{log.emptyCans}</td>
-                  <td className="p-1 border-r border-black">{log.fullCans}</td>
-                  <td className="p-1">{log.iceUsed}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        <div className="w-full grid grid-cols-1 gap-2 text-left mb-6">
-          {["achievements", "problems", "actionsTaken", "visitDiscussion", "officeTaskDetails"].map(key => d[key] && (
-            <div key={key} className="p-2 border border-black rounded bg-slate-50/50">
-              <span className="text-[7pt] font-black uppercase text-slate-500 block">{labelMap[key] || key.toUpperCase()}</span>
-              <p className="text-[9pt] font-bold">{d[key]}</p>
-            </div>
-          ))}
-        </div>
-        <div className="w-full mt-auto pt-8 grid grid-cols-2 gap-12 text-center uppercase font-black text-[9pt] tracking-widest">
-          <div className="border-t-[1.5px] border-black pt-2">अधिकारी स्वाक्षरी</div>
-          <div className="border-t-[1.5px] border-black pt-2">सुपरवायझर: {d.supervisorName || '---'}</div>
+        <ReportHeader title={d.reportHeading} date={report.date} subName={d.name || profileName} subId={d.idNumber || profileId} />
+        
+        <TableSection title="Type : Can Route Morning" data={d.morningRoutes} />
+        <TableSection title="Type : Can Route Evening" data={d.eveningRoutes} />
+        <TableSection title="Type : Tanker Route" data={d.tankerRoutes} />
+
+        <div className="w-full mt-auto pt-12 grid grid-cols-2 gap-12 text-center uppercase font-black text-[9pt] tracking-widest">
+          <div className="border-t-[1.5px] border-black pt-2">1) Procurement Supervisor :</div>
+          <div className="border-t-[1.5px] border-black pt-2">2) Procurement Supervisor :</div>
         </div>
       </div>
-    );
-  };
+    )
+  }
 
   const GenericLayout = ({ report }: { report: any }) => {
     const d = report.fullData || {};
@@ -340,9 +331,14 @@ export default function ReportsPage() {
           </h2>
           <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">ARCHIVE & RECORD MANAGEMENT</p>
         </div>
-        <Button asChild className="h-10 px-6 font-black uppercase rounded-2xl shadow-xl shadow-primary/20 w-full sm:w-auto">
-          <Link href="/daily-report"><Plus className="h-4 w-4 mr-2" /> नवीन अहवाल</Link>
-        </Button>
+        <div className="flex gap-2 w-full sm:w-auto">
+          <Button asChild variant="outline" className="h-10 px-4 font-black uppercase rounded-2xl border-indigo-200 text-indigo-600 hover:bg-indigo-50 flex-1 sm:flex-none">
+            <Link href="/reports/entry/route-allocation"><Layers className="h-4 w-4 mr-2" /> रूट वाटप</Link>
+          </Button>
+          <Button asChild className="h-10 px-6 font-black uppercase rounded-2xl shadow-xl shadow-primary/20 flex-1 sm:flex-none">
+            <Link href="/daily-report"><Plus className="h-4 w-4 mr-2" /> नवीन अहवाल</Link>
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
@@ -413,7 +409,8 @@ export default function ReportsPage() {
           <ScrollArea className="max-h-[85vh] p-4 bg-slate-100 w-full flex flex-col items-center">
             <div className="w-full flex flex-col items-center">
               {selectedReport && (
-                selectedReport.type === 'Route Visit' ? <RouteSlipLayout report={selectedReport} /> :
+                selectedReport.type === 'Route Allocation Report' ? <RouteAllocationLayout report={selectedReport} /> :
+                selectedReport.type === 'Route Visit' ? <GenericLayout report={selectedReport} /> :
                 <GenericLayout report={selectedReport} />
               )}
             </div>
@@ -443,9 +440,9 @@ export default function ReportsPage() {
           }
           [role="dialog"] { position: absolute !important; top: 0 !important; left: 0 !important; transform: none !important; width: 100% !important; max-width: none !important; background: transparent !important; box-shadow: none !important; }
           .no-print, button, header, nav, footer, .sidebar, [role="dialog"] [class*="Close"], .h-14, .h-6 { display: none !important; }
-          table { width: 100% !important; border-collapse: collapse !important; border: 1.5px solid black !important; }
-          th, td { border: 1px solid black !important; padding: 3pt 5pt !important; font-size: 8.5pt !important; line-height: 1.2 !important; }
-          th { background-color: #f1f5f9 !important; -webkit-print-color-adjust: exact; }
+          table { width: 100% !important; border-collapse: collapse !important; border: 1.2px solid black !important; margin-bottom: 10pt; }
+          th, td { border: 1px solid black !important; padding: 3pt 5pt !important; font-size: 8pt !important; line-height: 1.2 !important; }
+          th { background-color: #f8fafc !important; -webkit-print-color-adjust: exact; }
         }
       `}</style>
     </div>

@@ -4,7 +4,7 @@ import * as React from "react"
 import { 
   LayoutDashboard, ListTodo, MapPin, LogOut, Milk, 
   ClipboardCheck, Archive, UserCircle, Warehouse, 
-  X, FileEdit, Users, Thermometer
+  X, FileEdit, Users, Thermometer, Layers
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
@@ -46,6 +46,12 @@ const items = [
     url: "/work-log",
     icon: ListTodo,
     sub: "Tasks"
+  },
+  {
+    title: "रूट मागणी व वाटप",
+    url: "/reports/entry/route-allocation",
+    icon: Layers,
+    sub: "Allocation"
   },
   {
     title: "सप्लायर मास्टर",
