@@ -78,49 +78,62 @@ h1, h2, h3, h4 {
 ::-webkit-scrollbar-track { @apply bg-transparent; }
 ::-webkit-scrollbar-thumb { @apply bg-slate-200 rounded-full; }
 
-/* Robust Global Print Engine */
+/* 
+ * ROBUST GLOBAL PRINT ENGINE 
+ * Ensures no blank pages and content is centered on A4.
+ */
 @media print {
   @page {
     size: A4;
-    margin: 5mm;
+    margin: 0mm; /* Minimal margins, we handle padding in CSS */
   }
   
   html, body {
     height: auto !important;
     overflow: visible !important;
     background: white !important;
-    padding: 0 !important;
     margin: 0 !important;
+    padding: 0 !important;
+    -webkit-print-color-adjust: exact;
   }
 
+  /* Hide everything by default */
   body * {
     visibility: hidden !important;
   }
 
+  /* Force display of the printable report and its children */
   .printable-report, .printable-report * {
     visibility: visible !important;
     opacity: 1 !important;
     color: black !important;
   }
 
+  /* Center the report on the A4 page */
   .printable-report {
     position: absolute !important;
-    top: 0 !important;
     left: 50% !important;
+    top: 0mm !important; /* Force to start from TOP */
     transform: translateX(-50%) !important;
     width: 190mm !important;
     max-width: 190mm !important;
+    min-height: auto !important;
     border: 1px solid black !important;
-    padding: 8mm !important;
+    padding: 10mm !important;
+    margin: 5mm 0 !important;
     display: block !important;
     background: white !important;
-    margin: 0 !important;
     box-shadow: none !important;
-    page-break-after: always;
+    page-break-inside: avoid !important;
   }
 
-  .no-print, button, header, nav, footer, .sidebar, [role="dialog"] [class*="Close"], .h-14, .h-6 {
+  /* Explicitly hide non-printable UI elements */
+  .no-print, button, header, nav, footer, .sidebar, [role="dialog"] [class*="Close"], .h-14, .h-6, .sidebar-inset, main {
     display: none !important;
+    height: 0 !important;
+    width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
   table {
@@ -131,12 +144,12 @@ h1, h2, h3, h4 {
 
   th, td {
     border: 1px solid black !important;
-    padding: 3pt 5pt !important;
-    font-size: 8pt !important;
+    padding: 4pt 6pt !important;
+    font-size: 9pt !important;
   }
 
   th {
-    background-color: #f1f5f9 !important;
-    -webkit-print-color-adjust: exact;
+    background-color: #f8fafc !important;
+    font-weight: 900 !important;
   }
 }

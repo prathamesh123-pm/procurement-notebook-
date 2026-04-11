@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect, Suspense } from "react"
@@ -8,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Card } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { 
-  ArrowLeft, Save, Truck, Plus, Trash2, CheckCircle2, RefreshCw, Layers, CopyCheck, LayoutList, Settings2
+  ArrowLeft, Save, Truck, Plus, Trash2, RefreshCw, Layers, CopyCheck, LayoutList, Settings2
 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { useUser, useFirestore, addDocumentNonBlocking, useDoc, useMemoFirebase, updateDocumentNonBlocking, setDocumentNonBlocking } from "@/firebase"
@@ -23,24 +22,28 @@ interface AllocationEntry {
   allocated: boolean;
 }
 
+/**
+ * Define UI sub-components OUTSIDE the main render function
+ * to prevent focus loss during typing.
+ */
 const AllocationSection = ({ 
   title, 
   section, 
   color, 
   formData, 
   isManageMode, 
-  addEntry, 
-  updateEntry, 
-  removeEntry 
+  onAdd, 
+  onUpdate, 
+  onRemove 
 }: { 
   title: string, 
   section: string, 
   color: string, 
   formData: any, 
   isManageMode: boolean,
-  addEntry: (s: any) => void,
-  updateEntry: (s: any, id: string, u: any) => void,
-  removeEntry: (s: any, id: string) => void
+  onAdd: (s: string) => void,
+  onUpdate: (s: string, id: string, u: Partial<AllocationEntry>) => void,
+  onRemove: (s: string, id: string) => void
 }) => (
   <Card className="compact-card p-3 border-muted-foreground/10">
     <div className="flex items-center justify-between border-b pb-1 mb-2">
@@ -48,7 +51,7 @@ const AllocationSection = ({
         <Layers className="h-3 w-3" /> {title}
       </h3>
       {isManageMode && (
-        <Button size="sm" variant="outline" onClick={() => addEntry(section)} className="h-6 text-[8px] font-black uppercase px-2 rounded-lg">
+        <Button size="sm" variant="outline" onClick={() => onAdd(section)} className="h-6 text-[8px] font-black uppercase px-2 rounded-lg">
           <Plus className="h-3 w-3 mr-1" /> जोडा
         </Button>
       )}
@@ -65,8 +68,8 @@ const AllocationSection = ({
         <div key={entry.id} className="grid grid-cols-12 gap-1 items-center bg-muted/5 p-1 rounded-lg border border-muted-foreground/5">
           {isManageMode ? (
             <>
-              <Input value={entry.routeId} onChange={e => updateEntry(section, entry.id, { routeId: e.target.value })} className="col-span-2 h-7 text-[10px] p-1 bg-white border-none font-black" />
-              <Input value={entry.routeName} onChange={e => updateEntry(section, entry.id, { routeName: e.target.value })} className="col-span-6 h-7 text-[10px] p-1 bg-white border-none font-bold" />
+              <Input value={entry.routeId} onChange={e => onUpdate(section, entry.id, { routeId: e.target.value })} className="col-span-2 h-7 text-[10px] p-1 bg-white border-none font-black" />
+              <Input value={entry.routeName} onChange={e => onUpdate(section, entry.id, { routeName: e.target.value })} className="col-span-6 h-7 text-[10px] p-1 bg-white border-none font-bold" />
             </>
           ) : (
             <>
@@ -76,16 +79,16 @@ const AllocationSection = ({
           )}
           
           <div className="col-span-2 flex justify-center">
-            <input type="checkbox" checked={entry.requested} onChange={e => updateEntry(section, entry.id, { requested: e.target.checked })} className="h-4 w-4 accent-primary cursor-pointer" />
+            <input type="checkbox" checked={entry.requested} onChange={e => onUpdate(section, entry.id, { requested: e.target.checked })} className="h-4 w-4 accent-primary cursor-pointer" />
           </div>
           
           <div className={cn(isManageMode ? "col-span-1 flex justify-center" : "col-span-2 flex justify-center")}>
-            <input type="checkbox" checked={entry.allocated} onChange={e => updateEntry(section, entry.id, { allocated: e.target.checked })} className="h-4 w-4 accent-primary cursor-pointer" />
+            <input type="checkbox" checked={entry.allocated} onChange={e => onUpdate(section, entry.id, { allocated: e.target.checked })} className="h-4 w-4 accent-primary cursor-pointer" />
           </div>
 
           {isManageMode && (
             <div className="col-span-1 flex justify-end">
-              <Button variant="ghost" size="icon" onClick={() => removeEntry(section, entry.id)} className="h-6 w-6 text-rose-400 hover:bg-rose-50 rounded-md">
+              <Button variant="ghost" size="icon" onClick={() => onRemove(section, entry.id)} className="h-6 w-6 text-rose-400 hover:bg-rose-50 rounded-md">
                 <Trash2 className="h-3.5 w-3.5" />
               </Button>
             </div>
@@ -96,7 +99,6 @@ const AllocationSection = ({
         <p className="text-[8px] text-center italic opacity-30 py-2">रूट यादी कोरी आहे.</p>
       )}
     </div>
-  </Card>
 )
 
 function RouteAllocationForm() {
@@ -156,7 +158,7 @@ function RouteAllocationForm() {
     }
   }, [existingReport])
 
-  const addEntry = (section: any) => {
+  const handleAddEntry = (section: string) => {
     const newEntry: AllocationEntry = {
       id: crypto.randomUUID(),
       routeId: "",
@@ -164,20 +166,20 @@ function RouteAllocationForm() {
       requested: false,
       allocated: false
     }
-    setFormData(prev => ({ ...prev, [section]: [...(prev[section] as AllocationEntry[]), newEntry] }))
+    setFormData(prev => ({ ...prev, [section]: [...(prev[section as keyof typeof prev] as AllocationEntry[]), newEntry] }))
   }
 
-  const updateEntry = (section: any, id: string, updates: Partial<AllocationEntry>) => {
+  const handleUpdateEntry = (section: string, id: string, updates: Partial<AllocationEntry>) => {
     setFormData(prev => ({
       ...prev,
-      [section]: (prev[section] as AllocationEntry[]).map(e => e.id === id ? { ...e, ...updates } : e)
+      [section]: (prev[section as keyof typeof prev] as AllocationEntry[]).map(e => e.id === id ? { ...e, ...updates } : e)
     }))
   }
 
-  const removeEntry = (section: any, id: string) => {
+  const handleRemoveEntry = (section: string, id: string) => {
     setFormData(prev => ({
       ...prev,
-      [section]: (prev[section] as AllocationEntry[]).filter(e => e.id !== id)
+      [section]: (prev[section as keyof typeof prev] as AllocationEntry[]).filter(e => e.id !== id)
     }))
   }
 
@@ -263,11 +265,11 @@ function RouteAllocationForm() {
 
         <Card className="compact-card p-3"><div className="space-y-0.5"><Label className="compact-label">तारीख</Label><Input type="date" className="compact-input h-9" value={formData.date} onChange={e => setFormData({...formData, date: e.target.value})} /></div></Card>
 
-        <AllocationSection title="Can Route Morning (Internal)" section="morningRoutes" color="text-blue-600" formData={formData} isManageMode={isManageMode} addEntry={addEntry} updateEntry={updateEntry} removeEntry={removeEntry} />
-        <AllocationSection title="Can Route Evening (Internal)" section="eveningRoutes" color="text-indigo-600" formData={formData} isManageMode={isManageMode} addEntry={addEntry} updateEntry={updateEntry} removeEntry={removeEntry} />
-        <AllocationSection title="Internal Tanker Route" section="tankerRoutes" color="text-rose-600" formData={formData} isManageMode={isManageMode} addEntry={addEntry} updateEntry={updateEntry} removeEntry={removeEntry} />
-        <AllocationSection title="External Can Route" section="extCanRoutes" color="text-emerald-600" formData={formData} isManageMode={isManageMode} addEntry={addEntry} updateEntry={updateEntry} removeEntry={removeEntry} />
-        <AllocationSection title="External Tanker Route" section="extTankerRoutes" color="text-amber-600" formData={formData} isManageMode={isManageMode} addEntry={addEntry} updateEntry={updateEntry} removeEntry={removeEntry} />
+        <AllocationSection title="Can Route Morning (Internal)" section="morningRoutes" color="text-blue-600" formData={formData} isManageMode={isManageMode} onAdd={handleAddEntry} onUpdate={handleUpdateEntry} onRemove={handleRemoveEntry} />
+        <AllocationSection title="Can Route Evening (Internal)" section="eveningRoutes" color="text-indigo-600" formData={formData} isManageMode={isManageMode} onAdd={handleAddEntry} onUpdate={handleUpdateEntry} onRemove={handleRemoveEntry} />
+        <AllocationSection title="Internal Tanker Route" section="tankerRoutes" color="text-rose-600" formData={formData} isManageMode={isManageMode} onAdd={handleAddEntry} onUpdate={handleUpdateEntry} onRemove={handleRemoveEntry} />
+        <AllocationSection title="External Can Route" section="extCanRoutes" color="text-emerald-600" formData={formData} isManageMode={isManageMode} onAdd={handleAddEntry} onUpdate={handleUpdateEntry} onRemove={handleRemoveEntry} />
+        <AllocationSection title="External Tanker Route" section="extTankerRoutes" color="text-amber-600" formData={formData} isManageMode={isManageMode} onAdd={handleAddEntry} onUpdate={handleUpdateEntry} onRemove={handleRemoveEntry} />
 
         <div className="flex flex-col gap-2 pt-4">
           {isManageMode ? (
