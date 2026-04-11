@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect, Suspense } from "react"
@@ -215,7 +214,7 @@ function RouteAllocationForm() {
       <div className="flex items-center gap-2 border-b pb-2 mb-3">
         <Button variant="ghost" size="icon" onClick={() => router.push('/reports')} className="h-8 w-8 shrink-0"><ArrowLeft className="h-4 w-4" /></Button>
         <div className="min-w-0">
-          <h2 className="text-sm font-black uppercase truncate flex items-center gap-1.5"><Truck className="h-4 w-4 text-primary" /> रूट मागणी व वाटप</h2>
+          <h2 className="text-sm font-black uppercase truncate flex items-center gap-1.5"><Truck className="h-4 w-4 text-primary" /> ERP रिपोर्ट</h2>
           <p className="text-[8px] font-black text-muted-foreground uppercase tracking-widest">{formData.date}</p>
         </div>
       </div>

@@ -48,10 +48,10 @@ const items = [
     sub: "Tasks"
   },
   {
-    title: "रूट मागणी व वाटप",
+    title: "ERP रिपोर्ट",
     url: "/reports/entry/route-allocation",
     icon: Layers,
-    sub: "Allocation"
+    sub: "ERP Report"
   },
   {
     title: "सप्लायर मास्टर",
