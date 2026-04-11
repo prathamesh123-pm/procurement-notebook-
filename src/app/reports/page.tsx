@@ -18,6 +18,7 @@ import { collection, doc } from "firebase/firestore"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
+import { Badge } from "@/components/ui/badge"
 
 const labelMap: Record<string, string> = {
   reportHeading: "अहवाल शीर्षक",
@@ -97,8 +98,8 @@ const ReportHeader = ({ title, date, subName, subId }: any) => (
         <Milk className="h-3.5 w-3.5 text-white" />
       </div>
       <div className="text-left">
-        <h1 className="text-[10pt] font-black uppercase tracking-tight leading-none">अहवाल तपशील (Management Report)</h1>
-        <p className="text-[7pt] font-bold uppercase opacity-70">{title || "अहवाल तपशील"}</p>
+        <h1 className="text-[10pt] font-black uppercase tracking-tight leading-none">अहवाल तपशील</h1>
+        <p className="text-[7pt] font-bold uppercase opacity-70">{title || "माहिती अहवाल"}</p>
       </div>
     </div>
     <div className="flex justify-between text-[6pt] font-black uppercase text-slate-500 tracking-wider mt-1 border-t pt-0.5">
@@ -147,7 +148,7 @@ const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any
       
       <TableSection title="Morning Can Routes (Internal)" data={d.morningRoutes} />
       <TableSection title="Evening Can Routes (Internal)" data={d.eveningRoutes} />
-      <TableSection title="Tanker Routes (Internal)" data={d.tankerRoutes} />
+      <TableSection title="Internal Tanker Routes" data={d.tankerRoutes} />
       <TableSection title="External Can Routes" data={d.extCanRoutes} />
       <TableSection title="External Tanker Routes" data={d.extTankerRoutes} />
 

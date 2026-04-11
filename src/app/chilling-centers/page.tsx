@@ -178,7 +178,7 @@ export default function ChillingCentersPage() {
       <div className="flex flex-col sm:flex-row items-center justify-between gap-3 border-b pb-4 no-print">
         <div className="min-w-0">
           <h2 className="text-xl font-black text-foreground flex items-center gap-2 uppercase tracking-tight">
-            <Thermometer className="h-6 w-6 text-primary" /> चिलिंग सेंटर मॅनेजमेंट (CHILLING)
+            <Thermometer className="h-6 w-6 text-primary" /> चिलिंग सेंटर (CHILLING)
           </h2>
           <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Logistics, Tanks & Audit Records</p>
         </div>
@@ -187,7 +187,7 @@ export default function ChillingCentersPage() {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+      <div className="grid grid-cols-1 grid-cols-1 lg:grid-cols-12 gap-4">
         <Card className="lg:col-span-4 border shadow-2xl bg-white rounded-2xl overflow-hidden no-print">
           <div className="p-3 border-b bg-muted/5">
             <div className="relative">
