@@ -66,7 +66,7 @@ const labelMap: Record<string, string> = {
   summary: "सारांश",
   visitPerson: "भेट व्यक्ती",
   visitPurpose: "उद्देश",
-  visitDiscussion: "चर्चा",
+  visitDiscussion: " चर्चा",
   officeTaskSubject: "विषय",
   officeTaskDetails: "तपशील",
   achievements: "कामगिरी",
@@ -91,7 +91,7 @@ const fieldSequence = [
   "summary", "achievements", "problems", "actionsTaken", "actionTaken", "remark", "otherInfo", "totalLossAmount", "supervisorName"
 ];
 
-const ReportHeader = ({ title, date, subName, subId }: any) => (
+const ReportHeader = ({ title, date, subName, subId, shift }: any) => (
   <div className="w-full border-b-2 border-black pb-1 mb-2 text-center">
     <div className="flex items-center justify-center gap-2">
       <div className="h-6 w-6 bg-black rounded flex items-center justify-center">
@@ -103,7 +103,11 @@ const ReportHeader = ({ title, date, subName, subId }: any) => (
       </div>
     </div>
     <div className="flex justify-between text-[6pt] font-black uppercase text-slate-500 tracking-wider mt-1 border-t pt-0.5">
-      <span>सादरकर्ता: {subName} ({subId})</span>
+      <div className="flex gap-2">
+        <span>सादरकर्ता: {subName}</span>
+        {subId && <span>| ID: {subId}</span>}
+        {shift && <span>| शिफ्ट: {shift}</span>}
+      </div>
       <span>दिनांक: {date}</span>
     </div>
   </div>
@@ -144,7 +148,7 @@ const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any
   const d = report.fullData || {};
   return (
     <div className="bg-white font-sans text-slate-900 border-[1.2px] border-black rounded-sm w-full max-w-[210mm] mx-auto p-4 printable-report flex flex-col items-center shadow-none mb-4">
-      <ReportHeader title={d.reportHeading} date={report.date} subName={d.name || profileName} subId={d.idNumber || profileId} />
+      <ReportHeader title={d.reportHeading} date={report.date} subName={d.name || profileName} subId={d.idNumber || profileId} shift={d.shift} />
       
       <TableSection title="Morning Can Routes (Internal)" data={d.morningRoutes} />
       <TableSection title="Evening Can Routes (Internal)" data={d.eveningRoutes} />
@@ -179,8 +183,11 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
     );
   }
 
+  // Fields to exclude from the main table because they are in the header
+  const excludeFields = ["reportHeading", "name", "repName", "shift", "idNumber", "repId"];
+
   const orderedEntries = fieldSequence
-    .filter(key => d[key] !== undefined && d[key] !== "" && labelMap[key])
+    .filter(key => d[key] !== undefined && d[key] !== "" && labelMap[key] && !excludeFields.includes(key))
     .map(key => [key, d[key]]);
 
   const losses = d.centerLosses || [];
@@ -189,7 +196,13 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
 
   return (
     <div className="bg-white font-sans text-slate-900 border-[1.2px] border-black rounded-sm w-full max-w-[210mm] mx-auto p-4 printable-report flex flex-col items-center shadow-none mb-4">
-      <ReportHeader title={d.reportHeading || report.type} date={report.date} subName={d.name || d.repName || profileName} subId={d.idNumber || d.repId || profileId} />
+      <ReportHeader 
+        title={d.reportHeading || report.type} 
+        date={report.date} 
+        subName={d.name || d.repName || profileName} 
+        subId={d.idNumber || d.repId || profileId}
+        shift={d.shift}
+      />
       
       <div className="w-full border border-black rounded overflow-hidden mb-2">
         <table className="w-full border-collapse">
