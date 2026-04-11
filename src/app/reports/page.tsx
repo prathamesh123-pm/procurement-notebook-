@@ -7,7 +7,8 @@ import { Card } from "@/components/ui/card"
 import { 
   Archive, Search, X, Printer, Trash2, FileEdit, Truck, 
   ShieldAlert, ClipboardCheck, Plus, MapPin, FileText,
-  Milk, User, Briefcase, FileSignature, CheckCircle2, Microscope, Layers, Calendar, ChevronRight
+  Milk, User, Briefcase, FileSignature, CheckCircle2, Microscope, Layers, Calendar, ChevronRight,
+  Clock, AlertTriangle, Settings, Info, Box
 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
@@ -25,7 +26,7 @@ const labelMap: Record<string, string> = {
   date: "तारीख",
   reportDate: "तारीख",
   shift: "शिफ्ट",
-  slipNo: "स्लिप क्र.",
+  slipNo: "SLIP No.",
   idNumber: "अधिकारी ID",
   repId: "कर्मचारी ID",
   supervisorName: "सुपरवायझर",
@@ -49,7 +50,7 @@ const labelMap: Record<string, string> = {
   severity: "बिघाड प्रकार",
   detailedReason: "सविस्तर माहिती",
   estimatedRepairTime: "दुरुस्ती वेळ",
-  estimatedRepairCost: "अंदाजे खर्च",
+  estimatedRepairCost: "अंदाजे खर्च (₹)",
   recoveryVehicleNo: "पर्यायी गाडी",
   recoveryArrivalTime: "पोहोच वेळ",
   capacity: "क्षमता (L)",
@@ -66,7 +67,7 @@ const labelMap: Record<string, string> = {
   summary: "सारांश",
   visitPerson: "भेट व्यक्ती",
   visitPurpose: "उद्देश",
-  visitDiscussion: " चर्चा",
+  visitDiscussion: "चर्चा",
   officeTaskSubject: "विषय",
   officeTaskDetails: "तपशील",
   achievements: "कामगिरी",
@@ -113,6 +114,230 @@ const ReportHeader = ({ title, date, subName, subId, shift }: any) => (
   </div>
 )
 
+const RouteVisitLayout = ({ report, profileName, profileId }: { report: any, profileName: string, profileId: string }) => {
+  const d = report.fullData || {};
+  const logs = d.routeVisitLogs || [];
+  
+  return (
+    <div className="bg-white font-sans text-slate-900 border-[1.2px] border-black rounded-sm w-full max-w-[210mm] mx-auto p-4 printable-report flex flex-col items-center shadow-none mb-4">
+      <ReportHeader title={d.reportHeading || "रूट व्हिजिट अहवाल"} date={report.date} subName={d.name || profileName} subId={d.idNumber || profileId} shift={d.shift} />
+      
+      <div className="w-full grid grid-cols-2 gap-2 mb-2">
+        <div className="border border-black p-1 text-[7pt] font-bold uppercase">रूट: {d.routeName}</div>
+        <div className="border border-black p-1 text-[7pt] font-bold uppercase">गाडी: {d.vehicleNumber}</div>
+        <div className="border border-black p-1 text-[7pt] font-bold uppercase">ड्रायव्हर: {d.driverName}</div>
+        <div className="border border-black p-1 text-[7pt] font-bold uppercase">SLIP No: {d.slipNo}</div>
+      </div>
+
+      <div className="w-full border border-black rounded overflow-hidden mb-2">
+        <table className="w-full border-collapse">
+          <thead>
+            <tr className="bg-slate-100 text-[6pt] font-black uppercase text-center border-b border-black">
+              <th className="p-0.5 border-r border-black w-6">अ.क्र.</th>
+              <th className="p-0.5 border-r border-black w-16">कोड</th>
+              <th className="p-0.5 border-r border-black text-left pl-1">केंद्राचे नाव</th>
+              <th className="p-0.5 border-r border-black w-24">वेळ (In/Out)</th>
+              <th className="p-0.5 border-r border-black w-16">कॅन (E/F)</th>
+              <th className="p-0.5 w-20">बर्फ</th>
+            </tr>
+          </thead>
+          <tbody>
+            {logs.map((log: any, i: number) => (
+              <tr key={i} className="text-[7pt] font-bold uppercase text-center h-6 border-b border-black last:border-0">
+                <td className="p-0.5 border-r border-black">{i + 1}</td>
+                <td className="p-0.5 border-r border-black">{log.centerCode}</td>
+                <td className="p-0.5 border-r border-black text-left pl-1 truncate">{log.supplierName}</td>
+                <td className="p-0.5 border-r border-black">{log.arrivalTime} - {log.departureTime}</td>
+                <td className="p-0.5 border-r border-black">{log.emptyCans}/{log.fullCans}</td>
+                <td className="p-0.5">{log.iceUsed}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="w-full grid grid-cols-1 gap-1 mb-2">
+        {d.achievements && <div className="border border-black p-1 text-[7pt]"><span className="font-black uppercase">कामगिरी:</span> {d.achievements}</div>}
+        {d.problems && <div className="border border-black p-1 text-[7pt] text-rose-700"><span className="font-black uppercase">समस्या:</span> {d.problems}</div>}
+        {d.actionsTaken && <div className="border border-black p-1 text-[7pt] text-blue-700"><span className="font-black uppercase">कार्यवाही:</span> {d.actionsTaken}</div>}
+      </div>
+
+      <div className="w-full mt-auto pt-4 grid grid-cols-2 gap-8 text-center uppercase font-black text-[7pt] tracking-widest">
+        <div className="border-t border-black pt-1">Officer Sign</div>
+        <div className="border-t border-black pt-1">Supervisor Sign</div>
+      </div>
+    </div>
+  )
+}
+
+const BreakdownLayout = ({ report, profileName, profileId }: { report: any, profileName: string, profileId: string }) => {
+  const d = report.fullData || {};
+  const losses = d.centerLosses || [];
+  
+  return (
+    <div className="bg-white font-sans text-slate-900 border-[1.2px] border-black rounded-sm w-full max-w-[210mm] mx-auto p-4 printable-report flex flex-col items-center shadow-none mb-4">
+      <ReportHeader title={d.reportHeading || "ब्रेकडाऊन अहवाल"} date={report.date} subName={d.name || profileName} subId={d.idNumber || profileId} shift={d.shift} />
+      
+      <div className="w-full border border-black mb-2 overflow-hidden">
+        <div className="bg-slate-100 p-0.5 text-[7pt] font-black uppercase text-center border-b border-black">वाहन व ड्रायव्हर माहिती</div>
+        <div className="grid grid-cols-3 text-[7pt] font-bold uppercase divide-x divide-black">
+          <div className="p-1">रूट: {d.routeName}</div>
+          <div className="p-1">वाहन: {d.vehicleNo} ({d.vehicleType})</div>
+          <div className="p-1">क्षमता: {d.capacity} L</div>
+        </div>
+        <div className="grid grid-cols-2 text-[7pt] font-bold uppercase divide-x divide-black border-t border-black">
+          <div className="p-1">ड्रायव्हर: {d.driverName}</div>
+          <div className="p-1">संपर्क: {d.mobile}</div>
+        </div>
+      </div>
+
+      <div className="w-full border border-black mb-2 overflow-hidden">
+        <div className="bg-rose-50 p-0.5 text-[7pt] font-black uppercase text-center border-b border-black text-rose-700">बिघाड व सद्यस्थिती</div>
+        <div className="grid grid-cols-2 text-[7pt] font-bold uppercase divide-x divide-black">
+          <div className="p-1">वेळ: {d.breakdownTime}</div>
+          <div className="p-1">ठिकाण: {d.location}</div>
+        </div>
+        <div className="p-1 border-t border-black text-[7pt]"><span className="font-black">कारण:</span> {d.reason} - {d.detailedReason}</div>
+        <div className="grid grid-cols-3 text-[7pt] font-black uppercase divide-x divide-black border-t border-black bg-slate-50">
+          <div className="p-1">दुरुस्ती खर्च: ₹{d.estimatedRepairCost}</div>
+          <div className="p-1">दूध गरम?: {d.milkHot}</div>
+          <div className="p-1">दूध खराब?: {d.milkSour}</div>
+        </div>
+      </div>
+
+      <div className="w-full border border-black mb-2 overflow-hidden">
+        <div className="bg-blue-50 p-0.5 text-[7pt] font-black uppercase text-center border-b border-black text-blue-700">पर्यायी सोय</div>
+        <div className="grid grid-cols-2 text-[7pt] font-bold uppercase divide-x divide-black">
+          <div className="p-1">गाडी क्र.: {d.recoveryVehicleNo}</div>
+          <div className="p-1">पोहोच वेळ: {d.recoveryArrivalTime}</div>
+        </div>
+      </div>
+
+      {losses.length > 0 && (
+        <div className="w-full border border-black rounded overflow-hidden mb-2">
+          <div className="bg-slate-100 p-0.5 text-[7pt] font-black uppercase text-center border-b border-black">नुकसान तपशील (LOSS LOG)</div>
+          <table className="w-full border-collapse">
+            <thead>
+              <tr className="bg-black text-white font-black text-[6pt] uppercase text-center">
+                <th className="p-0.5 border-r border-white/20 text-left pl-1">नाव/कोड</th>
+                <th className="p-0.5 border-r border-white/20 w-12">प्रकार</th>
+                <th className="p-0.5 border-r border-white/20 w-12">Qty</th>
+                <th className="p-0.5 w-16">रक्कम (₹)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {losses.map((loss: any, idx: number) => (
+                <tr key={idx} className="font-bold text-[7pt] uppercase border-b border-black last:border-0 text-center h-5">
+                  <td className="p-0.5 border-r border-black text-left pl-1 truncate">{loss.centerCode} {loss.centerName}</td>
+                  <td className="p-0.5 border-r border-black">{loss.milkType}</td>
+                  <td className="p-0.5 border-r border-black">{loss.qtyLiters}</td>
+                  <td className="p-0.5">{loss.lossAmount}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <div className="bg-rose-600 text-white p-1 text-right font-black text-[8pt]">एकूण नुकसान: ₹{d.totalLossAmount}</div>
+        </div>
+      )}
+
+      <div className="w-full mt-auto pt-4 grid grid-cols-2 gap-8 text-center uppercase font-black text-[7pt] tracking-widest">
+        <div className="border-t border-black pt-1">Officer Sign</div>
+        <div className="border-t border-black pt-1">Supervisor Sign</div>
+      </div>
+    </div>
+  )
+}
+
+const GenericLayout = ({ report, profileName, profileId }: { report: any, profileName: string, profileId: string }) => {
+  const d = report.fullData || {};
+  
+  if (report.type === 'Official Document') {
+    return (
+      <div className="bg-white font-sans text-slate-900 border-none w-full max-w-[210mm] mx-auto p-0 printable-report flex flex-col shadow-none mb-4">
+        <div className="w-full text-center mb-6">
+           <h1 className="text-[16pt] font-black uppercase tracking-tight border-b-2 border-black pb-1 inline-block min-w-[150px]">
+             {d.title || "अधिकृत दस्तऐवज"}
+           </h1>
+        </div>
+        <div 
+          className="w-full prose prose-sm max-w-none text-left text-[10pt] leading-snug"
+          dangerouslySetInnerHTML={{ __html: d.content || "" }} 
+        />
+      </div>
+    );
+  }
+
+  const excludeFields = ["reportHeading", "name", "repName", "shift", "idNumber", "repId", "routeVisitLogs", "centerLosses", "morningRoutes", "eveningRoutes", "tankerRoutes", "extCanRoutes", "extTankerRoutes", "points", "remarkPoints"];
+
+  const orderedEntries = fieldSequence
+    .filter(key => d[key] !== undefined && d[key] !== "" && labelMap[key] && !excludeFields.includes(key))
+    .map(key => [key, d[key]]);
+
+  const points = d.points || [];
+  const remarkPoints = d.remarkPoints || [];
+
+  return (
+    <div className="bg-white font-sans text-slate-900 border-[1.2px] border-black rounded-sm w-full max-w-[210mm] mx-auto p-4 printable-report flex flex-col items-center shadow-none mb-4">
+      <ReportHeader 
+        title={d.reportHeading || report.type} 
+        date={report.date} 
+        subName={d.name || d.repName || profileName} 
+        subId={d.idNumber || d.repId || profileId}
+        shift={d.shift}
+      />
+      
+      <div className="w-full border border-black rounded overflow-hidden mb-2">
+        <table className="w-full border-collapse">
+          <tbody>
+            {orderedEntries.map(([k, v]: any) => (
+              <tr key={k} className="border-b border-black last:border-0 text-[7pt] font-bold">
+                <td className="p-1 bg-slate-50 uppercase font-black border-r border-black w-[140px]">{labelMap[k]}</td>
+                <td className="p-1">{String(v)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {(points.length > 0 || remarkPoints.length > 0) && (
+        <div className="w-full p-2 border border-black rounded bg-slate-50 mb-2 text-left">
+          <span className="text-[6pt] font-black uppercase block border-b border-black/10 pb-0.5 mb-1">विशेष निरीक्षणे / मुद्दे:</span>
+          <ul className="list-decimal list-inside space-y-0.5">
+            {[...points, ...remarkPoints].map((p: string, i: number) => (
+              <li key={i} className="text-[7pt] font-bold">{p}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <div className="w-full mt-auto pt-4 grid grid-cols-2 gap-8 text-center uppercase font-black text-[7pt] tracking-widest">
+        <div className="border-t border-black pt-1">अधिकारी स्वाक्षरी</div>
+        <div className="border-t border-black pt-1">सुपरवायझर स्वाक्षरी</div>
+      </div>
+    </div>
+  );
+};
+
+const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any, profileName: string, profileId: string }) => {
+  const d = report.fullData || {};
+  return (
+    <div className="bg-white font-sans text-slate-900 border-[1.2px] border-black rounded-sm w-full max-w-[210mm] mx-auto p-4 printable-report flex flex-col items-center shadow-none mb-4">
+      <ReportHeader title={d.reportHeading} date={report.date} subName={d.name || profileName} subId={d.idNumber || profileId} shift={d.shift} />
+      
+      <TableSection title="Morning Can Routes (Internal)" data={d.morningRoutes} />
+      <TableSection title="Evening Can Routes (Internal)" data={d.eveningRoutes} />
+      <TableSection title="Internal Tanker Routes" data={d.tankerRoutes} />
+      <TableSection title="External Can Routes" data={d.extCanRoutes} />
+      <TableSection title="External Tanker Routes" data={d.extTankerRoutes} />
+
+      <div className="w-full mt-auto pt-4 grid grid-cols-2 gap-8 text-center uppercase font-black text-[7pt] tracking-widest">
+        <div className="border-t border-black pt-1">Supervisor Sign</div>
+        <div className="border-t border-black pt-1">Officer Sign</div>
+      </div>
+    </div>
+  )
+}
+
 const TableSection = ({ title, data }: { title: string, data: any[] }) => {
   if (!data || data.length === 0) return null;
   return (
@@ -143,129 +368,6 @@ const TableSection = ({ title, data }: { title: string, data: any[] }) => {
     </div>
   )
 }
-
-const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any, profileName: string, profileId: string }) => {
-  const d = report.fullData || {};
-  return (
-    <div className="bg-white font-sans text-slate-900 border-[1.2px] border-black rounded-sm w-full max-w-[210mm] mx-auto p-4 printable-report flex flex-col items-center shadow-none mb-4">
-      <ReportHeader title={d.reportHeading} date={report.date} subName={d.name || profileName} subId={d.idNumber || profileId} shift={d.shift} />
-      
-      <TableSection title="Morning Can Routes (Internal)" data={d.morningRoutes} />
-      <TableSection title="Evening Can Routes (Internal)" data={d.eveningRoutes} />
-      <TableSection title="Internal Tanker Routes" data={d.tankerRoutes} />
-      <TableSection title="External Can Routes" data={d.extCanRoutes} />
-      <TableSection title="External Tanker Routes" data={d.extTankerRoutes} />
-
-      <div className="w-full mt-auto pt-4 grid grid-cols-2 gap-8 text-center uppercase font-black text-[7pt] tracking-widest">
-        <div className="border-t border-black pt-1">Supervisor Sign</div>
-        <div className="border-t border-black pt-1">Officer Sign</div>
-      </div>
-    </div>
-  )
-}
-
-const GenericLayout = ({ report, profileName, profileId }: { report: any, profileName: string, profileId: string }) => {
-  const d = report.fullData || {};
-  
-  if (report.type === 'Official Document') {
-    return (
-      <div className="bg-white font-sans text-slate-900 border-none w-full max-w-[210mm] mx-auto p-0 printable-report flex flex-col shadow-none mb-4">
-        <div className="w-full text-center mb-6">
-           <h1 className="text-[16pt] font-black uppercase tracking-tight border-b-2 border-black pb-1 inline-block min-w-[150px]">
-             {d.title || "अधिकृत दस्तऐवज"}
-           </h1>
-        </div>
-        <div 
-          className="w-full prose prose-sm max-w-none text-left text-[10pt] leading-snug"
-          dangerouslySetInnerHTML={{ __html: d.content || "" }} 
-        />
-      </div>
-    );
-  }
-
-  // Fields to exclude from the main table because they are in the header
-  const excludeFields = ["reportHeading", "name", "repName", "shift", "idNumber", "repId"];
-
-  const orderedEntries = fieldSequence
-    .filter(key => d[key] !== undefined && d[key] !== "" && labelMap[key] && !excludeFields.includes(key))
-    .map(key => [key, d[key]]);
-
-  const losses = d.centerLosses || [];
-  const points = d.points || [];
-  const remarkPoints = d.remarkPoints || [];
-
-  return (
-    <div className="bg-white font-sans text-slate-900 border-[1.2px] border-black rounded-sm w-full max-w-[210mm] mx-auto p-4 printable-report flex flex-col items-center shadow-none mb-4">
-      <ReportHeader 
-        title={d.reportHeading || report.type} 
-        date={report.date} 
-        subName={d.name || d.repName || profileName} 
-        subId={d.idNumber || d.repId || profileId}
-        shift={d.shift}
-      />
-      
-      <div className="w-full border border-black rounded overflow-hidden mb-2">
-        <table className="w-full border-collapse">
-          <tbody>
-            {orderedEntries.map(([k, v]: any) => (
-              <tr key={k} className="border-b border-black last:border-0 text-[7pt] font-bold">
-                <td className="p-1 bg-slate-50 uppercase font-black border-r border-black w-[120px]">{labelMap[k]}</td>
-                <td className="p-1">{String(v)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {losses.length > 0 && (
-        <div className="w-full border border-black rounded overflow-hidden mb-2">
-          <div className="bg-slate-100 p-0.5 text-[7pt] font-black uppercase text-center border-b border-black">नुकसान तपशील (LOSS LOG)</div>
-          <table className="w-full border-collapse">
-            <thead>
-              <tr className="bg-black text-white font-black text-[6pt] uppercase text-center">
-                <th className="p-0.5 border-r border-white/20 text-left pl-1">नाव/कोड</th>
-                <th className="p-0.5 border-r border-white/20 w-12">प्रकार</th>
-                <th className="p-0.5 border-r border-white/20 w-12">Qty</th>
-                <th className="p-0.5 w-16">रक्कम</th>
-              </tr>
-            </thead>
-            <tbody>
-              {losses.map((loss: any, idx: number) => (
-                <tr key={idx} className="font-bold text-[7pt] uppercase border-b border-black last:border-0 text-center h-5">
-                  <td className="p-0.5 border-r border-black text-left pl-1 truncate">{loss.centerCode} {loss.centerName}</td>
-                  <td className="p-0.5 border-r border-black">{loss.milkType}</td>
-                  <td className="p-0.5 border-r border-black">{loss.qtyLiters}</td>
-                  <td className="p-0.5">{loss.lossAmount}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          {d.totalLossAmount !== undefined && (
-            <div className="bg-slate-50 p-1 text-right border-t border-black font-black text-[7pt]">
-              एकूण नुकसान: ₹{d.totalLossAmount}
-            </div>
-          )}
-        </div>
-      )}
-
-      {(points.length > 0 || remarkPoints.length > 0) && (
-        <div className="w-full p-2 border border-black rounded bg-slate-50 mb-2 text-left">
-          <span className="text-[6pt] font-black uppercase block border-b border-black/10 pb-0.5 mb-1">विशेष निरीक्षणे:</span>
-          <ul className="list-decimal list-inside space-y-0.5">
-            {[...points, ...remarkPoints].map((p: string, i: number) => (
-              <li key={i} className="text-[7pt] font-bold">{p}</li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      <div className="w-full mt-auto pt-4 grid grid-cols-2 gap-8 text-center uppercase font-black text-[7pt] tracking-widest">
-        <div className="border-t border-black pt-1">अधिकारी स्वाक्षरी</div>
-        <div className="border-t border-black pt-1">सुपरवायझर स्वाक्षरी</div>
-      </div>
-    </div>
-  );
-};
 
 export default function ReportsPage() {
   const { user } = useUser()
@@ -314,7 +416,7 @@ export default function ReportsPage() {
     return list.filter(r => {
       const matchesDate = filterDate === "" || r.date === filterDate
       const q = searchQuery.toLowerCase()
-      const matchesSearch = r.type?.toLowerCase().includes(q) || r.summary?.toLowerCase().includes(q)
+      const matchesSearch = r.type?.toLowerCase().includes(q) || r.summary?.toLowerCase().includes(q) || r.fullData?.reportHeading?.toLowerCase().includes(q)
       const matchesType = !typeFilter || r.type === typeFilter;
       return matchesDate && matchesSearch && matchesType
     }).sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime())
@@ -497,10 +599,12 @@ export default function ReportsPage() {
               <Button size="icon" variant="ghost" onClick={() => setIsViewOpen(false)} className="h-8 w-8 text-slate-400 hover:bg-slate-100 rounded-full"><X className="h-4 w-4" /></Button>
             </div>
           </DialogHeader>
-          <ScrollArea className="max-h-[80vh] p-2 sm:p-4 bg-slate-100 w-full">
+          <ScrollArea className="max-h-[85vh] p-2 sm:p-4 bg-slate-100 w-full overflow-y-auto">
             <div className="w-full flex flex-col items-center pb-10">
               {selectedReport && (
                 selectedReport.type === 'Route Allocation Report' ? <RouteAllocationLayout report={selectedReport} profileName={profileName} profileId={profileId} /> :
+                selectedReport.type === 'Route Visit' ? <RouteVisitLayout report={selectedReport} profileName={profileName} profileId={profileId} /> :
+                selectedReport.type === 'Transport Breakdown Report' ? <BreakdownLayout report={selectedReport} profileName={profileName} profileId={profileId} /> :
                 <GenericLayout report={selectedReport} profileName={profileName} profileId={profileId} />
               )}
             </div>
