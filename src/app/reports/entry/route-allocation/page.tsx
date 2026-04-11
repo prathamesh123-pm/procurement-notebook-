@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect, Suspense } from "react"
@@ -99,7 +100,8 @@ const AllocationSection = ({
         <p className="text-[8px] text-center italic opacity-30 py-2">रूट यादी कोरी आहे.</p>
       )}
     </div>
-)
+  </Card>
+);
 
 function RouteAllocationForm() {
   const router = useRouter()
