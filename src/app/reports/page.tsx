@@ -235,15 +235,16 @@ export default function ReportsPage() {
     
     if (report.type === 'Official Document') {
       return (
-        <div className="bg-white font-sans text-slate-900 border-[1.2px] border-black rounded-sm w-full max-w-[210mm] mx-auto p-8 printable-report flex flex-col items-center shadow-none mb-4">
+        <div className="bg-white font-sans text-slate-900 border-none w-full max-w-[210mm] mx-auto p-0 printable-report flex flex-col shadow-none mb-4">
+          <div className="w-full text-center mb-8">
+             <h1 className="text-[18pt] font-black uppercase tracking-tight border-b-2 border-black pb-2 inline-block min-w-[200px]">
+               {d.title || "अधिकृत दस्तऐवज"}
+             </h1>
+          </div>
           <div 
-            className="w-full prose prose-sm max-w-none text-left text-[9pt]"
+            className="w-full prose prose-sm max-w-none text-left text-[10pt] leading-relaxed"
             dangerouslySetInnerHTML={{ __html: d.content || "" }} 
           />
-          <div className="w-full mt-auto pt-6 grid grid-cols-2 gap-12 text-center uppercase font-black text-[8pt] tracking-widest">
-            <div className="border-t-[1.2px] border-black pt-1.5">अधिकारी स्वाक्षरी</div>
-            <div className="border-t-[1.2px] border-black pt-1.5">दिनांक: {report.date}</div>
-          </div>
         </div>
       );
     }
