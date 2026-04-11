@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Supplier, EquipmentItem, SupplierType, Route } from "@/lib/types"
 import { 
   Plus, Search, User, 
-  Truck, Edit, ChevronRight, ArrowLeft, X, Laptop, Zap, Sun, Trash2, Milk, Box, Wallet, ShieldCheck, Printer, CheckCircle2, ListPlus
+  Truck, Edit, ChevronRight, ArrowLeft, X, Laptop, Zap, Sun, Trash2, Milk, Box, Wallet, ShieldCheck, Printer, CheckCircle2, ListPlus, MapPin
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
@@ -20,7 +20,6 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking } from "@/firebase"
 import { collection, doc } from "firebase/firestore"
 import { Textarea } from "@/components/ui/textarea"
-import { cn } from "@/lib/utils"
 
 export default function RouteDetailsPage() {
   const params = useParams()
@@ -130,6 +129,7 @@ export default function RouteDetailsPage() {
     });
     toast({ title: "यशस्वी", description: `${supplier.name} या रूटमध्ये समाविष्ट झाला.` });
     setIsMasterDialogOpen(false);
+    setSelectedSupplier(supplier); // Automatically select transferred supplier to show info
   }
 
   const addEquipmentRow = () => {
@@ -194,7 +194,7 @@ export default function RouteDetailsPage() {
               <input placeholder="या रूटमध्ये शोधा..." className="w-full pl-9 h-10 text-[12px] bg-muted/10 border-none rounded-xl font-black uppercase outline-none focus:ring-1 focus:ring-primary shadow-inner" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
             </div>
           </div>
-          <ScrollArea className="h-[450px]">
+          <ScrollArea className="h-[500px]">
             <div className="divide-y">
               {filteredSuppliers.map(s => (
                 <div key={s.id} onClick={() => setSelectedSupplier(s)} className={`p-3 cursor-pointer hover:bg-primary/5 transition-all ${selectedSupplier?.id === s.id ? 'bg-primary/5 border-l-4 border-primary' : ''}`}>
@@ -202,7 +202,10 @@ export default function RouteDetailsPage() {
                     <h4 className="font-black text-[11px] uppercase truncate flex-1">{s.name}</h4>
                     {s.supplierType === 'Center' && <Badge className="h-3.5 px-1 text-[7px] font-black bg-emerald-500 border-none">CENTER</Badge>}
                   </div>
-                  <p className="text-[9px] text-muted-foreground font-bold mt-0.5">ID: {s.supplierId}</p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <Badge variant="outline" className="h-4 px-1.5 text-[7px] font-black bg-primary/5 text-primary border-none">ID: {s.supplierId}</Badge>
+                    <span className="text-[9px] text-muted-foreground font-bold">{s.address}</span>
+                  </div>
                 </div>
               ))}
               {filteredSuppliers.length === 0 && <div className="p-10 text-center text-[10px] font-black uppercase opacity-20 italic">सप्लायर नाहीत.</div>}
@@ -301,7 +304,7 @@ export default function RouteDetailsPage() {
             <div className="flex flex-col items-center justify-center h-full opacity-20 p-20 text-center">
               <User className="h-16 w-16 mb-4" />
               <h4 className="font-black uppercase tracking-[0.3em] text-sm">पुरवठादार निवडा</h4>
-              <p className="text-[10px] font-bold uppercase mt-2">Select a supplier to view full details</p>
+              <p className="text-[10px] font-bold uppercase mt-2">Select a supplier from the list to view full profile & inventory</p>
             </div>
           )}
         </Card>
