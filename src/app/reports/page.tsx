@@ -195,41 +195,43 @@ const RouteVisitLayout = ({ report, profileName, profileId }: { report: any, pro
       <ReportHeader title={d.reportHeading || "रूट व्हिजिट अहवाल"} date={report.date} subName={d.name || profileName} subId={d.idNumber || profileId} shift={d.shift} />
       
       <div className="w-full grid grid-cols-2 gap-2 mb-3 text-left">
-        <div className="border border-black p-1.5 text-[8pt] font-bold uppercase">रूट: {d.routeName}</div>
-        <div className="border border-black p-1.5 text-[8pt] font-bold uppercase">वाहन: {d.vehicleNumber}</div>
-        <div className="border border-black p-1.5 text-[8pt] font-bold uppercase">ड्रायव्हर: {d.driverName}</div>
-        <div className="border border-black p-1.5 text-[8pt] font-bold uppercase">SLIP No: {d.slipNo}</div>
+        <div className="border border-black p-1.5 text-[8pt] font-bold uppercase">{labelMap.routeName}: {d.routeName}</div>
+        <div className="border border-black p-1.5 text-[8pt] font-bold uppercase">{labelMap.vehicleNumber}: {d.vehicleNumber}</div>
+        <div className="border border-black p-1.5 text-[8pt] font-bold uppercase">{labelMap.driverName}: {d.driverName}</div>
+        <div className="border border-black p-1.5 text-[8pt] font-bold uppercase">{labelMap.slipNo}: {d.slipNo}</div>
       </div>
 
-      <table className="w-full border-collapse mb-3 table-fixed">
+      <table className="w-full border-collapse mb-3 table-fixed border border-black">
         <thead>
-          <tr className="bg-slate-100 text-[7pt] font-black uppercase text-center">
-            <th className="p-1 border border-black w-8">Sr.</th>
-            <th className="p-1 border border-black w-16">Code</th>
-            <th className="p-1 border border-black text-left pl-2">Name</th>
-            <th className="p-1 border border-black w-24">In/Out</th>
-            <th className="p-1 border border-black w-16">E/F</th>
-            <th className="p-1 border border-black w-20">Ice</th>
+          <tr className="bg-slate-100 text-[7pt] font-black uppercase text-center h-8">
+            <th className="p-1 border border-black w-[35px]">Sr.</th>
+            <th className="p-1 border border-black w-[60px]">Code</th>
+            <th className="p-1 border border-black text-left pl-2">Center Name</th>
+            <th className="p-1 border border-black w-[95px]">In/Out</th>
+            <th className="p-1 border border-black w-[55px]">E/F</th>
+            <th className="p-1 border border-black w-[65px]">Ice</th>
           </tr>
         </thead>
         <tbody>
           {logs.map((log: any, i: number) => (
-            <tr key={i} className="text-[8pt] font-bold uppercase text-center h-7 border-b border-black">
+            <tr key={i} className="text-[8pt] font-bold uppercase text-center h-8 border-b border-black">
               <td className="p-1 border border-black">{i + 1}</td>
-              <td className="p-1 border border-black truncate">{log.centerCode}</td>
-              <td className="p-1 border border-black text-left pl-2 truncate">{log.supplierName}</td>
+              <td className="p-1 border border-black truncate px-1">{log.centerCode}</td>
+              <td className="p-1 border border-black text-left pl-2 overflow-hidden px-1">
+                <div className="truncate w-full">{log.supplierName}</div>
+              </td>
               <td className="p-1 border border-black">{log.arrivalTime}-{log.departureTime}</td>
               <td className="p-1 border border-black">{log.emptyCans}/{log.fullCans}</td>
-              <td className="p-1 border border-black truncate">{log.iceUsed}</td>
+              <td className="p-1 border border-black truncate px-1">{log.iceUsed}</td>
             </tr>
           ))}
         </tbody>
       </table>
 
       <div className="w-full grid grid-cols-1 gap-1 mb-3">
-        {d.achievements && <div className="border border-black p-1.5 text-[8pt] text-left"><span className="font-black uppercase">कामगिरी:</span> {d.achievements}</div>}
-        {d.problems && <div className="border border-black p-1.5 text-[8pt] text-rose-700 text-left"><span className="font-black uppercase">समस्या:</span> {d.problems}</div>}
-        {d.actionsTaken && <div className="border border-black p-1.5 text-[8pt] text-blue-700 text-left"><span className="font-black uppercase">कार्यवाही:</span> {d.actionsTaken}</div>}
+        {d.achievements && <div className="border border-black p-1.5 text-[8pt] text-left"><span className="font-black uppercase">{labelMap.achievements}:</span> {d.achievements}</div>}
+        {d.problems && <div className="border border-black p-1.5 text-[8pt] text-rose-700 text-left"><span className="font-black uppercase">{labelMap.problems}:</span> {d.problems}</div>}
+        {d.actionsTaken && <div className="border border-black p-1.5 text-[8pt] text-blue-700 text-left"><span className="font-black uppercase">{labelMap.actionsTaken}:</span> {d.actionsTaken}</div>}
       </div>
 
       <div className="w-full mt-auto pt-6 grid grid-cols-2 gap-12 text-center uppercase font-black text-[8pt] tracking-widest">
@@ -251,27 +253,27 @@ const BreakdownLayout = ({ report, profileName, profileId }: { report: any, prof
       <div className="w-full border border-black mb-3 overflow-hidden text-left">
         <div className="bg-slate-100 p-1 text-[8pt] font-black uppercase text-center border-b border-black">१) वाहन व ड्रायव्हर माहिती</div>
         <div className="p-1.5 border-b border-black text-[8pt] font-bold uppercase flex justify-between">
-          <span>रूट: {d.routeName}</span>
-          <span>गाडी क्र.: {d.vehicleNo}</span>
+          <span>{labelMap.routeName}: {d.routeName}</span>
+          <span>{labelMap.vehicleNo}: {d.vehicleNo}</span>
         </div>
         <div className="grid grid-cols-2 text-[8pt] font-bold uppercase divide-x divide-black border-b border-black">
-          <div className="p-1.5">प्रकार: {d.vehicleType}</div>
-          <div className="p-1.5">क्षमता: {d.capacity} L</div>
+          <div className="p-1.5">{labelMap.vehicleType}: {d.vehicleType}</div>
+          <div className="p-1.5">{labelMap.capacity}: {d.capacity} L</div>
         </div>
         <div className="grid grid-cols-2 text-[8pt] font-bold uppercase divide-x divide-black">
-          <div className="p-1.5">ड्रायव्हर: {d.driverName}</div>
-          <div className="p-1.5">मोबाईल: {d.mobile}</div>
+          <div className="p-1.5">{labelMap.driverName}: {d.driverName}</div>
+          <div className="p-1.5">{labelMap.mobile}: {d.mobile}</div>
         </div>
       </div>
 
       <div className="w-full border border-black mb-3 overflow-hidden text-left">
         <div className="bg-rose-50 p-1 text-[8pt] font-black uppercase text-center border-b border-black text-rose-700">२) गाडी बिघाड तपशील</div>
         <div className="grid grid-cols-2 text-[8pt] font-bold uppercase divide-x divide-black">
-          <div className="p-1.5">वेळ: {d.breakdownTime}</div>
-          <div className="p-1.5">ठिकाण: {d.location}</div>
+          <div className="p-1.5">{labelMap.breakdownTime}: {d.breakdownTime}</div>
+          <div className="p-1.5">{labelMap.location}: {d.location}</div>
         </div>
-        <div className="p-1.5 border-t border-black text-[8pt]"><span className="font-black uppercase">कारण:</span> {d.reason}</div>
-        {d.detailedReason && <div className="p-1.5 border-t border-black text-[8pt]"><span className="font-black uppercase">वर्णन:</span> {d.detailedReason}</div>}
+        <div className="p-1.5 border-t border-black text-[8pt]"><span className="font-black uppercase">{labelMap.reason}:</span> {d.reason}</div>
+        {d.detailedReason && <div className="p-1.5 border-t border-black text-[8pt]"><span className="font-black uppercase">{labelMap.detailedReason}:</span> {d.detailedReason}</div>}
       </div>
 
       {losses && losses.length > 0 && (
@@ -297,7 +299,7 @@ const BreakdownLayout = ({ report, profileName, profileId }: { report: any, prof
               ))}
             </tbody>
           </table>
-          <div className="bg-rose-600 text-white p-1.5 text-right font-black text-[9pt]">एकूण आर्थिक नुकसान: ₹{d.totalLossAmount}</div>
+          <div className="bg-rose-600 text-white p-1.5 text-right font-black text-[9pt]">{labelMap.totalLossAmount}: ₹{d.totalLossAmount}</div>
         </div>
       )}
 
