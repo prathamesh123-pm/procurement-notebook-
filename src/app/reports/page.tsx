@@ -245,7 +245,7 @@ const BreakdownLayout = ({ report, profileName, profileId }: { report: any, prof
         </div>
       </div>
 
-      {losses.length > 0 && (
+      {losses && losses.length > 0 && (
         <div className="w-full border border-black rounded overflow-hidden mb-3">
           <div className="bg-slate-100 p-1 text-[8pt] font-black uppercase text-center border-b border-black">नुकसान तपशील (LOSS LOG)</div>
           <table className="w-full border-collapse">

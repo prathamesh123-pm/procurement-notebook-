@@ -79,8 +79,8 @@ h1, h2, h3, h4 {
 ::-webkit-scrollbar-thumb { @apply bg-slate-200 rounded-full; }
 
 /* 
- * ULTIMATE ROBUST PRINT ENGINE v5.0
- * Fixes: Dark overlays, Clipped content (Heading only showing), and Blank pages.
+ * ULTIMATE ROBUST PRINT ENGINE v6.0
+ * Fixes: Dark overlays, Clipped content (ScrollArea issues), Blank pages, and Alignment.
  */
 @media print {
   @page {
@@ -99,21 +99,23 @@ h1, h2, h3, h4 {
     print-color-adjust: exact !important;
   }
 
-  /* 1. Hide EVERYTHING except portals containing reports */
-  body > *:not(div[data-radix-portal]) {
+  /* 1. Hide EVERYTHING except the printable report */
+  body > * {
     display: none !important;
   }
 
-  /* 2. Reset the Portal and Dialog behavior to be a flat page */
-  div[data-radix-portal], 
-  div[role="dialog"], 
-  div[role="presentation"] {
-    position: static !important;
+  /* 2. Show the portal content (Dialog) */
+  body > div[data-radix-portal] {
     display: block !important;
+    position: static !important;
+  }
+
+  div[role="dialog"] {
+    display: block !important;
+    position: static !important;
     background: white !important;
     width: 100% !important;
     height: auto !important;
-    overflow: visible !important;
     padding: 0 !important;
     margin: 0 !important;
     box-shadow: none !important;
@@ -121,7 +123,7 @@ h1, h2, h3, h4 {
     transform: none !important;
   }
 
-  /* 3. Force-Kill the dark backdrop/overlay */
+  /* 3. Kill the dark backdrop/overlay */
   div[data-state="open"] > div:first-child,
   .fixed.inset-0.z-50.bg-black\/80 {
     display: none !important;
@@ -129,7 +131,7 @@ h1, h2, h3, h4 {
     backdrop-filter: none !important;
   }
 
-  /* 4. Force ScrollArea to be fully visible (This was the "heading only" culprit) */
+  /* 4. Reset ScrollArea so all content shows */
   [data-radix-scroll-area-viewport] {
     display: block !important;
     overflow: visible !important;
@@ -137,7 +139,7 @@ h1, h2, h3, h4 {
     width: 100% !important;
   }
 
-  /* 5. Clean up the Report itself */
+  /* 5. Printable Report Structure */
   .printable-report {
     display: block !important;
     visibility: visible !important;
@@ -152,7 +154,7 @@ h1, h2, h3, h4 {
     background: white !important;
     box-shadow: none !important;
     page-break-inside: avoid !important;
-    z-index: 9999 !important;
+    z-index: 99999 !important;
   }
 
   .printable-report * {
@@ -161,21 +163,12 @@ h1, h2, h3, h4 {
     background-color: transparent !important;
   }
 
-  /* 6. Hide UI elements like close buttons and headers in the dialog */
-  .no-print, 
-  button, 
-  [role="dialog"] header,
-  [role="dialog"] [class*="Close"],
-  .shrink-0 {
-    display: none !important;
-  }
-
-  /* 7. Table Printing Consistency */
+  /* 6. Professional Table Styling */
   .printable-report table {
     display: table !important;
     width: 100% !important;
     border-collapse: collapse !important;
-    border: 1px solid black !important;
+    border: 1.2px solid black !important;
   }
   
   .printable-report th,
@@ -183,11 +176,20 @@ h1, h2, h3, h4 {
     display: table-cell !important;
     border: 1px solid black !important;
     padding: 4px !important;
-    font-size: 7.5pt !important;
+    font-size: 8pt !important;
     color: black !important;
   }
 
   .printable-report tr {
     page-break-inside: avoid !important;
+  }
+
+  /* 7. Hide UI Noise */
+  .no-print, 
+  button, 
+  [role="dialog"] header,
+  [role="dialog"] [class*="Close"],
+  .shrink-0 {
+    display: none !important;
   }
 }
