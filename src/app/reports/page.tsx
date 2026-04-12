@@ -33,8 +33,8 @@ const labelMap: Record<string, string> = {
   centerName: "केंद्राचे नाव",
   centerCode: "केंद्र कोड",
   ownerName: "मालकाचे नाव",
-  supplierName: "सप्लायर नाव",
-  supplierId: "सप्लायर ID",
+  supplierName: "पुरवठादार किंवा केंद्राचे नाव",
+  supplierId: "पुरवठादार किंवा केंद्राचा कोड (CODE)",
   mobile: "मोबाईल",
   address: "पत्ता",
   district: "जिल्हा",
@@ -77,7 +77,7 @@ const labelMap: Record<string, string> = {
   remark: "विशेष शेरा",
   otherInfo: "इतर माहिती",
   notes: "नोंद",
-  title: "शीर्षक",
+  title: "पूर्ण करावयाच्या कामाचे नाव",
   totalLossAmount: "एकूण आर्थिक नुकसान (₹)"
 };
 
@@ -249,6 +249,52 @@ const BreakdownLayout = ({ report, profileName, profileId }: { report: any, prof
     </div>
   )
 }
+
+const TaskLayout = ({ report, profileName, profileId }: { report: any, profileName: string, profileId: string }) => {
+  const d = report.fullData || {};
+  const points = d.remarkPoints || [];
+  
+  return (
+    <div className="bg-white font-sans text-slate-900 border-[1.2px] border-black rounded-sm w-full max-w-[210mm] mx-auto p-4 printable-report flex flex-col items-center shadow-none mb-4">
+      <ReportHeader title={d.reportHeading || "कामकाज नोंद अहवाल"} date={report.date} subName={d.name || profileName} subId={d.idNumber || profileId} shift={d.shift} />
+      
+      <div className="w-full border border-black rounded overflow-hidden mb-2">
+        <table className="w-full border-collapse">
+          <tbody>
+            <tr className="border-b border-black text-[7pt] font-bold">
+              <td className="p-1 bg-slate-50 uppercase font-black border-r border-black w-[200px]">पुरवठादार किंवा केंद्राचे नाव</td>
+              <td className="p-1">{d.supplierName || "---"}</td>
+            </tr>
+            <tr className="border-b border-black text-[7pt] font-bold">
+              <td className="p-1 bg-slate-50 uppercase font-black border-r border-black w-[200px]">पुरवठादार किंवा केंद्राचा कोड (CODE)</td>
+              <td className="p-1">{d.supplierId || "---"}</td>
+            </tr>
+            <tr className="border-b border-black text-[7pt] font-bold">
+              <td className="p-1 bg-slate-50 uppercase font-black border-r border-black w-[200px]">पूर्ण करावयाच्या कामाचे नाव</td>
+              <td className="p-1">{d.title || "---"}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      {points.length > 0 && (
+        <div className="w-full p-2 border border-black rounded bg-slate-50 mb-2 text-left">
+          <span className="text-[6pt] font-black uppercase block border-b border-black/10 pb-0.5 mb-1">केलेल्या कामाबद्दल सविस्तर शेरा (REMARKS):</span>
+          <ul className="list-decimal list-inside space-y-0.5">
+            {points.map((p: string, i: number) => (
+              <li key={i} className="text-[7pt] font-bold">{p}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <div className="w-full mt-auto pt-4 grid grid-cols-2 gap-8 text-center uppercase font-black text-[7pt] tracking-widest">
+        <div className="border-t border-black pt-1">अधिकारी स्वाक्षरी</div>
+        <div className="border-t border-black pt-1">सुपरवायझर स्वाक्षरी</div>
+      </div>
+    </div>
+  );
+};
 
 const GenericLayout = ({ report, profileName, profileId }: { report: any, profileName: string, profileId: string }) => {
   const d = report.fullData || {};
@@ -610,6 +656,7 @@ export default function ReportsPage() {
                 selectedReport.type === 'Route Allocation Report' ? <RouteAllocationLayout report={selectedReport} profileName={profileName} profileId={profileId} /> :
                 selectedReport.type === 'Route Visit' ? <RouteVisitLayout report={selectedReport} profileName={profileName} profileId={profileId} /> :
                 selectedReport.type === 'Transport Breakdown Report' ? <BreakdownLayout report={selectedReport} profileName={profileName} profileId={profileId} /> :
+                selectedReport.type === 'Daily Task' ? <TaskLayout report={selectedReport} profileName={profileName} profileId={profileId} /> :
                 <GenericLayout report={selectedReport} profileName={profileName} profileId={profileId} />
               )}
             </div>
