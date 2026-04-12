@@ -47,8 +47,10 @@ export default function RouteDetailsPage() {
 
   const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(null)
   const [searchQuery, setSearchQuery] = useState("")
+  const [masterSearchQuery, setMasterSearchQuery] = useState("")
   const [mounted, setMounted] = useState(false)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [isMasterDialogOpen, setIsMasterDialogOpen] = useState(false)
   const [dialogMode, setDialogMode] = useState<'add' | 'edit'>('add')
   const [editingId, setEditingId] = useState<string | null>(null)
 
@@ -119,6 +121,27 @@ export default function RouteDetailsPage() {
     setIsDialogOpen(false); toast({ title: "यशस्वी", description: "माहिती जतन झाली." })
   }
 
+  const handleAssignFromMaster = (sid: string) => {
+    if (!db) return
+    updateDocumentNonBlocking(doc(db, 'suppliers', sid), { routeId: currentRouteId, updatedAt: new Date().toISOString() })
+    setIsMasterDialogOpen(false)
+    toast({ title: "यशस्वी", description: "सप्लायर या रूटला जोडला गेला." })
+  }
+
+  const availableMasterSuppliers = useMemo(() => {
+    return (allSuppliers || []).filter(s => {
+      const isNotInCurrentRoute = s.routeId !== currentRouteId;
+      const q = masterSearchQuery.toLowerCase();
+      const matchesSearch = s.name?.toLowerCase().includes(q) || s.supplierId?.toString().includes(q);
+      return isNotInCurrentRoute && matchesSearch;
+    })
+  }, [allSuppliers, currentRouteId, masterSearchQuery])
+
+  const getRouteName = (rid: string) => {
+    if (!rid) return "रूट नाही";
+    return allRoutes?.find(r => r.id === rid)?.name || "---"
+  }
+
   const addEquipmentRow = () => {
     setFormData({ ...formData, equipment: [...formData.equipment, { id: crypto.randomUUID(), name: "", quantity: 1, ownership: 'Company' }] })
   }
@@ -155,6 +178,9 @@ export default function RouteDetailsPage() {
           </div>
         </div>
         <div className="flex gap-2 w-full md:w-auto overflow-x-auto pb-1">
+          <Button onClick={() => setIsMasterDialogOpen(true)} variant="outline" className="h-10 font-black rounded-xl text-[10px] uppercase tracking-widest px-4 border-primary/20 text-primary shrink-0 shadow-sm">
+            <ListPlus className="h-4 w-4 mr-1.5" /> मास्टर मधून निवडा
+          </Button>
           <Button onClick={openAddDialog} className="h-10 font-black rounded-xl text-[10px] uppercase tracking-widest px-4 shadow-lg shadow-primary/20 shrink-0">
             <Plus className="h-4 w-4 mr-1.5" /> नवीन सप्लायर
           </Button>
@@ -290,6 +316,48 @@ export default function RouteDetailsPage() {
           )}
         </Card>
       </div>
+
+      <Dialog open={isMasterDialogOpen} onOpenChange={setIsMasterDialogOpen}>
+        <DialogContent className="max-w-2xl p-0 overflow-hidden rounded-3xl border-none shadow-2xl bg-white">
+          <DialogHeader className="p-4 bg-primary text-white">
+            <DialogTitle className="text-base font-black uppercase tracking-widest">मास्टर लिस्ट मधून निवडा</DialogTitle>
+            <DialogDescription className="text-[9px] text-white/70 uppercase">या रूटला सप्लायर असाइन करा.</DialogDescription>
+          </DialogHeader>
+          <div className="p-4 border-b">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
+              <Input 
+                placeholder="नाव किंवा कोडने शोधा..." 
+                className="pl-10 h-11 rounded-xl bg-muted/10 border-none font-bold shadow-inner"
+                value={masterSearchQuery}
+                onChange={e => setMasterSearchQuery(e.target.value)}
+              />
+            </div>
+          </div>
+          <ScrollArea className="h-[400px]">
+            <div className="divide-y divide-muted-foreground/5">
+              {availableMasterSuppliers.length > 0 ? (
+                availableMasterSuppliers.map(s => (
+                  <div key={s.id} className="p-4 flex items-center justify-between hover:bg-muted/50 transition-colors">
+                    <div className="min-w-0 flex-1 mr-4">
+                      <h4 className="font-black text-[12px] uppercase truncate">{s.name}</h4>
+                      <div className="flex flex-wrap items-center gap-2 mt-1">
+                        <Badge variant="outline" className="h-4 px-1 text-[7px] border-none bg-primary/5 text-primary uppercase">ID: {s.supplierId}</Badge>
+                        <span className="text-[9px] text-muted-foreground font-bold uppercase truncate">रूट: {getRouteName(s.routeId)}</span>
+                      </div>
+                    </div>
+                    <Button size="sm" className="h-8 text-[9px] font-black uppercase rounded-lg px-4 shadow-md" onClick={() => handleAssignFromMaster(s.id)}>
+                      येथे जोडा
+                    </Button>
+                  </div>
+                ))
+              ) : (
+                <div className="p-20 text-center text-muted-foreground font-black uppercase text-[10px] opacity-30 italic">सप्लायर सापडले नाहीत.</div>
+              )}
+            </div>
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-[600px] p-0 overflow-hidden rounded-3xl border-none shadow-2xl bg-white">
