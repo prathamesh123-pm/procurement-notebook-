@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
@@ -204,25 +205,25 @@ const RouteVisitLayout = ({ report, profileName, profileId }: { report: any, pro
       <table className="w-full border-collapse mb-3 table-fixed border border-black">
         <thead>
           <tr className="bg-slate-100 text-[7pt] font-black uppercase text-center h-8">
-            <th className="p-1 border border-black w-[35px]">Sr.</th>
-            <th className="p-1 border border-black w-[60px]">Code</th>
+            <th className="p-1 border border-black w-[30px]">Sr.</th>
+            <th className="p-1 border border-black w-[50px]">Code</th>
             <th className="p-1 border border-black text-left pl-2">Center Name</th>
-            <th className="p-1 border border-black w-[95px]">In/Out</th>
-            <th className="p-1 border border-black w-[55px]">E/F</th>
-            <th className="p-1 border border-black w-[65px]">Ice</th>
+            <th className="p-1 border border-black w-[85px]">In/Out</th>
+            <th className="p-1 border border-black w-[50px]">E/F</th>
+            <th className="p-1 border border-black w-[50px]">Ice</th>
           </tr>
         </thead>
         <tbody>
           {logs.map((log: any, i: number) => (
             <tr key={i} className="text-[8pt] font-bold uppercase text-center h-8 border-b border-black">
               <td className="p-1 border border-black">{i + 1}</td>
-              <td className="p-1 border border-black truncate px-1">{log.centerCode}</td>
+              <td className="p-1 border border-black truncate px-1 text-center">{log.centerCode}</td>
               <td className="p-1 border border-black text-left pl-2 overflow-hidden px-1">
                 <div className="truncate w-full">{log.supplierName}</div>
               </td>
-              <td className="p-1 border border-black">{log.arrivalTime}-{log.departureTime}</td>
-              <td className="p-1 border border-black">{log.emptyCans}/{log.fullCans}</td>
-              <td className="p-1 border border-black truncate px-1">{log.iceUsed}</td>
+              <td className="p-1 border border-black text-center">{log.arrivalTime}-{log.departureTime}</td>
+              <td className="p-1 border border-black text-center">{log.emptyCans}/{log.fullCans}</td>
+              <td className="p-1 border border-black truncate px-1 text-center">{log.iceUsed}</td>
             </tr>
           ))}
         </tbody>
