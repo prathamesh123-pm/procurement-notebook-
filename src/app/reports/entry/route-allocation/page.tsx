@@ -6,8 +6,9 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
 import { 
-  ArrowLeft, Save, Truck, Plus, Trash2, RefreshCw, Layers, CopyCheck, LayoutList, Settings2
+  ArrowLeft, Save, Truck, Plus, Trash2, RefreshCw, Layers, CopyCheck, LayoutList, Settings2, AlertCircle
 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { useUser, useFirestore, addDocumentNonBlocking, useDoc, useMemoFirebase, updateDocumentNonBlocking, setDocumentNonBlocking } from "@/firebase"
@@ -23,9 +24,6 @@ interface AllocationEntry {
   allocated: boolean;
 }
 
-/** 
- * Component moved outside main function to prevent re-renders and focus loss
- */
 const AllocationSection = ({ 
   title, 
   section, 
@@ -143,7 +141,8 @@ function RouteAllocationForm() {
     eveningRoutes: [] as AllocationEntry[],
     tankerRoutes: [] as AllocationEntry[],
     extCanRoutes: [] as AllocationEntry[],
-    extTankerRoutes: [] as AllocationEntry[]
+    extTankerRoutes: [] as AllocationEntry[],
+    dailyProblems: ""
   })
 
   const templateRef = useMemoFirebase(() => {
@@ -298,6 +297,20 @@ function RouteAllocationForm() {
         <AllocationSection title="Internal Tanker Route" section="tankerRoutes" color="text-rose-600" data={formData.tankerRoutes} isManageMode={isManageMode} onAdd={handleAddEntry} onUpdate={handleUpdateEntry} onRemove={handleRemoveEntry} />
         <AllocationSection title="External Can Route" section="extCanRoutes" color="text-emerald-600" data={formData.extCanRoutes} isManageMode={isManageMode} onAdd={handleAddEntry} onUpdate={handleUpdateEntry} onRemove={handleRemoveEntry} />
         <AllocationSection title="External Tanker Route" section="extTankerRoutes" color="text-amber-600" data={formData.extTankerRoutes} isManageMode={isManageMode} onAdd={handleAddEntry} onUpdate={handleUpdateEntry} onRemove={handleRemoveEntry} />
+
+        {!isManageMode && (
+          <Card className="compact-card p-3 border-rose-100 bg-rose-50/20">
+            <div className="space-y-1">
+              <Label className="compact-label text-rose-600 flex items-center gap-1.5"><AlertCircle className="h-3 w-3" /> आजचे महत्त्वाचे प्रॉब्लेम्स / निरीक्षणे (Daily Text Pad)</Label>
+              <Textarea 
+                value={formData.dailyProblems} 
+                onChange={e => setFormData({...formData, dailyProblems: e.target.value})} 
+                className="min-h-[100px] text-[11px] font-bold bg-white border border-rose-100 rounded-lg p-3 shadow-inner"
+                placeholder="उदा. गाडी वेळेवर आली नाही, केंद्रावरील काटा बंद आहे इ."
+              />
+            </div>
+          </Card>
+        )}
 
         <div className="flex flex-col gap-2 pt-4">
           {isManageMode ? (

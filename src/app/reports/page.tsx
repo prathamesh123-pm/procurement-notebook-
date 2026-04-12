@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card"
 import { 
   Archive, Search, X, Printer, Trash2, FileEdit, Truck, 
   ShieldAlert, ClipboardCheck, Plus, MapPin, FileText,
-  Briefcase, FileSignature, CheckCircle2, Microscope, Layers, Calendar, ChevronRight
+  Briefcase, FileSignature, CheckCircle2, Microscope, Layers, Calendar, ChevronRight, AlertCircle
 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
@@ -76,7 +76,8 @@ const labelMap: Record<string, string> = {
   otherInfo: "इतर माहिती",
   notes: "नोंद",
   title: "पूर्ण करावयाच्या कामाचे नाव",
-  totalLossAmount: "एकूण आर्थिक नुकसान (₹)"
+  totalLossAmount: "एकूण आर्थिक नुकसान (₹)",
+  dailyProblems: "आजचे प्रॉब्लेम्स / निरीक्षणे"
 };
 
 const fieldSequence = [
@@ -87,7 +88,7 @@ const fieldSequence = [
   "recoveryVehicleNo", "recoveryArrivalTime", "capacity", "morningQty", "eveningQty", 
   "fat", "snf", "result", "licenseStatus", "fssaiNo", "validDate", "milkHot", "milkSour",
   "visitPerson", "visitPurpose", "visitDiscussion", "officeTaskSubject", "officeTaskDetails",
-  "summary", "achievements", "problems", "actionsTaken", "actionTaken", "remark", "otherInfo", "totalLossAmount", "supervisorName"
+  "summary", "achievements", "problems", "actionsTaken", "actionTaken", "remark", "otherInfo", "totalLossAmount", "dailyProblems", "supervisorName"
 ];
 
 const ReportHeader = ({ title, date, subName, subId, shift }: any) => (
@@ -104,38 +105,86 @@ const ReportHeader = ({ title, date, subName, subId, shift }: any) => (
   </div>
 )
 
-const TableSection = ({ title, data }: { title: string, data: any[] }) => {
-  if (!data || data.length === 0) return null;
-  const activeData = data.filter(e => e.requested || e.allocated);
-  if (activeData.length === 0) return null;
+const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any, profileName: string, profileId: string }) => {
+  const d = report.fullData || {};
+  
+  const renderExcelSection = (title: string, rawData: any[]) => {
+    if (!rawData || rawData.length === 0) return null;
+    const activeData = rawData.filter(e => e.requested || e.allocated);
+    if (activeData.length === 0) return null;
 
-  return (
-    <div className="w-full mb-3 text-left">
-      <div className="bg-slate-100 p-1 text-[8pt] font-black uppercase text-center border border-black">{title}</div>
-      <table className="w-full border-collapse">
+    // Split data into two halves for the two-column layout
+    const mid = Math.ceil(activeData.length / 2);
+    const leftCol = activeData.slice(0, mid);
+    const rightCol = activeData.slice(mid);
+
+    const TablePart = ({ items, startIdx }: { items: any[], startIdx: number }) => (
+      <table className="w-full border-collapse border border-black text-[7pt]">
         <thead>
-          <tr className="bg-slate-50 text-[7pt] font-black uppercase text-center">
-            <th className="p-1 border border-black w-8">अ.क्र.</th>
-            <th className="p-1 border border-black w-16">ID</th>
-            <th className="p-1 border border-black w-16">Code</th>
-            <th className="p-1 border border-black text-left pl-2">रूटचे नाव</th>
-            <th className="p-1 border border-black w-12">Req</th>
-            <th className="p-1 border border-black w-12">Alloc</th>
+          <tr className="bg-slate-200 font-black uppercase">
+            <th className="border border-black p-1 w-8">Sr. No</th>
+            <th className="border border-black p-1 w-12">Route ID</th>
+            <th className="border border-black p-1 text-left pl-2">Route Name</th>
+            <th className="border border-black p-1 w-12 text-center">Req (√)</th>
+            <th className="border border-black p-1 w-12 text-center">Alloc (√)</th>
           </tr>
         </thead>
         <tbody>
-          {activeData.map((entry, idx) => (
-            <tr key={idx} className="text-[8pt] font-bold uppercase h-6 text-center">
-              <td className="p-1 border border-black">{idx + 1}</td>
-              <td className="p-1 border border-black">{entry.routeId}</td>
-              <td className="p-1 border border-black">{entry.routeCode}</td>
-              <td className="p-1 border border-black text-left pl-2 truncate">{entry.routeName}</td>
-              <td className="p-1 border border-black font-black">{entry.requested ? '√' : '-'}</td>
-              <td className="p-1 border border-black font-black">{entry.allocated ? '√' : '-'}</td>
+          {items.map((it, i) => (
+            <tr key={i} className="h-6 font-bold uppercase">
+              <td className="border border-black p-1 text-center">{startIdx + i + 1}</td>
+              <td className="border border-black p-1 text-center">{it.routeCode || it.routeId}</td>
+              <td className="border border-black p-1 text-left pl-2 truncate">{it.routeName}</td>
+              <td className="border border-black p-1 text-center font-black">{it.requested ? '√' : ''}</td>
+              <td className="border border-black p-1 text-center font-black">{it.allocated ? '√' : ''}</td>
             </tr>
           ))}
         </tbody>
       </table>
+    );
+
+    return (
+      <div className="w-full mb-4">
+        <div className="bg-slate-800 text-white p-1 text-[8pt] font-black uppercase text-center border border-black mb-0">
+          Type : {title}
+        </div>
+        <div className="grid grid-cols-2 gap-0 border-x border-black">
+          <div className="border-r border-black">
+            <TablePart items={leftCol} startIdx={0} />
+          </div>
+          <div>
+            <TablePart items={rightCol} startIdx={mid} />
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div className="bg-white font-sans text-slate-900 border-[1.2px] border-black rounded-sm w-full p-5 printable-report flex flex-col items-center shadow-none mb-4">
+      <ReportHeader title={d.reportHeading || "ERP अहवाल"} date={report.date} subName={d.name || profileName} subId={d.idNumber || profileId} shift={d.shift} />
+      
+      {renderExcelSection("Can Route Morning (Internal)", d.morningRoutes)}
+      {renderExcelSection("Can Route Evening (Internal)", d.eveningRoutes)}
+      {renderExcelSection("Internal Tanker Route", d.tankerRoutes)}
+      {renderExcelSection("External Can Route", d.extCanRoutes)}
+      {renderExcelSection("External Tanker Route", d.extTankerRoutes)}
+
+      {d.dailyProblems && (
+        <div className="w-full border border-black rounded-sm overflow-hidden mb-4 mt-2 text-left">
+          <div className="bg-rose-50 p-1.5 text-[8pt] font-black uppercase text-rose-700 border-b border-black flex items-center gap-2">
+            <AlertCircle className="h-3 w-3" /> आजचे महत्त्वाचे प्रॉब्लेम्स / निरीक्षणे (Daily Text Pad)
+          </div>
+          <div className="p-3 text-[9pt] font-bold whitespace-pre-wrap leading-relaxed">
+            {d.dailyProblems}
+          </div>
+        </div>
+      )}
+
+      <div className="w-full mt-auto pt-8 grid grid-cols-2 gap-12 text-center uppercase font-black text-[8pt] tracking-widest">
+        <div className="border-t border-black pt-1.5">Supervisor Sign</div>
+        <div className="border-t border-black pt-1.5">Officer Sign</div>
+      </div>
     </div>
   )
 }
@@ -299,7 +348,7 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
     );
   }
 
-  const excludeFields = ["reportHeading", "name", "repName", "shift", "idNumber", "repId", "routeVisitLogs", "centerLosses", "morningRoutes", "eveningRoutes", "tankerRoutes", "extCanRoutes", "extTankerRoutes", "points", "remarkPoints"];
+  const excludeFields = ["reportHeading", "name", "repName", "shift", "idNumber", "repId", "routeVisitLogs", "centerLosses", "morningRoutes", "eveningRoutes", "tankerRoutes", "extCanRoutes", "extTankerRoutes", "points", "remarkPoints", "dailyProblems"];
 
   const orderedEntries = fieldSequence
     .filter(key => d[key] !== undefined && d[key] !== "" && labelMap[key] && !excludeFields.includes(key))
@@ -349,26 +398,6 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
     </div>
   );
 };
-
-const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any, profileName: string, profileId: string }) => {
-  const d = report.fullData || {};
-  return (
-    <div className="bg-white font-sans text-slate-900 border-[1.2px] border-black rounded-sm w-full p-5 printable-report flex flex-col items-center shadow-none mb-4">
-      <ReportHeader title={d.reportHeading || "ERP अहवाल"} date={report.date} subName={d.name || profileName} subId={d.idNumber || profileId} shift={d.shift} />
-      
-      <TableSection title="Morning Can Routes (Internal)" data={d.morningRoutes} />
-      <TableSection title="Evening Can Routes (Internal)" data={d.eveningRoutes} />
-      <TableSection title="Internal Tanker Routes" data={d.tankerRoutes} />
-      <TableSection title="External Can Routes" data={d.extCanRoutes} />
-      <TableSection title="External Tanker Routes" data={d.extTankerRoutes} />
-
-      <div className="w-full mt-auto pt-8 grid grid-cols-2 gap-12 text-center uppercase font-black text-[8pt] tracking-widest">
-        <div className="border-t border-black pt-1.5">Supervisor Sign</div>
-        <div className="border-t border-black pt-1.5">Officer Sign</div>
-      </div>
-    </div>
-  )
-}
 
 export default function ReportsPage() {
   const { user } = useUser()
@@ -616,6 +645,85 @@ export default function ReportsPage() {
           </ScrollArea>
         </DialogContent>
       </Dialog>
+    </div>
+  )
+}
+
+const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any, profileName: string, profileId: string }) => {
+  const d = report.fullData || {};
+  
+  const renderExcelSection = (title: string, rawData: any[]) => {
+    if (!rawData || rawData.length === 0) return null;
+    const activeData = rawData.filter(e => e.requested || e.allocated);
+    if (activeData.length === 0) return null;
+
+    const mid = Math.ceil(activeData.length / 2);
+    const leftCol = activeData.slice(0, mid);
+    const rightCol = activeData.slice(mid);
+
+    const TablePart = ({ items, startIdx }: { items: any[], startIdx: number }) => (
+      <table className="w-full border-collapse border border-black text-[7pt]">
+        <thead>
+          <tr className="bg-slate-200 font-black uppercase text-center">
+            <th className="border border-black p-1 w-8">Sr. No</th>
+            <th className="border border-black p-1 w-12">Route ID</th>
+            <th className="border border-black p-1 text-left pl-2">Route Name</th>
+            <th className="border border-black p-1 w-12">Req (√)</th>
+            <th className="border border-black p-1 w-12">Alloc (√)</th>
+          </tr>
+        </thead>
+        <tbody>
+          {items.map((it, i) => (
+            <tr key={i} className="h-6 font-bold uppercase text-center">
+              <td className="border border-black p-1">{startIdx + i + 1}</td>
+              <td className="border border-black p-1">{it.routeCode || it.routeId}</td>
+              <td className="border border-black p-1 text-left pl-2 truncate">{it.routeName}</td>
+              <td className="border border-black p-1 font-black">{it.requested ? '√' : ''}</td>
+              <td className="border border-black p-1 font-black">{it.allocated ? '√' : ''}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    );
+
+    return (
+      <div className="w-full mb-4 border border-black overflow-hidden">
+        <div className="bg-slate-800 text-white p-1 text-[8pt] font-black uppercase text-center border-b border-black">
+          Type : {title}
+        </div>
+        <div className="grid grid-cols-2 gap-0 divide-x divide-black">
+          <div><TablePart items={leftCol} startIdx={0} /></div>
+          <div><TablePart items={rightCol} startIdx={mid} /></div>
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div className="bg-white font-sans text-slate-900 border-[1.2px] border-black rounded-sm w-full p-5 printable-report flex flex-col items-center shadow-none mb-4">
+      <ReportHeader title={d.reportHeading || "ERP अहवाल"} date={report.date} subName={d.name || profileName} subId={d.idNumber || profileId} shift={d.shift} />
+      
+      {renderExcelSection("Can Route Morning (Internal)", d.morningRoutes)}
+      {renderExcelSection("Can Route Evening (Internal)", d.eveningRoutes)}
+      {renderExcelSection("Internal Tanker Route", d.tankerRoutes)}
+      {renderExcelSection("External Can Route", d.extCanRoutes)}
+      {renderExcelSection("External Tanker Route", d.extTankerRoutes)}
+
+      {d.dailyProblems && (
+        <div className="w-full border border-black rounded-sm overflow-hidden mb-4 mt-2 text-left">
+          <div className="bg-rose-50 p-1.5 text-[8pt] font-black uppercase text-rose-700 border-b border-black flex items-center gap-2">
+            <AlertCircle className="h-3 w-3" /> आजचे महत्त्वाचे प्रॉब्लेम्स / निरीक्षणे (Daily Text Pad)
+          </div>
+          <div className="p-3 text-[9pt] font-bold whitespace-pre-wrap leading-relaxed">
+            {d.dailyProblems}
+          </div>
+        </div>
+      )}
+
+      <div className="w-full mt-auto pt-8 grid grid-cols-2 gap-12 text-center uppercase font-black text-[8pt] tracking-widest">
+        <div className="border-t border-black pt-1.5">Supervisor Sign</div>
+        <div className="border-t border-black pt-1.5">Officer Sign</div>
+      </div>
     </div>
   )
 }
