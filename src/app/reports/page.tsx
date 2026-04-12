@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
@@ -119,23 +118,23 @@ const TableSection = ({ title, data }: { title: string, data: any[] }) => {
       <table className="w-full border-collapse border border-black">
         <thead>
           <tr className="bg-slate-50 text-[6pt] font-black uppercase">
-            <th className="p-0.5 border border-black w-6">अ.क्र.</th>
-            <th className="p-0.5 border border-black w-14">ID</th>
-            <th className="p-0.5 border border-black w-14">Code</th>
+            <th className="p-0.5 border border-black w-6 text-center">अ.क्र.</th>
+            <th className="p-0.5 border border-black w-14 text-center">ID</th>
+            <th className="p-0.5 border border-black w-14 text-center">Code</th>
             <th className="p-0.5 border border-black text-left pl-1">रूटचे नाव</th>
-            <th className="p-0.5 border border-black w-10">Req</th>
-            <th className="p-0.5 border border-black w-10">Alloc</th>
+            <th className="p-0.5 border border-black w-10 text-center">Req</th>
+            <th className="p-0.5 border border-black w-10 text-center">Alloc</th>
           </tr>
         </thead>
         <tbody>
           {activeData.map((entry, idx) => (
-            <tr key={idx} className="text-[7pt] font-bold uppercase text-center h-5">
-              <td className="p-0.5 border border-black">{idx + 1}</td>
-              <td className="p-0.5 border border-black">{entry.routeId}</td>
-              <td className="p-0.5 border border-black">{entry.routeCode}</td>
+            <tr key={idx} className="text-[7pt] font-bold uppercase h-5">
+              <td className="p-0.5 border border-black text-center">{idx + 1}</td>
+              <td className="p-0.5 border border-black text-center">{entry.routeId}</td>
+              <td className="p-0.5 border border-black text-center">{entry.routeCode}</td>
               <td className="p-0.5 border border-black text-left pl-1 truncate">{entry.routeName}</td>
-              <td className="p-0.5 border border-black font-black">{entry.requested ? '√' : '-'}</td>
-              <td className="p-0.5 border border-black font-black">{entry.allocated ? '√' : '-'}</td>
+              <td className="p-0.5 border border-black font-black text-center">{entry.requested ? '√' : '-'}</td>
+              <td className="p-0.5 border border-black font-black text-center">{entry.allocated ? '√' : '-'}</td>
             </tr>
           ))}
         </tbody>
@@ -187,9 +186,9 @@ const RouteVisitLayout = ({ report, profileName, profileId }: { report: any, pro
       </div>
 
       <div className="w-full grid grid-cols-1 gap-1 mb-2">
-        {d.achievements && <div className="border border-black p-1 text-[7pt]"><span className="font-black uppercase">कामगिरी:</span> {d.achievements}</div>}
-        {d.problems && <div className="border border-black p-1 text-[7pt] text-rose-700"><span className="font-black uppercase">समस्या:</span> {d.problems}</div>}
-        {d.actionsTaken && <div className="border border-black p-1 text-[7pt] text-blue-700"><span className="font-black uppercase">कार्यवाही:</span> {d.actionsTaken}</div>}
+        {d.achievements && <div className="border border-black p-1 text-[7pt] text-left"><span className="font-black uppercase">कामगिरी:</span> {d.achievements}</div>}
+        {d.problems && <div className="border border-black p-1 text-[7pt] text-rose-700 text-left"><span className="font-black uppercase">समस्या:</span> {d.problems}</div>}
+        {d.actionsTaken && <div className="border border-black p-1 text-[7pt] text-blue-700 text-left"><span className="font-black uppercase">कार्यवाही:</span> {d.actionsTaken}</div>}
       </div>
 
       <div className="w-full mt-auto pt-4 grid grid-cols-2 gap-8 text-center uppercase font-black text-[7pt] tracking-widest">
@@ -208,46 +207,46 @@ const BreakdownLayout = ({ report, profileName, profileId }: { report: any, prof
     <div className="bg-white font-sans text-slate-900 border-[1.2px] border-black rounded-sm w-full max-w-[210mm] mx-auto p-4 printable-report flex flex-col items-center shadow-none mb-4">
       <ReportHeader title={d.reportHeading || "ब्रेकडाऊन अहवाल"} date={report.date} subName={d.name || profileName} subId={d.idNumber || profileId} shift={d.shift} />
       
-      <div className="w-full border border-black mb-2 overflow-hidden">
+      <div className="w-full border border-black mb-2 overflow-hidden text-left">
         <div className="bg-slate-100 p-0.5 text-[7pt] font-black uppercase text-center border-b border-black">१) वाहन व ड्रायव्हर माहिती</div>
         <div className="p-1 border-b border-black text-[7pt] font-bold uppercase flex justify-between">
-          <span>दुध संकलन रूटचे नाव: {d.routeName}</span>
-          <span>गाडीचा नंबर: {d.vehicleNo}</span>
+          <span>{labelMap.routeName}: {d.routeName}</span>
+          <span>{labelMap.vehicleNo}: {d.vehicleNo}</span>
         </div>
         <div className="grid grid-cols-2 text-[7pt] font-bold uppercase divide-x divide-black">
-          <div className="p-1">गाडीचा प्रकार: {d.vehicleType}</div>
-          <div className="p-1">गाडीची दूध क्षमता: {d.capacity} L</div>
+          <div className="p-1">{labelMap.vehicleType}: {d.vehicleType}</div>
+          <div className="p-1">{labelMap.capacity}: {d.capacity} L</div>
         </div>
         <div className="grid grid-cols-2 text-[7pt] font-bold uppercase divide-x divide-black border-t border-black">
-          <div className="p-1">ड्रायव्हरचे नाव: {d.driverName}</div>
-          <div className="p-1">ड्रायव्हरचा मोबाईल नंबर: {d.mobile}</div>
+          <div className="p-1">{labelMap.driverName}: {d.driverName}</div>
+          <div className="p-1">{labelMap.mobile}: {d.mobile}</div>
         </div>
       </div>
 
-      <div className="w-full border border-black mb-2 overflow-hidden">
+      <div className="w-full border border-black mb-2 overflow-hidden text-left">
         <div className="bg-rose-50 p-0.5 text-[7pt] font-black uppercase text-center border-b border-black text-rose-700">२) गाडी बिघाड झाल्याचा तपशील</div>
         <div className="grid grid-cols-2 text-[7pt] font-bold uppercase divide-x divide-black">
-          <div className="p-1">गाडी बिघाड झाल्याची वेळ: {d.breakdownTime}</div>
-          <div className="p-1">बिघाड झालेल्या ठिकाणाचे नाव: {d.location}</div>
+          <div className="p-1">{labelMap.breakdownTime}: {d.breakdownTime}</div>
+          <div className="p-1">{labelMap.location}: {d.location}</div>
         </div>
-        <div className="p-1 border-t border-black text-[7pt]"><span className="font-black uppercase">बिघाड होण्याचे मुख्य कारण:</span> {d.reason}</div>
-        {d.detailedReason && <div className="p-1 border-t border-black text-[7pt]"><span className="font-black uppercase">बिघाडाचे सविस्तर वर्णन:</span> {d.detailedReason}</div>}
+        <div className="p-1 border-t border-black text-[7pt]"><span className="font-black uppercase">{labelMap.reason}:</span> {d.reason}</div>
+        {d.detailedReason && <div className="p-1 border-t border-black text-[7pt]"><span className="font-black uppercase">{labelMap.detailedReason}:</span> {d.detailedReason}</div>}
         <div className="grid grid-cols-3 text-[7pt] font-black uppercase divide-x divide-black border-t border-black bg-slate-50">
-          <div className="p-1">बिघाडाचे स्वरूप: {d.severity}</div>
-          <div className="p-1">दूध गरम झाले होते का?: {d.milkHot}</div>
-          <div className="p-1">दूध पूर्णपणे खराब झाले?: {d.milkSour}</div>
+          <div className="p-1">स्वरूप: {d.severity}</div>
+          <div className="p-1">{labelMap.milkHot}: {d.milkHot}</div>
+          <div className="p-1">{labelMap.milkSour}: {d.milkSour}</div>
         </div>
       </div>
 
-      <div className="w-full border border-black mb-2 overflow-hidden">
+      <div className="w-full border border-black mb-2 overflow-hidden text-left">
         <div className="bg-blue-50 p-0.5 text-[7pt] font-black uppercase text-center border-b border-black text-blue-700">३) दुरुस्ती व पर्यायी सोय</div>
         <div className="grid grid-cols-2 text-[7pt] font-bold uppercase divide-x divide-black">
-          <div className="p-1">दुरुस्तीसाठी लागणारा वेळ: {d.estimatedRepairTime}</div>
-          <div className="p-1">दुरुस्तीचा अंदाजे खर्च: ₹{d.estimatedRepairCost}</div>
+          <div className="p-1">{labelMap.estimatedRepairTime}: {d.estimatedRepairTime}</div>
+          <div className="p-1">{labelMap.estimatedRepairCost}: ₹{d.estimatedRepairCost}</div>
         </div>
         <div className="grid grid-cols-2 text-[7pt] font-bold uppercase divide-x divide-black border-t border-black">
-          <div className="p-1">पर्यायी गाडीचा नंबर: {d.recoveryVehicleNo || "---"}</div>
-          <div className="p-1">गाडी पोहोचण्याची वेळ: {d.recoveryArrivalTime || "---"}</div>
+          <div className="p-1">{labelMap.recoveryVehicleNo}: {d.recoveryVehicleNo || "---"}</div>
+          <div className="p-1">{labelMap.recoveryArrivalTime}: {d.recoveryArrivalTime || "---"}</div>
         </div>
       </div>
 
@@ -258,18 +257,18 @@ const BreakdownLayout = ({ report, profileName, profileId }: { report: any, prof
             <thead>
               <tr className="bg-black text-white font-black text-[6pt] uppercase text-center">
                 <th className="p-0.5 border-r border-white/20 text-left pl-1">नाव/कोड</th>
-                <th className="p-0.5 border-r border-white/20 w-12">प्रकार</th>
-                <th className="p-0.5 border-r border-white/20 w-12">Qty</th>
-                <th className="p-0.5 w-16">रक्कम (₹)</th>
+                <th className="p-0.5 border-r border-white/20 w-12 text-center">प्रकार</th>
+                <th className="p-0.5 border-r border-white/20 w-12 text-center">Qty</th>
+                <th className="p-0.5 w-16 text-center">रक्कम (₹)</th>
               </tr>
             </thead>
             <tbody>
               {losses.map((loss: any, idx: number) => (
                 <tr key={idx} className="font-bold text-[7pt] uppercase border-b border-black last:border-0 text-center h-5">
                   <td className="p-0.5 border-r border-black text-left pl-1 truncate">{loss.centerCode} {loss.centerName}</td>
-                  <td className="p-0.5 border-r border-black">{loss.milkType}</td>
-                  <td className="p-0.5 border-r border-black">{loss.qtyLiters}</td>
-                  <td className="p-0.5">{loss.lossAmount}</td>
+                  <td className="p-0.5 border-r border-black text-center">{loss.milkType}</td>
+                  <td className="p-0.5 border-r border-black text-center">{loss.qtyLiters}</td>
+                  <td className="p-0.5 text-center">{loss.lossAmount}</td>
                 </tr>
               ))}
             </tbody>
@@ -294,7 +293,7 @@ const TaskLayout = ({ report, profileName, profileId }: { report: any, profileNa
     <div className="bg-white font-sans text-slate-900 border-[1.2px] border-black rounded-sm w-full max-w-[210mm] mx-auto p-4 printable-report flex flex-col items-center shadow-none mb-4">
       <ReportHeader title={d.reportHeading || "कामकाज नोंद अहवाल"} date={report.date} subName={d.name || profileName} subId={d.idNumber || profileId} shift={d.shift} />
       
-      <div className="w-full border border-black rounded overflow-hidden mb-2">
+      <div className="w-full border border-black rounded overflow-hidden mb-2 text-left">
         <table className="w-full border-collapse">
           <tbody>
             <tr className="border-b border-black text-[7pt] font-bold">
@@ -370,7 +369,7 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
         shift={d.shift}
       />
       
-      <div className="w-full border border-black rounded overflow-hidden mb-2">
+      <div className="w-full border border-black rounded overflow-hidden mb-2 text-left">
         <table className="w-full border-collapse">
           <tbody>
             {orderedEntries.map(([k, v]: any) => (
@@ -571,21 +570,21 @@ export default function ReportsPage() {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-100">
-                <th className="p-4 text-[10px] font-black uppercase text-slate-400 tracking-widest w-24">तारीख</th>
-                <th className="p-4 text-[10px] font-black uppercase text-slate-400 tracking-widest">अहवाल शीर्षक व सारांश</th>
+                <th className="p-4 text-[10px] font-black uppercase text-slate-400 tracking-widest w-24 text-center">तारीख</th>
+                <th className="p-4 text-[10px] font-black uppercase text-slate-400 tracking-widest text-left">अहवाल शीर्षक व सारांश</th>
                 <th className="p-4 text-right text-[10px] font-black uppercase text-slate-400 tracking-widest w-24">क्रिया</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
               {filteredReports.map((report) => (
                 <tr key={report.id} className="hover:bg-primary/[0.02] cursor-pointer group transition-colors" onClick={() => { setSelectedReport(report); setIsViewOpen(true); }}>
-                  <td className="p-4 font-black text-[10px] text-slate-500 uppercase whitespace-nowrap">
+                  <td className="p-4 font-black text-[10px] text-slate-500 uppercase whitespace-nowrap text-center">
                     <div className="flex flex-col">
                       <span>{report.date?.split('-').reverse().join('/')}</span>
                       <span className="text-[8px] opacity-50">{report.fullData?.shift || ""}</span>
                     </div>
                   </td>
-                  <td className="p-4">
+                  <td className="p-4 text-left">
                     <div className="flex flex-col min-w-0">
                       <span className="font-black text-[12px] text-primary uppercase group-hover:translate-x-1 transition-transform truncate max-w-md">
                         {report.fullData?.reportHeading || report.fullData?.title || report.type}
@@ -613,7 +612,7 @@ export default function ReportsPage() {
 
         <div className="md:hidden space-y-3">
           {filteredReports.map((report) => (
-            <Card key={report.id} className="p-4 bg-white border-none shadow-md rounded-2xl relative active:scale-[0.98] transition-all" onClick={() => { setSelectedReport(report); setIsViewOpen(true); }}>
+            <Card key={report.id} className="p-4 bg-white border-none shadow-md rounded-2xl relative active:scale-[0.98] transition-all text-left" onClick={() => { setSelectedReport(report); setIsViewOpen(true); }}>
               <div className="flex justify-between items-start mb-2">
                 <div className="space-y-0.5">
                   <div className="flex items-center gap-2">

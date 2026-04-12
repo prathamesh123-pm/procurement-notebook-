@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect, Suspense, useCallback } from "react"
@@ -46,7 +45,7 @@ const AllocationSection = ({
   onUpdate: (s: string, id: string, u: Partial<AllocationEntry>) => void,
   onRemove: (s: string, id: string) => void
 }) => (
-  <Card className="compact-card p-3 border-muted-foreground/10">
+  <Card className="compact-card p-3 border-muted-foreground/10 text-left">
     <div className="flex items-center justify-between border-b pb-1 mb-2">
       <h3 className={`text-[10px] font-black uppercase ${color} tracking-widest flex items-center gap-1.5`}>
         <Layers className="h-3 w-3" /> {title}
@@ -58,12 +57,12 @@ const AllocationSection = ({
       )}
     </div>
     <div className="space-y-2">
-      <div className="grid grid-cols-12 gap-1 px-1 text-[7px] font-black uppercase text-muted-foreground">
+      <div className="grid grid-cols-12 gap-1 px-1 text-[7px] font-black uppercase text-muted-foreground text-center">
         <div className="col-span-2">ID</div>
         <div className="col-span-2">Code</div>
-        <div className={cn(isManageMode ? "col-span-7" : "col-span-4")}>Route Name</div>
-        {!isManageMode && <div className="col-span-2 text-center">Req</div>}
-        {!isManageMode && <div className="col-span-2 text-center">Alloc</div>}
+        <div className={cn(isManageMode ? "col-span-7" : "col-span-4", "text-left")}>Route Name</div>
+        {!isManageMode && <div className="col-span-2">Req</div>}
+        {!isManageMode && <div className="col-span-2">Alloc</div>}
         {isManageMode && <div className="col-span-1"></div>}
       </div>
       {data.map((entry) => (
@@ -74,13 +73,13 @@ const AllocationSection = ({
                 value={entry.routeId || ""} 
                 onChange={e => onUpdate(section, entry.id, { routeId: e.target.value })} 
                 placeholder="ID"
-                className="col-span-2 h-8 text-[10px] p-1 bg-white border-none font-black shadow-inner" 
+                className="col-span-2 h-8 text-[10px] p-1 bg-white border-none font-black shadow-inner text-center" 
               />
               <Input 
                 value={entry.routeCode || ""} 
                 onChange={e => onUpdate(section, entry.id, { routeCode: e.target.value })} 
                 placeholder="Code"
-                className="col-span-2 h-8 text-[10px] p-1 bg-white border-none font-black shadow-inner" 
+                className="col-span-2 h-8 text-[10px] p-1 bg-white border-none font-black shadow-inner text-center" 
               />
               <Input 
                 value={entry.routeName || ""} 
@@ -96,9 +95,9 @@ const AllocationSection = ({
             </>
           ) : (
             <>
-              <div className="col-span-2 text-[9px] font-black truncate px-1">{entry.routeId || "---"}</div>
-              <div className="col-span-2 text-[9px] font-black truncate px-1">{entry.routeCode || "---"}</div>
-              <div className="col-span-4 text-[10px] font-bold truncate px-1 uppercase">{entry.routeName || "---"}</div>
+              <div className="col-span-2 text-[9px] font-black truncate px-1 text-center">{entry.routeId || "---"}</div>
+              <div className="col-span-2 text-[9px] font-black truncate px-1 text-center">{entry.routeCode || "---"}</div>
+              <div className="col-span-4 text-[10px] font-bold truncate px-1 uppercase text-left">{entry.routeName || "---"}</div>
               <div className="col-span-2 flex justify-center">
                 <input 
                   type="checkbox" 
@@ -261,7 +260,7 @@ function RouteAllocationForm() {
     <div className="compact-form-container max-w-[650px] pb-20 px-2">
       <div className="flex items-center gap-2 border-b pb-2 mb-3">
         <Button variant="ghost" size="icon" onClick={() => router.push('/reports')} className="h-8 w-8 shrink-0"><ArrowLeft className="h-4 w-4" /></Button>
-        <div className="min-w-0">
+        <div className="min-w-0 text-left">
           <h2 className="text-sm font-black uppercase truncate flex items-center gap-1.5"><Truck className="h-4 w-4 text-primary" /> ERP रिपोर्ट</h2>
           <p className="text-[8px] font-black text-muted-foreground uppercase tracking-widest">{formData.date}</p>
         </div>
@@ -285,14 +284,14 @@ function RouteAllocationForm() {
       </div>
 
       <div className="space-y-3">
-        <Card className="compact-card p-3 border-primary/20 bg-primary/5">
+        <Card className="compact-card p-3 border-primary/20 bg-primary/5 text-left">
           <div className="space-y-1">
             <Label className="compact-label text-primary">अहवालाचे शीर्षक *</Label>
             <Input className="compact-input h-10 border-primary/20 font-black text-primary text-base" value={formData.reportHeading} onChange={e => setFormData({...formData, reportHeading: e.target.value})} />
           </div>
         </Card>
 
-        <Card className="compact-card p-3"><div className="space-y-0.5"><Label className="compact-label">तारीख</Label><Input type="date" className="compact-input h-9" value={formData.date} onChange={e => setFormData({...formData, date: e.target.value})} /></div></Card>
+        <Card className="compact-card p-3 text-left"><div className="space-y-0.5"><Label className="compact-label">तारीख</Label><Input type="date" className="compact-input h-9" value={formData.date} onChange={e => setFormData({...formData, date: e.target.value})} /></div></Card>
 
         <AllocationSection title="Can Route Morning (Internal)" section="morningRoutes" color="text-blue-600" data={formData.morningRoutes} isManageMode={isManageMode} onAdd={handleAddEntry} onUpdate={handleUpdateEntry} onRemove={handleRemoveEntry} />
         <AllocationSection title="Can Route Evening (Internal)" section="eveningRoutes" color="text-indigo-600" data={formData.eveningRoutes} isManageMode={isManageMode} onAdd={handleAddEntry} onUpdate={handleUpdateEntry} onRemove={handleRemoveEntry} />

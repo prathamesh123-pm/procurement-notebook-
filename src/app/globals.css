@@ -80,7 +80,7 @@ h1, h2, h3, h4 {
 
 /* 
  * FINAL ROBUST PRINT ENGINE 
- * Prevents blank pages and ensures reports are centered and top-aligned on A4.
+ * Ensures reports are visible, white background, black text, and no blank pages.
  */
 @media print {
   @page {
@@ -88,26 +88,48 @@ h1, h2, h3, h4 {
     margin: 5mm;
   }
   
+  /* Reset whole page for printing */
   html, body {
     height: auto !important;
     overflow: visible !important;
     background: white !important;
+    color: black !important;
     margin: 0 !important;
     padding: 0 !important;
-    -webkit-print-color-adjust: exact;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
-  /* Hide everything else */
-  body > * {
-    display: none !important;
+  /* Hide everything globally */
+  body * {
+    visibility: hidden !important;
+    background-color: transparent !important;
   }
 
-  /* Show ONLY the printable report container */
-  .printable-report, .printable-report * {
-    display: block !important;
+  /* Reveal only the printable report and its children */
+  .printable-report, 
+  .printable-report *,
+  [role="dialog"] .printable-report,
+  [role="dialog"] .printable-report * {
     visibility: visible !important;
+    display: block !important;
     opacity: 1 !important;
     color: black !important;
+    background-color: white !important;
+  }
+
+  /* Force table layout for visibility */
+  .printable-report table,
+  .printable-report tr,
+  .printable-report th,
+  .printable-report td {
+    display: table !important;
+    visibility: visible !important;
+    border: 1px solid black !important;
+  }
+  
+  .printable-report th, .printable-report td {
+    display: table-cell !important;
   }
 
   .printable-report {
@@ -120,30 +142,13 @@ h1, h2, h3, h4 {
     border: 1px solid black !important;
     padding: 8mm !important;
     margin: 0 !important;
-    background: white !important;
-    box-shadow: none !important;
+    z-index: 9999 !important;
     page-break-inside: avoid !important;
   }
 
-  /* Force table styles for print */
-  table {
-    width: 100% !important;
-    border-collapse: collapse !important;
-    border: 1px solid black !important;
-  }
-
-  th, td {
-    border: 1px solid black !important;
-    padding: 4pt 6pt !important;
-    font-size: 8pt !important;
-  }
-
-  th {
-    background-color: #f1f5f9 !important;
-    font-weight: 900 !important;
-  }
-
-  .no-print, button, header, nav, footer, .sidebar {
+  /* Absolutely hide UI elements */
+  .no-print, button, header, nav, footer, .sidebar, [role="separator"] {
     display: none !important;
+    visibility: hidden !important;
   }
 }
