@@ -79,18 +79,18 @@ h1, h2, h3, h4 {
 ::-webkit-scrollbar-thumb { @apply bg-slate-200 rounded-full; }
 
 /* 
- * FINAL ROBUST PRINT ENGINE v3.0
- * Fixes dark overlays, blank pages, and ensures sharp black-on-white output.
+ * ULTIMATE ROBUST PRINT ENGINE v4.0
+ * Fixes: Dark overlays, blank pages, double-page leaking, and centering.
  */
 @media print {
   @page {
     size: A4;
-    margin: 5mm;
+    margin: 0;
   }
   
   html, body {
-    height: auto !important;
-    overflow: visible !important;
+    height: 100% !important;
+    overflow: hidden !important;
     background: white !important;
     color: black !important;
     margin: 0 !important;
@@ -99,27 +99,29 @@ h1, h2, h3, h4 {
     print-color-adjust: exact !important;
   }
 
-  /* Hide EVERYTHING except the report and its parents */
-  header, nav, footer, aside, .sidebar, .no-print, button, [role="separator"], .compact-form-container button {
+  /* Hide EVERYTHING except the report itself */
+  body > *:not(div[role="dialog"]), 
+  header, nav, footer, aside, .sidebar, .no-print, button, 
+  [role="separator"], .compact-form-container button {
     display: none !important;
     visibility: hidden !important;
   }
 
-  /* Target the dialog overlay specifically to remove the black/blurred background */
-  [role="dialog"] > div:first-child,
-  [data-state="open"] > div:first-child {
-    background: transparent !important;
-    backdrop-filter: none !important;
+  /* Target the Dialog Overlays/Backdrops specifically to remove the dark/grey rectangle */
+  div[data-state="open"] > div:first-child,
+  div[role="presentation"],
+  .fixed.inset-0.z-50.bg-black\/80 {
     display: none !important;
+    background: none !important;
+    backdrop-filter: none !important;
   }
 
-  /* Reset the Dialog/Modal to be a simple top-aligned container */
-  [role="dialog"] {
+  /* Reset the Dialog Container to be a simple top-aligned container */
+  div[role="dialog"] {
     position: absolute !important;
     top: 0 !important;
     left: 0 !important;
     width: 100% !important;
-    max-width: 100% !important;
     height: auto !important;
     background: white !important;
     padding: 0 !important;
@@ -130,21 +132,22 @@ h1, h2, h3, h4 {
     transform: none !important;
   }
 
-  /* Force the printable report to take full width and top alignment */
+  /* Ensure the printable report is centered and takes full width */
   .printable-report {
     display: block !important;
     visibility: visible !important;
     position: absolute !important;
-    top: 0 !important;
+    top: 5mm !important;
     left: 50% !important;
     transform: translateX(-50%) !important;
-    width: 100% !important;
+    width: 190mm !important;
     max-width: 190mm !important;
-    border: 1px solid black !important;
-    padding: 5mm !important;
+    border: 1.2px solid black !important;
+    padding: 8mm !important;
     background: white !important;
     box-shadow: none !important;
     page-break-inside: avoid !important;
+    z-index: 9999 !important;
   }
 
   .printable-report * {
@@ -153,7 +156,7 @@ h1, h2, h3, h4 {
     background-color: transparent !important;
   }
 
-  /* Robust Table Printing */
+  /* Table Printing Fixes */
   .printable-report table {
     display: table !important;
     width: 100% !important;
@@ -165,8 +168,9 @@ h1, h2, h3, h4 {
   .printable-report td {
     display: table-cell !important;
     border: 1px solid black !important;
-    padding: 3px !important;
+    padding: 4px !important;
     font-size: 7.5pt !important;
+    color: black !important;
   }
 
   .printable-report tr {

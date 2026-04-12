@@ -31,7 +31,7 @@ const labelMap: Record<string, string> = {
   centerName: "केंद्राचे नाव",
   centerCode: "केंद्र कोड",
   ownerName: "मालकाचे नाव",
-  supplierName: "पुरवठादार किंवा केंद्राचे नाव",
+  supplierName: "पुरवठादार किंवा केंद्राचे पूर्ण नाव",
   supplierId: "पुरवठादार किंवा केंद्राचा कोड (CODE)",
   mobile: "मोबाईल",
   address: "पत्ता",
@@ -91,9 +91,9 @@ const fieldSequence = [
 ];
 
 const ReportHeader = ({ title, date, subName, subId, shift }: any) => (
-  <div className="w-full border-b-2 border-black pb-1 mb-2 text-center">
+  <div className="w-full border-b-2 border-black pb-1.5 mb-3 text-center">
     <h1 className="text-[14pt] font-black uppercase tracking-tight">{title || "अहवाल"}</h1>
-    <div className="flex justify-between text-[6.5pt] font-black uppercase text-slate-500 tracking-wider mt-1 border-t pt-0.5">
+    <div className="flex justify-between text-[7pt] font-black uppercase text-slate-500 tracking-wider mt-1 border-t pt-1">
       <div className="flex gap-2">
         <span>सादरकर्ता: {subName}</span>
         {subId && <span>| ID: {subId}</span>}
@@ -110,28 +110,28 @@ const TableSection = ({ title, data }: { title: string, data: any[] }) => {
   if (activeData.length === 0) return null;
 
   return (
-    <div className="w-full mb-2">
-      <div className="bg-slate-100 p-0.5 text-[7pt] font-black uppercase text-center border border-black">{title}</div>
+    <div className="w-full mb-3">
+      <div className="bg-slate-100 p-1 text-[8pt] font-black uppercase text-center border border-black">{title}</div>
       <table className="w-full border-collapse">
         <thead>
-          <tr className="bg-slate-50 text-[6pt] font-black uppercase">
-            <th className="p-0.5 border border-black w-6 text-center">अ.क्र.</th>
-            <th className="p-0.5 border border-black w-14 text-center">ID</th>
-            <th className="p-0.5 border border-black w-14 text-center">Code</th>
-            <th className="p-0.5 border border-black text-left pl-1">रूटचे नाव</th>
-            <th className="p-0.5 border border-black w-10 text-center">Req</th>
-            <th className="p-0.5 border border-black w-10 text-center">Alloc</th>
+          <tr className="bg-slate-50 text-[7pt] font-black uppercase">
+            <th className="p-1 border border-black w-8 text-center">अ.क्र.</th>
+            <th className="p-1 border border-black w-16 text-center">ID</th>
+            <th className="p-1 border border-black w-16 text-center">Code</th>
+            <th className="p-1 border border-black text-left pl-2">रूटचे नाव</th>
+            <th className="p-1 border border-black w-12 text-center">Req</th>
+            <th className="p-1 border border-black w-12 text-center">Alloc</th>
           </tr>
         </thead>
         <tbody>
           {activeData.map((entry, idx) => (
-            <tr key={idx} className="text-[7pt] font-bold uppercase h-5">
-              <td className="p-0.5 border border-black text-center">{idx + 1}</td>
-              <td className="p-0.5 border border-black text-center">{entry.routeId}</td>
-              <td className="p-0.5 border border-black text-center">{entry.routeCode}</td>
-              <td className="p-0.5 border border-black text-left pl-1 truncate">{entry.routeName}</td>
-              <td className="p-0.5 border border-black font-black text-center">{entry.requested ? '√' : '-'}</td>
-              <td className="p-0.5 border border-black font-black text-center">{entry.allocated ? '√' : '-'}</td>
+            <tr key={idx} className="text-[8pt] font-bold uppercase h-6">
+              <td className="p-1 border border-black text-center">{idx + 1}</td>
+              <td className="p-1 border border-black text-center">{entry.routeId}</td>
+              <td className="p-1 border border-black text-center">{entry.routeCode}</td>
+              <td className="p-1 border border-black text-left pl-2 truncate">{entry.routeName}</td>
+              <td className="p-1 border border-black font-black text-center">{entry.requested ? '√' : '-'}</td>
+              <td className="p-1 border border-black font-black text-center">{entry.allocated ? '√' : '-'}</td>
             </tr>
           ))}
         </tbody>
@@ -145,50 +145,50 @@ const RouteVisitLayout = ({ report, profileName, profileId }: { report: any, pro
   const logs = d.routeVisitLogs || [];
   
   return (
-    <div className="bg-white font-sans text-slate-900 border-[1.2px] border-black rounded-sm w-full p-4 printable-report flex flex-col items-center shadow-none mb-4">
+    <div className="bg-white font-sans text-slate-900 border-[1.2px] border-black rounded-sm w-full p-5 printable-report flex flex-col items-center shadow-none mb-4">
       <ReportHeader title={d.reportHeading || "रूट व्हिजिट अहवाल"} date={report.date} subName={d.name || profileName} subId={d.idNumber || profileId} shift={d.shift} />
       
-      <div className="w-full grid grid-cols-2 gap-2 mb-2">
-        <div className="border border-black p-1 text-[7pt] font-bold uppercase">रूट: {d.routeName}</div>
-        <div className="border border-black p-1 text-[7pt] font-bold uppercase">वाहन: {d.vehicleNumber}</div>
-        <div className="border border-black p-1 text-[7pt] font-bold uppercase">ड्रायव्हर: {d.driverName}</div>
-        <div className="border border-black p-1 text-[7pt] font-bold uppercase">SLIP No: {d.slipNo}</div>
+      <div className="w-full grid grid-cols-2 gap-2 mb-3">
+        <div className="border border-black p-1.5 text-[8pt] font-bold uppercase">रूट: {d.routeName}</div>
+        <div className="border border-black p-1.5 text-[8pt] font-bold uppercase">वाहन: {d.vehicleNumber}</div>
+        <div className="border border-black p-1.5 text-[8pt] font-bold uppercase">ड्रायव्हर: {d.driverName}</div>
+        <div className="border border-black p-1.5 text-[8pt] font-bold uppercase">SLIP No: {d.slipNo}</div>
       </div>
 
-      <table className="w-full border-collapse mb-2">
+      <table className="w-full border-collapse mb-3">
         <thead>
-          <tr className="bg-slate-100 text-[6pt] font-black uppercase text-center">
-            <th className="p-0.5 border border-black w-6">अ.क्र.</th>
-            <th className="p-0.5 border border-black w-16">कोड</th>
-            <th className="p-0.5 border border-black text-left pl-1">केंद्राचे नाव</th>
-            <th className="p-0.5 border border-black w-24">वेळ (In/Out)</th>
-            <th className="p-0.5 border border-black w-16">कॅन (E/F)</th>
-            <th className="p-0.5 border border-black w-20">बर्फ</th>
+          <tr className="bg-slate-100 text-[7pt] font-black uppercase text-center">
+            <th className="p-1 border border-black w-8">अ.क्र.</th>
+            <th className="p-1 border border-black w-20">कोड</th>
+            <th className="p-1 border border-black text-left pl-2">केंद्राचे नाव</th>
+            <th className="p-1 border border-black w-32">वेळ (In/Out)</th>
+            <th className="p-1 border border-black w-20">कॅन (E/F)</th>
+            <th className="p-1 border border-black w-24">बर्फ</th>
           </tr>
         </thead>
         <tbody>
           {logs.map((log: any, i: number) => (
-            <tr key={i} className="text-[7pt] font-bold uppercase text-center h-6">
-              <td className="p-0.5 border border-black">{i + 1}</td>
-              <td className="p-0.5 border border-black">{log.centerCode}</td>
-              <td className="p-0.5 border border-black text-left pl-1 truncate">{log.supplierName}</td>
-              <td className="p-0.5 border border-black">{log.arrivalTime} - {log.departureTime}</td>
-              <td className="p-0.5 border border-black">{log.emptyCans}/{log.fullCans}</td>
-              <td className="p-0.5 border border-black">{log.iceUsed}</td>
+            <tr key={i} className="text-[8pt] font-bold uppercase text-center h-7">
+              <td className="p-1 border border-black">{i + 1}</td>
+              <td className="p-1 border border-black">{log.centerCode}</td>
+              <td className="p-1 border border-black text-left pl-2 truncate">{log.supplierName}</td>
+              <td className="p-1 border border-black">{log.arrivalTime} - {log.departureTime}</td>
+              <td className="p-1 border border-black">{log.emptyCans}/{log.fullCans}</td>
+              <td className="p-1 border border-black">{log.iceUsed}</td>
             </tr>
           ))}
         </tbody>
       </table>
 
-      <div className="w-full grid grid-cols-1 gap-1 mb-2">
-        {d.achievements && <div className="border border-black p-1 text-[7pt] text-left"><span className="font-black uppercase">कामगिरी:</span> {d.achievements}</div>}
-        {d.problems && <div className="border border-black p-1 text-[7pt] text-rose-700 text-left"><span className="font-black uppercase">समस्या:</span> {d.problems}</div>}
-        {d.actionsTaken && <div className="border border-black p-1 text-[7pt] text-blue-700 text-left"><span className="font-black uppercase">कार्यवाही:</span> {d.actionsTaken}</div>}
+      <div className="w-full grid grid-cols-1 gap-1 mb-3">
+        {d.achievements && <div className="border border-black p-1.5 text-[8pt] text-left"><span className="font-black uppercase">कामगिरी:</span> {d.achievements}</div>}
+        {d.problems && <div className="border border-black p-1.5 text-[8pt] text-rose-700 text-left"><span className="font-black uppercase">समस्या:</span> {d.problems}</div>}
+        {d.actionsTaken && <div className="border border-black p-1.5 text-[8pt] text-blue-700 text-left"><span className="font-black uppercase">कार्यवाही:</span> {d.actionsTaken}</div>}
       </div>
 
-      <div className="w-full mt-auto pt-4 grid grid-cols-2 gap-8 text-center uppercase font-black text-[7pt] tracking-widest">
-        <div className="border-t border-black pt-1">Officer Sign</div>
-        <div className="border-t border-black pt-1">Supervisor Sign</div>
+      <div className="w-full mt-auto pt-6 grid grid-cols-2 gap-12 text-center uppercase font-black text-[8pt] tracking-widest">
+        <div className="border-t border-black pt-1.5">Officer Sign</div>
+        <div className="border-t border-black pt-1.5">Supervisor Sign</div>
       </div>
     </div>
   )
@@ -199,82 +199,82 @@ const BreakdownLayout = ({ report, profileName, profileId }: { report: any, prof
   const losses = d.centerLosses || [];
   
   return (
-    <div className="bg-white font-sans text-slate-900 border-[1.2px] border-black rounded-sm w-full p-4 printable-report flex flex-col items-center shadow-none mb-4">
+    <div className="bg-white font-sans text-slate-900 border-[1.2px] border-black rounded-sm w-full p-5 printable-report flex flex-col items-center shadow-none mb-4">
       <ReportHeader title={d.reportHeading || "ब्रेकडाऊन अहवाल"} date={report.date} subName={d.name || profileName} subId={d.idNumber || profileId} shift={d.shift} />
       
-      <div className="w-full border border-black mb-2 overflow-hidden text-left">
-        <div className="bg-slate-100 p-0.5 text-[7pt] font-black uppercase text-center border-b border-black">१) वाहन व ड्रायव्हर माहिती</div>
-        <div className="p-1 border-b border-black text-[7pt] font-bold uppercase flex justify-between">
+      <div className="w-full border border-black mb-3 overflow-hidden text-left">
+        <div className="bg-slate-100 p-1 text-[8pt] font-black uppercase text-center border-b border-black">१) वाहन व ड्रायव्हर माहिती</div>
+        <div className="p-1.5 border-b border-black text-[8pt] font-bold uppercase flex justify-between">
           <span>{labelMap.routeName}: {d.routeName}</span>
           <span>{labelMap.vehicleNo}: {d.vehicleNo}</span>
         </div>
-        <div className="grid grid-cols-2 text-[7pt] font-bold uppercase divide-x divide-black border-b border-black">
-          <div className="p-1">{labelMap.vehicleType}: {d.vehicleType}</div>
-          <div className="p-1">{labelMap.capacity}: {d.capacity} L</div>
+        <div className="grid grid-cols-2 text-[8pt] font-bold uppercase divide-x divide-black border-b border-black">
+          <div className="p-1.5">{labelMap.vehicleType}: {d.vehicleType}</div>
+          <div className="p-1.5">{labelMap.capacity}: {d.capacity} L</div>
         </div>
-        <div className="grid grid-cols-2 text-[7pt] font-bold uppercase divide-x divide-black">
-          <div className="p-1">{labelMap.driverName}: {d.driverName}</div>
-          <div className="p-1">{labelMap.mobile}: {d.mobile}</div>
-        </div>
-      </div>
-
-      <div className="w-full border border-black mb-2 overflow-hidden text-left">
-        <div className="bg-rose-50 p-0.5 text-[7pt] font-black uppercase text-center border-b border-black text-rose-700">२) गाडी बिघाड झाल्याचा तपशील</div>
-        <div className="grid grid-cols-2 text-[7pt] font-bold uppercase divide-x divide-black">
-          <div className="p-1">{labelMap.breakdownTime}: {d.breakdownTime}</div>
-          <div className="p-1">{labelMap.location}: {d.location}</div>
-        </div>
-        <div className="p-1 border-t border-black text-[7pt]"><span className="font-black uppercase">{labelMap.reason}:</span> {d.reason}</div>
-        {d.detailedReason && <div className="p-1 border-t border-black text-[7pt]"><span className="font-black uppercase">{labelMap.detailedReason}:</span> {d.detailedReason}</div>}
-        <div className="grid grid-cols-3 text-[7pt] font-black uppercase divide-x divide-black border-t border-black bg-slate-50">
-          <div className="p-1">स्वरूप: {d.severity}</div>
-          <div className="p-1">{labelMap.milkHot}: {d.milkHot}</div>
-          <div className="p-1">{labelMap.milkSour}: {d.milkSour}</div>
+        <div className="grid grid-cols-2 text-[8pt] font-bold uppercase divide-x divide-black">
+          <div className="p-1.5">{labelMap.driverName}: {d.driverName}</div>
+          <div className="p-1.5">{labelMap.mobile}: {d.mobile}</div>
         </div>
       </div>
 
-      <div className="w-full border border-black mb-2 overflow-hidden text-left">
-        <div className="bg-blue-50 p-0.5 text-[7pt] font-black uppercase text-center border-b border-black text-blue-700">३) दुरुस्ती व पर्यायी सोय</div>
-        <div className="grid grid-cols-2 text-[7pt] font-bold uppercase divide-x divide-black border-b border-black">
-          <div className="p-1">{labelMap.estimatedRepairTime}: {d.estimatedRepairTime}</div>
-          <div className="p-1">{labelMap.estimatedRepairCost}: ₹{d.estimatedRepairCost}</div>
+      <div className="w-full border border-black mb-3 overflow-hidden text-left">
+        <div className="bg-rose-50 p-1 text-[8pt] font-black uppercase text-center border-b border-black text-rose-700">२) गाडी बिघाड झाल्याचा तपशील</div>
+        <div className="grid grid-cols-2 text-[8pt] font-bold uppercase divide-x divide-black">
+          <div className="p-1.5">{labelMap.breakdownTime}: {d.breakdownTime}</div>
+          <div className="p-1.5">{labelMap.location}: {d.location}</div>
         </div>
-        <div className="grid grid-cols-2 text-[7pt] font-bold uppercase divide-x divide-black">
-          <div className="p-1">{labelMap.recoveryVehicleNo}: {d.recoveryVehicleNo || "---"}</div>
-          <div className="p-1">{labelMap.recoveryArrivalTime}: {d.recoveryArrivalTime || "---"}</div>
+        <div className="p-1.5 border-t border-black text-[8pt]"><span className="font-black uppercase">{labelMap.reason}:</span> {d.reason}</div>
+        {d.detailedReason && <div className="p-1.5 border-t border-black text-[8pt]"><span className="font-black uppercase">{labelMap.detailedReason}:</span> {d.detailedReason}</div>}
+        <div className="grid grid-cols-3 text-[8pt] font-black uppercase divide-x divide-black border-t border-black bg-slate-50">
+          <div className="p-1.5">स्वरूप: {d.severity}</div>
+          <div className="p-1.5">{labelMap.milkHot}: {d.milkHot}</div>
+          <div className="p-1.5">{labelMap.milkSour}: {d.milkSour}</div>
+        </div>
+      </div>
+
+      <div className="w-full border border-black mb-3 overflow-hidden text-left">
+        <div className="bg-blue-50 p-1 text-[8pt] font-black uppercase text-center border-b border-black text-blue-700">३) दुरुस्ती व पर्यायी सोय</div>
+        <div className="grid grid-cols-2 text-[8pt] font-bold uppercase divide-x divide-black border-b border-black">
+          <div className="p-1.5">{labelMap.estimatedRepairTime}: {d.estimatedRepairTime}</div>
+          <div className="p-1.5">{labelMap.estimatedRepairCost}: ₹{d.estimatedRepairCost}</div>
+        </div>
+        <div className="grid grid-cols-2 text-[8pt] font-bold uppercase divide-x divide-black">
+          <div className="p-1.5">{labelMap.recoveryVehicleNo}: {d.recoveryVehicleNo || "---"}</div>
+          <div className="p-1.5">{labelMap.recoveryArrivalTime}: {d.recoveryArrivalTime || "---"}</div>
         </div>
       </div>
 
       {losses.length > 0 && (
-        <div className="w-full border border-black rounded overflow-hidden mb-2">
-          <div className="bg-slate-100 p-0.5 text-[7pt] font-black uppercase text-center border-b border-black">नुकसान तपशील (LOSS LOG)</div>
+        <div className="w-full border border-black rounded overflow-hidden mb-3">
+          <div className="bg-slate-100 p-1 text-[8pt] font-black uppercase text-center border-b border-black">नुकसान तपशील (LOSS LOG)</div>
           <table className="w-full border-collapse">
             <thead>
-              <tr className="bg-black text-white font-black text-[6pt] uppercase text-center">
-                <th className="p-0.5 border border-white/20 text-left pl-1">नाव/कोड</th>
-                <th className="p-0.5 border border-white/20 w-12 text-center">प्रकार</th>
-                <th className="p-0.5 border border-white/20 w-12 text-center">Qty</th>
-                <th className="p-0.5 border border-white/20 w-16 text-center">रक्कम (₹)</th>
+              <tr className="bg-black text-white font-black text-[7pt] uppercase text-center">
+                <th className="p-1 border border-white/20 text-left pl-2">नाव/कोड</th>
+                <th className="p-1 border border-white/20 w-16 text-center">प्रकार</th>
+                <th className="p-1 border border-white/20 w-16 text-center">Qty</th>
+                <th className="p-1 border border-white/20 w-24 text-center">रक्कम (₹)</th>
               </tr>
             </thead>
             <tbody>
               {losses.map((loss: any, idx: number) => (
-                <tr key={idx} className="font-bold text-[7pt] uppercase text-center h-5">
-                  <td className="p-0.5 border border-black text-left pl-1 truncate">{loss.centerCode} {loss.centerName}</td>
-                  <td className="p-0.5 border border-black text-center">{loss.milkType}</td>
-                  <td className="p-0.5 border border-black text-center">{loss.qtyLiters}</td>
-                  <td className="p-0.5 border border-black text-center">{loss.lossAmount}</td>
+                <tr key={idx} className="font-bold text-[8pt] uppercase text-center h-6">
+                  <td className="p-1 border border-black text-left pl-2 truncate">{loss.centerCode} {loss.centerName}</td>
+                  <td className="p-1 border border-black text-center">{loss.milkType}</td>
+                  <td className="p-1 border border-black text-center">{loss.qtyLiters}</td>
+                  <td className="p-1 border border-black text-center">{loss.lossAmount}</td>
                 </tr>
               ))}
             </tbody>
           </table>
-          <div className="bg-rose-600 text-white p-1 text-right font-black text-[8pt]">एकूण आर्थिक नुकसान: ₹{d.totalLossAmount}</div>
+          <div className="bg-rose-600 text-white p-1.5 text-right font-black text-[9pt]">एकूण आर्थिक नुकसान: ₹{d.totalLossAmount}</div>
         </div>
       )}
 
-      <div className="w-full mt-auto pt-4 grid grid-cols-2 gap-8 text-center uppercase font-black text-[7pt] tracking-widest">
-        <div className="border-t border-black pt-1">Officer Sign</div>
-        <div className="border-t border-black pt-1">Supervisor Sign</div>
+      <div className="w-full mt-auto pt-6 grid grid-cols-2 gap-12 text-center uppercase font-black text-[8pt] tracking-widest">
+        <div className="border-t border-black pt-1.5">Officer Sign</div>
+        <div className="border-t border-black pt-1.5">Supervisor Sign</div>
       </div>
     </div>
   )
@@ -285,14 +285,14 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
   
   if (report.type === 'Official Document') {
     return (
-      <div className="bg-white font-sans text-slate-900 border-none w-full p-4 printable-report flex flex-col shadow-none mb-4">
-        <div className="w-full text-center mb-6">
-           <h1 className="text-[16pt] font-black uppercase tracking-tight border-b-2 border-black pb-1 inline-block min-w-[150px]">
+      <div className="bg-white font-sans text-slate-900 border-none w-full p-6 printable-report flex flex-col shadow-none mb-4">
+        <div className="w-full text-center mb-8">
+           <h1 className="text-[18pt] font-black uppercase tracking-tight border-b-2 border-black pb-2 inline-block min-w-[200px]">
              {d.title || "अधिकृत दस्तऐवज"}
            </h1>
         </div>
         <div 
-          className="w-full prose prose-sm max-w-none text-left text-[10pt] leading-snug"
+          className="w-full prose prose-sm max-w-none text-left text-[11pt] leading-relaxed"
           dangerouslySetInnerHTML={{ __html: d.content || "" }} 
         />
       </div>
@@ -309,7 +309,7 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
   const remarkPoints = d.remarkPoints || [];
 
   return (
-    <div className="bg-white font-sans text-slate-900 border-[1.2px] border-black rounded-sm w-full p-4 printable-report flex flex-col items-center shadow-none mb-4">
+    <div className="bg-white font-sans text-slate-900 border-[1.2px] border-black rounded-sm w-full p-5 printable-report flex flex-col items-center shadow-none mb-4">
       <ReportHeader 
         title={d.reportHeading || report.type} 
         date={report.date} 
@@ -318,13 +318,13 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
         shift={d.shift}
       />
       
-      <div className="w-full border border-black rounded overflow-hidden mb-2 text-left">
+      <div className="w-full border border-black rounded overflow-hidden mb-3 text-left">
         <table className="w-full border-collapse">
           <tbody>
             {orderedEntries.map(([k, v]: any) => (
-              <tr key={k} className="text-[7pt] font-bold">
-                <td className="p-1 bg-slate-50 uppercase font-black border border-black w-[180px]">{labelMap[k]}</td>
-                <td className="p-1 border border-black">{String(v)}</td>
+              <tr key={k} className="text-[8pt] font-bold">
+                <td className="p-2 bg-slate-50 uppercase font-black border border-black w-[220px]">{labelMap[k]}</td>
+                <td className="p-2 border border-black">{String(v)}</td>
               </tr>
             ))}
           </tbody>
@@ -332,19 +332,19 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
       </div>
 
       {(points.length > 0 || remarkPoints.length > 0) && (
-        <div className="w-full p-2 border border-black rounded bg-slate-50 mb-2 text-left">
-          <span className="text-[6pt] font-black uppercase block border-b border-black/10 pb-0.5 mb-1">विशेष निरीक्षणे / मुद्दे:</span>
-          <ul className="list-decimal list-inside space-y-0.5">
+        <div className="w-full p-3 border border-black rounded bg-slate-50 mb-3 text-left">
+          <span className="text-[7pt] font-black uppercase block border-b border-black/10 pb-1 mb-2">विशेष निरीक्षणे / मुद्दे:</span>
+          <ul className="list-decimal list-inside space-y-1">
             {[...points, ...remarkPoints].map((p: string, i: number) => (
-              <li key={i} className="text-[7pt] font-bold">{p}</li>
+              <li key={i} className="text-[8pt] font-bold">{p}</li>
             ))}
           </ul>
         </div>
       )}
 
-      <div className="w-full mt-auto pt-4 grid grid-cols-2 gap-8 text-center uppercase font-black text-[7pt] tracking-widest">
-        <div className="border-t border-black pt-1">अधिकारी स्वाक्षरी</div>
-        <div className="border-t border-black pt-1">सुपरवायझर स्वाक्षरी</div>
+      <div className="w-full mt-auto pt-6 grid grid-cols-2 gap-12 text-center uppercase font-black text-[8pt] tracking-widest">
+        <div className="border-t border-black pt-1.5">अधिकारी स्वाक्षरी</div>
+        <div className="border-t border-black pt-1.5">सुपरवायझर स्वाक्षरी</div>
       </div>
     </div>
   );
@@ -353,7 +353,7 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
 const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any, profileName: string, profileId: string }) => {
   const d = report.fullData || {};
   return (
-    <div className="bg-white font-sans text-slate-900 border-[1.2px] border-black rounded-sm w-full p-4 printable-report flex flex-col items-center shadow-none mb-4">
+    <div className="bg-white font-sans text-slate-900 border-[1.2px] border-black rounded-sm w-full p-5 printable-report flex flex-col items-center shadow-none mb-4">
       <ReportHeader title={d.reportHeading || "ERP अहवाल"} date={report.date} subName={d.name || profileName} subId={d.idNumber || profileId} shift={d.shift} />
       
       <TableSection title="Morning Can Routes (Internal)" data={d.morningRoutes} />
@@ -362,9 +362,9 @@ const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any
       <TableSection title="External Can Routes" data={d.extCanRoutes} />
       <TableSection title="External Tanker Routes" data={d.extTankerRoutes} />
 
-      <div className="w-full mt-auto pt-4 grid grid-cols-2 gap-8 text-center uppercase font-black text-[7pt] tracking-widest">
-        <div className="border-t border-black pt-1">Supervisor Sign</div>
-        <div className="border-t border-black pt-1">Officer Sign</div>
+      <div className="w-full mt-auto pt-8 grid grid-cols-2 gap-12 text-center uppercase font-black text-[8pt] tracking-widest">
+        <div className="border-t border-black pt-1.5">Supervisor Sign</div>
+        <div className="border-t border-black pt-1.5">Officer Sign</div>
       </div>
     </div>
   )
@@ -443,6 +443,10 @@ export default function ReportsPage() {
     }
     const path = typeMap[report.type] || '/reports'
     router.push(`${path}?edit=${report.id}`)
+  }
+
+  const handlePrint = () => {
+    window.print();
   }
 
   if (!mounted) return <div className="p-20 text-center font-black uppercase text-[10px] opacity-50">लोड होत आहे...</div>
@@ -590,17 +594,17 @@ export default function ReportsPage() {
       </div>
 
       <Dialog open={isViewOpen} onOpenChange={setIsViewOpen}>
-        <DialogContent className="max-w-[850px] w-[98vw] p-0 rounded-2xl overflow-hidden border-none shadow-2xl bg-slate-100 flex flex-col items-center">
+        <DialogContent className="max-w-[850px] w-[98vw] p-0 rounded-2xl overflow-hidden border-none shadow-2xl bg-white flex flex-col items-center">
           <DialogHeader className="p-3 bg-white border-b flex flex-row items-center justify-between no-print w-full shrink-0">
             <DialogTitle className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
               <FileText className="h-4 w-4 text-primary" /> अहवाल प्रीव्ह्यू
             </DialogTitle>
             <div className="flex gap-2">
-              <Button size="sm" onClick={() => window.print()} className="h-8 px-3 font-black uppercase rounded-xl bg-black text-white text-[9px]"><Printer className="h-3.5 w-3.5 mr-1.5" /> प्रिंट</Button>
+              <Button size="sm" onClick={handlePrint} className="h-8 px-3 font-black uppercase rounded-xl bg-black text-white text-[9px]"><Printer className="h-3.5 w-3.5 mr-1.5" /> प्रिंट</Button>
               <Button size="icon" variant="ghost" onClick={() => setIsViewOpen(false)} className="h-8 w-8 text-slate-400 hover:bg-slate-100 rounded-full"><X className="h-4 w-4" /></Button>
             </div>
           </DialogHeader>
-          <ScrollArea className="max-h-[85vh] p-2 sm:p-4 bg-slate-100 w-full">
+          <ScrollArea className="max-h-[85vh] p-2 sm:p-4 bg-slate-100 w-full overflow-x-hidden">
             <div className="w-full flex flex-col items-center pb-10">
               {selectedReport && (
                 selectedReport.type === 'Route Allocation Report' ? <RouteAllocationLayout report={selectedReport} profileName={profileName} profileId={profileId} /> :
