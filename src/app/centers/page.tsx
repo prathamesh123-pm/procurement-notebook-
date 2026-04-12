@@ -194,7 +194,7 @@ export default function CentersPage() {
         </Card>
 
         {selectedCenter && (
-          <div className="bg-white font-sans text-slate-900 border-[1.2px] border-black rounded-sm w-full max-w-[210mm] mx-auto p-5 printable-report flex flex-col items-center shadow-none mb-4">
+          <div className="bg-white font-sans text-slate-900 border-[1.5px] border-black rounded-sm w-full max-w-[210mm] mx-auto p-6 printable-report flex flex-col items-center shadow-none mb-4">
             <div className="w-full flex items-center justify-between no-print mb-3 border-b pb-1.5">
               <Badge className="bg-primary/10 text-primary border-none uppercase text-[9px] font-black">CENTER PROFILE</Badge>
               <div className="flex gap-2">
@@ -204,75 +204,86 @@ export default function CentersPage() {
               </div>
             </div>
 
-            <div className="w-full border-b-2 border-black pb-1.5 mb-3 text-center">
-              <h3 className="text-[14pt] font-black uppercase text-primary tracking-widest">{selectedCenter.name}</h3>
-              <p className="text-[8pt] font-black text-muted-foreground uppercase">ID: {selectedCenter.supplierId} | CENTER</p>
+            <div className="w-full border-b-4 border-black pb-2 mb-4 text-center">
+              <h3 className="text-[18pt] font-black uppercase text-primary tracking-[0.1em]">{selectedCenter.name}</h3>
+              <p className="text-[10pt] font-black text-muted-foreground uppercase">केंद्र आयडी: {selectedCenter.supplierId} | संकलन केंद्र अहवाल</p>
             </div>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full mb-3 text-left">
-              <div className="space-y-2">
-                <h4 className="text-[9px] font-black uppercase text-primary tracking-widest border-b pb-0.5 flex items-center gap-1.5"><User className="h-3 w-3" /> १) प्राथमिक माहिती</h4>
-                <div className="space-y-1 text-[10px] font-bold">
-                  <div className="flex justify-between border-b border-dashed pb-0.5"><span className="text-muted-foreground uppercase text-[8px]">ऑपरेटर</span><span>{selectedCenter.operatorName || "-"}</span></div>
-                  <div className="flex justify-between border-b border-dashed pb-0.5"><span className="text-muted-foreground uppercase text-[8px]">मोबाईल</span><span>{selectedCenter.mobile || "-"}</span></div>
-                  <div className="flex flex-col gap-0.5"><span className="text-muted-foreground uppercase text-[8px]">पत्ता</span><span className="leading-tight">{selectedCenter.address || "-"}</span></div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full mb-4 text-left">
+              <div className="space-y-3">
+                <h4 className="text-[10px] font-black uppercase text-primary tracking-widest border-b-2 border-black pb-0.5">१) प्राथमिक माहिती (PRIMARY)</h4>
+                <div className="space-y-1.5 text-[11px] font-bold">
+                  <div className="flex justify-between border-b border-dashed border-black/20 pb-0.5"><span className="text-muted-foreground uppercase text-[9px]">ऑपरेटर</span><span>{selectedCenter.operatorName || "-"}</span></div>
+                  <div className="flex justify-between border-b border-dashed border-black/20 pb-0.5"><span className="text-muted-foreground uppercase text-[9px]">मोबाईल</span><span>{selectedCenter.mobile || "-"}</span></div>
+                  <div className="flex flex-col gap-0.5"><span className="text-muted-foreground uppercase text-[9px]">पत्ता</span><span className="leading-tight">{selectedCenter.address || "-"}</span></div>
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <h4 className="text-[9px] font-black uppercase text-primary tracking-widest border-b pb-0.5 flex items-center gap-1.5"><ShieldCheck className="h-3 w-3" /> २) परवाना व तांत्रिक</h4>
-                <div className="space-y-1 text-[10px] font-bold">
-                  <div className="flex justify-between border-b border-dashed pb-0.5"><span className="text-muted-foreground uppercase text-[8px]">FSSAI क्र.</span><span>{selectedCenter.fssaiNumber || "-"}</span></div>
-                  <div className="flex justify-between border-b border-dashed pb-0.5"><span className="text-muted-foreground uppercase text-[8px]">काटा ब्रँड</span><span>{selectedCenter.scaleBrand || "-"}</span></div>
-                  <div className="flex justify-between border-b border-dashed pb-0.5"><span className="text-muted-foreground uppercase text-[8px]">मशीन ब्रँड</span><span>{selectedCenter.fatMachineBrand || "-"}</span></div>
-                  <div className="flex justify-between border-b border-dashed pb-0.5"><span className="text-muted-foreground uppercase text-[8px]">रसायन स्टॉक</span><span>{selectedCenter.chemicalsStock || "-"}</span></div>
-                  <div className="flex justify-between border-b border-dashed pb-0.5"><span className="text-muted-foreground uppercase text-[8px]">बॅटरी स्थिती</span><span>{selectedCenter.batteryCondition || "-"}</span></div>
-                </div>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full mb-3 text-left">
-              <div className="space-y-2">
-                <h4 className="text-[9px] font-black uppercase text-primary tracking-widest border-b pb-0.5 flex items-center gap-1.5"><Wallet className="h-3 w-3" /> ३) व्यावसायिक माहिती</h4>
-                <div className="space-y-1 text-[10px] font-bold">
-                  <div className="flex justify-between border-b border-dashed pb-0.5"><span className="text-muted-foreground uppercase text-[8px]">पेमेंट सायकल</span><span>{selectedCenter.paymentCycle || "10 Days"}</span></div>
-                  <div className="flex justify-between border-b border-dashed pb-0.5"><span className="text-muted-foreground uppercase text-[8px]">जागा</span><span>{selectedCenter.spaceOwnership === 'Self' ? 'स्वतःची' : 'भाड्याची'}</span></div>
-                  <div className="flex justify-between border-b border-dashed pb-0.5"><span className="text-muted-foreground uppercase text-[8px]">स्वच्छता ग्रेड</span><Badge className="h-3.5 px-1 text-[7px] border-none bg-emerald-500">{selectedCenter.hygieneGrade || "A"}</Badge></div>
-                  <div className="flex justify-between border-b border-dashed pb-0.5"><span className="text-muted-foreground uppercase text-[8px]">बर्फ लाद्या</span><span>{selectedCenter.iceBlocks || 0}</span></div>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <h4 className="text-[9px] font-black uppercase text-blue-600 tracking-widest border-b pb-0.5 flex items-center gap-1.5"><Milk className="h-3 w-3" /> ४) दूध सारांश</h4>
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="p-1.5 rounded-lg bg-blue-50 text-center border border-blue-100"><p className="text-[7px] font-black uppercase text-blue-500">गाय</p><p className="text-[11px] font-black">{selectedCenter.cowMilk?.quantity || 0}L</p></div>
-                  <div className="p-1.5 rounded-lg bg-amber-50 text-center border border-amber-100"><p className="text-[7px] font-black uppercase text-amber-500">म्हेस</p><p className="text-[11px] font-black">{selectedCenter.buffaloMilk?.quantity || 0}L</p></div>
+              <div className="space-y-3">
+                <h4 className="text-[10px] font-black uppercase text-primary tracking-widest border-b-2 border-black pb-0.5">२) परवाना व तांत्रिक (TECHNICAL)</h4>
+                <div className="space-y-1.5 text-[11px] font-bold">
+                  <div className="flex justify-between border-b border-dashed border-black/20 pb-0.5"><span className="text-muted-foreground uppercase text-[9px]">FSSAI क्र.</span><span>{selectedCenter.fssaiNumber || "-"}</span></div>
+                  <div className="flex justify-between border-b border-dashed border-black/20 pb-0.5"><span className="text-muted-foreground uppercase text-[9px]">काटा ब्रँड</span><span>{selectedCenter.scaleBrand || "-"}</span></div>
+                  <div className="flex justify-between border-b border-dashed border-black/20 pb-0.5"><span className="text-muted-foreground uppercase text-[9px]">मशीन ब्रँड</span><span>{selectedCenter.fatMachineBrand || "-"}</span></div>
+                  <div className="flex justify-between border-b border-dashed border-black/20 pb-0.5"><span className="text-muted-foreground uppercase text-[9px]">बॅटरी स्थिती</span><span>{selectedCenter.batteryCondition || "-"}</span></div>
                 </div>
               </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-2 w-full mb-3 text-left">
-              <div className={`p-1.5 rounded-lg border border-black/10 flex flex-col items-center gap-0.5 ${selectedCenter.computerAvailable ? 'bg-emerald-50' : 'bg-muted/20 opacity-40'}`}><Laptop className="h-3 w-3" /><span className="text-[7px] font-black uppercase">POP: {selectedCenter.computerAvailable ? 'हो' : 'नाही'}</span></div>
-              <div className={`p-1.5 rounded-lg border border-black/10 flex flex-col items-center gap-0.5 ${selectedCenter.upsInverterAvailable ? 'bg-emerald-50' : 'bg-muted/20 opacity-40'}`}><Zap className="h-3 w-3" /><span className="text-[7px] font-black uppercase">UPS: {selectedCenter.upsInverterAvailable ? 'हो' : 'नाही'}</span></div>
-              <div className={`p-1.5 rounded-lg border border-black/10 flex flex-col items-center gap-0.5 ${selectedCenter.solarAvailable ? 'bg-emerald-50' : 'bg-muted/20 opacity-40'}`}><Sun className="h-3 w-3" /><span className="text-[7px] font-black uppercase">सोलर: {selectedCenter.solarAvailable ? 'हो' : 'नाही'}</span></div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full mb-4 text-left">
+              <div className="space-y-3">
+                <h4 className="text-[10px] font-black uppercase text-primary tracking-widest border-b-2 border-black pb-0.5">३) व्यावसायिक माहिती (BUSINESS)</h4>
+                <div className="space-y-1.5 text-[11px] font-bold">
+                  <div className="flex justify-between border-b border-dashed border-black/20 pb-0.5"><span className="text-muted-foreground uppercase text-[9px]">पेमेंट सायकल</span><span>{selectedCenter.paymentCycle || "10 Days"}</span></div>
+                  <div className="flex justify-between border-b border-dashed border-black/20 pb-0.5"><span className="text-muted-foreground uppercase text-[9px]">जागा मालकी</span><span>{selectedCenter.spaceOwnership === 'Self' ? 'स्वतःची' : 'भाड्याची'}</span></div>
+                  <div className="flex justify-between border-b border-dashed border-black/20 pb-0.5"><span className="text-muted-foreground uppercase text-[9px]">स्वच्छता ग्रेड</span><span className="font-black text-emerald-600">{selectedCenter.hygieneGrade || "A"}</span></div>
+                  <div className="flex justify-between border-b border-dashed border-black/20 pb-0.5"><span className="text-muted-foreground uppercase text-[9px]">बर्फ लाद्या</span><span>{selectedCenter.iceBlocks || 0}</span></div>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <h4 className="text-[10px] font-black uppercase text-blue-600 tracking-widest border-b-2 border-black pb-0.5">४) दूध संकलन सारांश (MILK)</h4>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="p-2 rounded border border-black text-center"><p className="text-[8px] font-black uppercase text-blue-600">गाय (COW)</p><p className="text-sm font-black">{selectedCenter.cowMilk?.quantity || 0}L</p></div>
+                  <div className="p-2 rounded border border-black text-center"><p className="text-[8px] font-black uppercase text-amber-600">म्हेस (BUF)</p><p className="text-sm font-black">{selectedCenter.buffaloMilk?.quantity || 0}L</p></div>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-3 gap-3 w-full mb-6">
+              <div className="p-2 border border-black text-center"><p className="text-[7px] font-black uppercase">POP / Computer</p><p className="text-[10px] font-black">{selectedCenter.computerAvailable ? 'AVAILABLE' : 'NO'}</p></div>
+              <div className="p-2 border border-black text-center"><p className="text-[7px] font-black uppercase">UPS / Inverter</p><p className="text-[10px] font-black">{selectedCenter.upsInverterAvailable ? 'AVAILABLE' : 'NO'}</p></div>
+              <div className="p-2 border border-black text-center"><p className="text-[7px] font-black uppercase">Solar System</p><p className="text-[10px] font-black">{selectedCenter.solarAvailable ? 'AVAILABLE' : 'NO'}</p></div>
             </div>
 
             <div className="space-y-2 w-full text-left">
-              <h4 className="text-[9px] font-black uppercase text-primary tracking-widest border-b pb-0.5 flex items-center gap-1.5"><Box className="h-3 w-3" /> साहित्याची यादी (INVENTORY)</h4>
-              <div className="border border-black rounded-sm overflow-hidden">
-                <table className="w-full text-left text-[8pt] border-collapse">
-                  <thead><tr className="bg-slate-100 border-b border-black"><th className="p-1.5 font-black uppercase border border-black">साहित्य</th><th className="p-1.5 text-center font-black uppercase border border-black">नग</th><th className="p-1.5 text-right font-black uppercase border border-black">मालकी</th></tr></thead>
-                  <tbody>
-                    {(selectedCenter.equipment || []).map((it, idx) => (
-                      <tr key={idx} className="border-b border-black last:border-0 font-bold"><td className="p-1.5 border border-black">{it.name}</td><td className="p-1.5 text-center border border-black">{it.quantity}</td><td className="p-1.5 text-right uppercase text-[7pt] border border-black">{it.ownership === 'Self' ? 'स्वतः' : 'डेअरी'}</td></tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              <h4 className="text-[10px] font-black uppercase text-primary tracking-widest border-b-2 border-black pb-0.5 mb-1">५) साहित्याची यादी (INVENTORY)</h4>
+              <table className="w-full border-collapse">
+                <thead>
+                  <tr className="bg-slate-100">
+                    <th className="p-2 border border-black text-left uppercase text-[9px] w-[60%]">साहित्य नाव (Item Name)</th>
+                    <th className="p-2 border border-black text-center uppercase text-[9px] w-[15%]">नग</th>
+                    <th className="p-2 border border-black text-right uppercase text-[9px] w-[25%]">मालकी</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(selectedCenter.equipment || []).map((it, idx) => (
+                    <tr key={idx} className="font-bold border-b border-black">
+                      <td className="p-2 border border-black">{it.name}</td>
+                      <td className="p-2 border border-black text-center">{it.quantity}</td>
+                      <td className="p-2 border border-black text-right uppercase text-[8px]">{it.ownership === 'Self' ? 'स्वतः' : 'डेअरी'}</td>
+                    </tr>
+                  ))}
+                  {(!selectedCenter.equipment || selectedCenter.equipment.length === 0) && (
+                    <tr><td colSpan={3} className="p-4 text-center italic text-[9px] opacity-50 border border-black">कोणतेही साहित्य नोंदवलेले नाही.</td></tr>
+                  )}
+                </tbody>
+              </table>
             </div>
-            <div className="w-full mt-auto pt-6 grid grid-cols-2 gap-12 text-center uppercase font-black text-[8pt] tracking-widest hidden print:grid">
-              <div className="border-t-[1.2px] border-black pt-1.5">अधिकारी स्वाक्षरी</div>
-              <div className="border-t-[1.2px] border-black pt-1.5">सुपरवायझर स्वाक्षरी</div>
+
+            <div className="w-full mt-auto pt-16 grid grid-cols-2 gap-20 text-center uppercase font-black text-[10pt] tracking-widest">
+              <div className="border-t-2 border-black pt-2">अधिकारी स्वाक्षरी</div>
+              <div className="border-t-2 border-black pt-2">सुपरवायझर स्वाक्षरी</div>
             </div>
           </div>
         )}

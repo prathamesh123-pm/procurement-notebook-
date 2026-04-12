@@ -79,13 +79,13 @@ h1, h2, h3, h4 {
 ::-webkit-scrollbar-thumb { @apply bg-slate-200 rounded-full; }
 
 /* 
- * ULTIMATE PRINT ENGINE v12.0 - PROFILE FIX
- * Forces everything marked .printable-report to be visible and clear.
+ * ULTIMATE PRINT ENGINE v15.0 - THE FINAL FIX
+ * Ensures absolute white background, perfect alignment, and zero clipping.
  */
 @media print {
   @page {
     size: A4;
-    margin: 0mm;
+    margin: 5mm;
   }
   
   html, body {
@@ -107,6 +107,7 @@ h1, h2, h3, h4 {
     opacity: 1 !important;
     color: black !important;
     background-color: white !important;
+    box-shadow: none !important;
   }
 
   .printable-report {
@@ -114,24 +115,26 @@ h1, h2, h3, h4 {
     top: 0 !important;
     left: 50% !important;
     transform: translateX(-50%) !important;
-    width: 190mm !important;
-    max-width: 190mm !important;
-    border: 1px solid black !important;
-    padding: 8mm !important;
+    width: 195mm !important;
+    max-width: 195mm !important;
+    border: none !important;
+    padding: 5mm !important;
     margin: 0 !important;
-    box-shadow: none !important;
-    z-index: 999999 !important;
+    z-index: 9999999 !important;
+    height: auto !important;
+    overflow: visible !important;
   }
 
-  /* Specific fixes for tables within printable reports */
   .printable-report table {
     display: table !important;
     width: 100% !important;
     border-collapse: collapse !important;
+    margin-bottom: 5mm !important;
   }
 
   .printable-report tr {
     display: table-row !important;
+    page-break-inside: avoid !important;
   }
 
   .printable-report th, .printable-report td {
@@ -139,9 +142,9 @@ h1, h2, h3, h4 {
     border: 1px solid black !important;
     padding: 4px !important;
     font-size: 8pt !important;
+    color: black !important;
   }
 
-  /* Grid adjustment for print */
   .printable-report .grid {
     display: grid !important;
     grid-template-columns: repeat(2, 1fr) !important;
@@ -158,10 +161,18 @@ h1, h2, h3, h4 {
   header, 
   nav, 
   footer, 
-  .sidebar, 
+  .sidebar,
+  [data-radix-collection-item],
   [role="dialog"] header,
   [role="dialog"] [class*="Close"],
   .fixed.inset-0.z-50 {
     display: none !important;
+  }
+
+  /* Unset dialog/scrollarea restrictions */
+  div { 
+    overflow: visible !important; 
+    max-height: none !important;
+    height: auto !important;
   }
 }

@@ -224,74 +224,81 @@ export default function ChillingCentersPage() {
               </div>
 
               <div className="w-full border-b-2 border-black pb-1.5 mb-3 text-center">
-                <h3 className="text-[14pt] font-black uppercase text-primary tracking-widest">{selectedCenter.name}</h3>
-                <p className="text-[8pt] font-black text-muted-foreground uppercase">ID: {selectedCenter.code} | चिलिंग सेंटर</p>
+                <h3 className="text-[16pt] font-black uppercase text-primary tracking-widest">{selectedCenter.name}</h3>
+                <p className="text-[9pt] font-black text-muted-foreground uppercase">ID: {selectedCenter.code} | चिलिंग सेंटर अहवाल</p>
               </div>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full text-left">
                 <div className="space-y-2">
-                  <h4 className="text-[9px] font-black uppercase text-primary tracking-widest border-b pb-0.5 flex items-center gap-1.5"><User className="h-3 w-3" /> १) प्राथमिक माहिती</h4>
-                  <div className="space-y-1 text-[10px] font-bold">
-                    <div className="flex justify-between border-b border-dashed pb-0.5"><span className="text-muted-foreground uppercase text-[8px]">मालक</span><span>{selectedCenter.ownerName || "-"}</span></div>
-                    <div className="flex justify-between border-b border-dashed pb-0.5"><span className="text-muted-foreground uppercase text-[8px]">संपर्क</span><span>{selectedCenter.mobile || "-"}</span></div>
-                    <div className="flex flex-col gap-0.5"><span className="text-muted-foreground uppercase text-[8px]">पत्ता</span><span className="leading-tight">{selectedCenter.address || "-"}</span></div>
-                    <div className="flex justify-between border-b border-dashed pb-0.5 pt-1"><span className="text-muted-foreground uppercase text-[8px]">एकूण सप्लायर्स</span><span>{selectedCenter.supplierCount || "0"}</span></div>
-                    <div className="flex justify-between border-b border-dashed pb-0.5"><span className="text-muted-foreground uppercase text-[8px]">FSSAI क्र.</span><span>{selectedCenter.fssaiNumber || "-"}</span></div>
+                  <h4 className="text-[10px] font-black uppercase text-primary tracking-widest border-b-2 border-black pb-0.5 mb-1">१) प्राथमिक माहिती (PRIMARY INFO)</h4>
+                  <div className="space-y-1 text-[11px] font-bold">
+                    <div className="flex justify-between border-b border-dashed pb-0.5"><span className="text-muted-foreground uppercase text-[9px]">मालक</span><span>{selectedCenter.ownerName || "-"}</span></div>
+                    <div className="flex justify-between border-b border-dashed pb-0.5"><span className="text-muted-foreground uppercase text-[9px]">संपर्क</span><span>{selectedCenter.mobile || "-"}</span></div>
+                    <div className="flex flex-col gap-0.5"><span className="text-muted-foreground uppercase text-[9px]">पत्ता</span><span className="leading-tight">{selectedCenter.address || "-"}</span></div>
+                    <div className="flex justify-between border-b border-dashed pb-0.5 pt-1"><span className="text-muted-foreground uppercase text-[9px]">एकूण सप्लायर्स</span><span>{selectedCenter.supplierCount || "0"}</span></div>
+                    <div className="flex justify-between border-b border-dashed pb-0.5"><span className="text-muted-foreground uppercase text-[9px]">FSSAI क्र.</span><span>{selectedCenter.fssaiNumber || "-"}</span></div>
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <h4 className="text-[9px] font-black uppercase text-primary tracking-widest border-b pb-0.5 flex items-center gap-1.5"><Box className="h-3 w-3" /> २) सुविधा & मशिन्स</h4>
-                  <div className="space-y-1 text-[10px] font-bold">
-                    <div className="flex justify-between border-b border-dashed pb-0.5"><span className="text-muted-foreground uppercase text-[8px]">BMC | IBT</span><span>{selectedCenter.hasBmc ? "BMC" : ""} {selectedCenter.hasIbt ? "| IBT" : ""}</span></div>
-                    <div className="flex justify-between border-b border-dashed pb-0.5"><span className="text-muted-foreground uppercase text-[8px]">फॅट मशीन</span><span>{selectedCenter.fatMachineBrand || "-"}</span></div>
-                    <div className="flex justify-between border-b border-dashed pb-0.5"><span className="text-muted-foreground uppercase text-[8px]">पाणी स्रोत</span><span>{selectedCenter.waterSource || "-"}</span></div>
-                    <div className="flex justify-between border-b border-dashed pb-0.5"><span className="text-muted-foreground uppercase text-[8px]">स्वच्छता ग्रेड</span><Badge className="h-3.5 px-1 text-[7px] border-none bg-emerald-500">{selectedCenter.hygieneGrade || "A"}</Badge></div>
+                  <h4 className="text-[10px] font-black uppercase text-primary tracking-widest border-b-2 border-black pb-0.5 mb-1">२) तांत्रिक सुविधा (TECHNICAL)</h4>
+                  <div className="space-y-1 text-[11px] font-bold">
+                    <div className="flex justify-between border-b border-dashed pb-0.5"><span className="text-muted-foreground uppercase text-[9px]">BMC | IBT</span><span>{selectedCenter.hasBmc ? "BMC" : ""} {selectedCenter.hasIbt ? "| IBT" : ""}</span></div>
+                    <div className="flex justify-between border-b border-dashed pb-0.5"><span className="text-muted-foreground uppercase text-[9px]">फॅट मशीन</span><span>{selectedCenter.fatMachineBrand || "-"}</span></div>
+                    <div className="flex justify-between border-b border-dashed pb-0.5"><span className="text-muted-foreground uppercase text-[9px]">पाणी स्रोत</span><span>{selectedCenter.waterSource || "-"}</span></div>
+                    <div className="flex justify-between border-b border-dashed pb-0.5"><span className="text-muted-foreground uppercase text-[9px]">स्वच्छता ग्रेड</span><span className="font-black text-emerald-600">{selectedCenter.hygieneGrade || "A"}</span></div>
                   </div>
                 </div>
               </div>
 
-              <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+              <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
                 <div className="space-y-2">
-                  <h4 className="text-[9px] font-black uppercase text-primary tracking-widest border-b pb-0.5 flex items-center gap-1.5"><Box className="h-3 w-3" /> टाक्यांची यादी (TANKS)</h4>
-                  <table className="w-full text-[9px] border border-black border-collapse">
-                    <thead className="bg-slate-100">
-                      <tr className="font-black uppercase text-center"><th className="p-1 border border-black text-left">टाकी क्रमांक</th><th className="p-1 border border-black text-right">क्षमता (L)</th></tr>
+                  <h4 className="text-[10px] font-black uppercase text-primary tracking-widest border-b-2 border-black pb-0.5 mb-1">३) टाक्यांची यादी (TANKS)</h4>
+                  <table className="w-full border-collapse">
+                    <thead>
+                      <tr className="bg-slate-100"><th className="p-1.5 border border-black text-left uppercase text-[9px]">टाकी</th><th className="p-1.5 border border-black text-right uppercase text-[9px]">क्षमता (L)</th></tr>
                     </thead>
                     <tbody>
                       {(selectedCenter.tanks || []).map((t, idx) => (
-                        <tr key={idx} className="font-bold border-b border-black"><td className="p-1 border border-black">{t.label}</td><td className="p-1 border border-black text-right">{t.capacity} L</td></tr>
+                        <tr key={idx} className="font-bold border-b border-black"><td className="p-1.5 border border-black">{t.label}</td><td className="p-1.5 border border-black text-right">{t.capacity} L</td></tr>
                       ))}
                     </tbody>
                   </table>
                 </div>
                 <div className="space-y-2">
-                  <h4 className="text-[9px] font-black uppercase text-rose-600 tracking-widest border-b pb-0.5 flex items-center gap-1.5"><Truck className="h-3 w-3" /> टँकर संकलन (LOG)</h4>
-                  <table className="w-full text-[8px] border border-black border-collapse">
-                    <thead className="bg-slate-100">
-                      <tr className="font-black uppercase text-center"><th className="p-1 border border-black text-left">टँकर क्र.</th><th className="p-1 border border-black text-center">IN/OUT</th><th className="p-1 border border-black text-right">Qty</th></tr>
+                  <h4 className="text-[10px] font-black uppercase text-rose-600 tracking-widest border-b-2 border-black pb-0.5 mb-1">४) टँकर संकलन (TANKER LOG)</h4>
+                  <table className="w-full border-collapse">
+                    <thead>
+                      <tr className="bg-slate-100"><th className="p-1.5 border border-black text-left uppercase text-[8px]">टँकर क्र.</th><th className="p-1.5 border border-black text-center uppercase text-[8px]">In-Out</th><th className="p-1.5 border border-black text-right uppercase text-[8px]">Qty (L)</th></tr>
                     </thead>
                     <tbody>
                       {(selectedCenter.tankerLogs || []).map((tl, idx) => (
-                        <tr key={idx} className="font-bold border-b border-black text-center"><td className="p-1 border border-black text-left">{tl.tankerNo}</td><td className="p-1 border border-black">{tl.arrivalTime}-{tl.departureTime}</td><td className="p-1 border border-black text-right">{tl.qtyFilled} L</td></tr>
+                        <tr key={idx} className="font-bold border-b border-black text-center"><td className="p-1.5 border border-black text-left">{tl.tankerNo}</td><td className="p-1.5 border border-black">{tl.arrivalTime}-{tl.departureTime}</td><td className="p-1.5 border border-black text-right">{tl.qtyFilled} L</td></tr>
                       ))}
                     </tbody>
                   </table>
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5 w-full mb-2">
-                <div className={`p-1.5 rounded-lg border border-black/10 flex flex-col items-center gap-0.5 ${selectedCenter.hasEtp ? 'bg-emerald-50' : 'bg-muted/20 opacity-40'}`}><Waves className="h-3 w-3" /><span className="text-[6px] font-black uppercase text-center">ETP: {selectedCenter.hasEtp ? 'हो' : 'नाही'}</span></div>
-                <div className={`p-1.5 rounded-lg border border-black/10 flex flex-col items-center gap-0.5 ${selectedCenter.hasSolar ? 'bg-emerald-50' : 'bg-muted/20 opacity-40'}`}><Sun className="h-3.5 w-3.5" /><span className="text-[6px] font-black uppercase text-center">सोलर: {selectedCenter.hasSolar ? 'हो' : 'नाही'}</span></div>
-                <div className={`p-1.5 rounded-lg border border-black/10 flex flex-col items-center gap-0.5 ${selectedCenter.hasHotWater ? 'bg-emerald-50' : 'bg-muted/20 opacity-40'}`}><Droplets className="h-3.5 w-3.5" /><span className="text-[6px] font-black uppercase text-center">गरम पाणी: {selectedCenter.hasHotWater ? 'हो' : 'नाही'}</span></div>
-                <div className={`p-1.5 rounded-lg border border-black/10 flex flex-col items-center gap-0.5 ${selectedCenter.hasDrainage ? 'bg-emerald-50' : 'bg-muted/20 opacity-40'}`}><Wind className="h-3.5 w-3.5" /><span className="text-[6px] font-black uppercase text-center">ड्रेनेज: {selectedCenter.hasDrainage ? 'हो' : 'नाही'}</span></div>
-                <div className={`p-1.5 rounded-lg border border-black/10 flex flex-col items-center gap-0.5 ${selectedCenter.hasLab ? 'bg-emerald-50' : 'bg-muted/20 opacity-40'}`}><FlaskConical className="h-3.5 w-3.5" /><span className="text-[6px] font-black uppercase text-center">LAB: {selectedCenter.hasLab ? 'हो' : 'नाही'}</span></div>
-                <div className={`p-1.5 rounded-lg border border-black/10 flex flex-col items-center gap-0.5 ${selectedCenter.staffUniform ? 'bg-emerald-50' : 'bg-muted/20 opacity-40'}`}><Shirt className="h-3.5 w-3.5" /><span className="text-[6px] font-black uppercase text-center">गणवेश: {selectedCenter.staffUniform ? 'हो' : 'नाही'}</span></div>
+              <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 w-full mt-4">
+                {[
+                  { l: 'ETP', v: selectedCenter.hasEtp },
+                  { l: 'Solar', v: selectedCenter.hasSolar },
+                  { l: 'Hot Water', v: selectedCenter.hasHotWater },
+                  { l: 'Drainage', v: selectedCenter.hasDrainage },
+                  { l: 'Lab', v: selectedCenter.hasLab },
+                  { l: 'Uniform', v: selectedCenter.staffUniform }
+                ].map((item, i) => (
+                  <div key={i} className={`p-2 border border-black rounded text-center ${item.v ? 'bg-slate-50' : 'opacity-30'}`}>
+                    <p className="text-[7px] font-black uppercase">{item.l}</p>
+                    <p className="text-[9px] font-black">{item.v ? 'YES' : 'NO'}</p>
+                  </div>
+                ))}
               </div>
 
-              <div className="w-full mt-auto pt-8 grid grid-cols-2 gap-12 text-center uppercase font-black text-[8pt] tracking-widest hidden print:grid">
-                <div className="border-t-[1.2px] border-black pt-1.5">अधिकारी स्वाक्षरी</div>
-                <div className="border-t-[1.2px] border-black pt-1.5">चिलिंग इन्चार्ज स्वाक्षरी</div>
+              <div className="w-full mt-auto pt-12 grid grid-cols-2 gap-16 text-center uppercase font-black text-[9pt] tracking-widest">
+                <div className="border-t-2 border-black pt-2">प्रादेशिक अधिकारी</div>
+                <div className="border-t-2 border-black pt-2">सेंटर इन्चार्ज</div>
               </div>
             </div>
           ) : (
