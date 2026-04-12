@@ -31,7 +31,7 @@ const labelMap: Record<string, string> = {
   centerName: "केंद्राचे नाव",
   centerCode: "केंद्र कोड",
   ownerName: "मालकाचे नाव",
-  supplierName: "पुरवठादार किंवा केंद्राचे पूर्ण नाव",
+  supplierName: "पुरवठादार किंवा केंद्राचे नाव",
   supplierId: "पुरवठादार किंवा केंद्राचा कोड (CODE)",
   mobile: "मोबाईल",
   address: "पत्ता",
@@ -110,28 +110,28 @@ const TableSection = ({ title, data }: { title: string, data: any[] }) => {
   if (activeData.length === 0) return null;
 
   return (
-    <div className="w-full mb-3">
+    <div className="w-full mb-3 text-left">
       <div className="bg-slate-100 p-1 text-[8pt] font-black uppercase text-center border border-black">{title}</div>
       <table className="w-full border-collapse">
         <thead>
-          <tr className="bg-slate-50 text-[7pt] font-black uppercase">
-            <th className="p-1 border border-black w-8 text-center">अ.क्र.</th>
-            <th className="p-1 border border-black w-16 text-center">ID</th>
-            <th className="p-1 border border-black w-16 text-center">Code</th>
+          <tr className="bg-slate-50 text-[7pt] font-black uppercase text-center">
+            <th className="p-1 border border-black w-8">अ.क्र.</th>
+            <th className="p-1 border border-black w-16">ID</th>
+            <th className="p-1 border border-black w-16">Code</th>
             <th className="p-1 border border-black text-left pl-2">रूटचे नाव</th>
-            <th className="p-1 border border-black w-12 text-center">Req</th>
-            <th className="p-1 border border-black w-12 text-center">Alloc</th>
+            <th className="p-1 border border-black w-12">Req</th>
+            <th className="p-1 border border-black w-12">Alloc</th>
           </tr>
         </thead>
         <tbody>
           {activeData.map((entry, idx) => (
-            <tr key={idx} className="text-[8pt] font-bold uppercase h-6">
-              <td className="p-1 border border-black text-center">{idx + 1}</td>
-              <td className="p-1 border border-black text-center">{entry.routeId}</td>
-              <td className="p-1 border border-black text-center">{entry.routeCode}</td>
+            <tr key={idx} className="text-[8pt] font-bold uppercase h-6 text-center">
+              <td className="p-1 border border-black">{idx + 1}</td>
+              <td className="p-1 border border-black">{entry.routeId}</td>
+              <td className="p-1 border border-black">{entry.routeCode}</td>
               <td className="p-1 border border-black text-left pl-2 truncate">{entry.routeName}</td>
-              <td className="p-1 border border-black font-black text-center">{entry.requested ? '√' : '-'}</td>
-              <td className="p-1 border border-black font-black text-center">{entry.allocated ? '√' : '-'}</td>
+              <td className="p-1 border border-black font-black">{entry.requested ? '√' : '-'}</td>
+              <td className="p-1 border border-black font-black">{entry.allocated ? '√' : '-'}</td>
             </tr>
           ))}
         </tbody>
@@ -148,7 +148,7 @@ const RouteVisitLayout = ({ report, profileName, profileId }: { report: any, pro
     <div className="bg-white font-sans text-slate-900 border-[1.2px] border-black rounded-sm w-full p-5 printable-report flex flex-col items-center shadow-none mb-4">
       <ReportHeader title={d.reportHeading || "रूट व्हिजिट अहवाल"} date={report.date} subName={d.name || profileName} subId={d.idNumber || profileId} shift={d.shift} />
       
-      <div className="w-full grid grid-cols-2 gap-2 mb-3">
+      <div className="w-full grid grid-cols-2 gap-2 mb-3 text-left">
         <div className="border border-black p-1.5 text-[8pt] font-bold uppercase">रूट: {d.routeName}</div>
         <div className="border border-black p-1.5 text-[8pt] font-bold uppercase">वाहन: {d.vehicleNumber}</div>
         <div className="border border-black p-1.5 text-[8pt] font-bold uppercase">ड्रायव्हर: {d.driverName}</div>

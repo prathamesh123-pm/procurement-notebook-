@@ -79,8 +79,8 @@ h1, h2, h3, h4 {
 ::-webkit-scrollbar-thumb { @apply bg-slate-200 rounded-full; }
 
 /* 
- * ULTIMATE ROBUST PRINT ENGINE v4.0
- * Fixes: Dark overlays, blank pages, double-page leaking, and centering.
+ * ULTIMATE ROBUST PRINT ENGINE v5.0
+ * Fixes: Dark overlays, Clipped content (Heading only showing), and Blank pages.
  */
 @media print {
   @page {
@@ -89,8 +89,8 @@ h1, h2, h3, h4 {
   }
   
   html, body {
-    height: 100% !important;
-    overflow: hidden !important;
+    height: auto !important;
+    overflow: visible !important;
     background: white !important;
     color: black !important;
     margin: 0 !important;
@@ -99,44 +99,49 @@ h1, h2, h3, h4 {
     print-color-adjust: exact !important;
   }
 
-  /* Hide EVERYTHING except the report itself */
-  body > *:not(div[role="dialog"]), 
-  header, nav, footer, aside, .sidebar, .no-print, button, 
-  [role="separator"], .compact-form-container button {
+  /* 1. Hide EVERYTHING except portals containing reports */
+  body > *:not(div[data-radix-portal]) {
     display: none !important;
-    visibility: hidden !important;
   }
 
-  /* Target the Dialog Overlays/Backdrops specifically to remove the dark/grey rectangle */
+  /* 2. Reset the Portal and Dialog behavior to be a flat page */
+  div[data-radix-portal], 
+  div[role="dialog"], 
+  div[role="presentation"] {
+    position: static !important;
+    display: block !important;
+    background: white !important;
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+    transform: none !important;
+  }
+
+  /* 3. Force-Kill the dark backdrop/overlay */
   div[data-state="open"] > div:first-child,
-  div[role="presentation"],
   .fixed.inset-0.z-50.bg-black\/80 {
     display: none !important;
     background: none !important;
     backdrop-filter: none !important;
   }
 
-  /* Reset the Dialog Container to be a simple top-aligned container */
-  div[role="dialog"] {
-    position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100% !important;
-    height: auto !important;
-    background: white !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    box-shadow: none !important;
-    border: none !important;
+  /* 4. Force ScrollArea to be fully visible (This was the "heading only" culprit) */
+  [data-radix-scroll-area-viewport] {
+    display: block !important;
     overflow: visible !important;
-    transform: none !important;
+    height: auto !important;
+    width: 100% !important;
   }
 
-  /* Ensure the printable report is centered and takes full width */
+  /* 5. Clean up the Report itself */
   .printable-report {
     display: block !important;
     visibility: visible !important;
-    position: absolute !important;
+    position: relative !important;
     top: 5mm !important;
     left: 50% !important;
     transform: translateX(-50%) !important;
@@ -156,7 +161,16 @@ h1, h2, h3, h4 {
     background-color: transparent !important;
   }
 
-  /* Table Printing Fixes */
+  /* 6. Hide UI elements like close buttons and headers in the dialog */
+  .no-print, 
+  button, 
+  [role="dialog"] header,
+  [role="dialog"] [class*="Close"],
+  .shrink-0 {
+    display: none !important;
+  }
+
+  /* 7. Table Printing Consistency */
   .printable-report table {
     display: table !important;
     width: 100% !important;
