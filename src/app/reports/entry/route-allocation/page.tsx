@@ -24,7 +24,7 @@ interface AllocationEntry {
 }
 
 /** 
- * Memoized section component to prevent keyboard focus loss during typing.
+ * Component moved outside main function to prevent re-renders and focus loss
  */
 const AllocationSection = ({ 
   title, 
@@ -51,7 +51,7 @@ const AllocationSection = ({
         <Layers className="h-3 w-3" /> {title}
       </h3>
       {isManageMode && (
-        <Button size="sm" variant="outline" onClick={() => onAdd(section)} className="h-6 text-[8px] font-black uppercase px-2 rounded-lg">
+        <Button size="sm" variant="outline" onClick={() => onAdd(section)} className="h-6 text-[8px] font-black uppercase px-2 rounded-lg border-primary/20 text-primary">
           <Plus className="h-3 w-3 mr-1" /> जोडा
         </Button>
       )}
@@ -59,44 +59,59 @@ const AllocationSection = ({
     <div className="space-y-2">
       <div className="grid grid-cols-12 gap-1 px-1 text-[7px] font-black uppercase text-muted-foreground">
         <div className="col-span-2">ID</div>
-        <div className="col-span-6">Route Name</div>
-        <div className="col-span-2 text-center">Req</div>
-        <div className={cn(isManageMode ? "col-span-1 text-center" : "col-span-2 text-center")}>Alloc</div>
+        <div className={cn(isManageMode ? "col-span-9" : "col-span-6")}>Route Name</div>
+        {!isManageMode && <div className="col-span-2 text-center">Req</div>}
+        {!isManageMode && <div className="col-span-2 text-center">Alloc</div>}
         {isManageMode && <div className="col-span-1"></div>}
       </div>
       {data.map((entry) => (
         <div key={entry.id} className="grid grid-cols-12 gap-1 items-center bg-muted/5 p-1 rounded-lg border border-muted-foreground/5">
           {isManageMode ? (
             <>
-              <Input value={entry.routeId} onChange={e => onUpdate(section, entry.id, { routeId: e.target.value })} className="col-span-2 h-7 text-[10px] p-1 bg-white border-none font-black" />
-              <Input value={entry.routeName} onChange={e => onUpdate(section, entry.id, { routeName: e.target.value })} className="col-span-6 h-7 text-[10px] p-1 bg-white border-none font-bold" />
+              <Input 
+                value={entry.routeId} 
+                onChange={e => onUpdate(section, entry.id, { routeId: e.target.value })} 
+                placeholder="ID"
+                className="col-span-2 h-8 text-[10px] p-1 bg-white border-none font-black shadow-inner" 
+              />
+              <Input 
+                value={entry.routeName} 
+                onChange={e => onUpdate(section, entry.id, { routeName: e.target.value })} 
+                placeholder="Route Name"
+                className="col-span-9 h-8 text-[10px] p-1 bg-white border-none font-bold shadow-inner" 
+              />
+              <div className="col-span-1 flex justify-end">
+                <Button variant="ghost" size="icon" onClick={() => onRemove(section, entry.id)} className="h-7 w-7 text-rose-400">
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
             </>
           ) : (
             <>
               <div className="col-span-2 text-[9px] font-black truncate px-1">{entry.routeId || "---"}</div>
               <div className="col-span-6 text-[10px] font-bold truncate px-1 uppercase">{entry.routeName || "---"}</div>
+              <div className="col-span-2 flex justify-center">
+                <input 
+                  type="checkbox" 
+                  checked={entry.requested} 
+                  onChange={e => onUpdate(section, entry.id, { requested: e.target.checked })} 
+                  className="h-4 w-4 accent-primary cursor-pointer" 
+                />
+              </div>
+              <div className="col-span-2 flex justify-center">
+                <input 
+                  type="checkbox" 
+                  checked={entry.allocated} 
+                  onChange={e => onUpdate(section, entry.id, { allocated: e.target.checked })} 
+                  className="h-4 w-4 accent-primary cursor-pointer" 
+                />
+              </div>
             </>
-          )}
-          
-          <div className="col-span-2 flex justify-center">
-            <input type="checkbox" checked={entry.requested} onChange={e => onUpdate(section, entry.id, { requested: e.target.checked })} className="h-4 w-4 accent-primary cursor-pointer" />
-          </div>
-          
-          <div className={cn(isManageMode ? "col-span-1 flex justify-center" : "col-span-2 flex justify-center")}>
-            <input type="checkbox" checked={entry.allocated} onChange={e => onUpdate(section, entry.id, { allocated: e.target.checked })} className="h-4 w-4 accent-primary cursor-pointer" />
-          </div>
-
-          {isManageMode && (
-            <div className="col-span-1 flex justify-end">
-              <Button variant="ghost" size="icon" onClick={() => onRemove(section, entry.id)} className="h-6 w-6 text-rose-400 hover:bg-rose-50 rounded-md">
-                <Trash2 className="h-3.5 w-3.5" />
-              </Button>
-            </div>
           )}
         </div>
       ))}
       {data.length === 0 && (
-        <p className="text-[8px] text-center italic opacity-30 py-2">रूट यादी कोरी आहे.</p>
+        <p className="text-[8px] text-center italic opacity-30 py-2">रूट यादी कोरी आहे. 'लिस्ट बदल करा' वर क्लिक करून रूट जोडा.</p>
       )}
     </div>
   </Card>
@@ -167,7 +182,10 @@ function RouteAllocationForm() {
       requested: false,
       allocated: false
     }
-    setFormData(prev => ({ ...prev, [section]: [...(prev[section as keyof typeof prev] as AllocationEntry[]), newEntry] }))
+    setFormData(prev => ({ 
+      ...prev, 
+      [section]: [...(prev[section as keyof typeof prev] as AllocationEntry[]), newEntry] 
+    }))
   }, [])
 
   const handleUpdateEntry = useCallback((section: string, id: string, updates: Partial<AllocationEntry>) => {
@@ -185,7 +203,7 @@ function RouteAllocationForm() {
   }, [])
 
   const saveAsTemplate = () => {
-    if (!db || !user) return
+    if (!db || !user || !templateRef) return
     const template = {
       morningRoutes: formData.morningRoutes.map(({ id, routeId, routeName }) => ({ id, routeId, routeName })),
       eveningRoutes: formData.eveningRoutes.map(({ id, routeId, routeName }) => ({ id, routeId, routeName })),
@@ -194,7 +212,7 @@ function RouteAllocationForm() {
       extTankerRoutes: formData.extTankerRoutes.map(({ id, routeId, routeName }) => ({ id, routeId, routeName })),
       updatedAt: new Date().toISOString()
     }
-    setDocumentNonBlocking(templateRef!, template, { merge: true })
+    setDocumentNonBlocking(templateRef, template, { merge: true })
     toast({ title: "टेम्पलेट जतन झाले", description: "पुढच्या वेळी हे रूट्स आपोआप येतील." })
     setIsManageMode(false)
   }

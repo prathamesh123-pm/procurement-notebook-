@@ -108,6 +108,40 @@ const ReportHeader = ({ title, date, subName, subId, shift }: any) => (
   </div>
 )
 
+const TableSection = ({ title, data }: { title: string, data: any[] }) => {
+  if (!data || data.length === 0) return null;
+  const activeData = data.filter(e => e.requested || e.allocated);
+  if (activeData.length === 0) return null;
+
+  return (
+    <div className="w-full mb-2">
+      <div className="bg-slate-100 p-0.5 text-[7pt] font-black uppercase text-center border border-black">{title}</div>
+      <table className="w-full border-collapse border border-black">
+        <thead>
+          <tr className="bg-slate-50 text-[6pt] font-black uppercase">
+            <th className="p-0.5 border border-black w-6">Sr</th>
+            <th className="p-0.5 border border-black w-16">ID</th>
+            <th className="p-0.5 border border-black text-left pl-1">Route Name</th>
+            <th className="p-0.5 border border-black w-10">Req</th>
+            <th className="p-0.5 border border-black w-10">Alloc</th>
+          </tr>
+        </thead>
+        <tbody>
+          {activeData.map((entry, idx) => (
+            <tr key={idx} className="text-[7pt] font-bold uppercase text-center h-5">
+              <td className="p-0.5 border border-black">{idx + 1}</td>
+              <td className="p-0.5 border border-black">{entry.routeId}</td>
+              <td className="p-0.5 border border-black text-left pl-1 truncate">{entry.routeName}</td>
+              <td className="p-0.5 border border-black font-black">{entry.requested ? '√' : '-'}</td>
+              <td className="p-0.5 border border-black font-black">{entry.allocated ? '√' : '-'}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
 const RouteVisitLayout = ({ report, profileName, profileId }: { report: any, profileName: string, profileId: string }) => {
   const d = report.fullData || {};
   const logs = d.routeVisitLogs || [];
@@ -382,40 +416,6 @@ const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any
         <div className="border-t border-black pt-1">Supervisor Sign</div>
         <div className="border-t border-black pt-1">Officer Sign</div>
       </div>
-    </div>
-  )
-}
-
-const TableSection = ({ title, data }: { title: string, data: any[] }) => {
-  if (!data || data.length === 0) return null;
-  const activeData = data.filter(e => e.requested || e.allocated);
-  if (activeData.length === 0) return null;
-
-  return (
-    <div className="w-full mb-2">
-      <div className="bg-slate-100 p-0.5 text-[7pt] font-black uppercase text-center border border-black">{title}</div>
-      <table className="w-full border-collapse border border-black">
-        <thead>
-          <tr className="bg-slate-50 text-[6pt] font-black uppercase">
-            <th className="p-0.5 border border-black w-6">Sr</th>
-            <th className="p-0.5 border border-black w-16">ID</th>
-            <th className="p-0.5 border border-black text-left pl-1">Route Name</th>
-            <th className="p-0.5 border border-black w-10">Req</th>
-            <th className="p-0.5 border border-black w-10">Alloc</th>
-          </tr>
-        </thead>
-        <tbody>
-          {activeData.map((entry, idx) => (
-            <tr key={idx} className="text-[7pt] font-bold uppercase text-center h-5">
-              <td className="p-0.5 border border-black">{idx + 1}</td>
-              <td className="p-0.5 border border-black">{entry.routeId}</td>
-              <td className="p-0.5 border border-black text-left pl-1 truncate">{entry.routeName}</td>
-              <td className="p-0.5 border border-black font-black">{entry.requested ? '√' : '-'}</td>
-              <td className="p-0.5 border border-black font-black">{entry.allocated ? '√' : '-'}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
     </div>
   )
 }
