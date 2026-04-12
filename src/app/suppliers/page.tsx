@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Supplier, Route, EquipmentItem, SupplierType } from "@/lib/types"
 import { 
   Search, Filter, Phone, Trash2, Milk, X, Laptop, Zap, Sun, 
-  Edit, CheckCircle2, Box, Wallet, User, ShieldCheck, Users, Truck 
+  Edit, CheckCircle2, Box, Wallet, User, ShieldCheck, Users, Truck, Printer, MapPin
 } from "lucide-react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
@@ -194,49 +194,147 @@ function SuppliersContent() {
         </div>
       </Card>
 
-      <div className="bg-white rounded-3xl border border-muted-foreground/10 shadow-2xl overflow-hidden">
-        <Table>
-          <TableHeader>
-            <TableRow className="bg-muted/30">
-              <TableHead className="font-black text-[10px] uppercase px-6">सप्लायर तपशील</TableHead>
-              <TableHead className="font-black text-[10px] uppercase text-center">वर्तमान रूट (ROUTE)</TableHead>
-              <TableHead className="font-black text-[10px] uppercase text-right px-6">क्रिया</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredSuppliers.map((supp) => (
-              <TableRow key={supp.id} className="cursor-pointer hover:bg-primary/5 transition-colors group" onClick={() => prepareEdit(supp)}>
-                <TableCell className="py-3 px-6">
-                  <div className="flex flex-col gap-1">
-                    <span className="font-black text-[13px] uppercase">{supp.name}</span>
-                    <span className="text-[9px] text-muted-foreground font-black uppercase flex items-center gap-2">
-                      <Badge variant="outline" className="h-4 px-1 text-[7px] border-none bg-primary/5 text-primary">ID: {supp.supplierId}</Badge>
-                      <Phone className="h-3 w-3" /> {supp.mobile}
-                    </span>
+      <div className="grid grid-cols-1 gap-4">
+        {selectedSupplier ? (
+          <div className="bg-white font-sans text-slate-900 border-[1.5px] border-black rounded-sm w-full max-w-[210mm] mx-auto p-6 printable-report flex flex-col items-center shadow-none mb-4 animate-in slide-in-from-right-2 duration-300">
+            <div className="w-full flex items-center justify-between no-print mb-3 border-b pb-1.5">
+              <Badge className="bg-primary/10 text-primary border-none uppercase text-[9px] font-black">{selectedSupplier.supplierType} PROFILE</Badge>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" className="h-7 rounded-xl font-black uppercase text-[8px]" onClick={() => window.print()}><Printer className="h-3 w-3 mr-1" /> प्रिंट</Button>
+                <Button variant="outline" size="sm" className="h-7 rounded-xl font-black uppercase text-[8px]" onClick={() => prepareEdit(selectedSupplier)}><Edit className="h-3 w-3 mr-1" /> बदल करा</Button>
+                <Button variant="outline" size="sm" className="h-7 rounded-xl font-black uppercase text-[8px] text-destructive border-destructive/20" onClick={() => deleteSupplier(selectedSupplier.id)}><Trash2 className="h-3.5 w-3.5 mr-1" /> हटवा</Button>
+                <Button variant="ghost" size="icon" onClick={() => setSelectedSupplier(null)} className="h-7 w-7 text-slate-400 hover:bg-slate-100 rounded-xl"><X className="h-4 w-4" /></Button>
+              </div>
+            </div>
+
+            <div className="w-full border-b-4 border-black pb-2 mb-4 text-center">
+              <h3 className="text-[18pt] font-black uppercase text-primary tracking-[0.1em]">{selectedSupplier.name}</h3>
+              <p className="text-[10pt] font-black text-muted-foreground uppercase">आयडी: {selectedSupplier.supplierId} | {selectedSupplier.supplierType === 'Center' ? 'संकलन केंद्र' : 'गवळी / सप्लायर'} प्रोफाईल</p>
+            </div>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full mb-4 text-left">
+              <div className="space-y-3">
+                <h4 className="text-[10px] font-black uppercase text-primary tracking-widest border-b-2 border-black pb-0.5 mb-1">१) प्राथमिक माहिती (PRIMARY)</h4>
+                <div className="space-y-1.5 text-[11px] font-bold">
+                  <div className="flex justify-between border-b border-dashed border-black/20 pb-0.5"><span className="text-muted-foreground uppercase text-[9px]">ऑपरेटर</span><span>{selectedSupplier.operatorName || "-"}</span></div>
+                  <div className="flex justify-between border-b border-dashed border-black/20 pb-0.5"><span className="text-muted-foreground uppercase text-[9px]">मोबाईल</span><span>{selectedSupplier.mobile || "-"}</span></div>
+                  <div className="flex flex-col gap-0.5"><span className="text-muted-foreground uppercase text-[9px]">पत्ता</span><span className="leading-tight">{selectedSupplier.address || "-"}</span></div>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <h4 className="text-[10px] font-black uppercase text-primary tracking-widest border-b-2 border-black pb-0.5 mb-1">२) परवाना व तांत्रिक (TECHNICAL)</h4>
+                <div className="space-y-1.5 text-[11px] font-bold">
+                  <div className="flex justify-between border-b border-dashed border-black/20 pb-0.5"><span className="text-muted-foreground uppercase text-[9px]">FSSAI क्र.</span><span>{selectedSupplier.fssaiNumber || "-"}</span></div>
+                  <div className="flex justify-between border-b border-dashed border-black/20 pb-0.5"><span className="text-muted-foreground uppercase text-[9px]">काटा ब्रँड</span><span>{selectedSupplier.scaleBrand || "-"}</span></div>
+                  <div className="flex justify-between border-b border-dashed border-black/20 pb-0.5"><span className="text-muted-foreground uppercase text-[9px]">मशीन ब्रँड</span><span>{selectedSupplier.fatMachineBrand || "-"}</span></div>
+                  <div className="flex justify-between border-b border-dashed border-black/20 pb-0.5"><span className="text-muted-foreground uppercase text-[9px]">बॅटरी स्थिती</span><span>{selectedSupplier.batteryCondition || "-"}</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full mb-4 text-left">
+              <div className="space-y-3">
+                <h4 className="text-[10px] font-black uppercase text-primary tracking-widest border-b-2 border-black pb-0.5 mb-1">३) व्यावसायिक माहिती (BUSINESS)</h4>
+                <div className="space-y-1.5 text-[11px] font-bold">
+                  <div className="flex justify-between border-b border-dashed border-black/20 pb-0.5"><span className="text-muted-foreground uppercase text-[9px]">पेमेंट सायकल</span><span>{selectedSupplier.paymentCycle || "10 Days"}</span></div>
+                  <div className="flex justify-between border-b border-dashed border-black/20 pb-0.5"><span className="text-muted-foreground uppercase text-[9px]">जागा</span><span>{selectedSupplier.spaceOwnership === 'Self' ? 'स्वतःची' : 'भाड्याची'}</span></div>
+                  <div className="flex justify-between border-b border-dashed border-black/20 pb-0.5"><span className="text-muted-foreground uppercase text-[9px]">स्वच्छता ग्रेड</span><span className="font-black text-emerald-600">{selectedSupplier.hygieneGrade || "A"}</span></div>
+                  <div className="flex justify-between border-b border-dashed border-black/20 pb-0.5"><span className="text-muted-foreground uppercase text-[9px]">बर्फ लाद्या</span><span>{selectedSupplier.iceBlocks || 0}</span></div>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <h4 className="text-[10px] font-black uppercase text-blue-600 tracking-widest border-b-2 border-black pb-0.5 mb-1">४) दूध संकलन सारांश (MILK)</h4>
+                <div className="grid grid-cols-1 gap-2">
+                  <div className="p-2 rounded border border-black flex justify-between items-center bg-blue-50/30">
+                    <span className="text-[9px] font-black uppercase text-blue-600">गाय (COW)</span>
+                    <span className="text-sm font-black">{selectedSupplier.cowMilk?.quantity || 0}L <span className="text-[9px] opacity-60 ml-1">(F:{selectedSupplier.cowMilk?.fat} S:{selectedSupplier.cowMilk?.snf})</span></span>
                   </div>
-                </TableCell>
-                <TableCell className="text-center">
-                  <Badge className={cn("h-5 px-2 text-[8px] font-black uppercase border-none", supp.routeId ? "bg-emerald-100 text-emerald-700" : "bg-rose-100 text-rose-700")}>
-                    <Truck className="h-2.5 w-2.5 mr-1" /> {getRouteName(supp.routeId)}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-right px-6">
-                  <div className="flex gap-1 justify-end opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Button variant="ghost" size="icon" className="h-9 w-9 text-primary" onClick={(e) => { e.stopPropagation(); prepareEdit(supp); }}><Edit className="h-4 w-4" /></Button>
-                    <Button variant="ghost" size="icon" className="h-9 w-9 text-destructive" onClick={(e) => { e.stopPropagation(); deleteSupplier(supp.id); }}><Trash2 className="h-4 w-4" /></Button>
+                  <div className="p-2 rounded border border-black flex justify-between items-center bg-amber-50/30">
+                    <span className="text-[9px] font-black uppercase text-amber-600">म्हेस (BUF)</span>
+                    <span className="text-sm font-black">{selectedSupplier.buffaloMilk?.quantity || 0}L <span className="text-[9px] opacity-60 ml-1">(F:{selectedSupplier.buffaloMilk?.fat} S:{selectedSupplier.buffaloMilk?.snf})</span></span>
                   </div>
-                </TableCell>
-              </TableRow>
-            ))}
-            {filteredSuppliers.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={3} className="p-20 text-center text-muted-foreground font-black uppercase text-[11px] opacity-20 tracking-[0.3em] italic">
-                  सप्लायर सापडले नाहीत.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-2 w-full text-left">
+              <h4 className="text-[10px] font-black uppercase text-primary tracking-widest border-b-2 border-black pb-0.5 mb-1">५) साहित्याची यादी (INVENTORY)</h4>
+              <table className="w-full border-collapse">
+                <thead>
+                  <tr className="bg-slate-100">
+                    <th className="p-2 border border-black text-left uppercase text-[9px] w-[55%]">साहित्य नाव (Item Name)</th>
+                    <th className="p-2 border border-black text-center uppercase text-[9px] w-[15%]">नग</th>
+                    <th className="p-2 border border-black text-right uppercase text-[9px] w-[30%]">मालकी</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(selectedSupplier.equipment || []).map((it, idx) => (
+                    <tr key={idx} className="font-bold border-b border-black">
+                      <td className="p-2 border border-black">{it.name}</td>
+                      <td className="p-2 border border-black text-center">{it.quantity}</td>
+                      <td className="p-2 border border-black text-right uppercase text-[8px]">{it.ownership === 'Self' ? 'स्वतः' : 'डेअरी'}</td>
+                    </tr>
+                  ))}
+                  {(!selectedSupplier.equipment || selectedSupplier.equipment.length === 0) && (
+                    <tr><td colSpan={3} className="p-4 text-center italic text-[9px] opacity-50 border border-black">कोणतेही साहित्य नोंदवलेले नाही.</td></tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="w-full mt-auto pt-16 grid grid-cols-2 gap-20 text-center uppercase font-black text-[10pt] tracking-widest">
+              <div className="border-t-2 border-black pt-2">अधिकारी स्वाक्षरी</div>
+              <div className="border-t-2 border-black pt-2">सुपरवायझर स्वाक्षरी</div>
+            </div>
+          </div>
+        ) : (
+          <div className="bg-white rounded-3xl border border-muted-foreground/10 shadow-2xl overflow-hidden">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-muted/30">
+                  <TableHead className="font-black text-[10px] uppercase px-6">सप्लायर तपशील</TableHead>
+                  <TableHead className="font-black text-[10px] uppercase text-center">वर्तमान रूट (ROUTE)</TableHead>
+                  <TableHead className="font-black text-[10px] uppercase text-right px-6">क्रिया</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredSuppliers.map((supp) => (
+                  <TableRow key={supp.id} className="cursor-pointer hover:bg-primary/5 transition-colors group" onClick={() => setSelectedSupplier(supp)}>
+                    <TableCell className="py-3 px-6">
+                      <div className="flex flex-col gap-1">
+                        <span className="font-black text-[13px] uppercase">{supp.name}</span>
+                        <span className="text-[9px] text-muted-foreground font-black uppercase flex items-center gap-2">
+                          <Badge variant="outline" className="h-4 px-1 text-[7px] border-none bg-primary/5 text-primary">ID: {supp.supplierId}</Badge>
+                          <Phone className="h-3 w-3" /> {supp.mobile}
+                        </span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <Badge className={cn("h-5 px-2 text-[8px] font-black uppercase border-none", supp.routeId ? "bg-emerald-100 text-emerald-700" : "bg-rose-100 text-rose-700")}>
+                        <Truck className="h-2.5 w-2.5 mr-1" /> {getRouteName(supp.routeId)}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right px-6">
+                      <div className="flex gap-1 justify-end opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Button variant="ghost" size="icon" className="h-9 w-9 text-primary" onClick={(e) => { e.stopPropagation(); prepareEdit(supp); }}><Edit className="h-4 w-4" /></Button>
+                        <Button variant="ghost" size="icon" className="h-9 w-9 text-destructive" onClick={(e) => { e.stopPropagation(); deleteSupplier(supp.id); }}><Trash2 className="h-4 w-4" /></Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+                {filteredSuppliers.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={3} className="p-20 text-center text-muted-foreground font-black uppercase text-[11px] opacity-20 tracking-[0.3em] italic">
+                      सप्लायर सापडले नाहीत.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        )}
       </div>
 
       <Dialog open={isEditing} onOpenChange={(open) => { if(!open) { setIsEditing(false); resetFormData(); } }}>
@@ -309,13 +407,13 @@ function SuppliersContent() {
                   <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">पशुखाद्य</Label><Input value={formData.cattleFeedBrand} onChange={e => setFormData({...formData, cattleFeedBrand: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl shadow-inner" /></div>
                 </div>
                 <div className="grid grid-cols-3 gap-2 p-3 bg-blue-50/50 rounded-xl border border-blue-100">
-                  <div className="col-span-3 text-[10px] font-black uppercase text-blue-600 mb-1">गाय (Qty/F/S)</div>
+                  <div className="col-span-3 text-[10px] font-black uppercase text-blue-600 mb-1">गाय (Qty/F/S) *</div>
                   <Input type="number" value={formData.cowQty} onChange={e => setFormData({...formData, cowQty: e.target.value})} className="h-8 text-[11px] bg-white border-none font-bold rounded-lg" placeholder="L" />
                   <Input type="number" value={formData.cowFat} onChange={e => setFormData({...formData, cowFat: e.target.value})} className="h-8 text-[11px] bg-white border-none font-bold rounded-lg" placeholder="F" />
                   <Input type="number" value={formData.cowSnf} onChange={e => setFormData({...formData, cowSnf: e.target.value})} className="h-8 text-[11px] bg-white border-none font-bold rounded-lg" placeholder="S" />
                 </div>
                 <div className="grid grid-cols-3 gap-2 p-3 bg-amber-50/50 rounded-xl border border-amber-100">
-                  <div className="col-span-3 text-[10px] font-black uppercase text-amber-600 mb-1">म्हेस (Qty/F/S)</div>
+                  <div className="col-span-3 text-[10px] font-black uppercase text-amber-600 mb-1">म्हेस (Qty/F/S) *</div>
                   <Input type="number" value={formData.bufQty} onChange={e => setFormData({...formData, bufQty: e.target.value})} className="h-8 text-[11px] bg-white border-none font-bold rounded-lg" placeholder="L" />
                   <Input type="number" value={formData.bufFat} onChange={e => setFormData({...formData, bufFat: e.target.value})} className="h-8 text-[11px] bg-white border-none font-bold rounded-lg" placeholder="F" />
                   <Input type="number" value={formData.bufSnf} onChange={e => setFormData({...formData, bufSnf: e.target.value})} className="h-8 text-[11px] bg-white border-none font-bold rounded-lg" placeholder="S" />
@@ -335,7 +433,7 @@ function SuppliersContent() {
                   </div>
                   <div className="flex flex-col items-center gap-2 p-3 bg-muted/10 rounded-xl cursor-pointer hover:bg-muted/20 transition-all border border-muted-foreground/5" onClick={() => setFormData({...formData, solarAvailable: !formData.solarAvailable})}>
                     <Sun className={`h-5 w-5 ${formData.solarAvailable ? 'text-emerald-500' : 'text-slate-400'}`} />
-                    <Label className="text-[9px) font-black uppercase cursor-pointer">सोलर: {formData.solarAvailable ? 'हो' : 'नाही'}</Label>
+                    <Label className="text-[9px] font-black uppercase cursor-pointer">सोलर: {formData.solarAvailable ? 'हो' : 'नाही'}</Label>
                   </div>
                   <div className="flex flex-col items-center gap-2 p-3 bg-muted/10 rounded-xl border border-muted-foreground/5">
                     <Label className="text-[8px] font-black uppercase opacity-50">Cans</Label>

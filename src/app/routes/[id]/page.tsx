@@ -264,9 +264,15 @@ export default function RouteDetailsPage() {
 
                 <div className="space-y-3">
                   <h4 className="text-[10px] font-black uppercase text-blue-600 tracking-widest border-b-2 border-black pb-0.5 mb-1">४) दूध संकलन सारांश (MILK)</h4>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="p-2.5 rounded border border-black text-center"><p className="text-[8px] font-black uppercase text-blue-600">गाय (COW)</p><p className="text-base font-black">{selectedSupplier.cowMilk?.quantity || 0}L</p></div>
-                    <div className="p-2.5 rounded border border-black text-center"><p className="text-[8px] font-black uppercase text-amber-600">म्हेस (BUF)</p><p className="text-base font-black">{selectedSupplier.buffaloMilk?.quantity || 0}L</p></div>
+                  <div className="grid grid-cols-1 gap-2">
+                    <div className="p-2.5 rounded border border-black flex justify-between items-center bg-blue-50/30">
+                      <span className="text-[8px] font-black uppercase text-blue-600">गाय (COW)</span>
+                      <span className="text-base font-black">{selectedSupplier.cowMilk?.quantity || 0}L <span className="text-[9px] opacity-60 ml-1">(F:{selectedSupplier.cowMilk?.fat} S:{selectedSupplier.cowMilk?.snf})</span></span>
+                    </div>
+                    <div className="p-2.5 rounded border border-black flex justify-between items-center bg-amber-50/30">
+                      <span className="text-[8px] font-black uppercase text-amber-600">म्हेस (BUF)</span>
+                      <span className="text-base font-black">{selectedSupplier.buffaloMilk?.quantity || 0}L <span className="text-[9px] opacity-60 ml-1">(F:{selectedSupplier.buffaloMilk?.fat} S:{selectedSupplier.buffaloMilk?.snf})</span></span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -282,9 +288,9 @@ export default function RouteDetailsPage() {
                 <table className="w-full border-collapse">
                   <thead>
                     <tr className="bg-slate-100">
-                      <th className="p-2 border border-black text-left uppercase text-[9px] w-[60%]">साहित्य नाव (Item Name)</th>
+                      <th className="p-2 border border-black text-left uppercase text-[9px] w-[55%]">साहित्य नाव (Item Name)</th>
                       <th className="p-2 border border-black text-center uppercase text-[9px] w-[15%]">नग</th>
-                      <th className="p-2 border border-black text-right uppercase text-[9px] w-[25%]">मालकी</th>
+                      <th className="p-2 border border-black text-right uppercase text-[9px] w-[30%]">मालकी</th>
                     </tr>
                   </thead>
                   <tbody>

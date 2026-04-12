@@ -331,7 +331,7 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
     );
   }
 
-  const excludeFields = ["reportHeading", "name", "repName", "shift", "idNumber", "repId", "routeVisitLogs", "centerLosses", "morningRoutes", "eveningRoutes", "tankerRoutes", "extCanRoutes", "extTankerRoutes", "points", "remarkPoints", "dailyProblems", "equipment"];
+  const excludeFields = ["reportHeading", "name", "repName", "shift", "idNumber", "repId", "routeVisitLogs", "centerLosses", "morningRoutes", "eveningRoutes", "tankerRoutes", "extCanRoutes", "extTankerRoutes", "points", "remarkPoints", "dailyProblems", "equipment", "cowMilk", "buffaloMilk", "cowQty", "cowFat", "cowSnf", "bufQty", "bufFat", "bufSnf"];
 
   const orderedEntries = fieldSequence
     .filter(key => d[key] !== undefined && d[key] !== "" && labelMap[key] && !excludeFields.includes(key))
@@ -364,23 +364,53 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
         </table>
       </div>
 
+      {(d.cowMilk || d.buffaloMilk || d.cowQty) && (
+        <div className="w-full mb-3 text-left">
+          <span className="text-[7pt] font-black uppercase block border-b border-black pb-1 mb-1">दूध संकलन तपशील (MILK DETAILS):</span>
+          <table className="w-full border-collapse border border-black table-fixed">
+            <thead>
+              <tr className="bg-slate-100 text-[7pt] font-black uppercase text-center">
+                <th className="p-1 border border-black text-left pl-2">दूध प्रकार</th>
+                <th className="p-1 border border-black w-24">प्रमाण (L)</th>
+                <th className="p-1 border border-black w-20">FAT %</th>
+                <th className="p-1 border border-black w-20">SNF %</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="text-[8pt] font-bold border-b border-black text-center">
+                <td className="p-1 border border-black text-left pl-2">गाय (COW)</td>
+                <td className="p-1 border border-black">{d.cowMilk?.quantity || d.cowQty || "0"}</td>
+                <td className="p-1 border border-black">{d.cowMilk?.fat || d.cowFat || "-"}</td>
+                <td className="p-1 border border-black">{d.cowMilk?.snf || d.cowSnf || "-"}</td>
+              </tr>
+              <tr className="text-[8pt] font-bold border-b border-black text-center">
+                <td className="p-1 border border-black text-left pl-2">म्हेस (BUFFALO)</td>
+                <td className="p-1 border border-black">{d.buffaloMilk?.quantity || d.bufQty || "0"}</td>
+                <td className="p-1 border border-black">{d.buffaloMilk?.fat || d.bufFat || "-"}</td>
+                <td className="p-1 border border-black">{d.buffaloMilk?.snf || d.bufSnf || "-"}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      )}
+
       {inventory.length > 0 && (
         <div className="w-full mb-3 text-left">
           <span className="text-[7pt] font-black uppercase block border-b border-black pb-1 mb-1">साहित्याची यादी (INVENTORY):</span>
           <table className="w-full border-collapse border border-black table-fixed">
             <thead>
               <tr className="bg-slate-100 text-[7pt] font-black uppercase">
-                <th className="p-1 border border-black text-left">साहित्य</th>
+                <th className="p-1 border border-black text-left pl-2">साहित्य</th>
                 <th className="p-1 border border-black text-center w-16">नग</th>
-                <th className="p-1 border border-black text-right w-24">मालकी</th>
+                <th className="p-1 border border-black text-right w-24 pr-2">मालकी</th>
               </tr>
             </thead>
             <tbody>
               {inventory.map((it: any, i: number) => (
                 <tr key={i} className="text-[8pt] font-bold border-b border-black">
-                  <td className="p-1 border border-black">{it.name}</td>
+                  <td className="p-1 border border-black pl-2">{it.name}</td>
                   <td className="p-1 border border-black text-center">{it.quantity}</td>
-                  <td className="p-1 border border-black text-right uppercase text-[7pt]">{it.ownership === 'Self' ? 'स्वतः' : 'डेअरी'}</td>
+                  <td className="p-1 border border-black text-right uppercase text-[7pt] pr-2">{it.ownership === 'Self' ? 'स्वतः' : 'डेअरी'}</td>
                 </tr>
               ))}
             </tbody>

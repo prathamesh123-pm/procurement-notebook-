@@ -6,14 +6,14 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { 
   Warehouse, Plus, Search, MapPin, Edit, X, ChevronRight,
-  Laptop, Zap, Sun, Box, Milk, ShieldCheck, Wallet, User, Printer, CheckCircle2, FlaskConical
+  Laptop, Zap, Sun, Box, Milk, ShieldCheck, Wallet, User, Printer, CheckCircle2, FlaskConical, Trash2
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
 import { Supplier, EquipmentItem, SupplierType } from "@/lib/types"
 import { useToast } from "@/hooks/use-toast"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking } from "@/firebase"
+import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking } from "@/firebase"
 import { collection, doc, query, where } from "firebase/firestore"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
@@ -131,6 +131,15 @@ export default function CentersPage() {
     setIsDialogOpen(false)
   }
 
+  const handleDelete = (id: string) => {
+    if (!db) return
+    if (confirm("तुम्हाला खात्री आहे की हे केंद्र हटवायचे आहे?")) {
+      deleteDocumentNonBlocking(doc(db, 'suppliers', id))
+      setSelectedCenter(null)
+      toast({ title: "यशस्वी", description: "केंद्र हटवण्यात आले." })
+    }
+  }
+
   const addEquipmentRow = () => {
     setFormData({ ...formData, equipment: [...formData.equipment, { id: crypto.randomUUID(), name: "", quantity: 1, ownership: 'Company' }] })
   }
@@ -201,6 +210,7 @@ export default function CentersPage() {
               <div className="flex gap-2">
                 <Button variant="outline" size="sm" className="h-7 rounded-xl font-black uppercase text-[8px]" onClick={() => window.print()}><Printer className="h-3 w-3 mr-1" /> प्रिंट</Button>
                 <Button variant="outline" size="sm" className="h-7 rounded-xl font-black uppercase text-[8px]" onClick={() => handleOpenEdit(selectedCenter)}><Edit className="h-3 w-3 mr-1" /> बदल करा</Button>
+                <Button variant="outline" size="sm" className="h-7 rounded-xl font-black uppercase text-[8px] text-destructive border-destructive/20" onClick={() => handleDelete(selectedCenter.id)}><Trash2 className="h-3 w-3 mr-1" /> हटवा</Button>
                 <Button variant="ghost" size="icon" onClick={() => setSelectedCenter(null)} className="h-7 w-7 text-slate-400 hover:bg-slate-100 rounded-xl"><X className="h-4 w-4" /></Button>
               </div>
             </div>
@@ -244,9 +254,15 @@ export default function CentersPage() {
 
               <div className="space-y-3">
                 <h4 className="text-[10px] font-black uppercase text-blue-600 tracking-widest border-b-2 border-black pb-0.5">४) दूध संकलन सारांश (MILK)</h4>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="p-2 rounded border border-black text-center"><p className="text-[8px] font-black uppercase text-blue-600">गाय (COW)</p><p className="text-sm font-black">{selectedCenter.cowMilk?.quantity || 0}L</p></div>
-                  <div className="p-2 rounded border border-black text-center"><p className="text-[8px] font-black uppercase text-amber-600">म्हेस (BUF)</p><p className="text-sm font-black">{selectedCenter.buffaloMilk?.quantity || 0}L</p></div>
+                <div className="grid grid-cols-1 gap-2">
+                  <div className="p-2 rounded border border-black flex justify-between items-center bg-blue-50/30">
+                    <span className="text-[9px] font-black uppercase text-blue-600">गाय (COW)</span>
+                    <span className="text-sm font-black">{selectedCenter.cowMilk?.quantity || 0}L <span className="text-[9px] opacity-60 ml-1">(F:{selectedCenter.cowMilk?.fat} S:{selectedCenter.cowMilk?.snf})</span></span>
+                  </div>
+                  <div className="p-2 rounded border border-black flex justify-between items-center bg-amber-50/30">
+                    <span className="text-[9px] font-black uppercase text-amber-600">म्हेस (BUF)</span>
+                    <span className="text-sm font-black">{selectedCenter.buffaloMilk?.quantity || 0}L <span className="text-[9px] opacity-60 ml-1">(F:{selectedCenter.buffaloMilk?.fat} S:{selectedCenter.buffaloMilk?.snf})</span></span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -262,9 +278,9 @@ export default function CentersPage() {
               <table className="w-full border-collapse">
                 <thead>
                   <tr className="bg-slate-100">
-                    <th className="p-2 border border-black text-left uppercase text-[9px] w-[60%]">साहित्य नाव (Item Name)</th>
+                    <th className="p-2 border border-black text-left uppercase text-[9px] w-[55%]">साहित्य नाव (Item Name)</th>
                     <th className="p-2 border border-black text-center uppercase text-[9px] w-[15%]">नग</th>
-                    <th className="p-2 border border-black text-right uppercase text-[9px] w-[25%]">मालकी</th>
+                    <th className="p-2 border border-black text-right uppercase text-[9px] w-[30%]">मालकी</th>
                   </tr>
                 </thead>
                 <tbody>
