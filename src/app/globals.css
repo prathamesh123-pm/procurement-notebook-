@@ -79,13 +79,13 @@ h1, h2, h3, h4 {
 ::-webkit-scrollbar-thumb { @apply bg-slate-200 rounded-full; }
 
 /* 
- * ULTIMATE ROBUST PRINT ENGINE v7.0
- * Fixes: Dark overlays, Clipped content, Background bleeding, and Multi-page issues.
+ * ROBUST PRINT ENGINE v8.0
+ * Centered, Non-overlapping, Full-page output.
  */
 @media print {
   @page {
     size: A4;
-    margin: 5mm;
+    margin: 10mm;
   }
   
   html, body {
@@ -99,12 +99,12 @@ h1, h2, h3, h4 {
     print-color-adjust: exact !important;
   }
 
-  /* 1. Reset all containers to be visible and unconstrained */
+  /* Hide everything by default */
   body > * {
     display: none !important;
   }
 
-  /* 2. Target the Radix Portal (Dialog) specifically */
+  /* Display the portal containing the dialog content */
   body > div[data-radix-portal] {
     display: block !important;
     position: absolute !important;
@@ -114,15 +114,14 @@ h1, h2, h3, h4 {
     background: white !important;
   }
 
-  /* 3. Disable all overlays/backdrops */
+  /* Remove dark overlays and backdrops */
   [data-state="open"] > div:first-child,
   .fixed.inset-0.z-50.bg-black\/80 {
     display: none !important;
-    background: transparent !important;
-    backdrop-filter: none !important;
+    opacity: 0 !important;
   }
 
-  /* 4. Force dialog content to occupy full width and be visible */
+  /* Reset dialog constraints */
   div[role="dialog"] {
     display: block !important;
     position: relative !important;
@@ -138,7 +137,7 @@ h1, h2, h3, h4 {
     overflow: visible !important;
   }
 
-  /* 5. Force ScrollArea to reveal all hidden content */
+  /* Reset scroll area constraints */
   [data-radix-scroll-area-viewport] {
     display: block !important;
     overflow: visible !important;
@@ -146,14 +145,14 @@ h1, h2, h3, h4 {
     width: 100% !important;
   }
 
-  /* 6. Printable Report Core Styling */
+  /* The actual report content */
   .printable-report {
     display: block !important;
     visibility: visible !important;
     position: relative !important;
     width: 100% !important;
     max-width: 190mm !important;
-    margin: 0 auto !important;
+    margin: 0 auto !important; /* Centering */
     border: 1.2px solid black !important;
     padding: 10mm !important;
     background: white !important;
@@ -169,24 +168,25 @@ h1, h2, h3, h4 {
     border-color: black !important;
   }
 
-  /* 7. Strict Table Styling for Print */
+  /* Ensure tables don't overflow or overlap */
   .printable-report table {
     display: table !important;
     width: 100% !important;
+    table-layout: fixed !important;
     border-collapse: collapse !important;
-    border: 1.2px solid black !important;
+    border: 1px solid black !important;
   }
   
   .printable-report th,
   .printable-report td {
-    display: table-cell !important;
     border: 1px solid black !important;
     padding: 4px !important;
     font-size: 8pt !important;
-    color: black !important;
+    word-wrap: break-word !important;
+    overflow: hidden !important;
   }
 
-  /* 8. Hide all UI noise */
+  /* Hide UI elements */
   .no-print, 
   button, 
   header,
@@ -194,7 +194,6 @@ h1, h2, h3, h4 {
   nav,
   [role="dialog"] header,
   [role="dialog"] [class*="Close"],
-  .shrink-0,
   [data-sidebar="sidebar"] {
     display: none !important;
   }

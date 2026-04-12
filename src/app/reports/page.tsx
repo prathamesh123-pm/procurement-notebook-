@@ -118,22 +118,22 @@ const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any
     const rightCol = activeData.slice(mid);
 
     const TablePart = ({ items, startIdx }: { items: any[], startIdx: number }) => (
-      <table className="w-full border-collapse border border-black text-[7pt]">
+      <table className="w-full border-collapse border border-black text-[7pt] table-fixed">
         <thead>
-          <tr className="bg-slate-200 font-black uppercase text-center">
-            <th className="border border-black p-1 w-8">अ.क्र.</th>
-            <th className="border border-black p-1 w-12">कोड</th>
-            <th className="border border-black p-1 text-left pl-2">रूटचे नाव</th>
-            <th className="border border-black p-1 w-10">Req</th>
-            <th className="border border-black p-1 w-10">Alloc</th>
+          <tr className="bg-slate-200 font-black uppercase text-center h-6">
+            <th className="border border-black p-1 w-6">Sr.</th>
+            <th className="border border-black p-1 w-10">Code</th>
+            <th className="border border-black p-1 text-left pl-1">Route Name</th>
+            <th className="border border-black p-1 w-8">Req</th>
+            <th className="border border-black p-1 w-8">Alloc</th>
           </tr>
         </thead>
         <tbody>
           {items.map((it, i) => (
-            <tr key={i} className="h-6 font-bold uppercase text-center">
+            <tr key={i} className="h-6 font-bold uppercase text-center border-b border-black">
               <td className="border border-black p-1">{startIdx + i + 1}</td>
-              <td className="border border-black p-1">{it.routeCode || it.routeId}</td>
-              <td className="border border-black p-1 text-left pl-2 truncate">{it.routeName}</td>
+              <td className="border border-black p-1 truncate">{it.routeCode || it.routeId}</td>
+              <td className="border border-black p-1 text-left pl-1 truncate text-[6.5pt]">{it.routeName}</td>
               <td className="border border-black p-1 font-black">{it.requested ? '√' : ''}</td>
               <td className="border border-black p-1 font-black">{it.allocated ? '√' : ''}</td>
             </tr>
@@ -147,9 +147,9 @@ const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any
         <div className="bg-slate-800 text-white p-1 text-[8pt] font-black uppercase text-center border-b border-black">
           प्रकार : {title}
         </div>
-        <div className="grid grid-cols-2 gap-0 divide-x divide-black">
-          <div><TablePart items={leftCol} startIdx={0} /></div>
-          <div><TablePart items={rightCol} startIdx={mid} /></div>
+        <div className="flex w-full divide-x divide-black">
+          <div className="w-1/2"><TablePart items={leftCol} startIdx={0} /></div>
+          <div className="w-1/2"><TablePart items={rightCol} startIdx={mid} /></div>
         </div>
       </div>
     );
@@ -159,11 +159,13 @@ const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any
     <div className="bg-white font-sans text-slate-900 border-[1.2px] border-black rounded-sm w-full p-5 printable-report flex flex-col items-center shadow-none mb-4">
       <ReportHeader title={d.reportHeading || "ERP अहवाल"} date={report.date} subName={d.name || profileName} subId={d.idNumber || profileId} shift={d.shift} />
       
-      {renderExcelSection("Can Route Morning (Internal)", d.morningRoutes)}
-      {renderExcelSection("Can Route Evening (Internal)", d.eveningRoutes)}
-      {renderExcelSection("Internal Tanker Route", d.tankerRoutes)}
-      {renderExcelSection("External Can Route", d.extCanRoutes)}
-      {renderExcelSection("External Tanker Route", d.extTankerRoutes)}
+      <div className="w-full space-y-2">
+        {renderExcelSection("Can Route Morning (Internal)", d.morningRoutes)}
+        {renderExcelSection("Can Route Evening (Internal)", d.eveningRoutes)}
+        {renderExcelSection("Internal Tanker Route", d.tankerRoutes)}
+        {renderExcelSection("External Can Route", d.extCanRoutes)}
+        {renderExcelSection("External Tanker Route", d.extTankerRoutes)}
+      </div>
 
       {d.dailyProblems && (
         <div className="w-full border border-black rounded-sm overflow-hidden mb-4 mt-2 text-left">
@@ -199,26 +201,26 @@ const RouteVisitLayout = ({ report, profileName, profileId }: { report: any, pro
         <div className="border border-black p-1.5 text-[8pt] font-bold uppercase">SLIP No: {d.slipNo}</div>
       </div>
 
-      <table className="w-full border-collapse mb-3">
+      <table className="w-full border-collapse mb-3 table-fixed">
         <thead>
           <tr className="bg-slate-100 text-[7pt] font-black uppercase text-center">
-            <th className="p-1 border border-black w-8">अ.क्र.</th>
-            <th className="p-1 border border-black w-20">कोड</th>
-            <th className="p-1 border border-black text-left pl-2">केंद्राचे नाव</th>
-            <th className="p-1 border border-black w-32">वेळ (In/Out)</th>
-            <th className="p-1 border border-black w-20">कॅन (E/F)</th>
-            <th className="p-1 border border-black w-24">बर्फ</th>
+            <th className="p-1 border border-black w-8">Sr.</th>
+            <th className="p-1 border border-black w-16">Code</th>
+            <th className="p-1 border border-black text-left pl-2">Name</th>
+            <th className="p-1 border border-black w-24">In/Out</th>
+            <th className="p-1 border border-black w-16">E/F</th>
+            <th className="p-1 border border-black w-20">Ice</th>
           </tr>
         </thead>
         <tbody>
           {logs.map((log: any, i: number) => (
-            <tr key={i} className="text-[8pt] font-bold uppercase text-center h-7">
+            <tr key={i} className="text-[8pt] font-bold uppercase text-center h-7 border-b border-black">
               <td className="p-1 border border-black">{i + 1}</td>
-              <td className="p-1 border border-black">{log.centerCode}</td>
+              <td className="p-1 border border-black truncate">{log.centerCode}</td>
               <td className="p-1 border border-black text-left pl-2 truncate">{log.supplierName}</td>
-              <td className="p-1 border border-black">{log.arrivalTime} - {log.departureTime}</td>
+              <td className="p-1 border border-black">{log.arrivalTime}-{log.departureTime}</td>
               <td className="p-1 border border-black">{log.emptyCans}/{log.fullCans}</td>
-              <td className="p-1 border border-black">{log.iceUsed}</td>
+              <td className="p-1 border border-black truncate">{log.iceUsed}</td>
             </tr>
           ))}
         </tbody>
@@ -275,7 +277,7 @@ const BreakdownLayout = ({ report, profileName, profileId }: { report: any, prof
       {losses && losses.length > 0 && (
         <div className="w-full border border-black rounded overflow-hidden mb-3">
           <div className="bg-slate-100 p-1 text-[8pt] font-black uppercase text-center border-b border-black">नुकसान तपशील (LOSS LOG)</div>
-          <table className="w-full border-collapse">
+          <table className="w-full border-collapse table-fixed">
             <thead>
               <tr className="bg-black text-white font-black text-[7pt] uppercase text-center">
                 <th className="p-1 border border-white/20 text-left pl-2">नाव/कोड</th>
@@ -286,7 +288,7 @@ const BreakdownLayout = ({ report, profileName, profileId }: { report: any, prof
             </thead>
             <tbody>
               {losses.map((loss: any, idx: number) => (
-                <tr key={idx} className="font-bold text-[8pt] uppercase text-center h-6">
+                <tr key={idx} className="font-bold text-[8pt] uppercase text-center h-6 border-b border-black">
                   <td className="p-1 border border-black text-left pl-2 truncate">{loss.centerCode} {loss.centerName}</td>
                   <td className="p-1 border border-black text-center">{loss.milkType}</td>
                   <td className="p-1 border border-black text-center">{loss.qtyLiters}</td>
@@ -350,9 +352,9 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
         <table className="w-full border-collapse">
           <tbody>
             {orderedEntries.map(([k, v]: any) => (
-              <tr key={k} className="text-[8pt] font-bold">
-                <td className="p-2 bg-slate-50 uppercase font-black border border-black w-[220px]">{labelMap[k]}</td>
-                <td className="p-2 border border-black">{String(v)}</td>
+              <tr key={k} className="text-[8pt] font-bold border-b border-black last:border-0">
+                <td className="p-2 bg-slate-50 uppercase font-black border-r border-black w-[220px]">{labelMap[k]}</td>
+                <td className="p-2">{String(v)}</td>
               </tr>
             ))}
           </tbody>
@@ -362,7 +364,7 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
       {inventory.length > 0 && (
         <div className="w-full mb-3 text-left">
           <span className="text-[7pt] font-black uppercase block border-b border-black pb-1 mb-1">साहित्याची यादी (INVENTORY):</span>
-          <table className="w-full border-collapse border border-black">
+          <table className="w-full border-collapse border border-black table-fixed">
             <thead>
               <tr className="bg-slate-100 text-[7pt] font-black uppercase">
                 <th className="p-1 border border-black text-left">साहित्य</th>
@@ -372,7 +374,7 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
             </thead>
             <tbody>
               {inventory.map((it: any, i: number) => (
-                <tr key={i} className="text-[8pt] font-bold">
+                <tr key={i} className="text-[8pt] font-bold border-b border-black">
                   <td className="p-1 border border-black">{it.name}</td>
                   <td className="p-1 border border-black text-center">{it.quantity}</td>
                   <td className="p-1 border border-black text-right uppercase text-[7pt]">{it.ownership === 'Self' ? 'स्वतः' : 'डेअरी'}</td>
