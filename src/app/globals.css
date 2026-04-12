@@ -80,15 +80,14 @@ h1, h2, h3, h4 {
 
 /* 
  * FINAL ROBUST PRINT ENGINE 
- * Ensures reports are visible, white background, black text, and no blank pages.
+ * Fixes blank pages, ensures white background and sharp black text.
  */
 @media print {
   @page {
     size: A4;
-    margin: 5mm;
+    margin: 10mm;
   }
   
-  /* Reset whole page for printing */
   html, body {
     height: auto !important;
     overflow: visible !important;
@@ -100,13 +99,14 @@ h1, h2, h3, h4 {
     print-color-adjust: exact !important;
   }
 
-  /* Hide everything globally */
-  body * {
+  /* Hide UI elements globally */
+  header, nav, footer, .sidebar, .no-print, button, [role="separator"], [role="dialog"] button, .compact-form-container button {
+    display: none !important;
     visibility: hidden !important;
-    background-color: transparent !important;
+    opacity: 0 !important;
   }
 
-  /* Reveal only the printable report and its children */
+  /* Reveal only the report */
   .printable-report, 
   .printable-report *,
   [role="dialog"] .printable-report,
@@ -118,37 +118,55 @@ h1, h2, h3, h4 {
     background-color: white !important;
   }
 
-  /* Force table layout for visibility */
-  .printable-report table,
-  .printable-report tr,
-  .printable-report th,
-  .printable-report td {
+  /* Ensure tables are visible and borders are sharp */
+  .printable-report table {
     display: table !important;
-    visibility: visible !important;
-    border: 1px solid black !important;
+    width: 100% !important;
+    border-collapse: collapse !important;
+    border: 1.5px solid black !important;
+    page-break-inside: auto !important;
   }
   
-  .printable-report th, .printable-report td {
-    display: table-cell !important;
-  }
-
-  .printable-report {
-    position: absolute !important;
-    left: 50% !important;
-    top: 0 !important;
-    transform: translateX(-50%) !important;
-    width: 190mm !important;
-    max-width: 190mm !important;
-    border: 1px solid black !important;
-    padding: 8mm !important;
-    margin: 0 !important;
-    z-index: 9999 !important;
+  .printable-report tr {
+    display: table-row !important;
     page-break-inside: avoid !important;
+    page-break-after: auto !important;
   }
 
-  /* Absolutely hide UI elements */
-  .no-print, button, header, nav, footer, .sidebar, [role="separator"] {
-    display: none !important;
-    visibility: hidden !important;
+  .printable-report th,
+  .printable-report td {
+    display: table-cell !important;
+    border: 1px solid black !important;
+    padding: 4px !important;
+    color: black !important;
+    background: transparent !important;
+  }
+
+  /* Report Positioning - Force to top of A4 */
+  .printable-report {
+    position: relative !important;
+    left: 0 !important;
+    top: 0 !important;
+    transform: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    border: none !important; /* Outer container border handled by content */
+    padding: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    z-index: 99999 !important;
+  }
+
+  /* Hide Dialog overlay effects */
+  [role="dialog"] {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    background: white !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
   }
 }
