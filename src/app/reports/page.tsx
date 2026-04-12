@@ -113,7 +113,6 @@ const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any
     const activeData = rawData.filter(e => e.requested || e.allocated);
     if (activeData.length === 0) return null;
 
-    // Split data into two halves for the two-column layout
     const mid = Math.ceil(activeData.length / 2);
     const leftCol = activeData.slice(0, mid);
     const rightCol = activeData.slice(mid);
@@ -121,22 +120,22 @@ const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any
     const TablePart = ({ items, startIdx }: { items: any[], startIdx: number }) => (
       <table className="w-full border-collapse border border-black text-[7pt]">
         <thead>
-          <tr className="bg-slate-200 font-black uppercase">
-            <th className="border border-black p-1 w-8">Sr. No</th>
-            <th className="border border-black p-1 w-12">Route ID</th>
-            <th className="border border-black p-1 text-left pl-2">Route Name</th>
-            <th className="border border-black p-1 w-12 text-center">Req (√)</th>
-            <th className="border border-black p-1 w-12 text-center">Alloc (√)</th>
+          <tr className="bg-slate-200 font-black uppercase text-center">
+            <th className="border border-black p-1 w-8">अ.क्र.</th>
+            <th className="border border-black p-1 w-12">कोड</th>
+            <th className="border border-black p-1 text-left pl-2">रूटचे नाव</th>
+            <th className="border border-black p-1 w-10">Req</th>
+            <th className="border border-black p-1 w-10">Alloc</th>
           </tr>
         </thead>
         <tbody>
           {items.map((it, i) => (
-            <tr key={i} className="h-6 font-bold uppercase">
-              <td className="border border-black p-1 text-center">{startIdx + i + 1}</td>
-              <td className="border border-black p-1 text-center">{it.routeCode || it.routeId}</td>
+            <tr key={i} className="h-6 font-bold uppercase text-center">
+              <td className="border border-black p-1">{startIdx + i + 1}</td>
+              <td className="border border-black p-1">{it.routeCode || it.routeId}</td>
               <td className="border border-black p-1 text-left pl-2 truncate">{it.routeName}</td>
-              <td className="border border-black p-1 text-center font-black">{it.requested ? '√' : ''}</td>
-              <td className="border border-black p-1 text-center font-black">{it.allocated ? '√' : ''}</td>
+              <td className="border border-black p-1 font-black">{it.requested ? '√' : ''}</td>
+              <td className="border border-black p-1 font-black">{it.allocated ? '√' : ''}</td>
             </tr>
           ))}
         </tbody>
@@ -144,17 +143,13 @@ const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any
     );
 
     return (
-      <div className="w-full mb-4">
-        <div className="bg-slate-800 text-white p-1 text-[8pt] font-black uppercase text-center border border-black mb-0">
-          Type : {title}
+      <div className="w-full mb-4 border border-black overflow-hidden">
+        <div className="bg-slate-800 text-white p-1 text-[8pt] font-black uppercase text-center border-b border-black">
+          प्रकार : {title}
         </div>
-        <div className="grid grid-cols-2 gap-0 border-x border-black">
-          <div className="border-r border-black">
-            <TablePart items={leftCol} startIdx={0} />
-          </div>
-          <div>
-            <TablePart items={rightCol} startIdx={mid} />
-          </div>
+        <div className="grid grid-cols-2 gap-0 divide-x divide-black">
+          <div><TablePart items={leftCol} startIdx={0} /></div>
+          <div><TablePart items={rightCol} startIdx={mid} /></div>
         </div>
       </div>
     );
@@ -182,8 +177,8 @@ const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any
       )}
 
       <div className="w-full mt-auto pt-8 grid grid-cols-2 gap-12 text-center uppercase font-black text-[8pt] tracking-widest">
-        <div className="border-t border-black pt-1.5">Supervisor Sign</div>
-        <div className="border-t border-black pt-1.5">Officer Sign</div>
+        <div className="border-t border-black pt-1.5">अधिकारी स्वाक्षरी</div>
+        <div className="border-t border-black pt-1.5">सुपरवायझर स्वाक्षरी</div>
       </div>
     </div>
   )
@@ -236,8 +231,8 @@ const RouteVisitLayout = ({ report, profileName, profileId }: { report: any, pro
       </div>
 
       <div className="w-full mt-auto pt-6 grid grid-cols-2 gap-12 text-center uppercase font-black text-[8pt] tracking-widest">
-        <div className="border-t border-black pt-1.5">Officer Sign</div>
-        <div className="border-t border-black pt-1.5">Supervisor Sign</div>
+        <div className="border-t border-black pt-1.5">अधिकारी स्वाक्षरी</div>
+        <div className="border-t border-black pt-1.5">सुपरवायझर स्वाक्षरी</div>
       </div>
     </div>
   )
@@ -254,44 +249,27 @@ const BreakdownLayout = ({ report, profileName, profileId }: { report: any, prof
       <div className="w-full border border-black mb-3 overflow-hidden text-left">
         <div className="bg-slate-100 p-1 text-[8pt] font-black uppercase text-center border-b border-black">१) वाहन व ड्रायव्हर माहिती</div>
         <div className="p-1.5 border-b border-black text-[8pt] font-bold uppercase flex justify-between">
-          <span>{labelMap.routeName}: {d.routeName}</span>
-          <span>{labelMap.vehicleNo}: {d.vehicleNo}</span>
+          <span>रूट: {d.routeName}</span>
+          <span>गाडी क्र.: {d.vehicleNo}</span>
         </div>
         <div className="grid grid-cols-2 text-[8pt] font-bold uppercase divide-x divide-black border-b border-black">
-          <div className="p-1.5">{labelMap.vehicleType}: {d.vehicleType}</div>
-          <div className="p-1.5">{labelMap.capacity}: {d.capacity} L</div>
+          <div className="p-1.5">प्रकार: {d.vehicleType}</div>
+          <div className="p-1.5">क्षमता: {d.capacity} L</div>
         </div>
         <div className="grid grid-cols-2 text-[8pt] font-bold uppercase divide-x divide-black">
-          <div className="p-1.5">{labelMap.driverName}: {d.driverName}</div>
-          <div className="p-1.5">{labelMap.mobile}: {d.mobile}</div>
+          <div className="p-1.5">ड्रायव्हर: {d.driverName}</div>
+          <div className="p-1.5">मोबाईल: {d.mobile}</div>
         </div>
       </div>
 
       <div className="w-full border border-black mb-3 overflow-hidden text-left">
-        <div className="bg-rose-50 p-1 text-[8pt] font-black uppercase text-center border-b border-black text-rose-700">२) गाडी बिघाड झाल्याचा तपशील</div>
+        <div className="bg-rose-50 p-1 text-[8pt] font-black uppercase text-center border-b border-black text-rose-700">२) गाडी बिघाड तपशील</div>
         <div className="grid grid-cols-2 text-[8pt] font-bold uppercase divide-x divide-black">
-          <div className="p-1.5">{labelMap.breakdownTime}: {d.breakdownTime}</div>
-          <div className="p-1.5">{labelMap.location}: {d.location}</div>
+          <div className="p-1.5">वेळ: {d.breakdownTime}</div>
+          <div className="p-1.5">ठिकाण: {d.location}</div>
         </div>
-        <div className="p-1.5 border-t border-black text-[8pt]"><span className="font-black uppercase">{labelMap.reason}:</span> {d.reason}</div>
-        {d.detailedReason && <div className="p-1.5 border-t border-black text-[8pt]"><span className="font-black uppercase">{labelMap.detailedReason}:</span> {d.detailedReason}</div>}
-        <div className="grid grid-cols-3 text-[8pt] font-black uppercase divide-x divide-black border-t border-black bg-slate-50">
-          <div className="p-1.5">स्वरूप: {d.severity}</div>
-          <div className="p-1.5">{labelMap.milkHot}: {d.milkHot}</div>
-          <div className="p-1.5">{labelMap.milkSour}: {d.milkSour}</div>
-        </div>
-      </div>
-
-      <div className="w-full border border-black mb-3 overflow-hidden text-left">
-        <div className="bg-blue-50 p-1 text-[8pt] font-black uppercase text-center border-b border-black text-blue-700">३) दुरुस्ती व पर्यायी सोय</div>
-        <div className="grid grid-cols-2 text-[8pt] font-bold uppercase divide-x divide-black border-b border-black">
-          <div className="p-1.5">{labelMap.estimatedRepairTime}: {d.estimatedRepairTime}</div>
-          <div className="p-1.5">{labelMap.estimatedRepairCost}: ₹{d.estimatedRepairCost}</div>
-        </div>
-        <div className="grid grid-cols-2 text-[8pt] font-bold uppercase divide-x divide-black">
-          <div className="p-1.5">{labelMap.recoveryVehicleNo}: {d.recoveryVehicleNo || "---"}</div>
-          <div className="p-1.5">{labelMap.recoveryArrivalTime}: {d.recoveryArrivalTime || "---"}</div>
-        </div>
+        <div className="p-1.5 border-t border-black text-[8pt]"><span className="font-black uppercase">कारण:</span> {d.reason}</div>
+        {d.detailedReason && <div className="p-1.5 border-t border-black text-[8pt]"><span className="font-black uppercase">वर्णन:</span> {d.detailedReason}</div>}
       </div>
 
       {losses && losses.length > 0 && (
@@ -322,8 +300,8 @@ const BreakdownLayout = ({ report, profileName, profileId }: { report: any, prof
       )}
 
       <div className="w-full mt-auto pt-6 grid grid-cols-2 gap-12 text-center uppercase font-black text-[8pt] tracking-widest">
-        <div className="border-t border-black pt-1.5">Officer Sign</div>
-        <div className="border-t border-black pt-1.5">Supervisor Sign</div>
+        <div className="border-t border-black pt-1.5">अधिकारी स्वाक्षरी</div>
+        <div className="border-t border-black pt-1.5">सुपरवायझर स्वाक्षरी</div>
       </div>
     </div>
   )
@@ -348,7 +326,7 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
     );
   }
 
-  const excludeFields = ["reportHeading", "name", "repName", "shift", "idNumber", "repId", "routeVisitLogs", "centerLosses", "morningRoutes", "eveningRoutes", "tankerRoutes", "extCanRoutes", "extTankerRoutes", "points", "remarkPoints", "dailyProblems"];
+  const excludeFields = ["reportHeading", "name", "repName", "shift", "idNumber", "repId", "routeVisitLogs", "centerLosses", "morningRoutes", "eveningRoutes", "tankerRoutes", "extCanRoutes", "extTankerRoutes", "points", "remarkPoints", "dailyProblems", "equipment"];
 
   const orderedEntries = fieldSequence
     .filter(key => d[key] !== undefined && d[key] !== "" && labelMap[key] && !excludeFields.includes(key))
@@ -356,6 +334,7 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
 
   const points = d.points || [];
   const remarkPoints = d.remarkPoints || [];
+  const inventory = d.equipment || [];
 
   return (
     <div className="bg-white font-sans text-slate-900 border-[1.2px] border-black rounded-sm w-full p-5 printable-report flex flex-col items-center shadow-none mb-4">
@@ -379,6 +358,30 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
           </tbody>
         </table>
       </div>
+
+      {inventory.length > 0 && (
+        <div className="w-full mb-3 text-left">
+          <span className="text-[7pt] font-black uppercase block border-b border-black pb-1 mb-1">साहित्याची यादी (INVENTORY):</span>
+          <table className="w-full border-collapse border border-black">
+            <thead>
+              <tr className="bg-slate-100 text-[7pt] font-black uppercase">
+                <th className="p-1 border border-black text-left">साहित्य</th>
+                <th className="p-1 border border-black text-center w-16">नग</th>
+                <th className="p-1 border border-black text-right w-24">मालकी</th>
+              </tr>
+            </thead>
+            <tbody>
+              {inventory.map((it: any, i: number) => (
+                <tr key={i} className="text-[8pt] font-bold">
+                  <td className="p-1 border border-black">{it.name}</td>
+                  <td className="p-1 border border-black text-center">{it.quantity}</td>
+                  <td className="p-1 border border-black text-right uppercase text-[7pt]">{it.ownership === 'Self' ? 'स्वतः' : 'डेअरी'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       {(points.length > 0 || remarkPoints.length > 0) && (
         <div className="w-full p-3 border border-black rounded bg-slate-50 mb-3 text-left">
@@ -645,85 +648,6 @@ export default function ReportsPage() {
           </ScrollArea>
         </DialogContent>
       </Dialog>
-    </div>
-  )
-}
-
-const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any, profileName: string, profileId: string }) => {
-  const d = report.fullData || {};
-  
-  const renderExcelSection = (title: string, rawData: any[]) => {
-    if (!rawData || rawData.length === 0) return null;
-    const activeData = rawData.filter(e => e.requested || e.allocated);
-    if (activeData.length === 0) return null;
-
-    const mid = Math.ceil(activeData.length / 2);
-    const leftCol = activeData.slice(0, mid);
-    const rightCol = activeData.slice(mid);
-
-    const TablePart = ({ items, startIdx }: { items: any[], startIdx: number }) => (
-      <table className="w-full border-collapse border border-black text-[7pt]">
-        <thead>
-          <tr className="bg-slate-200 font-black uppercase text-center">
-            <th className="border border-black p-1 w-8">Sr. No</th>
-            <th className="border border-black p-1 w-12">Route ID</th>
-            <th className="border border-black p-1 text-left pl-2">Route Name</th>
-            <th className="border border-black p-1 w-12">Req (√)</th>
-            <th className="border border-black p-1 w-12">Alloc (√)</th>
-          </tr>
-        </thead>
-        <tbody>
-          {items.map((it, i) => (
-            <tr key={i} className="h-6 font-bold uppercase text-center">
-              <td className="border border-black p-1">{startIdx + i + 1}</td>
-              <td className="border border-black p-1">{it.routeCode || it.routeId}</td>
-              <td className="border border-black p-1 text-left pl-2 truncate">{it.routeName}</td>
-              <td className="border border-black p-1 font-black">{it.requested ? '√' : ''}</td>
-              <td className="border border-black p-1 font-black">{it.allocated ? '√' : ''}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    );
-
-    return (
-      <div className="w-full mb-4 border border-black overflow-hidden">
-        <div className="bg-slate-800 text-white p-1 text-[8pt] font-black uppercase text-center border-b border-black">
-          Type : {title}
-        </div>
-        <div className="grid grid-cols-2 gap-0 divide-x divide-black">
-          <div><TablePart items={leftCol} startIdx={0} /></div>
-          <div><TablePart items={rightCol} startIdx={mid} /></div>
-        </div>
-      </div>
-    );
-  };
-
-  return (
-    <div className="bg-white font-sans text-slate-900 border-[1.2px] border-black rounded-sm w-full p-5 printable-report flex flex-col items-center shadow-none mb-4">
-      <ReportHeader title={d.reportHeading || "ERP अहवाल"} date={report.date} subName={d.name || profileName} subId={d.idNumber || profileId} shift={d.shift} />
-      
-      {renderExcelSection("Can Route Morning (Internal)", d.morningRoutes)}
-      {renderExcelSection("Can Route Evening (Internal)", d.eveningRoutes)}
-      {renderExcelSection("Internal Tanker Route", d.tankerRoutes)}
-      {renderExcelSection("External Can Route", d.extCanRoutes)}
-      {renderExcelSection("External Tanker Route", d.extTankerRoutes)}
-
-      {d.dailyProblems && (
-        <div className="w-full border border-black rounded-sm overflow-hidden mb-4 mt-2 text-left">
-          <div className="bg-rose-50 p-1.5 text-[8pt] font-black uppercase text-rose-700 border-b border-black flex items-center gap-2">
-            <AlertCircle className="h-3 w-3" /> आजचे महत्त्वाचे प्रॉब्लेम्स / निरीक्षणे (Daily Text Pad)
-          </div>
-          <div className="p-3 text-[9pt] font-bold whitespace-pre-wrap leading-relaxed">
-            {d.dailyProblems}
-          </div>
-        </div>
-      )}
-
-      <div className="w-full mt-auto pt-8 grid grid-cols-2 gap-12 text-center uppercase font-black text-[8pt] tracking-widest">
-        <div className="border-t border-black pt-1.5">Supervisor Sign</div>
-        <div className="border-t border-black pt-1.5">Officer Sign</div>
-      </div>
     </div>
   )
 }
