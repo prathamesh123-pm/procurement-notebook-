@@ -5,9 +5,9 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { 
   Plus, Search, Thermometer, Edit, X, ChevronRight,
-  Printer, Milk, ShieldCheck, Box, Truck, Clock, 
+  Printer, Milk, ShieldCheck, Box, Truck, 
   Zap, Warehouse, User, MapPin, CheckCircle2,
-  Trash2, Droplets, Sun, Waves, Wind, Scale, Shirt, FlaskConical
+  Trash2, Droplets, Sun, Waves, Wind, FlaskConical, Shirt
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
@@ -215,7 +215,7 @@ export default function ChillingCentersPage() {
           {selectedCenter ? (
             <div className="p-5 space-y-5 animate-in slide-in-from-right-2 duration-300 printable-report flex flex-col items-center shadow-none w-full max-w-[210mm] mx-auto text-left">
               <div className="w-full flex items-center justify-between no-print mb-3 border-b pb-1.5">
-                <Badge className="bg-primary/10 text-primary border-none uppercase text-[9px] font-black">PROFILE</Badge>
+                <Badge className="bg-primary/10 text-primary border-none uppercase text-[9px] font-black">CHILLING PROFILE</Badge>
                 <div className="flex gap-2">
                   <Button variant="outline" size="sm" className="h-7 rounded-xl font-black uppercase text-[8px]" onClick={() => window.print()}><Printer className="h-3 w-3 mr-1" /> प्रिंट</Button>
                   <Button variant="outline" size="sm" className="h-7 rounded-xl font-black uppercase text-[8px]" onClick={() => handleOpenEdit(selectedCenter)}><Edit className="h-3 w-3 mr-1" /> बदल करा</Button>
@@ -228,7 +228,7 @@ export default function ChillingCentersPage() {
                 <p className="text-[8pt] font-black text-muted-foreground uppercase">ID: {selectedCenter.code} | चिलिंग सेंटर</p>
               </div>
               
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full text-left">
                 <div className="space-y-2">
                   <h4 className="text-[9px] font-black uppercase text-primary tracking-widest border-b pb-0.5 flex items-center gap-1.5"><User className="h-3 w-3" /> १) प्राथमिक माहिती</h4>
                   <div className="space-y-1 text-[10px] font-bold">
@@ -251,29 +251,29 @@ export default function ChillingCentersPage() {
                 </div>
               </div>
 
-              <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
                 <div className="space-y-2">
                   <h4 className="text-[9px] font-black uppercase text-primary tracking-widest border-b pb-0.5 flex items-center gap-1.5"><Box className="h-3 w-3" /> टाक्यांची यादी (TANKS)</h4>
-                  <table className="w-full text-[9px] border border-black rounded-sm overflow-hidden">
-                    <thead className="bg-slate-100 border-b border-black">
-                      <tr className="font-black uppercase text-center"><th className="p-1 text-left">टाकी क्रमांक</th><th className="p-1 text-right">क्षमता (L)</th></tr>
+                  <table className="w-full text-[9px] border border-black border-collapse">
+                    <thead className="bg-slate-100">
+                      <tr className="font-black uppercase text-center"><th className="p-1 border border-black text-left">टाकी क्रमांक</th><th className="p-1 border border-black text-right">क्षमता (L)</th></tr>
                     </thead>
                     <tbody>
                       {(selectedCenter.tanks || []).map((t, idx) => (
-                        <tr key={idx} className="border-b border-black last:border-0 font-bold"><td className="p-1">{t.label}</td><td className="p-1 text-right">{t.capacity} L</td></tr>
+                        <tr key={idx} className="font-bold border-b border-black"><td className="p-1 border border-black">{t.label}</td><td className="p-1 border border-black text-right">{t.capacity} L</td></tr>
                       ))}
                     </tbody>
                   </table>
                 </div>
                 <div className="space-y-2">
                   <h4 className="text-[9px] font-black uppercase text-rose-600 tracking-widest border-b pb-0.5 flex items-center gap-1.5"><Truck className="h-3 w-3" /> टँकर संकलन (LOG)</h4>
-                  <table className="w-full text-[8px] border border-black rounded-sm overflow-hidden">
-                    <thead className="bg-slate-100 border-b border-black">
-                      <tr className="font-black uppercase text-center"><th className="p-1 text-left">टँकर क्र.</th><th className="p-1 text-center">IN/OUT</th><th className="p-1 text-right">Qty</th></tr>
+                  <table className="w-full text-[8px] border border-black border-collapse">
+                    <thead className="bg-slate-100">
+                      <tr className="font-black uppercase text-center"><th className="p-1 border border-black text-left">टँकर क्र.</th><th className="p-1 border border-black text-center">IN/OUT</th><th className="p-1 border border-black text-right">Qty</th></tr>
                     </thead>
                     <tbody>
                       {(selectedCenter.tankerLogs || []).map((tl, idx) => (
-                        <tr key={idx} className="border-b border-black last:border-0 font-bold text-center"><td className="p-1 text-left">{tl.tankerNo}</td><td className="p-1">{tl.arrivalTime}-{tl.departureTime}</td><td className="p-1 text-right">{tl.qtyFilled} L</td></tr>
+                        <tr key={idx} className="font-bold border-b border-black text-center"><td className="p-1 border border-black text-left">{tl.tankerNo}</td><td className="p-1 border border-black">{tl.arrivalTime}-{tl.departureTime}</td><td className="p-1 border border-black text-right">{tl.qtyFilled} L</td></tr>
                       ))}
                     </tbody>
                   </table>

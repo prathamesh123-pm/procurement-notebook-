@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
@@ -153,7 +152,7 @@ export default function CentersPage() {
   if (!mounted || isLoading) return <div className="p-10 text-center font-black uppercase text-[10px] opacity-50">लोड होत आहे...</div>
 
   return (
-    <div className="space-y-4 max-w-4xl mx-auto w-full pb-10 px-2 animate-in fade-in duration-500">
+    <div className="space-y-4 max-w-4xl mx-auto w-full pb-10 px-2 animate-in fade-in duration-500 text-left">
       <div className="flex flex-col sm:flex-row items-center justify-between gap-3 border-b pb-4 no-print text-center sm:text-left">
         <div className="min-w-0">
           <h2 className="text-xl font-black text-foreground flex items-center justify-center sm:justify-start gap-2 uppercase tracking-tight">
@@ -262,10 +261,10 @@ export default function CentersPage() {
               <h4 className="text-[9px] font-black uppercase text-primary tracking-widest border-b pb-0.5 flex items-center gap-1.5"><Box className="h-3 w-3" /> साहित्याची यादी (INVENTORY)</h4>
               <div className="border border-black rounded-sm overflow-hidden">
                 <table className="w-full text-left text-[8pt] border-collapse">
-                  <thead><tr className="bg-slate-100 border-b border-black"><th className="p-1.5 font-black uppercase">साहित्य</th><th className="p-1.5 text-center font-black uppercase">नग</th><th className="p-1.5 text-right font-black uppercase">मालकी</th></tr></thead>
+                  <thead><tr className="bg-slate-100 border-b border-black"><th className="p-1.5 font-black uppercase border border-black">साहित्य</th><th className="p-1.5 text-center font-black uppercase border border-black">नग</th><th className="p-1.5 text-right font-black uppercase border border-black">मालकी</th></tr></thead>
                   <tbody>
                     {(selectedCenter.equipment || []).map((it, idx) => (
-                      <tr key={idx} className="border-b border-black last:border-0 font-bold"><td className="p-1.5">{it.name}</td><td className="p-1.5 text-center">{it.quantity}</td><td className="p-1.5 text-right uppercase text-[7pt]">{it.ownership === 'Self' ? 'स्वतः' : 'डेअरी'}</td></tr>
+                      <tr key={idx} className="border-b border-black last:border-0 font-bold"><td className="p-1.5 border border-black">{it.name}</td><td className="p-1.5 text-center border border-black">{it.quantity}</td><td className="p-1.5 text-right uppercase text-[7pt] border border-black">{it.ownership === 'Self' ? 'स्वतः' : 'डेअरी'}</td></tr>
                     ))}
                   </tbody>
                 </table>
@@ -390,30 +389,6 @@ export default function CentersPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
-      <style jsx global>{`
-        @media print {
-          @page { size: A4; margin: 5mm; }
-          body { visibility: hidden !important; background: white !important; margin: 0 !important; padding: 0 !important; }
-          .printable-report, .printable-report * { visibility: visible !important; opacity: 1 !important; color: black !important; }
-          .printable-report { 
-            position: absolute !important; 
-            top: 0 !important; 
-            left: 50% !important;
-            transform: translateX(-50%) !important;
-            width: 100% !important; 
-            max-width: 190mm !important; 
-            border: 1.2px solid black !important; 
-            padding: 8mm !important; 
-            display: block !important;
-            box-shadow: none !important;
-            page-break-inside: avoid !important;
-            background: white !important;
-            margin: 0 !important;
-          }
-          .no-print, button, header, nav, footer, .sidebar, [role="dialog"] [class*="Close"] { display: none !important; }
-        }
-      `}</style>
     </div>
   )
 }

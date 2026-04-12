@@ -79,13 +79,13 @@ h1, h2, h3, h4 {
 ::-webkit-scrollbar-thumb { @apply bg-slate-200 rounded-full; }
 
 /* 
- * ULTIMATE PRINT ENGINE v10.0 - SUPER STABLE
- * Centered, Multi-Page Support, Zero Clipping.
+ * ULTIMATE PRINT ENGINE v12.0 - PROFILE FIX
+ * Forces everything marked .printable-report to be visible and clear.
  */
 @media print {
   @page {
     size: A4;
-    margin: 0mm; /* Zero page margin to prevent double margins */
+    margin: 0mm;
   }
   
   html, body {
@@ -95,92 +95,73 @@ h1, h2, h3, h4 {
     color: black !important;
     margin: 0 !important;
     padding: 0 !important;
+    visibility: hidden !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
 
-  /* Hide everything except the report content */
-  body > *:not([data-radix-portal]) {
-    display: none !important;
-  }
-
-  [data-radix-portal] {
-    position: static !important;
+  /* Force display the report content regardless of nesting */
+  .printable-report, .printable-report * {
+    visibility: visible !important;
     display: block !important;
-    background: white !important;
-  }
-
-  /* Break out of ShadCN Dialog constraints */
-  div[role="dialog"] {
-    display: block !important;
-    position: relative !important;
-    width: 100% !important;
-    height: auto !important;
-    background: white !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    box-shadow: none !important;
-    border: none !important;
-    transform: none !important;
-    overflow: visible !important;
-    left: auto !important;
-    top: auto !important;
-  }
-
-  /* Disable ScrollArea Clipping during print */
-  [data-radix-scroll-area-viewport] {
-    display: block !important;
-    overflow: visible !important;
-    height: auto !important;
-    width: 100% !important;
+    opacity: 1 !important;
+    color: black !important;
+    background-color: white !important;
   }
 
   .printable-report {
-    display: block !important;
-    visibility: visible !important;
-    position: relative !important;
-    margin: 5mm auto !important;
-    padding: 8mm !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
     width: 190mm !important;
     max-width: 190mm !important;
     border: 1px solid black !important;
-    background: white !important;
+    padding: 8mm !important;
+    margin: 0 !important;
     box-shadow: none !important;
-    page-break-after: avoid !important;
-    page-break-inside: avoid !important;
-    z-index: 99999 !important;
-    left: 0 !important;
-    transform: none !important;
+    z-index: 999999 !important;
   }
 
-  .printable-report * {
-    visibility: visible !important;
-    color: black !important;
-    border-color: black !important;
-    background-color: transparent !important;
-  }
-
-  table {
+  /* Specific fixes for tables within printable reports */
+  .printable-report table {
+    display: table !important;
     width: 100% !important;
-    table-layout: fixed !important;
     border-collapse: collapse !important;
   }
 
-  th, td {
+  .printable-report tr {
+    display: table-row !important;
+  }
+
+  .printable-report th, .printable-report td {
+    display: table-cell !important;
     border: 1px solid black !important;
     padding: 4px !important;
     font-size: 8pt !important;
-    word-break: break-all !important;
   }
 
-  /* Forced hide of UI elements */
+  /* Grid adjustment for print */
+  .printable-report .grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+
+  .printable-report .grid-cols-3 {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+
+  /* Hide UI elements */
   .no-print, 
   button, 
-  header,
-  footer,
+  header, 
+  nav, 
+  footer, 
+  .sidebar, 
   [role="dialog"] header,
   [role="dialog"] [class*="Close"],
-  .fixed.inset-0.z-50.bg-black\/80 {
+  .fixed.inset-0.z-50 {
     display: none !important;
   }
 }
