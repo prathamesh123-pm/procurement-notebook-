@@ -18,6 +18,7 @@ import { cn } from "@/lib/utils"
 interface AllocationEntry {
   id: string;
   routeId: string;
+  routeCode: string;
   routeName: string;
   requested: boolean;
   allocated: boolean;
@@ -59,7 +60,8 @@ const AllocationSection = ({
     <div className="space-y-2">
       <div className="grid grid-cols-12 gap-1 px-1 text-[7px] font-black uppercase text-muted-foreground">
         <div className="col-span-2">ID</div>
-        <div className={cn(isManageMode ? "col-span-9" : "col-span-6")}>Route Name</div>
+        <div className="col-span-2">Code</div>
+        <div className={cn(isManageMode ? "col-span-7" : "col-span-4")}>Route Name</div>
         {!isManageMode && <div className="col-span-2 text-center">Req</div>}
         {!isManageMode && <div className="col-span-2 text-center">Alloc</div>}
         {isManageMode && <div className="col-span-1"></div>}
@@ -69,16 +71,22 @@ const AllocationSection = ({
           {isManageMode ? (
             <>
               <Input 
-                value={entry.routeId} 
+                value={entry.routeId || ""} 
                 onChange={e => onUpdate(section, entry.id, { routeId: e.target.value })} 
                 placeholder="ID"
                 className="col-span-2 h-8 text-[10px] p-1 bg-white border-none font-black shadow-inner" 
               />
               <Input 
-                value={entry.routeName} 
+                value={entry.routeCode || ""} 
+                onChange={e => onUpdate(section, entry.id, { routeCode: e.target.value })} 
+                placeholder="Code"
+                className="col-span-2 h-8 text-[10px] p-1 bg-white border-none font-black shadow-inner" 
+              />
+              <Input 
+                value={entry.routeName || ""} 
                 onChange={e => onUpdate(section, entry.id, { routeName: e.target.value })} 
                 placeholder="Route Name"
-                className="col-span-9 h-8 text-[10px] p-1 bg-white border-none font-bold shadow-inner" 
+                className="col-span-7 h-8 text-[10px] p-1 bg-white border-none font-bold shadow-inner" 
               />
               <div className="col-span-1 flex justify-end">
                 <Button variant="ghost" size="icon" onClick={() => onRemove(section, entry.id)} className="h-7 w-7 text-rose-400">
@@ -89,7 +97,8 @@ const AllocationSection = ({
           ) : (
             <>
               <div className="col-span-2 text-[9px] font-black truncate px-1">{entry.routeId || "---"}</div>
-              <div className="col-span-6 text-[10px] font-bold truncate px-1 uppercase">{entry.routeName || "---"}</div>
+              <div className="col-span-2 text-[9px] font-black truncate px-1">{entry.routeCode || "---"}</div>
+              <div className="col-span-4 text-[10px] font-bold truncate px-1 uppercase">{entry.routeName || "---"}</div>
               <div className="col-span-2 flex justify-center">
                 <input 
                   type="checkbox" 
@@ -178,6 +187,7 @@ function RouteAllocationForm() {
     const newEntry: AllocationEntry = {
       id: crypto.randomUUID(),
       routeId: "",
+      routeCode: "",
       routeName: "",
       requested: false,
       allocated: false
@@ -205,11 +215,11 @@ function RouteAllocationForm() {
   const saveAsTemplate = () => {
     if (!db || !user || !templateRef) return
     const template = {
-      morningRoutes: formData.morningRoutes.map(({ id, routeId, routeName }) => ({ id, routeId, routeName })),
-      eveningRoutes: formData.eveningRoutes.map(({ id, routeId, routeName }) => ({ id, routeId, routeName })),
-      tankerRoutes: formData.tankerRoutes.map(({ id, routeId, routeName }) => ({ id, routeId, routeName })),
-      extCanRoutes: formData.extCanRoutes.map(({ id, routeId, routeName }) => ({ id, routeId, routeName })),
-      extTankerRoutes: formData.extTankerRoutes.map(({ id, routeId, routeName }) => ({ id, routeId, routeName })),
+      morningRoutes: formData.morningRoutes.map(({ id, routeId, routeCode, routeName }) => ({ id, routeId, routeCode, routeName })),
+      eveningRoutes: formData.eveningRoutes.map(({ id, routeId, routeCode, routeName }) => ({ id, routeId, routeCode, routeName })),
+      tankerRoutes: formData.tankerRoutes.map(({ id, routeId, routeCode, routeName }) => ({ id, routeId, routeCode, routeName })),
+      extCanRoutes: formData.extCanRoutes.map(({ id, routeId, routeCode, routeName }) => ({ id, routeId, routeCode, routeName })),
+      extTankerRoutes: formData.extTankerRoutes.map(({ id, routeId, routeCode, routeName }) => ({ id, routeId, routeCode, routeName })),
       updatedAt: new Date().toISOString()
     }
     setDocumentNonBlocking(templateRef, template, { merge: true })

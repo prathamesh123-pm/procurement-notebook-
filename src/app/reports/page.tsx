@@ -119,9 +119,10 @@ const TableSection = ({ title, data }: { title: string, data: any[] }) => {
       <table className="w-full border-collapse border border-black">
         <thead>
           <tr className="bg-slate-50 text-[6pt] font-black uppercase">
-            <th className="p-0.5 border border-black w-6">Sr</th>
-            <th className="p-0.5 border border-black w-16">ID</th>
-            <th className="p-0.5 border border-black text-left pl-1">Route Name</th>
+            <th className="p-0.5 border border-black w-6">अ.क्र.</th>
+            <th className="p-0.5 border border-black w-14">ID</th>
+            <th className="p-0.5 border border-black w-14">Code</th>
+            <th className="p-0.5 border border-black text-left pl-1">रूटचे नाव</th>
             <th className="p-0.5 border border-black w-10">Req</th>
             <th className="p-0.5 border border-black w-10">Alloc</th>
           </tr>
@@ -131,6 +132,7 @@ const TableSection = ({ title, data }: { title: string, data: any[] }) => {
             <tr key={idx} className="text-[7pt] font-bold uppercase text-center h-5">
               <td className="p-0.5 border border-black">{idx + 1}</td>
               <td className="p-0.5 border border-black">{entry.routeId}</td>
+              <td className="p-0.5 border border-black">{entry.routeCode}</td>
               <td className="p-0.5 border border-black text-left pl-1 truncate">{entry.routeName}</td>
               <td className="p-0.5 border border-black font-black">{entry.requested ? '√' : '-'}</td>
               <td className="p-0.5 border border-black font-black">{entry.allocated ? '√' : '-'}</td>
