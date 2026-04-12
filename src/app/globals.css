@@ -79,13 +79,13 @@ h1, h2, h3, h4 {
 ::-webkit-scrollbar-thumb { @apply bg-slate-200 rounded-full; }
 
 /* 
- * ROBUST PRINT ENGINE v8.0
- * Centered, Non-overlapping, Full-page output.
+ * ULTIMATE PRINT ENGINE v9.0
+ * Centered, High-Performance, Anti-Clip.
  */
 @media print {
   @page {
     size: A4;
-    margin: 10mm;
+    margin: 5mm;
   }
   
   html, body {
@@ -99,34 +99,27 @@ h1, h2, h3, h4 {
     print-color-adjust: exact !important;
   }
 
-  /* Hide everything by default */
-  body > * {
+  /* Completely hide all UI except the portal or the report */
+  body > *:not([data-radix-portal]) {
     display: none !important;
   }
 
-  /* Display the portal containing the dialog content */
-  body > div[data-radix-portal] {
+  [data-radix-portal] {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    display: block !important;
+    background: white !important;
+  }
+
+  /* Reset fixed dialog constraints */
+  div[role="dialog"] {
     display: block !important;
     position: absolute !important;
     top: 0 !important;
     left: 0 !important;
     width: 100% !important;
-    background: white !important;
-  }
-
-  /* Remove dark overlays and backdrops */
-  [data-state="open"] > div:first-child,
-  .fixed.inset-0.z-50.bg-black\/80 {
-    display: none !important;
-    opacity: 0 !important;
-  }
-
-  /* Reset dialog constraints */
-  div[role="dialog"] {
-    display: block !important;
-    position: relative !important;
-    width: 100% !important;
-    max-width: 100% !important;
     height: auto !important;
     background: white !important;
     padding: 0 !important;
@@ -137,7 +130,6 @@ h1, h2, h3, h4 {
     overflow: visible !important;
   }
 
-  /* Reset scroll area constraints */
   [data-radix-scroll-area-viewport] {
     display: block !important;
     overflow: visible !important;
@@ -145,56 +137,50 @@ h1, h2, h3, h4 {
     width: 100% !important;
   }
 
-  /* The actual report content */
   .printable-report {
     display: block !important;
     visibility: visible !important;
-    position: relative !important;
-    width: 100% !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: 190mm !important;
     max-width: 190mm !important;
-    margin: 0 auto !important; /* Centering */
-    border: 1.2px solid black !important;
+    margin: 0 !important;
     padding: 10mm !important;
+    border: 1px solid black !important;
     background: white !important;
     box-shadow: none !important;
-    page-break-inside: avoid !important;
+    page-break-after: avoid !important;
     z-index: 99999 !important;
   }
 
   .printable-report * {
     visibility: visible !important;
     color: black !important;
-    background-color: transparent !important;
     border-color: black !important;
+    background-color: transparent !important;
   }
 
-  /* Ensure tables don't overflow or overlap */
-  .printable-report table {
-    display: table !important;
+  table {
     width: 100% !important;
     table-layout: fixed !important;
     border-collapse: collapse !important;
-    border: 1px solid black !important;
   }
-  
-  .printable-report th,
-  .printable-report td {
+
+  th, td {
     border: 1px solid black !important;
     padding: 4px !important;
     font-size: 8pt !important;
-    word-wrap: break-word !important;
-    overflow: hidden !important;
+    word-break: break-all !important;
   }
 
-  /* Hide UI elements */
+  /* Forced hide */
   .no-print, 
   button, 
-  header,
-  footer,
-  nav,
   [role="dialog"] header,
   [role="dialog"] [class*="Close"],
-  [data-sidebar="sidebar"] {
+  .fixed.inset-0.z-50.bg-black\/80 {
     display: none !important;
   }
 }
