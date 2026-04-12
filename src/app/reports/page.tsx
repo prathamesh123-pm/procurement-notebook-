@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
@@ -38,46 +39,46 @@ const labelMap: Record<string, string> = {
   address: "पत्ता",
   district: "जिल्हा",
   taluka: "तालुका",
-  routeName: "रूट नाव",
-  vehicleNo: "गाडी क्र.",
-  vehicleNumber: "गाडी क्र.",
-  vehicleType: "गाडी प्रकार",
-  driverName: "ड्रायव्हर",
-  breakdownTime: "बिघाड वेळ",
-  location: "ठिकाण",
-  reason: "कारण",
-  severity: "बिघाड प्रकार",
-  detailedReason: "सविस्तर माहिती",
-  estimatedRepairTime: "दुरुस्ती वेळ",
-  estimatedRepairCost: "अंदाजे खर्च (₹)",
-  recoveryVehicleNo: "पर्यायी गाडी",
-  recoveryArrivalTime: "पोहोच वेळ",
-  capacity: "क्षमता (L)",
-  morningQty: "सकाळ दूध (L)",
-  eveningQty: "संध्या दूध (L)",
-  fat: "फॅट (%)",
-  snf: "SNF (%)",
-  result: "अंतिम निकाल",
-  milkHot: "दूध गरम?",
-  milkSour: "दूध खराब?",
-  licenseStatus: "परवाना",
-  fssaiNo: "FSSAI क्र.",
-  validDate: "मुदत",
+  routeName: "दुध संकलन रूटचे नाव",
+  vehicleNo: "गाडीचा नंबर",
+  vehicleNumber: "गाडीचा नंबर",
+  vehicleType: "गाडीचा प्रकार",
+  driverName: "ड्रायव्हरचे नाव",
+  breakdownTime: "गाडी बिघाड झाल्याची वेळ",
+  location: "बिघाड झालेल्या ठिकाणाचे नाव",
+  reason: "बिघाड होण्याचे मुख्य कारण",
+  severity: "बिघाडाचे स्वरूप",
+  detailedReason: "बिघाडाचे सविस्तर वर्णन",
+  estimatedRepairTime: "दुरुस्तीसाठी लागणारा वेळ (तास)",
+  estimatedRepairCost: "दुरुस्तीसाठी लागणारा अंदाजे खर्च (₹)",
+  recoveryVehicleNo: "दुध वाचवण्यासाठी पाठवलेली दुसरी गाडी",
+  recoveryArrivalTime: "दुसरी गाडी पोहोचण्याची वेळ",
+  capacity: "गाडीची दूध क्षमता (Liters)",
+  morningQty: "सकाळचे दूध संकलन (L)",
+  eveningQty: "संध्याकाळचे दूध संकलन (L)",
+  fat: "दूध फॅट प्रमाण (%)",
+  snf: "दूध SNF प्रमाण (%)",
+  result: "अंतिम निकाल (RESULT)",
+  milkHot: "दूध गरम झाले होते का?",
+  milkSour: "दूध पूर्णपणे खराब झाले का?",
+  licenseStatus: "परवाना स्थिती",
+  fssaiNo: "FSSAI परवाना क्र.",
+  validDate: "वैधता मुदत",
   summary: "सारांश",
-  visitPerson: "भेट व्यक्ती",
-  visitPurpose: "उद्देश",
-  visitDiscussion: "चर्चा",
-  officeTaskSubject: "विषय",
-  officeTaskDetails: "तपशील",
-  achievements: "कामगिरी",
-  problems: "समस्या",
-  actionsTaken: "कार्यवाही",
+  visitPerson: "कोणाची भेट घेतली?",
+  visitPurpose: "भेटीचा मुख्य उद्देश",
+  visitDiscussion: "झालेली सविस्तर चर्चा",
+  officeTaskSubject: "कामाचा मुख्य विषय",
+  officeTaskDetails: "कामाचा सविस्तर गोषवारा",
+  achievements: "आजची मोठी कामगिरी",
+  problems: "महत्त्वाच्या समस्या",
+  actionsTaken: "केलेली कार्यवाही",
   actionTaken: "अंतिम कार्यवाही",
-  remark: "शेरा",
+  remark: "विशेष शेरा",
   otherInfo: "इतर माहिती",
   notes: "नोंद",
   title: "शीर्षक",
-  totalLossAmount: "नुकसान (₹)"
+  totalLossAmount: "एकूण आर्थिक नुकसान (₹)"
 };
 
 const fieldSequence = [
@@ -172,37 +173,45 @@ const BreakdownLayout = ({ report, profileName, profileId }: { report: any, prof
       <ReportHeader title={d.reportHeading || "ब्रेकडाऊन अहवाल"} date={report.date} subName={d.name || profileName} subId={d.idNumber || profileId} shift={d.shift} />
       
       <div className="w-full border border-black mb-2 overflow-hidden">
-        <div className="bg-slate-100 p-0.5 text-[7pt] font-black uppercase text-center border-b border-black">वाहन व ड्रायव्हर माहिती</div>
-        <div className="grid grid-cols-3 text-[7pt] font-bold uppercase divide-x divide-black">
-          <div className="p-1">रूट: {d.routeName}</div>
-          <div className="p-1">वाहन: {d.vehicleNo} ({d.vehicleType})</div>
-          <div className="p-1">क्षमता: {d.capacity} L</div>
+        <div className="bg-slate-100 p-0.5 text-[7pt] font-black uppercase text-center border-b border-black">१) वाहन व ड्रायव्हर माहिती</div>
+        <div className="p-1 border-b border-black text-[7pt] font-bold uppercase flex justify-between">
+          <span>दुध संकलन रूटचे नाव: {d.routeName}</span>
+          <span>गाडीचा नंबर: {d.vehicleNo}</span>
+        </div>
+        <div className="grid grid-cols-2 text-[7pt] font-bold uppercase divide-x divide-black">
+          <div className="p-1">गाडीचा प्रकार: {d.vehicleType}</div>
+          <div className="p-1">गाडीची दूध क्षमता: {d.capacity} L</div>
         </div>
         <div className="grid grid-cols-2 text-[7pt] font-bold uppercase divide-x divide-black border-t border-black">
-          <div className="p-1">ड्रायव्हर: {d.driverName}</div>
-          <div className="p-1">संपर्क: {d.mobile}</div>
+          <div className="p-1">ड्रायव्हरचे नाव: {d.driverName}</div>
+          <div className="p-1">ड्रायव्हरचा मोबाईल नंबर: {d.mobile}</div>
         </div>
       </div>
 
       <div className="w-full border border-black mb-2 overflow-hidden">
-        <div className="bg-rose-50 p-0.5 text-[7pt] font-black uppercase text-center border-b border-black text-rose-700">बिघाड व सद्यस्थिती</div>
+        <div className="bg-rose-50 p-0.5 text-[7pt] font-black uppercase text-center border-b border-black text-rose-700">२) गाडी बिघाड झाल्याचा तपशील</div>
         <div className="grid grid-cols-2 text-[7pt] font-bold uppercase divide-x divide-black">
-          <div className="p-1">वेळ: {d.breakdownTime}</div>
-          <div className="p-1">ठिकाण: {d.location}</div>
+          <div className="p-1">गाडी बिघाड झाल्याची वेळ: {d.breakdownTime}</div>
+          <div className="p-1">बिघाड झालेल्या ठिकाणाचे नाव: {d.location}</div>
         </div>
-        <div className="p-1 border-t border-black text-[7pt]"><span className="font-black">कारण:</span> {d.reason} - {d.detailedReason}</div>
+        <div className="p-1 border-t border-black text-[7pt]"><span className="font-black uppercase">बिघाड होण्याचे मुख्य कारण:</span> {d.reason}</div>
+        {d.detailedReason && <div className="p-1 border-t border-black text-[7pt]"><span className="font-black uppercase">बिघाडाचे सविस्तर वर्णन:</span> {d.detailedReason}</div>}
         <div className="grid grid-cols-3 text-[7pt] font-black uppercase divide-x divide-black border-t border-black bg-slate-50">
-          <div className="p-1">दुरुस्ती खर्च: ₹{d.estimatedRepairCost}</div>
-          <div className="p-1">दूध गरम?: {d.milkHot}</div>
-          <div className="p-1">दूध खराब?: {d.milkSour}</div>
+          <div className="p-1">बिघाडाचे स्वरूप: {d.severity}</div>
+          <div className="p-1">दूध गरम झाले होते का?: {d.milkHot}</div>
+          <div className="p-1">दूध पूर्णपणे खराब झाले?: {d.milkSour}</div>
         </div>
       </div>
 
       <div className="w-full border border-black mb-2 overflow-hidden">
-        <div className="bg-blue-50 p-0.5 text-[7pt] font-black uppercase text-center border-b border-black text-blue-700">पर्यायी सोय</div>
+        <div className="bg-blue-50 p-0.5 text-[7pt] font-black uppercase text-center border-b border-black text-blue-700">३) दुरुस्ती व पर्यायी सोय</div>
         <div className="grid grid-cols-2 text-[7pt] font-bold uppercase divide-x divide-black">
-          <div className="p-1">गाडी क्र.: {d.recoveryVehicleNo}</div>
-          <div className="p-1">पोहोच वेळ: {d.recoveryArrivalTime}</div>
+          <div className="p-1">दुरुस्तीसाठी लागणारा वेळ: {d.estimatedRepairTime}</div>
+          <div className="p-1">दुरुस्तीचा अंदाजे खर्च: ₹{d.estimatedRepairCost}</div>
+        </div>
+        <div className="grid grid-cols-2 text-[7pt] font-bold uppercase divide-x divide-black border-t border-black">
+          <div className="p-1">पर्यायी गाडीचा नंबर: {d.recoveryVehicleNo || "---"}</div>
+          <div className="p-1">गाडी पोहोचण्याची वेळ: {d.recoveryArrivalTime || "---"}</div>
         </div>
       </div>
 
@@ -229,7 +238,7 @@ const BreakdownLayout = ({ report, profileName, profileId }: { report: any, prof
               ))}
             </tbody>
           </table>
-          <div className="bg-rose-600 text-white p-1 text-right font-black text-[8pt]">एकूण नुकसान: ₹{d.totalLossAmount}</div>
+          <div className="bg-rose-600 text-white p-1 text-right font-black text-[8pt]">एकूण आर्थिक नुकसान: ₹{d.totalLossAmount}</div>
         </div>
       )}
 
@@ -284,7 +293,7 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
           <tbody>
             {orderedEntries.map(([k, v]: any) => (
               <tr key={k} className="border-b border-black last:border-0 text-[7pt] font-bold">
-                <td className="p-1 bg-slate-50 uppercase font-black border-r border-black w-[140px]">{labelMap[k]}</td>
+                <td className="p-1 bg-slate-50 uppercase font-black border-r border-black w-[180px]">{labelMap[k]}</td>
                 <td className="p-1">{String(v)}</td>
               </tr>
             ))}
@@ -333,7 +342,6 @@ const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any
 
 const TableSection = ({ title, data }: { title: string, data: any[] }) => {
   if (!data || data.length === 0) return null;
-  // Filter only if requested or allocated
   const activeData = data.filter(e => e.requested || e.allocated);
   if (activeData.length === 0) return null;
 
