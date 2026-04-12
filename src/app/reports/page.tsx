@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
@@ -95,9 +94,9 @@ const fieldSequence = [
 const ReportHeader = ({ title, date, subName, subId, shift }: any) => (
   <div className="w-full border-b-2 border-black pb-1 mb-2 text-center">
     <div className="text-center mb-1">
-      <h1 className="text-[12pt] font-black uppercase tracking-tight">{title || "माहिती अहवाल"}</h1>
+      <h1 className="text-[14pt] font-black uppercase tracking-tight">{title || "अहवाल"}</h1>
     </div>
-    <div className="flex justify-between text-[6pt] font-black uppercase text-slate-500 tracking-wider mt-1 border-t pt-0.5">
+    <div className="flex justify-between text-[6.5pt] font-black uppercase text-slate-500 tracking-wider mt-1 border-t pt-0.5">
       <div className="flex gap-2">
         <span>सादरकर्ता: {subName}</span>
         {subId && <span>| ID: {subId}</span>}
@@ -118,7 +117,7 @@ const RouteVisitLayout = ({ report, profileName, profileId }: { report: any, pro
       
       <div className="w-full grid grid-cols-2 gap-2 mb-2">
         <div className="border border-black p-1 text-[7pt] font-bold uppercase">रूट: {d.routeName}</div>
-        <div className="border border-black p-1 text-[7pt] font-bold uppercase">गाडी: {d.vehicleNumber}</div>
+        <div className="border border-black p-1 text-[7pt] font-bold uppercase">वाहन: {d.vehicleNumber}</div>
         <div className="border border-black p-1 text-[7pt] font-bold uppercase">ड्रायव्हर: {d.driverName}</div>
         <div className="border border-black p-1 text-[7pt] font-bold uppercase">SLIP No: {d.slipNo}</div>
       </div>
@@ -316,7 +315,7 @@ const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any
   const d = report.fullData || {};
   return (
     <div className="bg-white font-sans text-slate-900 border-[1.2px] border-black rounded-sm w-full max-w-[210mm] mx-auto p-4 printable-report flex flex-col items-center shadow-none mb-4">
-      <ReportHeader title={d.reportHeading} date={report.date} subName={d.name || profileName} subId={d.idNumber || profileId} shift={d.shift} />
+      <ReportHeader title={d.reportHeading || "ERP अहवाल"} date={report.date} subName={d.name || profileName} subId={d.idNumber || profileId} shift={d.shift} />
       
       <TableSection title="Morning Can Routes (Internal)" data={d.morningRoutes} />
       <TableSection title="Evening Can Routes (Internal)" data={d.eveningRoutes} />
@@ -334,6 +333,10 @@ const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any
 
 const TableSection = ({ title, data }: { title: string, data: any[] }) => {
   if (!data || data.length === 0) return null;
+  // Filter only if requested or allocated
+  const activeData = data.filter(e => e.requested || e.allocated);
+  if (activeData.length === 0) return null;
+
   return (
     <div className="w-full mb-2">
       <div className="bg-slate-100 p-0.5 text-[7pt] font-black uppercase text-center border border-black">{title}</div>
@@ -348,7 +351,7 @@ const TableSection = ({ title, data }: { title: string, data: any[] }) => {
           </tr>
         </thead>
         <tbody>
-          {data.map((entry, idx) => (
+          {activeData.map((entry, idx) => (
             <tr key={idx} className="text-[7pt] font-bold uppercase text-center h-5">
               <td className="p-0.5 border border-black">{idx + 1}</td>
               <td className="p-0.5 border border-black">{entry.routeId}</td>
