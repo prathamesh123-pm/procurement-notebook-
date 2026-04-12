@@ -79,13 +79,13 @@ h1, h2, h3, h4 {
 ::-webkit-scrollbar-thumb { @apply bg-slate-200 rounded-full; }
 
 /* 
- * ULTIMATE PRINT ENGINE v9.0
- * Centered, High-Performance, Anti-Clip.
+ * ULTIMATE PRINT ENGINE v10.0 - SUPER STABLE
+ * Centered, Multi-Page Support, Zero Clipping.
  */
 @media print {
   @page {
     size: A4;
-    margin: 5mm;
+    margin: 0mm; /* Zero page margin to prevent double margins */
   }
   
   html, body {
@@ -99,26 +99,21 @@ h1, h2, h3, h4 {
     print-color-adjust: exact !important;
   }
 
-  /* Completely hide all UI except the portal or the report */
+  /* Hide everything except the report content */
   body > *:not([data-radix-portal]) {
     display: none !important;
   }
 
   [data-radix-portal] {
-    position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100% !important;
+    position: static !important;
     display: block !important;
     background: white !important;
   }
 
-  /* Reset fixed dialog constraints */
+  /* Break out of ShadCN Dialog constraints */
   div[role="dialog"] {
     display: block !important;
-    position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
+    position: relative !important;
     width: 100% !important;
     height: auto !important;
     background: white !important;
@@ -128,8 +123,11 @@ h1, h2, h3, h4 {
     border: none !important;
     transform: none !important;
     overflow: visible !important;
+    left: auto !important;
+    top: auto !important;
   }
 
+  /* Disable ScrollArea Clipping during print */
   [data-radix-scroll-area-viewport] {
     display: block !important;
     overflow: visible !important;
@@ -140,19 +138,19 @@ h1, h2, h3, h4 {
   .printable-report {
     display: block !important;
     visibility: visible !important;
-    position: absolute !important;
-    top: 0 !important;
-    left: 50% !important;
-    transform: translateX(-50%) !important;
+    position: relative !important;
+    margin: 5mm auto !important;
+    padding: 8mm !important;
     width: 190mm !important;
     max-width: 190mm !important;
-    margin: 0 !important;
-    padding: 10mm !important;
     border: 1px solid black !important;
     background: white !important;
     box-shadow: none !important;
     page-break-after: avoid !important;
+    page-break-inside: avoid !important;
     z-index: 99999 !important;
+    left: 0 !important;
+    transform: none !important;
   }
 
   .printable-report * {
@@ -175,9 +173,11 @@ h1, h2, h3, h4 {
     word-break: break-all !important;
   }
 
-  /* Forced hide */
+  /* Forced hide of UI elements */
   .no-print, 
   button, 
+  header,
+  footer,
   [role="dialog"] header,
   [role="dialog"] [class*="Close"],
   .fixed.inset-0.z-50.bg-black\/80 {

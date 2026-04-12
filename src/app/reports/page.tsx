@@ -143,7 +143,7 @@ const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any
     );
 
     return (
-      <div className="w-full mb-4 border border-black overflow-hidden">
+      <div className="w-full mb-2 border border-black overflow-hidden">
         <div className="bg-slate-800 text-white p-1 text-[8pt] font-black uppercase text-center border-b border-black">
           प्रकार : {title}
         </div>
@@ -159,7 +159,7 @@ const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any
     <div className="bg-white font-sans text-slate-900 border-[1.2px] border-black rounded-sm w-full p-5 printable-report flex flex-col items-center shadow-none mb-4">
       <ReportHeader title={d.reportHeading || "ERP अहवाल"} date={report.date} subName={d.name || profileName} subId={d.idNumber || profileId} shift={d.shift} />
       
-      <div className="w-full space-y-2">
+      <div className="w-full space-y-1">
         {renderExcelSection("Can Route Morning (Internal)", d.morningRoutes)}
         {renderExcelSection("Can Route Evening (Internal)", d.eveningRoutes)}
         {renderExcelSection("Internal Tanker Route", d.tankerRoutes)}
@@ -168,7 +168,7 @@ const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any
       </div>
 
       {d.dailyProblems && (
-        <div className="w-full border border-black rounded-sm overflow-hidden mb-4 mt-2 text-left">
+        <div className="w-full border border-black rounded-sm overflow-hidden mb-2 mt-2 text-left">
           <div className="bg-rose-50 p-1.5 text-[8pt] font-black uppercase text-rose-700 border-b border-black flex items-center gap-2">
             <AlertCircle className="h-3 w-3" /> आजचे महत्त्वाचे प्रॉब्लेम्स / निरीक्षणे (Daily Text Pad)
           </div>
