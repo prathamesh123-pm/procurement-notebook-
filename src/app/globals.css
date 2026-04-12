@@ -79,13 +79,13 @@ h1, h2, h3, h4 {
 ::-webkit-scrollbar-thumb { @apply bg-slate-200 rounded-full; }
 
 /* 
- * ULTIMATE PRINT ENGINE v15.0 - THE FINAL FIX
- * Ensures absolute white background, perfect alignment, and zero clipping.
+ * ULTIMATE PRINT ENGINE v20.0 - PHOTO MATCH FIX
+ * Ensures zero overlap, perfect double column, and professional alignment.
  */
 @media print {
   @page {
     size: A4;
-    margin: 5mm;
+    margin: 10mm;
   }
   
   html, body {
@@ -100,7 +100,6 @@ h1, h2, h3, h4 {
     print-color-adjust: exact !important;
   }
 
-  /* Force display the report content regardless of nesting */
   .printable-report, .printable-report * {
     visibility: visible !important;
     display: block !important;
@@ -111,25 +110,23 @@ h1, h2, h3, h4 {
   }
 
   .printable-report {
-    position: absolute !important;
-    top: 0 !important;
-    left: 50% !important;
-    transform: translateX(-50%) !important;
-    width: 195mm !important;
-    max-width: 195mm !important;
+    position: relative !important;
+    width: 190mm !important;
+    max-width: 190mm !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
     border: none !important;
-    padding: 5mm !important;
-    margin: 0 !important;
-    z-index: 9999999 !important;
-    height: auto !important;
-    overflow: visible !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
   }
 
   .printable-report table {
     display: table !important;
     width: 100% !important;
     border-collapse: collapse !important;
-    margin-bottom: 5mm !important;
+    margin-bottom: 4mm !important;
+    table-layout: fixed !important;
   }
 
   .printable-report tr {
@@ -140,36 +137,32 @@ h1, h2, h3, h4 {
   .printable-report th, .printable-report td {
     display: table-cell !important;
     border: 1px solid black !important;
-    padding: 4px !important;
+    padding: 3px !important;
     font-size: 8pt !important;
     color: black !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
   }
 
-  .printable-report .grid {
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 10px !important;
+  .printable-report .flex-row {
+    display: flex !important;
+    flex-direction: row !important;
+    width: 100% !important;
   }
 
-  .printable-report .grid-cols-3 {
-    grid-template-columns: repeat(3, 1fr) !important;
+  .printable-report .w-1\/2 {
+    width: 50% !important;
   }
 
-  /* Hide UI elements */
-  .no-print, 
-  button, 
-  header, 
-  nav, 
-  footer, 
-  .sidebar,
-  [data-radix-collection-item],
-  [role="dialog"] header,
+  /* Hide all UI garbage */
+  .no-print, button, header, nav, footer, .sidebar, 
   [role="dialog"] [class*="Close"],
   .fixed.inset-0.z-50 {
     display: none !important;
   }
 
-  /* Unset dialog/scrollarea restrictions */
+  /* Force elements to not clip */
   div { 
     overflow: visible !important; 
     max-height: none !important;

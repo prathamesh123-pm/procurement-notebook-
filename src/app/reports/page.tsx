@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
@@ -122,18 +121,18 @@ const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any
       <table className="w-full border-collapse border border-black text-[7pt] table-fixed">
         <thead>
           <tr className="bg-slate-200 font-black uppercase text-center h-6">
-            <th className="border border-black p-1 w-6">Sr.</th>
-            <th className="border border-black p-1 w-10">Code</th>
-            <th className="border border-black p-1 text-left pl-1">Route Name</th>
-            <th className="border border-black p-1 w-8">Req</th>
-            <th className="border border-black p-1 w-8">Alloc</th>
+            <th className="border border-black p-1 w-[25px]">SR</th>
+            <th className="border border-black p-1 w-[45px]">CODE</th>
+            <th className="border border-black p-1 text-left pl-1">ROUTE NAME</th>
+            <th className="border border-black p-1 w-[35px]">REQ</th>
+            <th className="border border-black p-1 w-[35px]">ALLOC</th>
           </tr>
         </thead>
         <tbody>
           {items.map((it, i) => (
             <tr key={i} className="h-6 font-bold uppercase text-center border-b border-black">
               <td className="border border-black p-1">{startIdx + i + 1}</td>
-              <td className="border border-black p-1 truncate">{it.routeCode || it.routeId}</td>
+              <td className="border border-black p-1 truncate px-1">{it.routeCode || it.routeId}</td>
               <td className="border border-black p-1 text-left pl-1 truncate text-[6.5pt]">{it.routeName}</td>
               <td className="border border-black p-1 font-black">{it.requested ? '√' : ''}</td>
               <td className="border border-black p-1 font-black">{it.allocated ? '√' : ''}</td>
@@ -144,13 +143,13 @@ const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any
     );
 
     return (
-      <div className="w-full mb-2 border border-black overflow-hidden">
+      <div className="w-full mb-3 border border-black overflow-hidden">
         <div className="bg-slate-800 text-white p-1 text-[8pt] font-black uppercase text-center border-b border-black">
           प्रकार : {title}
         </div>
-        <div className="flex w-full divide-x divide-black">
-          <div className="w-1/2"><TablePart items={leftCol} startIdx={0} /></div>
-          <div className="w-1/2"><TablePart items={rightCol} startIdx={mid} /></div>
+        <div className="grid grid-cols-2 w-full border-collapse">
+          <div className="border-r border-black"><TablePart items={leftCol} startIdx={0} /></div>
+          <div><TablePart items={rightCol} startIdx={mid} /></div>
         </div>
       </div>
     );
@@ -205,12 +204,12 @@ const RouteVisitLayout = ({ report, profileName, profileId }: { report: any, pro
       <table className="w-full border-collapse mb-3 table-fixed border border-black">
         <thead>
           <tr className="bg-slate-100 text-[7pt] font-black uppercase text-center h-8">
-            <th className="p-1 border border-black w-[30px]">Sr.</th>
-            <th className="p-1 border border-black w-[50px]">Code</th>
-            <th className="p-1 border border-black text-left pl-2">Center Name</th>
-            <th className="p-1 border border-black w-[85px]">In/Out</th>
+            <th className="p-1 border border-black w-[30px]">SR</th>
+            <th className="p-1 border border-black w-[50px]">CODE</th>
+            <th className="p-1 border border-black text-left pl-2">CENTER NAME</th>
+            <th className="p-1 border border-black w-[85px]">IN/OUT</th>
             <th className="p-1 border border-black w-[50px]">E/F</th>
-            <th className="p-1 border border-black w-[50px]">Ice</th>
+            <th className="p-1 border border-black w-[50px]">ICE</th>
           </tr>
         </thead>
         <tbody>
@@ -285,7 +284,7 @@ const BreakdownLayout = ({ report, profileName, profileId }: { report: any, prof
               <tr className="bg-black text-white font-black text-[7pt] uppercase text-center">
                 <th className="p-1 border border-white/20 text-left pl-2">नाव/कोड</th>
                 <th className="p-1 border border-white/20 w-16 text-center">प्रकार</th>
-                <th className="p-1 border border-white/20 w-16 text-center">Qty</th>
+                <th className="p-1 border border-white/20 w-16 text-center">QTY</th>
                 <th className="p-1 border border-white/20 w-24 text-center">रक्कम (₹)</th>
               </tr>
             </thead>
@@ -357,14 +356,14 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
             {orderedEntries.map(([k, v]: any) => (
               <tr key={k} className="text-[8pt] font-bold border-b border-black last:border-0">
                 <td className="p-2 bg-slate-50 uppercase font-black border-r border-black w-[220px]">{labelMap[k]}</td>
-                <td className="p-2">{String(v)}</td>
+                <td className="p-2 whitespace-pre-wrap">{String(v)}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
 
-      {(d.cowMilk || d.buffaloMilk || d.cowQty) && (
+      {(d.cowMilk || d.buffaloMilk || d.cowQty || d.bufQty) && (
         <div className="w-full mb-3 text-left">
           <span className="text-[7pt] font-black uppercase block border-b border-black pb-1 mb-1">दूध संकलन तपशील (MILK DETAILS):</span>
           <table className="w-full border-collapse border border-black table-fixed">
@@ -400,15 +399,15 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
           <table className="w-full border-collapse border border-black table-fixed">
             <thead>
               <tr className="bg-slate-100 text-[7pt] font-black uppercase">
-                <th className="p-1 border border-black text-left pl-2">साहित्य</th>
-                <th className="p-1 border border-black text-center w-16">नग</th>
-                <th className="p-1 border border-black text-right w-24 pr-2">मालकी</th>
+                <th className="p-1 border border-black text-left pl-2">साहित्य नाव</th>
+                <th className="p-1 border border-black text-center w-[60px]">नग</th>
+                <th className="p-1 border border-black text-right w-[100px] pr-2">मालकी</th>
               </tr>
             </thead>
             <tbody>
               {inventory.map((it: any, i: number) => (
                 <tr key={i} className="text-[8pt] font-bold border-b border-black">
-                  <td className="p-1 border border-black pl-2">{it.name}</td>
+                  <td className="p-1 border border-black pl-2 truncate">{it.name}</td>
                   <td className="p-1 border border-black text-center">{it.quantity}</td>
                   <td className="p-1 border border-black text-right uppercase text-[7pt] pr-2">{it.ownership === 'Self' ? 'स्वतः' : 'डेअरी'}</td>
                 </tr>
