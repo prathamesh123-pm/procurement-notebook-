@@ -108,48 +108,48 @@ const ReportHeader = ({ title, date, subName, subId, shift }: any) => (
 const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any, profileName: string, profileId: string }) => {
   const d = report.fullData || {};
   
-  const renderExcelSection = (title: string, rawData: any[]) => {
+  const renderExcelSection = (title: string, rawData: any[], typeLabel: string = "(Internal)") => {
     if (!rawData || rawData.length === 0) return null;
-    const activeData = rawData.filter(e => e.requested || e.allocated);
-    if (activeData.length === 0) return null;
-
-    const mid = Math.ceil(activeData.length / 2);
-    const leftCol = activeData.slice(0, mid);
-    const rightCol = activeData.slice(mid);
+    
+    // Split data into two columns for Excel look
+    const mid = Math.ceil(rawData.length / 2);
+    const leftCol = rawData.slice(0, mid);
+    const rightCol = rawData.slice(mid);
 
     const TablePart = ({ items, startIdx }: { items: any[], startIdx: number }) => (
       <table className="w-full border-collapse border border-black text-[7pt] table-fixed">
         <thead>
-          <tr className="bg-slate-200 font-black uppercase text-center h-6">
-            <th className="border border-black p-1 w-[25px]">SR</th>
-            <th className="border border-black p-1 w-[45px]">CODE</th>
-            <th className="border border-black p-1 text-left pl-1">ROUTE NAME</th>
-            <th className="border border-black p-1 w-[35px]">REQ</th>
-            <th className="border border-black p-1 w-[35px]">ALLOC</th>
+          <tr className="bg-slate-100 font-black uppercase text-center h-7 border-b border-black">
+            <th className="border-r border-black p-1 w-[25px]">Sr.No</th>
+            <th className="border-r border-black p-1 w-[45px]">Route ID</th>
+            <th className="border-r border-black p-1 text-left pl-1">Route Name {typeLabel}</th>
+            <th className="border-r border-black p-1 w-[55px]">Requested Route (√)</th>
+            <th className="p-1 w-[50px]">Allocated Route (√)</th>
           </tr>
         </thead>
         <tbody>
           {items.map((it, i) => (
-            <tr key={i} className="h-6 font-bold uppercase text-center border-b border-black">
-              <td className="border border-black p-1">{startIdx + i + 1}</td>
-              <td className="border border-black p-1 truncate px-1">{it.routeCode || it.routeId}</td>
-              <td className="border border-black p-1 text-left pl-1 truncate text-[6.5pt]">{it.routeName}</td>
-              <td className="border border-black p-1 font-black">{it.requested ? '√' : ''}</td>
-              <td className="border border-black p-1 font-black">{it.allocated ? '√' : ''}</td>
+            <tr key={i} className="h-6 font-bold uppercase text-center border-b border-black last:border-b-0">
+              <td className="border-r border-black p-1 bg-slate-50">{startIdx + i + 1}</td>
+              <td className="border-r border-black p-1 truncate px-1 bg-slate-50">{it.routeCode || it.routeId}</td>
+              <td className="border-r border-black p-1 text-left pl-1 truncate text-[7pt]">{it.routeName}</td>
+              <td className="border-r border-black p-1 font-black text-[10pt]">{it.requested ? '√' : ''}</td>
+              <td className="p-1 font-black text-[10pt]">{it.allocated ? '√' : ''}</td>
             </tr>
           ))}
+          {/* Fill empty rows if needed to align columns */}
         </tbody>
       </table>
     );
 
     return (
-      <div className="w-full mb-3 border border-black overflow-hidden">
-        <div className="bg-slate-800 text-white p-1 text-[8pt] font-black uppercase text-center border-b border-black">
-          प्रकार : {title}
+      <div className="w-full mb-4 border border-black overflow-hidden bg-white shadow-sm">
+        <div className="bg-slate-800 text-white p-1 text-[9pt] font-black uppercase text-center border-b border-black">
+          Type : {title}
         </div>
-        <div className="grid grid-cols-2 w-full border-collapse">
-          <div className="border-r border-black"><TablePart items={leftCol} startIdx={0} /></div>
-          <div><TablePart items={rightCol} startIdx={mid} /></div>
+        <div className="grid grid-cols-2 w-full border-collapse divide-x divide-black">
+          <div className="col-span-1"><TablePart items={leftCol} startIdx={0} /></div>
+          <div className="col-span-1"><TablePart items={rightCol} startIdx={mid} /></div>
         </div>
       </div>
     );
@@ -160,27 +160,27 @@ const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any
       <ReportHeader title={d.reportHeading || "ERP अहवाल"} date={report.date} subName={d.name || profileName} subId={d.idNumber || profileId} shift={d.shift} />
       
       <div className="w-full space-y-1">
-        {renderExcelSection("Can Route Morning (Internal)", d.morningRoutes)}
-        {renderExcelSection("Can Route Evening (Internal)", d.eveningRoutes)}
-        {renderExcelSection("Internal Tanker Route", d.tankerRoutes)}
-        {renderExcelSection("External Can Route", d.extCanRoutes)}
-        {renderExcelSection("External Tanker Route", d.extTankerRoutes)}
+        {renderExcelSection("Can Route Morning (Internal)", d.morningRoutes, "(Internal)")}
+        {renderExcelSection("Can Route Evening (Internal)", d.eveningRoutes, "(Internal)")}
+        {renderExcelSection("Internal Tanker Route", d.tankerRoutes, "(Tanker)")}
+        {renderExcelSection("External Can Route", d.extCanRoutes, "(External)")}
+        {renderExcelSection("External Tanker Route", d.extTankerRoutes, "(External)")}
       </div>
 
       {d.dailyProblems && (
-        <div className="w-full border border-black rounded-sm overflow-hidden mb-2 mt-2 text-left">
+        <div className="w-full border border-black rounded-sm overflow-hidden mb-2 mt-4 text-left">
           <div className="bg-rose-50 p-1.5 text-[8pt] font-black uppercase text-rose-700 border-b border-black flex items-center gap-2">
             <AlertCircle className="h-3 w-3" /> आजचे महत्त्वाचे प्रॉब्लेम्स / निरीक्षणे (Daily Text Pad)
           </div>
-          <div className="p-3 text-[9pt] font-bold whitespace-pre-wrap leading-relaxed">
+          <div className="p-3 text-[10pt] font-bold whitespace-pre-wrap leading-tight text-slate-800">
             {d.dailyProblems}
           </div>
         </div>
       )}
 
-      <div className="w-full mt-auto pt-8 grid grid-cols-2 gap-12 text-center uppercase font-black text-[8pt] tracking-widest">
-        <div className="border-t border-black pt-1.5">अधिकारी स्वाक्षरी</div>
-        <div className="border-t border-black pt-1.5">सुपरवायझर स्वाक्षरी</div>
+      <div className="w-full mt-auto pt-10 grid grid-cols-2 gap-12 text-center uppercase font-black text-[9pt] tracking-widest">
+        <div className="border-t border-black pt-2">अधिकारी स्वाक्षरी</div>
+        <div className="border-t border-black pt-2">सुपरवायझर स्वाक्षरी</div>
       </div>
     </div>
   )

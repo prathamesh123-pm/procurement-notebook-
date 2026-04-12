@@ -79,13 +79,13 @@ h1, h2, h3, h4 {
 ::-webkit-scrollbar-thumb { @apply bg-slate-200 rounded-full; }
 
 /* 
- * ULTIMATE PRINT ENGINE v20.0 - PHOTO MATCH FIX
- * Ensures zero overlap, perfect double column, and professional alignment.
+ * NUCLEAR PRINT ENGINE v30.0 - PHOTO MATCH OPTIMIZED
+ * Fixes grids, tables, and centered alignment for professional reports.
  */
 @media print {
   @page {
     size: A4;
-    margin: 10mm;
+    margin: 5mm;
   }
   
   html, body {
@@ -102,7 +102,6 @@ h1, h2, h3, h4 {
 
   .printable-report, .printable-report * {
     visibility: visible !important;
-    display: block !important;
     opacity: 1 !important;
     color: black !important;
     background-color: white !important;
@@ -111,58 +110,54 @@ h1, h2, h3, h4 {
 
   .printable-report {
     position: relative !important;
-    width: 190mm !important;
-    max-width: 190mm !important;
+    width: 200mm !important;
+    max-width: 200mm !important;
     margin: 0 auto !important;
     padding: 0 !important;
     border: none !important;
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
+    top: 0 !important;
   }
 
+  /* Structural Overrides for Grid/Flex in Print */
+  .printable-report .grid { display: grid !important; }
+  .printable-report .flex { display: flex !important; }
+  .printable-report .grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  
   .printable-report table {
     display: table !important;
     width: 100% !important;
     border-collapse: collapse !important;
-    margin-bottom: 4mm !important;
+    border: 1px solid black !important;
     table-layout: fixed !important;
   }
 
-  .printable-report tr {
-    display: table-row !important;
-    page-break-inside: avoid !important;
-  }
-
+  .printable-report tr { display: table-row !important; page-break-inside: avoid !important; }
   .printable-report th, .printable-report td {
     display: table-cell !important;
     border: 1px solid black !important;
-    padding: 3px !important;
+    padding: 2px !important;
     font-size: 8pt !important;
-    color: black !important;
     overflow: hidden !important;
-    text-overflow: ellipsis !important;
-    white-space: nowrap !important;
   }
 
-  .printable-report .flex-row {
-    display: flex !important;
-    flex-direction: row !important;
-    width: 100% !important;
+  /* Dark headers for Excel style */
+  .printable-report .bg-slate-800,
+  .printable-report .bg-black {
+    background-color: #333 !important;
+    color: white !important;
   }
 
-  .printable-report .w-1\/2 {
-    width: 50% !important;
-  }
-
-  /* Hide all UI garbage */
+  /* Hide all UI elements */
   .no-print, button, header, nav, footer, .sidebar, 
   [role="dialog"] [class*="Close"],
   .fixed.inset-0.z-50 {
     display: none !important;
   }
 
-  /* Force elements to not clip */
+  /* Force content container to expand */
   div { 
     overflow: visible !important; 
     max-height: none !important;
