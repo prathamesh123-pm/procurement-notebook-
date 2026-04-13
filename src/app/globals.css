@@ -44,7 +44,7 @@
     @apply h-8 text-[12px] font-bold bg-slate-50 border border-slate-100 rounded-md px-2 focus-visible:ring-primary shadow-inner w-full outline-none transition-all;
   }
 
-  /* Robust Responsive Table Wrapper */
+  /* Robust Responsive Table Wrapper - Added Horizontal Scroll */
   .responsive-table-wrapper {
     @apply w-full overflow-x-auto rounded-lg border border-slate-200 bg-white mb-4;
     -webkit-overflow-scrolling: touch;
@@ -77,18 +77,24 @@ h1, h2, h3, h4 {
 }
 
 /* Custom Scrollbar */
-::-webkit-scrollbar { width: 2px; height: 2px; }
+::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { @apply bg-transparent; }
 ::-webkit-scrollbar-thumb { @apply bg-slate-200 rounded-full; }
 
 /* 
- * ULTIMATE ROBUST PRINT ENGINE v70.0
- * Pure white background, sequential flow, zero clipping, zero overlap.
+ * ULTIMATE ROBUST PRINT ENGINE v71.0
+ * Fixes overlapping and ensures scrolling visibility on screen
  */
+@media screen {
+  .report-scroll-container {
+    @apply w-full overflow-x-auto;
+  }
+}
+
 @media print {
   @page {
     size: A4;
-    margin: 15mm;
+    margin: 10mm;
   }
   
   html, body {
@@ -103,7 +109,7 @@ h1, h2, h3, h4 {
     print-color-adjust: exact !important;
   }
 
-  /* Hide all UI elements including dark overlays */
+  /* Hide all UI elements */
   .no-print, button, header, nav, footer, .sidebar, 
   [role="dialog"] > div:first-child, .fixed.inset-0, .bg-black\/80 {
     display: none !important;
@@ -122,7 +128,7 @@ h1, h2, h3, h4 {
   }
 
   .printable-report {
-    position: static !important; /* Stop absolute overlapping */
+    position: static !important;
     display: block !important;
     width: 100% !important;
     max-width: none !important;
@@ -134,59 +140,47 @@ h1, h2, h3, h4 {
     overflow: visible !important;
   }
 
-  /* Table Specific Print Fixes */
   table {
     width: 100% !important;
     border-collapse: collapse !important;
     page-break-inside: avoid !important;
     margin-bottom: 15px !important;
-    table-layout: auto !important;
+    table-layout: auto !important; /* Changed to auto for print */
   }
 
-  thead { display: table-header-group !important; }
-  tr { page-break-inside: avoid !important; }
-  
   th, td {
-    padding: 8px !important;
-    border: 1.5px solid black !important;
-    font-size: 10pt !important;
+    padding: 6px !important;
+    border: 1px solid black !important;
+    font-size: 9pt !important;
     word-wrap: break-word !important;
     overflow-wrap: break-word !important;
   }
 
-  /* Grid/Flex fixes for print */
   .grid, .flex {
-    display: block !important; /* Stack elements sequentially in print */
-  }
-
-  /* Keep 2-column ERP layout IF it fits, otherwise stack */
-  .print-excel-grid {
     display: flex !important;
     flex-direction: row !important;
     flex-wrap: wrap !important;
-    gap: 10px !important;
-  }
-  .print-excel-grid > * {
-    width: calc(50% - 5px) !important;
-    flex-basis: calc(50% - 5px) !important;
   }
 
-  /* Force display of elements usually hidden in Dialogs */
+  .print-excel-grid {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    gap: 0 !important;
+  }
+  
+  .print-excel-grid > * {
+    width: 50% !important;
+    flex-basis: 50% !important;
+  }
+
   [role="dialog"] {
     position: static !important;
     display: block !important;
     width: 100% !important;
-    max-width: none !important;
     background: white !important;
     overflow: visible !important;
     border: none !important;
     box-shadow: none !important;
-  }
-
-  div, section, article {
-    transform: none !important;
-    max-height: none !important;
-    height: auto !important;
-    overflow: visible !important;
   }
 }

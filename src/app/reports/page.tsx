@@ -116,14 +116,14 @@ const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any
     const rightCol = rawData.slice(mid);
 
     const TablePart = ({ items, startIdx }: { items: any[], startIdx: number }) => (
-      <table className="w-full border-collapse border border-black text-[9px] table-fixed">
+      <table className="w-full border-collapse border border-black text-[8px] table-auto">
         <thead>
           <tr className="bg-slate-100 font-black uppercase text-center h-8 border-b border-black">
             <th className="border-r border-black p-1 w-[25px]">SR</th>
-            <th className="border-r border-black p-1 w-[45px]">ID</th>
+            <th className="border-r border-black p-1 w-[40px]">ID</th>
             <th className="border-r border-black p-1 text-left pl-2">ROUTE NAME</th>
-            <th className="border-r border-black p-1 w-[35px]">REQ</th>
-            <th className="p-1 w-[35px]">ALOC</th>
+            <th className="border-r border-black p-1 w-[30px]">REQ</th>
+            <th className="p-1 w-[30px]">ALOC</th>
           </tr>
         </thead>
         <tbody>
@@ -131,9 +131,9 @@ const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any
             <tr key={i} className="h-7 font-bold uppercase text-center border-b border-black last:border-b-0">
               <td className="border-r border-black p-1 bg-slate-50">{startIdx + i + 1}</td>
               <td className="border-r border-black p-1 truncate px-1 bg-slate-50">{it.routeCode || it.routeId}</td>
-              <td className="border-r border-black p-1 text-left pl-2 truncate">{it.routeName}</td>
-              <td className="border-r border-black p-1 font-black text-[12px]">{it.requested ? '√' : ''}</td>
-              <td className="p-1 font-black text-[12px]">{it.allocated ? '√' : ''}</td>
+              <td className="border-r border-black p-1 text-left pl-2 truncate max-w-[100px]">{it.routeName}</td>
+              <td className="border-r border-black p-1 font-black text-[11px]">{it.requested ? '√' : ''}</td>
+              <td className="p-1 font-black text-[11px]">{it.allocated ? '√' : ''}</td>
             </tr>
           ))}
         </tbody>
@@ -141,23 +141,23 @@ const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any
     );
 
     return (
-      <div className="w-full mb-6 border-2 border-black overflow-hidden bg-white">
-        <div className="bg-slate-800 text-white p-2 text-[11px] font-black uppercase text-center border-b border-black">
+      <div className="w-full mb-4 border-2 border-black overflow-hidden bg-white">
+        <div className="bg-slate-800 text-white p-1.5 text-[10px] font-black uppercase text-center border-b border-black">
           {title}
         </div>
-        <div className="print-excel-grid flex w-full divide-x divide-black">
-          <div className="w-1/2 flex-1"><TablePart items={leftCol} startIdx={0} /></div>
-          <div className="w-1/2 flex-1"><TablePart items={rightCol} startIdx={mid} /></div>
+        <div className="print-excel-grid flex w-full divide-x divide-black overflow-x-auto">
+          <div className="w-1/2 flex-1 min-w-[250px]"><TablePart items={leftCol} startIdx={0} /></div>
+          <div className="w-1/2 flex-1 min-w-[250px]"><TablePart items={rightCol} startIdx={mid} /></div>
         </div>
       </div>
     );
   };
 
   return (
-    <div className="bg-white font-sans text-slate-900 border-none w-full p-6 printable-report flex flex-col items-center">
+    <div className="bg-white font-sans text-slate-900 border-none w-full p-4 printable-report flex flex-col items-center">
       <ReportHeader title={d.reportHeading || "ERP अहवाल"} date={report.date} subName={d.name || profileName} subId={d.idNumber || profileId} shift={d.shift} />
       
-      <div className="w-full space-y-4">
+      <div className="w-full space-y-4 report-scroll-container">
         {renderExcelSection("Can Route Morning (Internal)", d.morningRoutes)}
         {renderExcelSection("Can Route Evening (Internal)", d.eveningRoutes)}
         {renderExcelSection("Internal Tanker Route", d.tankerRoutes)}
@@ -176,9 +176,9 @@ const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any
         </div>
       )}
 
-      <div className="w-full mt-auto pt-20 grid grid-cols-2 gap-24 text-center uppercase font-black text-[11px] tracking-[0.2em]">
-        <div className="border-t-2 border-black pt-3">अधिकारी स्वाक्षरी</div>
-        <div className="border-t-2 border-black pt-3">सुपरवायझर स्वाक्षरी</div>
+      <div className="w-full mt-auto pt-16 grid grid-cols-2 gap-24 text-center uppercase font-black text-[10px] tracking-[0.2em]">
+        <div className="border-t-2 border-black pt-2">अधिकारी स्वाक्षरी</div>
+        <div className="border-t-2 border-black pt-2">सुपरवायझर स्वाक्षरी</div>
       </div>
     </div>
   )
@@ -192,47 +192,49 @@ const RouteVisitLayout = ({ report, profileName, profileId }: { report: any, pro
     <div className="bg-white font-sans text-slate-900 border-none w-full p-6 printable-report flex flex-col items-center">
       <ReportHeader title={d.reportHeading || "रूट व्हिजिट अहवाल"} date={report.date} subName={d.name || profileName} subId={d.idNumber || profileId} shift={d.shift} />
       
-      <table className="w-full border-collapse border-2 border-black mb-6">
-        <tbody>
-          <tr className="border-b border-black h-10">
-            <td className="p-2 bg-slate-50 font-black uppercase text-[10px] border-r border-black w-1/4">दुध संकलन रूटचे नाव</td>
-            <td className="p-2 font-bold text-[12px] w-1/4">{d.routeName}</td>
-            <td className="p-2 bg-slate-50 font-black uppercase text-[10px] border-r border-black w-1/4">वाहन नंबर</td>
-            <td className="p-2 font-bold text-[12px] w-1/4">{d.vehicleNumber}</td>
-          </tr>
-          <tr className="h-10">
-            <td className="p-2 bg-slate-50 font-black uppercase text-[10px] border-r border-black">ड्रायव्हरचे नाव</td>
-            <td className="p-2 font-bold text-[12px]">{d.driverName}</td>
-            <td className="p-2 bg-slate-50 font-black uppercase text-[10px] border-r border-black">SLIP No.</td>
-            <td className="p-2 font-bold text-[12px]">{d.slipNo}</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <table className="w-full border-collapse border-2 border-black mb-6">
-        <thead>
-          <tr className="bg-slate-800 text-white text-[9px] font-black uppercase text-center h-10">
-            <th className="border-r border-white/20 w-[35px]">SR</th>
-            <th className="border-r border-white/20 w-[65px]">CODE</th>
-            <th className="border-r border-white/20 text-left pl-3">CENTER NAME</th>
-            <th className="border-r border-white/20 w-[110px]">IN/OUT TIME</th>
-            <th className="border-r border-white/20 w-[75px]">CANS E/F</th>
-            <th className="w-[65px]">ICE</th>
-          </tr>
-        </thead>
-        <tbody>
-          {logs.map((log: any, i: number) => (
-            <tr key={i} className="text-[11px] font-bold uppercase text-center h-9 border-b border-black">
-              <td className="border-r border-black bg-slate-50">{i + 1}</td>
-              <td className="border-r border-black truncate px-1">{log.centerCode}</td>
-              <td className="border-r border-black text-left pl-3 font-black text-[12px]">{log.supplierName}</td>
-              <td className="border-r border-black">{log.arrivalTime}-{log.departureTime}</td>
-              <td className="border-r border-black">{log.emptyCans}/{log.fullCans}</td>
-              <td className="">{log.iceUsed}</td>
+      <div className="w-full report-scroll-container">
+        <table className="w-full border-collapse border-2 border-black mb-6">
+          <tbody>
+            <tr className="border-b border-black h-10">
+              <td className="p-2 bg-slate-50 font-black uppercase text-[10px] border-r border-black w-1/4">दुध संकलन रूटचे नाव</td>
+              <td className="p-2 font-bold text-[12px] w-1/4">{d.routeName}</td>
+              <td className="p-2 bg-slate-50 font-black uppercase text-[10px] border-r border-black w-1/4">वाहन नंबर</td>
+              <td className="p-2 font-bold text-[12px] w-1/4">{d.vehicleNumber}</td>
             </tr>
-          ))}
-        </tbody>
-      </table>
+            <tr className="h-10">
+              <td className="p-2 bg-slate-50 font-black uppercase text-[10px] border-r border-black">ड्रायव्हरचे नाव</td>
+              <td className="p-2 font-bold text-[12px]">{d.driverName}</td>
+              <td className="p-2 bg-slate-50 font-black uppercase text-[10px] border-r border-black">SLIP No.</td>
+              <td className="p-2 font-bold text-[12px]">{d.slipNo}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <table className="w-full border-collapse border-2 border-black mb-6 table-auto">
+          <thead>
+            <tr className="bg-slate-800 text-white text-[9px] font-black uppercase text-center h-10">
+              <th className="border-r border-white/20 w-[35px]">SR</th>
+              <th className="border-r border-white/20 w-[60px]">CODE</th>
+              <th className="border-r border-white/20 text-left pl-3">CENTER NAME</th>
+              <th className="border-r border-white/20 w-[100px]">IN/OUT TIME</th>
+              <th className="border-r border-white/20 w-[70px]">CANS E/F</th>
+              <th className="w-[60px]">ICE</th>
+            </tr>
+          </thead>
+          <tbody>
+            {logs.map((log: any, i: number) => (
+              <tr key={i} className="text-[11px] font-bold uppercase text-center h-9 border-b border-black">
+                <td className="border-r border-black bg-slate-50">{i + 1}</td>
+                <td className="border-r border-black truncate px-1">{log.centerCode}</td>
+                <td className="border-r border-black text-left pl-3 font-black text-[12px] min-w-[120px]">{log.supplierName}</td>
+                <td className="border-r border-black">{log.arrivalTime}-{log.departureTime}</td>
+                <td className="border-r border-black">{log.emptyCans}/{log.fullCans}</td>
+                <td className="">{log.iceUsed}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       <div className="w-full space-y-3 mb-10 text-left">
         {d.achievements && <div className="border-2 border-black p-4 rounded-sm bg-emerald-50/5"><span className="font-black uppercase text-emerald-700 block mb-1 text-[10px]">१) आजची मोठी कामगिरी:</span> <p className="text-[12px] font-bold">{d.achievements}</p></div>}
@@ -256,70 +258,72 @@ const BreakdownLayout = ({ report, profileName, profileId }: { report: any, prof
     <div className="bg-white font-sans text-slate-900 border-none w-full p-6 printable-report flex flex-col items-center">
       <ReportHeader title={d.reportHeading || "ब्रेकडाऊन अहवाल"} date={report.date} subName={d.name || profileName} subId={d.idNumber || profileId} shift={d.shift} />
       
-      <div className="w-full border-2 border-black mb-6 overflow-hidden text-left rounded-sm">
-        <div className="bg-slate-800 text-white p-2 text-[10px] font-black uppercase text-center border-b border-black">१) वाहन व ड्रायव्हर माहिती</div>
-        <table className="w-full border-collapse">
-          <tbody>
-            <tr className="border-b border-black h-10">
-              <td className="p-2 bg-slate-50 font-black uppercase text-[9px] border-r border-black w-1/4">रूट नेम</td>
-              <td className="p-2 font-bold text-[11px] w-1/4">{d.routeName}</td>
-              <td className="p-2 bg-slate-50 font-black uppercase text-[9px] border-r border-black w-1/4">वाहन नंबर</td>
-              <td className="p-2 font-bold text-[11px] w-1/4">{d.vehicleNo}</td>
-            </tr>
-            <tr className="border-b border-black h-10">
-              <td className="p-2 bg-slate-50 font-black uppercase text-[9px] border-r border-black">ड्रायव्हर</td>
-              <td className="p-2 font-bold text-[11px]">{d.driverName}</td>
-              <td className="p-2 bg-slate-50 font-black uppercase text-[9px] border-r border-black">मोबाईल</td>
-              <td className="p-2 font-bold text-[11px]">{d.mobile}</td>
-            </tr>
-            <tr className="h-10">
-              <td className="p-2 bg-slate-50 font-black uppercase text-[9px] border-r border-black">बिघाड वेळ</td>
-              <td className="p-2 font-bold text-[11px]">{d.breakdownTime}</td>
-              <td className="p-2 bg-slate-50 font-black uppercase text-[9px] border-r border-black">ठिकाण</td>
-              <td className="p-2 font-bold text-[11px]">{d.location}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div className="w-full border-2 border-black mb-6 text-left p-4 rounded-sm bg-rose-50/5">
-        <h4 className="font-black text-[10px] uppercase border-b border-black pb-1 mb-3 text-rose-700">२) बिघाड व दुरुस्ती तपशील</h4>
-        <p className="text-[13px] font-bold mb-3"><span className="text-[10px] font-black uppercase opacity-60">कारण:</span> {d.reason}</p>
-        {d.detailedReason && <p className="text-[12px] italic mb-4"><span className="text-[10px] font-black uppercase opacity-60">सविस्तर:</span> {d.detailedReason}</p>}
-        <div className="grid grid-cols-2 gap-6 text-[10px] font-black uppercase pt-3 border-t border-black/10">
-          <div>दुरुस्ती खर्च: ₹{d.estimatedRepairCost}</div>
-          <div>पर्यायी गाडी: {d.recoveryVehicleNo || "N/A"}</div>
-        </div>
-      </div>
-
-      {losses && losses.length > 0 && (
-        <div className="w-full border-2 border-black rounded-sm overflow-hidden mb-6">
-          <div className="bg-slate-800 text-white p-2 text-[10px] font-black uppercase text-center border-b border-black">आर्थिक नुकसान तपशील (LOSS LOG)</div>
+      <div className="w-full report-scroll-container">
+        <div className="w-full border-2 border-black mb-6 overflow-hidden text-left rounded-sm">
+          <div className="bg-slate-800 text-white p-2 text-[10px] font-black uppercase text-center border-b border-black">१) वाहन व ड्रायव्हर माहिती</div>
           <table className="w-full border-collapse">
-            <thead>
-              <tr className="bg-slate-100 text-black font-black text-[9px] uppercase text-center h-10">
-                <th className="border-r border-black text-left pl-3">सेंटर/गवळी नाव</th>
-                <th className="border-r border-black w-24">प्रकार</th>
-                <th className="border-r border-black w-20">QTY</th>
-                <th className="w-32">रक्कम (₹)</th>
-              </tr>
-            </thead>
             <tbody>
-              {losses.map((loss: any, idx: number) => (
-                <tr key={idx} className="font-bold text-[11px] uppercase text-center h-10 border-b border-black">
-                  <td className="border-r border-black text-left pl-3 truncate">{loss.centerCode} {loss.centerName}</td>
-                  <td className="border-r border-black">{loss.milkType}</td>
-                  <td className="border-r border-black">{loss.qtyLiters} L</td>
-                  <td className="font-black">₹{loss.lossAmount}</td>
-                </tr>
-              ))}
+              <tr className="border-b border-black h-10">
+                <td className="p-2 bg-slate-50 font-black uppercase text-[9px] border-r border-black w-1/4">रूट नेम</td>
+                <td className="p-2 font-bold text-[11px] w-1/4">{d.routeName}</td>
+                <td className="p-2 bg-slate-50 font-black uppercase text-[9px] border-r border-black w-1/4">वाहन नंबर</td>
+                <td className="p-2 font-bold text-[11px] w-1/4">{d.vehicleNo}</td>
+              </tr>
+              <tr className="border-b border-black h-10">
+                <td className="p-2 bg-slate-50 font-black uppercase text-[9px] border-r border-black">ड्रायव्हर</td>
+                <td className="p-2 font-bold text-[11px]">{d.driverName}</td>
+                <td className="p-2 bg-slate-50 font-black uppercase text-[9px] border-r border-black">मोबाईल</td>
+                <td className="p-2 font-bold text-[11px]">{d.mobile}</td>
+              </tr>
+              <tr className="h-10">
+                <td className="p-2 bg-slate-50 font-black uppercase text-[9px] border-r border-black">बिघाड वेळ</td>
+                <td className="p-2 font-bold text-[11px]">{d.breakdownTime}</td>
+                <td className="p-2 bg-slate-50 font-black uppercase text-[9px] border-r border-black">ठिकाण</td>
+                <td className="p-2 font-bold text-[11px]">{d.location}</td>
+              </tr>
             </tbody>
           </table>
-          <div className="bg-rose-600 text-white p-3 text-right font-black text-[13px] tracking-widest uppercase">
-            एकूण आर्थिक नुकसान: ₹{d.totalLossAmount}
+        </div>
+
+        <div className="w-full border-2 border-black mb-6 text-left p-4 rounded-sm bg-rose-50/5">
+          <h4 className="font-black text-[10px] uppercase border-b border-black pb-1 mb-3 text-rose-700">२) बिघाड व दुरुस्ती तपशील</h4>
+          <p className="text-[13px] font-bold mb-3"><span className="text-[10px] font-black uppercase opacity-60">कारण:</span> {d.reason}</p>
+          {d.detailedReason && <p className="text-[12px] italic mb-4"><span className="text-[10px] font-black uppercase opacity-60">सविस्तर:</span> {d.detailedReason}</p>}
+          <div className="grid grid-cols-2 gap-6 text-[10px] font-black uppercase pt-3 border-t border-black/10">
+            <div>दुरुस्ती खर्च: ₹{d.estimatedRepairCost}</div>
+            <div>पर्यायी गाडी: {d.recoveryVehicleNo || "N/A"}</div>
           </div>
         </div>
-      )}
+
+        {losses && losses.length > 0 && (
+          <div className="w-full border-2 border-black rounded-sm overflow-hidden mb-6">
+            <div className="bg-slate-800 text-white p-2 text-[10px] font-black uppercase text-center border-b border-black">आर्थिक नुकसान तपशील (LOSS LOG)</div>
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="bg-slate-100 text-black font-black text-[9px] uppercase text-center h-10">
+                  <th className="border-r border-black text-left pl-3">सेंटर/गवळी नाव</th>
+                  <th className="border-r border-black w-24">प्रकार</th>
+                  <th className="border-r border-black w-20">QTY</th>
+                  <th className="w-32">रक्कम (₹)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {losses.map((loss: any, idx: number) => (
+                  <tr key={idx} className="font-bold text-[11px] uppercase text-center h-10 border-b border-black">
+                    <td className="border-r border-black text-left pl-3 truncate">{loss.centerCode} {loss.centerName}</td>
+                    <td className="border-r border-black">{loss.milkType}</td>
+                    <td className="border-r border-black">{loss.qtyLiters} L</td>
+                    <td className="font-black">₹{loss.lossAmount}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <div className="bg-rose-600 text-white p-3 text-right font-black text-[13px] tracking-widest uppercase">
+              एकूण आर्थिक नुकसान: ₹{d.totalLossAmount}
+            </div>
+          </div>
+        )}
+      </div>
 
       <div className="w-full mt-auto pt-24 grid grid-cols-2 gap-24 text-center uppercase font-black text-[11px] tracking-widest">
         <div className="border-t-2 border-black pt-3">अधिकारी स्वाक्षरी</div>
@@ -368,72 +372,74 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
         shift={d.shift}
       />
       
-      <div className="w-full border-2 border-black rounded-sm overflow-hidden mb-8 text-left">
-        <table className="w-full border-collapse">
-          <tbody>
-            {orderedEntries.map(([k, v]: any) => (
-              <tr key={k} className="text-[11pt] font-bold border-b border-black last:border-0 h-12">
-                <td className="p-3 bg-slate-100 uppercase font-black border-r border-black w-[260px] text-[10px]">{labelMap[k]}</td>
-                <td className="p-3 whitespace-pre-wrap leading-snug">{String(v)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {(d.cowMilk || d.buffaloMilk || d.cowQty || d.bufQty) && (
-        <div className="w-full mb-8 text-left">
-          <span className="text-[11px] font-black uppercase block border-b-2 border-black pb-2 mb-3">दूध संकलन मॅट्रिक्स (MILK DETAILS):</span>
-          <table className="w-full border-collapse border-2 border-black">
-            <thead>
-              <tr className="bg-slate-800 text-white text-[10px] font-black uppercase text-center h-10">
-                <th className="text-left pl-3">दूध प्रकार</th>
-                <th className="w-36">प्रमाण (L)</th>
-                <th className="w-28">FAT %</th>
-                <th className="w-28">SNF %</th>
-              </tr>
-            </thead>
+      <div className="w-full report-scroll-container">
+        <div className="w-full border-2 border-black rounded-sm overflow-hidden mb-8 text-left">
+          <table className="w-full border-collapse">
             <tbody>
-              <tr className="text-[12px] font-black border-b border-black text-center h-11">
-                <td className="text-left pl-3 bg-slate-50 uppercase text-[10px] border-r border-black">गाय (COW MILK)</td>
-                <td className="border-r border-black">{d.cowMilk?.quantity || d.cowQty || "0"} L</td>
-                <td className="border-r border-black">{d.cowMilk?.fat || d.cowFat || "-"} %</td>
-                <td className="">{d.cowMilk?.snf || d.cowSnf || "-"} %</td>
-              </tr>
-              <tr className="text-[12px] font-black text-center h-11">
-                <td className="text-left pl-3 bg-slate-50 uppercase text-[10px] border-r border-black">म्हेस (BUF MILK)</td>
-                <td className="border-r border-black">{d.buffaloMilk?.quantity || d.bufQty || "0"} L</td>
-                <td className="border-r border-black">{d.buffaloMilk?.fat || d.bufFat || "-"} %</td>
-                <td className="">{d.buffaloMilk?.snf || d.bufSnf || "-"} %</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      )}
-
-      {inventory.length > 0 && (
-        <div className="w-full mb-8 text-left">
-          <span className="text-[11px] font-black uppercase block border-b-2 border-black pb-2 mb-3">साहित्याची यादी (INVENTORY ASSETS):</span>
-          <table className="w-full border-collapse border-2 border-black">
-            <thead>
-              <tr className="bg-slate-800 text-white text-[10px] font-black uppercase h-10 text-center">
-                <th className="text-left pl-3 border-r border-white/20">साहित्य नाव (Item Name)</th>
-                <th className="w-24 border-r border-white/20">नग</th>
-                <th className="w-40">मालकी हक्क</th>
-              </tr>
-            </thead>
-            <tbody>
-              {inventory.map((it: any, i: number) => (
-                <tr key={i} className="text-[11px] font-bold border-b border-black h-10 text-center">
-                  <td className="text-left pl-3 border-r border-black truncate uppercase">{it.name}</td>
-                  <td className="border-r border-black font-black">{it.quantity}</td>
-                  <td className="uppercase text-[9px]">{it.ownership === 'Self' ? 'स्वतःची' : 'डेअरीची'}</td>
+              {orderedEntries.map(([k, v]: any) => (
+                <tr key={k} className="text-[11pt] font-bold border-b border-black last:border-0 h-12">
+                  <td className="p-3 bg-slate-100 uppercase font-black border-r border-black w-[260px] text-[10px]">{labelMap[k]}</td>
+                  <td className="p-3 whitespace-pre-wrap leading-snug">{String(v)}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-      )}
+
+        {(d.cowMilk || d.buffaloMilk || d.cowQty || d.bufQty) && (
+          <div className="w-full mb-8 text-left">
+            <span className="text-[11px] font-black uppercase block border-b-2 border-black pb-2 mb-3">दूध संकलन मॅट्रिक्स (MILK DETAILS):</span>
+            <table className="w-full border-collapse border-2 border-black">
+              <thead>
+                <tr className="bg-slate-800 text-white text-[10px] font-black uppercase text-center h-10">
+                  <th className="text-left pl-3">दूध प्रकार</th>
+                  <th className="w-36">प्रमाण (L)</th>
+                  <th className="w-28">FAT %</th>
+                  <th className="w-28">SNF %</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="text-[12px] font-black border-b border-black text-center h-11">
+                  <td className="text-left pl-3 bg-slate-50 uppercase text-[10px] border-r border-black">गाय (COW MILK)</td>
+                  <td className="border-r border-black">{d.cowMilk?.quantity || d.cowQty || "0"} L</td>
+                  <td className="border-r border-black">{d.cowMilk?.fat || d.cowFat || "-"} %</td>
+                  <td className="">{d.cowMilk?.snf || d.cowSnf || "-"} %</td>
+                </tr>
+                <tr className="text-[12px] font-black text-center h-11">
+                  <td className="text-left pl-3 bg-slate-50 uppercase text-[10px] border-r border-black">म्हेस (BUF MILK)</td>
+                  <td className="border-r border-black">{d.buffaloMilk?.quantity || d.bufQty || "0"} L</td>
+                  <td className="border-r border-black">{d.buffaloMilk?.fat || d.bufFat || "-"} %</td>
+                  <td className="">{d.buffaloMilk?.snf || d.bufSnf || "-"} %</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {inventory.length > 0 && (
+          <div className="w-full mb-8 text-left">
+            <span className="text-[11px] font-black uppercase block border-b-2 border-black pb-2 mb-3">साहित्याची यादी (INVENTORY ASSETS):</span>
+            <table className="w-full border-collapse border-2 border-black">
+              <thead>
+                <tr className="bg-slate-800 text-white text-[10px] font-black uppercase h-10 text-center">
+                  <th className="text-left pl-3 border-r border-white/20">साहित्य नाव (Item Name)</th>
+                  <th className="w-24 border-r border-white/20">नग</th>
+                  <th className="w-40">मालकी हक्क</th>
+                </tr>
+              </thead>
+              <tbody>
+                {inventory.map((it: any, i: number) => (
+                  <tr key={i} className="text-[11px] font-bold border-b border-black h-10 text-center">
+                    <td className="text-left pl-3 border-r border-black truncate uppercase">{it.name}</td>
+                    <td className="border-r border-black font-black">{it.quantity}</td>
+                    <td className="uppercase text-[9px]">{it.ownership === 'Self' ? 'स्वतःची' : 'डेअरीची'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
 
       {(points.length > 0 || remarkPoints.length > 0) && (
         <div className="w-full p-5 border-2 border-black rounded-sm bg-slate-50 mb-8 text-left">
@@ -693,10 +699,12 @@ export default function ReportsPage() {
           <ScrollArea className="max-h-[85vh] p-2 sm:p-4 bg-slate-100 w-full overflow-x-hidden">
             <div className="w-full flex flex-col items-center pb-10">
               {selectedReport && (
-                selectedReport.type === 'Route Allocation Report' ? <RouteAllocationLayout report={selectedReport} profileName={profileName} profileId={profileId} /> :
-                selectedReport.type === 'Route Visit' ? <RouteVisitLayout report={selectedReport} profileName={profileName} profileId={profileId} /> :
-                selectedReport.type === 'Transport Breakdown Report' ? <BreakdownLayout report={selectedReport} profileName={profileName} profileId={profileId} /> :
-                <GenericLayout report={selectedReport} profileName={profileName} profileId={profileId} />
+                <div className="w-full overflow-x-auto">
+                  {selectedReport.type === 'Route Allocation Report' ? <RouteAllocationLayout report={selectedReport} profileName={profileName} profileId={profileId} /> :
+                  selectedReport.type === 'Route Visit' ? <RouteVisitLayout report={selectedReport} profileName={profileName} profileId={profileId} /> :
+                  selectedReport.type === 'Transport Breakdown Report' ? <BreakdownLayout report={selectedReport} profileName={profileName} profileId={profileId} /> :
+                  <GenericLayout report={selectedReport} profileName={profileName} profileId={profileId} />}
+                </div>
               )}
             </div>
           </ScrollArea>
