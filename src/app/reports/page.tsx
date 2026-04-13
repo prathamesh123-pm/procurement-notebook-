@@ -51,8 +51,8 @@ const labelMap: Record<string, string> = {
 
 const ReportHeader = ({ title, date, subName, subId, shift }: any) => (
   <div className="w-full border-b-[3px] border-black pb-4 mb-6 text-center">
-    <h1 className="text-[20pt] sm:text-[24pt] font-black uppercase tracking-tight text-slate-900 leading-tight">{title || "अधिकृत अहवाल"}</h1>
-    <div className="flex flex-col sm:flex-row justify-between items-center text-[10pt] font-black uppercase text-slate-700 tracking-wider mt-4 border-t border-black/10 pt-3 gap-2">
+    <h1 className="text-[18pt] sm:text-[24pt] font-black uppercase tracking-tight text-slate-900 leading-tight">{title || "अधिकृत अहवाल"}</h1>
+    <div className="flex flex-col sm:flex-row justify-between items-center text-[9pt] sm:text-[10pt] font-black uppercase text-slate-700 tracking-wider mt-4 border-t border-black/10 pt-3 gap-2">
       <div className="flex flex-wrap justify-center sm:justify-start gap-x-4 gap-y-1">
         <span className="flex items-center gap-1.5"><FileCheck className="h-3.5 w-3.5" /> सादरकर्ता: {subName}</span>
         {subId && <span className="opacity-70">ID: {subId}</span>}
@@ -66,7 +66,7 @@ const ReportHeader = ({ title, date, subName, subId, shift }: any) => (
 const SectionTitle = ({ icon: Icon, title, color = "text-slate-900" }: any) => (
   <div className="w-full flex items-center gap-2 border-b-2 border-black pb-1 mb-4 mt-6">
     <Icon className={cn("h-4 w-4", color)} />
-    <h3 className={cn("text-[11pt] font-black uppercase tracking-widest", color)}>{title}</h3>
+    <h3 className={cn("text-[10pt] sm:text-[11pt] font-black uppercase tracking-widest", color)}>{title}</h3>
   </div>
 )
 
@@ -76,10 +76,10 @@ const ProfessionalParagraph = ({ label, content, icon: Icon }: { label: string, 
     <div className="mb-6 text-left w-full">
       <div className="flex items-center gap-2 mb-1.5">
         {Icon && <Icon className="h-3.5 w-3.5 text-primary" />}
-        <span className="text-[9pt] font-black uppercase text-primary tracking-widest">{label}</span>
+        <span className="text-[8pt] sm:text-[9pt] font-black uppercase text-primary tracking-widest">{label}</span>
       </div>
-      <div className="p-4 bg-slate-50 border-l-4 border-primary rounded-r-lg shadow-sm">
-        <p className="text-[11pt] font-medium leading-relaxed text-slate-800 whitespace-pre-wrap">{content}</p>
+      <div className="p-3 sm:p-4 bg-slate-50 border-l-4 border-primary rounded-r-lg shadow-sm">
+        <p className="text-[10pt] sm:text-[11pt] font-medium leading-relaxed text-slate-800 whitespace-pre-wrap">{content}</p>
       </div>
     </div>
   )
@@ -93,28 +93,28 @@ const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any
     
     return (
       <div className="w-full mb-6 border-2 border-black overflow-hidden bg-white shadow-sm">
-        <div className="bg-slate-900 text-white p-2 text-[10pt] font-black uppercase text-center border-b-2 border-black tracking-widest">
+        <div className="bg-slate-900 text-white p-2 text-[9pt] sm:text-[10pt] font-black uppercase text-center border-b-2 border-black tracking-widest">
           {title}
         </div>
         <div className="overflow-x-auto w-full">
-          <table className="w-full border-collapse text-[9px]">
+          <table className="w-full border-collapse text-[8px] sm:text-[9px]">
             <thead>
               <tr className="bg-slate-100 font-black uppercase text-center border-b-2 border-black">
-                <th className="border-r border-black p-1.5 w-[40px]">SR</th>
-                <th className="border-r border-black p-1.5 w-[60px]">CODE</th>
-                <th className="border-r border-black p-1.5 text-left pl-3">ROUTE NAME</th>
-                <th className="border-r border-black p-1.5 w-[45px]">REQ</th>
-                <th className="p-1.5 w-[45px]">ALOC</th>
+                <th className="border-r border-black p-1 w-[30px] sm:w-[40px]">SR</th>
+                <th className="border-r border-black p-1 w-[50px] sm:w-[60px]">CODE</th>
+                <th className="border-r border-black p-1 text-left pl-3">ROUTE NAME</th>
+                <th className="border-r border-black p-1 w-[35px] sm:w-[45px]">REQ</th>
+                <th className="p-1 w-[35px] sm:w-[45px]">ALOC</th>
               </tr>
             </thead>
             <tbody>
               {rawData.map((it, i) => (
                 <tr key={i} className="font-bold uppercase text-center border-b border-black last:border-b-0 hover:bg-slate-50">
-                  <td className="border-r border-black p-1.5 bg-slate-50">{i + 1}</td>
-                  <td className="border-r border-black p-1.5 font-black">{it.routeCode || it.routeId}</td>
-                  <td className="border-r border-black p-1.5 text-left pl-3 truncate max-w-[150px]">{it.routeName}</td>
-                  <td className="border-r border-black font-black text-[12pt] text-primary">{it.requested ? '√' : ''}</td>
-                  <td className="p-1.5 font-black text-[12pt] text-emerald-600">{it.allocated ? '√' : ''}</td>
+                  <td className="border-r border-black p-1 bg-slate-50">{i + 1}</td>
+                  <td className="border-r border-black p-1 font-black">{it.routeCode || it.routeId}</td>
+                  <td className="border-r border-black p-1 text-left pl-3 truncate max-w-[120px] sm:max-w-[200px]">{it.routeName}</td>
+                  <td className="border-r border-black font-black text-[10pt] sm:text-[12pt] text-primary">{it.requested ? '√' : ''}</td>
+                  <td className="p-1 font-black text-[10pt] sm:text-[12pt] text-emerald-600">{it.allocated ? '√' : ''}</td>
                 </tr>
               ))}
             </tbody>
@@ -125,14 +125,14 @@ const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any
   };
 
   return (
-    <div className="bg-white font-sans text-slate-900 border-none w-full p-4 sm:p-8 printable-report flex flex-col items-center">
+    <div className="bg-white font-sans text-slate-900 border-none w-full p-3 sm:p-8 printable-report flex flex-col items-center">
       <ReportHeader title={d.reportHeading || "ERP दैनिक वाटप अहवाल"} date={report.date} subName={d.name || profileName} subId={d.idNumber || profileId} shift={d.shift} />
       
-      <SectionTitle icon={Layers} title="मुख्य वाटप तपशील (DATA ALLOCATION)" />
+      <SectionTitle icon={Layers} title="मुख्य वाटप तपशील (ALLOCATION)" />
       
       <div className="w-full space-y-4">
-        {renderExcelSection("Can Route Morning (Internal)", d.morningRoutes)}
-        {renderExcelSection("Can Route Evening (Internal)", d.eveningRoutes)}
+        {renderExcelSection("Can Route Morning", d.morningRoutes)}
+        {renderExcelSection("Can Route Evening", d.eveningRoutes)}
         {renderExcelSection("Internal Tanker Route", d.tankerRoutes)}
         {renderExcelSection("External Can Route", d.extCanRoutes)}
         {renderExcelSection("External Tanker Route", d.extTankerRoutes)}
@@ -144,7 +144,7 @@ const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any
         icon={AlertCircle} 
       />
 
-      <div className="w-full mt-12 pt-16 grid grid-cols-2 gap-10 text-center uppercase font-black text-[10pt] tracking-widest border-t border-slate-100">
+      <div className="w-full mt-12 pt-12 grid grid-cols-2 gap-10 text-center uppercase font-black text-[9pt] sm:text-[10pt] tracking-widest border-t border-slate-100">
         <div className="border-t-2 border-black pt-3">अधिकारी स्वाक्षरी</div>
         <div className="border-t-2 border-black pt-3">सुपरवायझर स्वाक्षरी</div>
       </div>
@@ -157,14 +157,14 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
   
   if (report.type === 'Official Document') {
     return (
-      <div className="bg-white font-sans text-slate-900 w-full p-6 sm:p-10 printable-report flex flex-col">
+      <div className="bg-white font-sans text-slate-900 w-full p-4 sm:p-10 printable-report flex flex-col">
         <div className="w-full text-center mb-12">
-           <h1 className="text-[24pt] font-black uppercase tracking-tight border-b-4 border-black pb-2 inline-block">
+           <h1 className="text-[20pt] sm:text-[24pt] font-black uppercase tracking-tight border-b-4 border-black pb-2 inline-block">
              {d.title || "अधिकृत दस्तऐवज"}
            </h1>
         </div>
         <div 
-          className="w-full prose prose-sm sm:prose-lg max-w-none text-left text-[12pt] leading-relaxed text-slate-900"
+          className="w-full prose prose-sm sm:prose-lg max-w-none text-left text-[11pt] sm:text-[12pt] leading-relaxed text-slate-900"
           dangerouslySetInnerHTML={{ __html: d.content || "" }} 
         />
       </div>
@@ -178,7 +178,7 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
     .map(key => [key, d[key]]);
 
   return (
-    <div className="bg-white font-sans text-slate-900 w-full p-4 sm:p-8 printable-report flex flex-col items-center">
+    <div className="bg-white font-sans text-slate-900 w-full p-3 sm:p-8 printable-report flex flex-col items-center">
       <ReportHeader 
         title={d.reportHeading || report.type} 
         date={report.date} 
@@ -188,13 +188,13 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
       />
       
       <SectionTitle icon={Info} title="१) मुख्य माहिती तपशील (DETAILS)" />
-      <div className="responsive-table-wrapper w-full border-2 border-black mb-8">
-        <table className="w-full border-collapse">
+      <div className="responsive-table-wrapper w-full border-2 border-black mb-8 overflow-x-auto">
+        <table className="w-full border-collapse min-w-[300px]">
           <tbody>
             {orderedEntries.map(([k, v]: any) => (
-              <tr key={k} className="text-[10pt] font-bold border-b border-black last:border-0 hover:bg-slate-50">
-                <td className="p-3 bg-slate-100 uppercase font-black border-r border-black w-1/3 text-[9pt] text-slate-700">{labelMap[k]}</td>
-                <td className="p-3 whitespace-pre-wrap">{String(v)}</td>
+              <tr key={k} className="text-[9pt] sm:text-[10pt] font-bold border-b border-black last:border-0 hover:bg-slate-50">
+                <td className="p-2 sm:p-3 bg-slate-100 uppercase font-black border-r border-black w-1/3 text-[8pt] sm:text-[9pt] text-slate-700">{labelMap[k]}</td>
+                <td className="p-2 sm:p-3 whitespace-pre-wrap">{String(v)}</td>
               </tr>
             ))}
           </tbody>
@@ -209,7 +209,7 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
         <ProfessionalParagraph label="केलेली कार्यवाही / शिफारसी" content={d.actionsTaken || d.actionTaken} icon={Lightbulb} />
       </div>
 
-      <div className="w-full mt-12 pt-16 grid grid-cols-2 gap-10 text-center uppercase font-black text-[10pt] tracking-widest border-t border-slate-100">
+      <div className="w-full mt-12 pt-12 grid grid-cols-2 gap-10 text-center uppercase font-black text-[9pt] sm:text-[10pt] tracking-widest border-t border-slate-100">
         <div className="border-t-2 border-black pt-3">अधिकारी स्वाक्षरी</div>
         <div className="border-t-2 border-black pt-3">सुपरवायझर स्वाक्षरी</div>
       </div>
@@ -295,7 +295,7 @@ export default function ReportsPage() {
   if (!mounted) return <div className="p-20 text-center font-black uppercase text-[10px] opacity-50">लोड होत आहे...</div>
 
   return (
-    <div className="max-w-6xl mx-auto px-2 pb-20 animate-in fade-in duration-700 overflow-x-hidden">
+    <div className="max-w-6xl mx-auto px-2 pb-20 animate-in fade-in duration-700">
       <div className="flex flex-col sm:flex-row items-center justify-between border-b-2 border-primary/20 pb-4 mb-6 gap-4">
         <div className="space-y-0.5 text-center sm:text-left">
           <h2 className="text-xl font-black text-slate-900 flex items-center justify-center sm:justify-start gap-2 uppercase tracking-tight">
@@ -389,21 +389,21 @@ export default function ReportsPage() {
       </div>
 
       <Dialog open={isViewOpen} onOpenChange={setIsViewOpen}>
-        <DialogContent className="max-w-[950px] w-[98vw] p-0 rounded-2xl overflow-hidden border-none shadow-2xl bg-white flex flex-col h-[90vh]">
+        <DialogContent className="max-w-[950px] w-[98vw] p-0 rounded-2xl overflow-hidden border-none shadow-2xl bg-white flex flex-col h-[90vh] md:h-auto md:max-h-[95vh]">
           <DialogHeader className="p-4 bg-white border-b flex flex-row items-center justify-between no-print w-full shrink-0">
             <DialogTitle className="text-[11px] font-black uppercase tracking-widest flex items-center gap-2">
               <FileText className="h-5 w-5 text-primary" /> अहवाल प्रिव्ह्यू (OFFICIAL PREVIEW)
             </DialogTitle>
             <div className="flex gap-2">
-              <Button size="sm" onClick={() => window.print()} className="h-9 px-4 font-black uppercase rounded-xl bg-slate-900 text-white text-[10px] shadow-lg"><Printer className="h-4 w-4 mr-2" /> प्रिंट करा</Button>
+              <Button size="sm" onClick={() => window.print()} className="h-9 px-4 font-black uppercase rounded-xl bg-slate-900 text-white text-[10px] shadow-lg"><Printer className="h-4 w-4 mr-2" /> प्रिंट</Button>
               <Button size="icon" variant="ghost" onClick={() => setIsViewOpen(false)} className="h-9 w-9 text-slate-400 hover:bg-slate-100 rounded-full"><X className="h-5 w-5" /></Button>
             </div>
           </DialogHeader>
           
-          <ScrollArea className="flex-1 bg-slate-100 w-full overflow-y-auto">
-            <div className="w-full flex flex-col items-center p-2 sm:p-6 pb-20">
+          <ScrollArea className="flex-1 bg-slate-100 w-full">
+            <div className="report-preview-container">
               {selectedReport && (
-                <div className="w-full bg-white shadow-2xl overflow-hidden rounded-sm">
+                <div className="w-full max-w-[210mm] bg-white shadow-2xl overflow-hidden rounded-sm min-h-screen origin-top transform-gpu">
                   {selectedReport.type === 'Route Allocation Report' ? 
                     <RouteAllocationLayout report={selectedReport} profileName={profileName} profileId={profileId} /> :
                     <GenericLayout report={selectedReport} profileName={profileName} profileId={profileId} />

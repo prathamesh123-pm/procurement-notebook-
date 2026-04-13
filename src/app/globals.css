@@ -79,6 +79,12 @@ h1, h2, h3, h4 {
 ::-webkit-scrollbar-track { @apply bg-transparent; }
 ::-webkit-scrollbar-thumb { @apply bg-slate-200 rounded-full; }
 
+/* Fixed overlapping and scrolling for mobile preview */
+.report-preview-container {
+  @apply w-full overflow-x-auto overflow-y-auto bg-slate-100 flex flex-col items-center p-2 sm:p-6;
+  -webkit-overflow-scrolling: touch;
+}
+
 @media print {
   @page {
     size: A4;
@@ -112,7 +118,7 @@ h1, h2, h3, h4 {
     background-color: white !important;
     box-shadow: none !important;
     text-shadow: none !important;
-    position: static !important; /* Prevent overlapping */
+    position: static !important;
   }
 
   .printable-report {
@@ -146,14 +152,12 @@ h1, h2, h3, h4 {
     page-break-after: auto !important;
   }
 
-  /* Responsive Grid Fix for Print */
   .print-excel-grid {
     display: grid !important;
     grid-template-columns: 1fr 1fr !important;
     gap: 10px !important;
   }
 
-  /* Prevent ScrollArea from clipping content in print */
   [data-radix-scroll-area-viewport] {
     overflow: visible !important;
     height: auto !important;
