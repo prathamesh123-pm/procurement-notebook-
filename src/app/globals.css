@@ -82,7 +82,7 @@ h1, h2, h3, h4 {
 @media print {
   @page {
     size: A4;
-    margin: 15mm;
+    margin: 10mm;
   }
   
   html, body {
@@ -97,6 +97,7 @@ h1, h2, h3, h4 {
     print-color-adjust: exact !important;
   }
 
+  /* Force elements to be visible during print */
   .no-print, button, header, nav, footer, .sidebar, 
   [role="dialog"] > div:first-child, .fixed.inset-0, .bg-black\/80 {
     display: none !important;
@@ -111,35 +112,33 @@ h1, h2, h3, h4 {
     background-color: white !important;
     box-shadow: none !important;
     text-shadow: none !important;
+    position: static !important; /* Prevent overlapping */
   }
 
   .printable-report {
-    position: static !important;
     display: block !important;
     width: 100% !important;
-    max-width: none !important;
+    max-width: 100% !important;
     margin: 0 !important;
-    padding: 0 !important;
+    padding: 5mm !important;
     border: none !important;
-    z-index: auto !important;
-    transform: none !important;
     overflow: visible !important;
+    transform: none !important;
   }
 
   table {
     width: 100% !important;
     border-collapse: collapse !important;
     page-break-inside: auto !important;
-    margin-bottom: 15px !important;
+    margin-bottom: 10px !important;
     table-layout: auto !important;
   }
 
   th, td {
-    padding: 6px !important;
+    padding: 4pt !important;
     border: 1px solid black !important;
     font-size: 10pt !important;
     word-wrap: break-word !important;
-    overflow-wrap: break-word !important;
   }
 
   tr {
@@ -147,31 +146,16 @@ h1, h2, h3, h4 {
     page-break-after: auto !important;
   }
 
-  .grid, .flex {
-    display: flex !important;
-    flex-direction: row !important;
-    flex-wrap: wrap !important;
-  }
-
+  /* Responsive Grid Fix for Print */
   .print-excel-grid {
-    display: flex !important;
-    flex-direction: row !important;
-    flex-wrap: nowrap !important;
-    gap: 0 !important;
-  }
-  
-  .print-excel-grid > * {
-    width: 50% !important;
-    flex-basis: 50% !important;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important;
   }
 
-  [role="dialog"] {
-    position: static !important;
-    display: block !important;
-    width: 100% !important;
-    background: white !important;
+  /* Prevent ScrollArea from clipping content in print */
+  [data-radix-scroll-area-viewport] {
     overflow: visible !important;
-    border: none !important;
-    box-shadow: none !important;
+    height: auto !important;
   }
 }
