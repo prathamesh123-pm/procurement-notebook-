@@ -454,7 +454,7 @@ export default function ReportsPage() {
         {filteredReports.length === 0 && (
           <div className="p-20 text-center bg-white rounded-2xl border-2 border-dashed border-slate-100 flex flex-col items-center gap-3">
             <Archive className="h-10 w-10 text-slate-200" />
-            <p className="text-muted-foreground font-black uppercase text-[11px] opacity-40 tracking-[0.2em] italic">एकही अहवाल सापडला नाही.</p>
+            <p className="text-muted-foreground font-black uppercase text-[11px] opacity-40 tracking-[0.2em] italic">एकही अहवाल सापडले नाहीत.</p>
           </div>
         )}
       </div>
