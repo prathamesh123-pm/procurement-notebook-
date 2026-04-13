@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -69,19 +70,8 @@ h1, h2, h3, h4 {
 
 /* Fixed overlapping and scrolling for mobile preview */
 .report-preview-container {
-  @apply w-full min-h-full overflow-visible bg-slate-100 flex flex-col items-center p-2 sm:p-6;
+  @apply w-full min-h-full bg-slate-100 flex flex-col items-center overflow-auto;
   -webkit-overflow-scrolling: touch;
-}
-
-/* Responsive Scaling for Mobile Profile Reports */
-@media (max-width: 768px) {
-  .printable-report {
-    transform: scale(0.95);
-    transform-origin: top center;
-    width: 100% !important;
-    max-width: 100% !important;
-    padding: 1rem !important;
-  }
 }
 
 @media print {

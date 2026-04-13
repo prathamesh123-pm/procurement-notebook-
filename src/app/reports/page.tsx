@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
@@ -6,12 +7,12 @@ import { Card } from "@/components/ui/card"
 import { 
   Archive, Search, X, Printer, Trash2, FileEdit, Truck, 
   ShieldAlert, ClipboardCheck, Plus, MapPin, FileText,
-  Briefcase, FileSignature, CheckCircle2, Microscope, Layers, Calendar, ChevronRight, AlertCircle, Info, BookOpen, Lightbulb, FileCheck, Clock, Milk
+  Briefcase, FileSignature, CheckCircle2, Microscope, Layers, Calendar, ChevronRight, AlertCircle, AlertTriangle, Info, BookOpen, Lightbulb, FileCheck, Clock, Milk, TriangleAlert
 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { ScrollArea } from "@/components/ui/scroll-area"
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { useUser, useFirestore, useCollection, useDoc, useMemoFirebase, deleteDocumentNonBlocking } from "@/firebase"
 import { collection, doc } from "firebase/firestore"
 import Link from "next/link"
@@ -471,15 +472,17 @@ export default function ReportsPage() {
           </DialogHeader>
           
           <ScrollArea className="flex-1 bg-slate-100 w-full overflow-auto">
-            <div className="report-preview-container">
+            <div className="report-preview-container p-2 sm:p-6 overflow-x-auto overflow-y-visible flex flex-col items-center">
               {selectedReport && (
-                <div className="w-full max-w-[210mm] bg-white shadow-2xl overflow-visible rounded-sm min-h-screen origin-top transform-gpu">
+                <div className="w-[210mm] min-w-[210mm] bg-white shadow-2xl overflow-visible rounded-sm min-h-[297mm] origin-top transform-gpu mb-10">
                   {selectedReport.type === 'Route Allocation Report' ? 
                     <RouteAllocationLayout report={selectedReport} profileName={profileName} profileId={profileId} /> :
                     <GenericLayout report={selectedReport} profileName={profileName} profileId={profileId} />
                   }
                 </div>
               )}
+              <ScrollBar orientation="horizontal" />
+              <ScrollBar orientation="vertical" />
             </div>
           </ScrollArea>
         </DialogContent>
