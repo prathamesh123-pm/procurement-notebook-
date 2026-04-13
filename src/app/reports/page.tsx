@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
@@ -305,7 +304,7 @@ export default function ReportsPage() {
   }, [db, user])
 
   const { data: firestoreReports, isLoading } = useCollection(reportsQuery)
-  const { data: userData } = useDoc(userDataRef)
+  const { data: userData } = useDoc(userDocRef)
 
   const profileName = userData?.displayName || user?.displayName || "सादरकर्ता";
   const profileId = userData?.employeeId || "---";
