@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
@@ -6,7 +7,7 @@ import { Card } from "@/components/ui/card"
 import { 
   Archive, Search, X, Printer, Trash2, FileEdit, Truck, 
   ShieldAlert, ClipboardCheck, Plus, MapPin, FileText,
-  Briefcase, FileSignature, CheckCircle2, Microscope, Layers, Calendar, ChevronRight, AlertCircle, Info, BookOpen, Lightbulb, FileCheck
+  Briefcase, FileSignature, CheckCircle2, Microscope, Layers, Calendar, ChevronRight, AlertCircle, Info, BookOpen, Lightbulb, FileCheck, Clock, Milk
 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
@@ -33,6 +34,7 @@ const labelMap: Record<string, string> = {
   address: "पत्ता",
   routeName: "रूट नाव",
   vehicleNo: "गाडी नंबर",
+  vehicleNumber: "वाहन क्र.",
   driverName: "ड्रायव्हर",
   breakdownTime: "बिघाड वेळ",
   location: "ठिकाण",
@@ -46,17 +48,21 @@ const labelMap: Record<string, string> = {
   snf: "SNF (%)",
   result: "निकाल",
   totalLossAmount: "आर्थिक नुकसान (₹)",
-  dailyProblems: "प्रॉब्लेम्स / निरीक्षणे"
+  dailyProblems: "प्रॉब्लेम्स / निरीक्षणे",
+  slipNo: "SLIP No.",
+  visitPerson: "भेट दिलेली व्यक्ती",
+  visitPurpose: "भेटीचा उद्देश",
+  officeTaskSubject: "कामाचा विषय"
 };
 
 const ReportHeader = ({ title, date, subName, subId, shift }: any) => (
   <div className="w-full border-b-[3px] border-black pb-4 mb-6 text-center">
-    <h1 className="text-[18pt] sm:text-[24pt] font-black uppercase tracking-tight text-slate-900 leading-tight">{title || "अधिकृत अहवाल"}</h1>
+    <h1 className="text-[18pt] sm:text-[22pt] font-black uppercase tracking-tight text-slate-900 leading-tight">{title || "अधिकृत अहवाल"}</h1>
     <div className="flex flex-col sm:flex-row justify-between items-center text-[9pt] sm:text-[10pt] font-black uppercase text-slate-700 tracking-wider mt-4 border-t border-black/10 pt-3 gap-2">
       <div className="flex flex-wrap justify-center sm:justify-start gap-x-4 gap-y-1">
         <span className="flex items-center gap-1.5"><FileCheck className="h-3.5 w-3.5" /> सादरकर्ता: {subName}</span>
         {subId && <span className="opacity-70">ID: {subId}</span>}
-        {shift && <Badge variant="outline" className="h-5 text-[8px] border-black/20">{shift}</Badge>}
+        {shift && <Badge variant="outline" className="h-5 text-[8px] border-black/20 font-black">{shift}</Badge>}
       </div>
       <span className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" /> दिनांक: {date}</span>
     </div>
@@ -87,24 +93,20 @@ const ProfessionalParagraph = ({ label, content, icon: Icon }: { label: string, 
 
 const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any, profileName: string, profileId: string }) => {
   const d = report.fullData || {};
-  
   const renderExcelSection = (title: string, rawData: any[]) => {
     if (!rawData || rawData.length === 0) return null;
-    
     return (
-      <div className="w-full mb-6 border-2 border-black overflow-hidden bg-white shadow-sm">
-        <div className="bg-slate-900 text-white p-2 text-[9pt] sm:text-[10pt] font-black uppercase text-center border-b-2 border-black tracking-widest">
-          {title}
-        </div>
+      <div className="w-full mb-6 border-2 border-black overflow-hidden bg-white">
+        <div className="bg-slate-900 text-white p-2 text-[9pt] font-black uppercase text-center border-b-2 border-black tracking-widest">{title}</div>
         <div className="overflow-x-auto w-full">
           <table className="w-full border-collapse text-[8px] sm:text-[9px]">
             <thead>
               <tr className="bg-slate-100 font-black uppercase text-center border-b-2 border-black">
-                <th className="border-r border-black p-1 w-[30px] sm:w-[40px]">SR</th>
-                <th className="border-r border-black p-1 w-[50px] sm:w-[60px]">CODE</th>
+                <th className="border-r border-black p-1 w-[35px]">SR</th>
+                <th className="border-r border-black p-1 w-[60px]">CODE</th>
                 <th className="border-r border-black p-1 text-left pl-3">ROUTE NAME</th>
-                <th className="border-r border-black p-1 w-[35px] sm:w-[45px]">REQ</th>
-                <th className="p-1 w-[35px] sm:w-[45px]">ALOC</th>
+                <th className="border-r border-black p-1 w-[40px]">REQ</th>
+                <th className="p-1 w-[40px]">ALOC</th>
               </tr>
             </thead>
             <tbody>
@@ -112,9 +114,9 @@ const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any
                 <tr key={i} className="font-bold uppercase text-center border-b border-black last:border-b-0 hover:bg-slate-50">
                   <td className="border-r border-black p-1 bg-slate-50">{i + 1}</td>
                   <td className="border-r border-black p-1 font-black">{it.routeCode || it.routeId}</td>
-                  <td className="border-r border-black p-1 text-left pl-3 truncate max-w-[120px] sm:max-w-[200px]">{it.routeName}</td>
-                  <td className="border-r border-black font-black text-[10pt] sm:text-[12pt] text-primary">{it.requested ? '√' : ''}</td>
-                  <td className="p-1 font-black text-[10pt] sm:text-[12pt] text-emerald-600">{it.allocated ? '√' : ''}</td>
+                  <td className="border-r border-black p-1 text-left pl-3 truncate max-w-[150px]">{it.routeName}</td>
+                  <td className="border-r border-black font-black text-[11pt] text-primary">{it.requested ? '√' : ''}</td>
+                  <td className="p-1 font-black text-[11pt] text-emerald-600">{it.allocated ? '√' : ''}</td>
                 </tr>
               ))}
             </tbody>
@@ -125,11 +127,9 @@ const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any
   };
 
   return (
-    <div className="bg-white font-sans text-slate-900 border-none w-full p-3 sm:p-8 printable-report flex flex-col items-center">
+    <div className="bg-white font-sans text-slate-900 w-full p-4 sm:p-8 printable-report flex flex-col items-center">
       <ReportHeader title={d.reportHeading || "ERP दैनिक वाटप अहवाल"} date={report.date} subName={d.name || profileName} subId={d.idNumber || profileId} shift={d.shift} />
-      
       <SectionTitle icon={Layers} title="मुख्य वाटप तपशील (ALLOCATION)" />
-      
       <div className="w-full space-y-4">
         {renderExcelSection("Can Route Morning", d.morningRoutes)}
         {renderExcelSection("Can Route Evening", d.eveningRoutes)}
@@ -137,14 +137,8 @@ const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any
         {renderExcelSection("External Can Route", d.extCanRoutes)}
         {renderExcelSection("External Tanker Route", d.extTankerRoutes)}
       </div>
-
-      <ProfessionalParagraph 
-        label="आजचे महत्त्वाचे प्रॉब्लेम्स / निरीक्षणे" 
-        content={d.dailyProblems} 
-        icon={AlertCircle} 
-      />
-
-      <div className="w-full mt-12 pt-12 grid grid-cols-2 gap-10 text-center uppercase font-black text-[9pt] sm:text-[10pt] tracking-widest border-t border-slate-100">
+      <ProfessionalParagraph label="आजचे महत्त्वाचे प्रॉब्लेम्स / निरीक्षणे" content={d.dailyProblems} icon={AlertCircle} />
+      <div className="w-full mt-12 pt-12 grid grid-cols-2 gap-10 text-center uppercase font-black text-[10pt] tracking-widest border-t border-slate-100">
         <div className="border-t-2 border-black pt-3">अधिकारी स्वाक्षरी</div>
         <div className="border-t-2 border-black pt-3">सुपरवायझर स्वाक्षरी</div>
       </div>
@@ -157,59 +151,136 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
   
   if (report.type === 'Official Document') {
     return (
-      <div className="bg-white font-sans text-slate-900 w-full p-4 sm:p-10 printable-report flex flex-col">
-        <div className="w-full text-center mb-12">
-           <h1 className="text-[20pt] sm:text-[24pt] font-black uppercase tracking-tight border-b-4 border-black pb-2 inline-block">
-             {d.title || "अधिकृत दस्तऐवज"}
-           </h1>
-        </div>
-        <div 
-          className="w-full prose prose-sm sm:prose-lg max-w-none text-left text-[11pt] sm:text-[12pt] leading-relaxed text-slate-900"
-          dangerouslySetInnerHTML={{ __html: d.content || "" }} 
-        />
+      <div className="bg-white font-sans text-slate-900 w-full p-6 sm:p-12 printable-report flex flex-col">
+        <div className="w-full text-center mb-12"><h1 className="text-[22pt] font-black uppercase tracking-tight border-b-4 border-black pb-2 inline-block">{d.title || "अधिकृत दस्तऐवज"}</h1></div>
+        <div className="w-full prose prose-sm sm:prose-lg max-w-none text-left text-[12pt] leading-relaxed text-slate-900" dangerouslySetInnerHTML={{ __html: d.content || "" }} />
       </div>
     );
   }
 
-  const excludeFields = ["reportHeading", "name", "repName", "shift", "idNumber", "repId", "routeVisitLogs", "centerLosses", "morningRoutes", "eveningRoutes", "tankerRoutes", "extCanRoutes", "extTankerRoutes", "points", "remarkPoints", "dailyProblems", "equipment", "cowMilk", "buffaloMilk", "cowQty", "cowFat", "cowSnf", "bufQty", "bufFat", "bufSnf", "summary", "achievements", "problems", "actionsTaken", "actionTaken", "isWordDoc", "content", "title", "type"];
+  const excludeFields = ["reportHeading", "name", "repName", "shift", "idNumber", "repId", "routeVisitLogs", "centerLosses", "morningRoutes", "eveningRoutes", "tankerRoutes", "extCanRoutes", "extTankerRoutes", "points", "remarkPoints", "dailyProblems", "equipment", "cowMilk", "buffaloMilk", "cowQty", "cowFat", "cowSnf", "bufQty", "bufFat", "bufSnf", "summary", "achievements", "problems", "actionsTaken", "actionTaken", "isWordDoc", "content", "title", "type", "visitDiscussion", "officeTaskDetails"];
 
   const orderedEntries = Object.keys(d)
     .filter(key => d[key] && labelMap[key] && !excludeFields.includes(key))
     .map(key => [key, d[key]]);
 
+  const renderLogsTable = () => {
+    if (d.routeVisitLogs && d.routeVisitLogs.length > 0) {
+      return (
+        <div className="w-full mb-8 border-2 border-black overflow-hidden shadow-sm">
+          <div className="bg-slate-800 text-white p-2 text-[10pt] font-black uppercase text-center tracking-widest">व्हिजिट लॉग (VISIT LOG)</div>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse text-[9pt]">
+              <thead>
+                <tr className="bg-slate-100 font-black uppercase border-b-2 border-black">
+                  <th className="border-r border-black p-2 w-[40px]">SR</th>
+                  <th className="border-r border-black p-2 w-[60px]">CODE</th>
+                  <th className="border-r border-black p-2 text-left">CENTER NAME</th>
+                  <th className="border-r border-black p-2 w-[100px]">IN / OUT</th>
+                  <th className="border-r border-black p-2 w-[80px]">CANS (E/F)</th>
+                  <th className="p-2">ICE USED</th>
+                </tr>
+              </thead>
+              <tbody>
+                {d.routeVisitLogs.map((it: any, i: number) => (
+                  <tr key={i} className="font-bold uppercase border-b border-black last:border-0 hover:bg-slate-50">
+                    <td className="border-r border-black p-2 text-center bg-slate-50">{i + 1}</td>
+                    <td className="border-r border-black p-2 text-center font-black">{it.centerCode}</td>
+                    <td className="border-r border-black p-2 text-left">{it.supplierName}</td>
+                    <td className="border-r border-black p-2 text-center">{it.arrivalTime} - {it.departureTime}</td>
+                    <td className="border-r border-black p-2 text-center">{it.emptyCans} / {it.fullCans}</td>
+                    <td className="p-2 text-center">{it.iceUsed}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )
+    }
+    return null;
+  }
+
+  const renderLossLogTable = () => {
+    if (d.centerLosses && d.centerLosses.length > 0) {
+      return (
+        <div className="w-full mb-8 border-2 border-black overflow-hidden shadow-sm">
+          <div className="bg-rose-800 text-white p-2 text-[10pt] font-black uppercase text-center tracking-widest">नुकसान तपशील (LOSS LOG)</div>
+          <table className="w-full border-collapse text-[9pt]">
+            <thead>
+              <tr className="bg-slate-100 font-black uppercase border-b-2 border-black">
+                <th className="border-r border-black p-2">केंद्राचे नाव</th>
+                <th className="border-r border-black p-2">प्रकार</th>
+                <th className="border-r border-black p-2">लिटर</th>
+                <th className="p-2">रक्कम (₹)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {d.centerLosses.map((it: any, i: number) => (
+                <tr key={i} className="font-bold uppercase border-b border-black last:border-0">
+                  <td className="border-r border-black p-2">{it.centerName} ({it.centerCode})</td>
+                  <td className="border-r border-black p-2 text-center">{it.milkType}</td>
+                  <td className="border-r border-black p-2 text-center">{it.qtyLiters}</td>
+                  <td className="p-2 text-right font-black text-rose-600">₹{it.lossAmount}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )
+    }
+    return null;
+  }
+
   return (
-    <div className="bg-white font-sans text-slate-900 w-full p-3 sm:p-8 printable-report flex flex-col items-center">
-      <ReportHeader 
-        title={d.reportHeading || report.type} 
-        date={report.date} 
-        subName={d.name || d.repName || profileName} 
-        subId={d.idNumber || d.repId || profileId}
-        shift={d.shift}
-      />
+    <div className="bg-white font-sans text-slate-900 w-full p-4 sm:p-10 printable-report flex flex-col items-center">
+      <ReportHeader title={d.reportHeading || report.type} date={report.date} subName={d.name || d.repName || profileName} subId={d.idNumber || d.repId || profileId} shift={d.shift} />
       
       <SectionTitle icon={Info} title="१) मुख्य माहिती तपशील (DETAILS)" />
-      <div className="responsive-table-wrapper w-full border-2 border-black mb-8 overflow-x-auto">
-        <table className="w-full border-collapse min-w-[300px]">
+      <div className="w-full border-2 border-black mb-8 overflow-hidden">
+        <table className="w-full border-collapse">
           <tbody>
             {orderedEntries.map(([k, v]: any) => (
-              <tr key={k} className="text-[9pt] sm:text-[10pt] font-bold border-b border-black last:border-0 hover:bg-slate-50">
-                <td className="p-2 sm:p-3 bg-slate-100 uppercase font-black border-r border-black w-1/3 text-[8pt] sm:text-[9pt] text-slate-700">{labelMap[k]}</td>
-                <td className="p-2 sm:p-3 whitespace-pre-wrap">{String(v)}</td>
+              <tr key={k} className="text-[10pt] font-bold border-b border-black last:border-0 hover:bg-slate-50">
+                <td className="p-3 bg-slate-100 uppercase font-black border-r border-black w-1/3 text-[9pt] text-slate-700">{labelMap[k]}</td>
+                <td className="p-3 whitespace-pre-wrap">{String(v)}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
 
-      <SectionTitle icon={BookOpen} title="२) सविस्तर अहवाल व शिफारसी (NARRATIVE)" />
-      <div className="w-full text-left space-y-2">
-        <ProfessionalParagraph label="प्रस्तावना / सारांश" content={d.summary} icon={Info} />
-        <ProfessionalParagraph label="महत्त्वाची कामगिरी / निरीक्षणे" content={d.achievements} icon={CheckCircle2} />
-        <ProfessionalParagraph label="समस्या व अडथळे" content={d.problems} icon={AlertCircle} />
-        <ProfessionalParagraph label="केलेली कार्यवाही / शिफारसी" content={d.actionsTaken || d.actionTaken} icon={Lightbulb} />
-      </div>
+      {renderLogsTable()}
+      {renderLossLogTable()}
 
-      <div className="w-full mt-12 pt-12 grid grid-cols-2 gap-10 text-center uppercase font-black text-[9pt] sm:text-[10pt] tracking-widest border-t border-slate-100">
+      {(d.summary || d.achievements || d.problems || d.actionsTaken || d.actionTaken || d.visitDiscussion || d.officeTaskDetails) && (
+        <>
+          <SectionTitle icon={BookOpen} title="२) सविस्तर अहवाल व कामकाज (NARRATIVE)" />
+          <div className="w-full text-left space-y-2">
+            <ProfessionalParagraph label="प्रस्तावना / सारांश" content={d.summary} icon={Info} />
+            <ProfessionalParagraph label="झालेली चर्चा / तपशील" content={d.visitDiscussion || d.officeTaskDetails} icon={FileText} />
+            <ProfessionalParagraph label="महत्त्वाची कामगिरी" content={d.achievements} icon={CheckCircle2} />
+            <ProfessionalParagraph label="समस्येचे स्वरूप" content={d.problems} icon={AlertTriangle} />
+            <ProfessionalParagraph label="केलेली कार्यवाही / शिफारसी" content={d.actionsTaken || d.actionTaken} icon={Lightbulb} />
+          </div>
+        </>
+      )}
+
+      { (d.remarkPoints || d.points) && (
+        <div className="w-full mt-6 text-left">
+          <SectionTitle icon={Layers} title="३) विशेष निरीक्षणे (POINTS)" />
+          <div className="p-4 bg-slate-50 border-2 border-black rounded-lg space-y-2">
+            {(d.remarkPoints || d.points).map((p: string, i: number) => (
+              <div key={i} className="flex gap-3 text-[10pt] font-bold text-slate-800">
+                <span className="text-primary">{i + 1}.</span>
+                <span>{p}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div className="w-full mt-auto pt-16 grid grid-cols-2 gap-20 text-center uppercase font-black text-[10pt] tracking-widest border-t border-slate-100">
         <div className="border-t-2 border-black pt-3">अधिकारी स्वाक्षरी</div>
         <div className="border-t-2 border-black pt-3">सुपरवायझर स्वाक्षरी</div>
       </div>
@@ -234,7 +305,7 @@ export default function ReportsPage() {
   }, [db, user])
 
   const { data: firestoreReports, isLoading } = useCollection(reportsQuery)
-  const { data: userData } = useDoc(userDocRef)
+  const { data: userData } = useDoc(userDataRef)
 
   const profileName = userData?.displayName || user?.displayName || "सादरकर्ता";
   const profileId = userData?.employeeId || "---";
@@ -389,7 +460,7 @@ export default function ReportsPage() {
       </div>
 
       <Dialog open={isViewOpen} onOpenChange={setIsViewOpen}>
-        <DialogContent className="max-w-[950px] w-[98vw] p-0 rounded-2xl overflow-hidden border-none shadow-2xl bg-white flex flex-col h-[90vh] md:h-auto md:max-h-[95vh]">
+        <DialogContent className="max-w-[950px] w-[98vw] p-0 rounded-2xl overflow-hidden border-none shadow-2xl bg-white flex flex-col h-[95vh] md:h-auto md:max-h-[98vh]">
           <DialogHeader className="p-4 bg-white border-b flex flex-row items-center justify-between no-print w-full shrink-0">
             <DialogTitle className="text-[11px] font-black uppercase tracking-widest flex items-center gap-2">
               <FileText className="h-5 w-5 text-primary" /> अहवाल प्रिव्ह्यू (OFFICIAL PREVIEW)
@@ -400,10 +471,10 @@ export default function ReportsPage() {
             </div>
           </DialogHeader>
           
-          <ScrollArea className="flex-1 bg-slate-100 w-full">
+          <ScrollArea className="flex-1 bg-slate-100 w-full overflow-auto">
             <div className="report-preview-container">
               {selectedReport && (
-                <div className="w-full max-w-[210mm] bg-white shadow-2xl overflow-hidden rounded-sm min-h-screen origin-top transform-gpu">
+                <div className="w-full max-w-[210mm] bg-white shadow-2xl overflow-visible rounded-sm min-h-screen origin-top transform-gpu">
                   {selectedReport.type === 'Route Allocation Report' ? 
                     <RouteAllocationLayout report={selectedReport} profileName={profileName} profileId={profileId} /> :
                     <GenericLayout report={selectedReport} profileName={profileName} profileId={profileId} />

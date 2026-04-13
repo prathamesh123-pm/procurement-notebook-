@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -81,7 +82,7 @@ h1, h2, h3, h4 {
 
 /* Fixed overlapping and scrolling for mobile preview */
 .report-preview-container {
-  @apply w-full overflow-x-auto overflow-y-auto bg-slate-100 flex flex-col items-center p-2 sm:p-6;
+  @apply w-full min-h-full overflow-visible bg-slate-100 flex flex-col items-center p-2 sm:p-6;
   -webkit-overflow-scrolling: touch;
 }
 
@@ -136,12 +137,12 @@ h1, h2, h3, h4 {
     width: 100% !important;
     border-collapse: collapse !important;
     page-break-inside: auto !important;
-    margin-bottom: 10px !important;
+    margin-bottom: 15px !important;
     table-layout: auto !important;
   }
 
   th, td {
-    padding: 4pt !important;
+    padding: 6pt !important;
     border: 1px solid black !important;
     font-size: 10pt !important;
     word-wrap: break-word !important;
