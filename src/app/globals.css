@@ -44,15 +44,13 @@
     @apply h-8 text-[12px] font-bold bg-slate-50 border border-slate-100 rounded-md px-2 focus-visible:ring-primary shadow-inner w-full outline-none transition-all;
   }
 
-  /* Robust Responsive Table Wrapper - Added Horizontal Scroll */
   .responsive-table-wrapper {
     @apply w-full overflow-x-auto rounded-lg border border-slate-200 bg-white mb-4;
     -webkit-overflow-scrolling: touch;
   }
 
-  /* Ultimate Printable Table Styling */
   .printable-report-table {
-    @apply w-full border-collapse border-2 border-black mb-4;
+    @apply w-full border-collapse border border-black mb-4;
     table-layout: auto;
   }
 
@@ -81,20 +79,10 @@ h1, h2, h3, h4 {
 ::-webkit-scrollbar-track { @apply bg-transparent; }
 ::-webkit-scrollbar-thumb { @apply bg-slate-200 rounded-full; }
 
-/* 
- * ULTIMATE ROBUST PRINT ENGINE v71.0
- * Fixes overlapping and ensures scrolling visibility on screen
- */
-@media screen {
-  .report-scroll-container {
-    @apply w-full overflow-x-auto;
-  }
-}
-
 @media print {
   @page {
     size: A4;
-    margin: 10mm;
+    margin: 15mm;
   }
   
   html, body {
@@ -109,7 +97,6 @@ h1, h2, h3, h4 {
     print-color-adjust: exact !important;
   }
 
-  /* Hide all UI elements */
   .no-print, button, header, nav, footer, .sidebar, 
   [role="dialog"] > div:first-child, .fixed.inset-0, .bg-black\/80 {
     display: none !important;
@@ -117,7 +104,6 @@ h1, h2, h3, h4 {
     pointer-events: none !important;
   }
 
-  /* Global Container for Print */
   .printable-report, .printable-report * {
     visibility: visible !important;
     opacity: 1 !important;
@@ -143,17 +129,22 @@ h1, h2, h3, h4 {
   table {
     width: 100% !important;
     border-collapse: collapse !important;
-    page-break-inside: avoid !important;
+    page-break-inside: auto !important;
     margin-bottom: 15px !important;
-    table-layout: auto !important; /* Changed to auto for print */
+    table-layout: auto !important;
   }
 
   th, td {
     padding: 6px !important;
     border: 1px solid black !important;
-    font-size: 9pt !important;
+    font-size: 10pt !important;
     word-wrap: break-word !important;
     overflow-wrap: break-word !important;
+  }
+
+  tr {
+    page-break-inside: avoid !important;
+    page-break-after: auto !important;
   }
 
   .grid, .flex {
