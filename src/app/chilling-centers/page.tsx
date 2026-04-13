@@ -230,92 +230,89 @@ export default function ChillingCentersPage() {
                   <p className="text-[10pt] sm:text-[11pt] font-black text-muted-foreground uppercase tracking-widest mt-1">ID: {selectedCenter.code} | चिलिंग सेंटर सविस्तर अहवाल</p>
                 </div>
                 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
-                  <table className="w-full border-2 border-black">
-                    <thead><tr className="bg-slate-800 text-white"><th colSpan={2} className="p-1.5 text-[10px] uppercase font-black">१) प्राथमिक माहिती</th></tr></thead>
-                    <tbody>
-                      <tr className="border-b border-black"><td className="p-2 bg-slate-50 font-black uppercase text-[9px] w-[120px]">मालक नाव</td><td className="p-2 font-bold text-[11px]">{selectedCenter.ownerName || "-"}</td></tr>
-                      <tr className="border-b border-black"><td className="p-2 bg-slate-50 font-black uppercase text-[9px]">मोबाईल</td><td className="p-2 font-bold text-[11px]">{selectedCenter.mobile || "-"}</td></tr>
-                      <tr className="border-b border-black"><td className="p-2 bg-slate-50 font-black uppercase text-[9px]">पत्ता</td><td className="p-2 font-bold text-[11px] leading-tight">{selectedCenter.address || "-"}</td></tr>
-                      <tr><td className="p-2 bg-slate-50 font-black uppercase text-[9px]">FSSAI क्र.</td><td className="p-2 font-bold text-[11px]">{selectedCenter.fssaiNumber || "-"}</td></tr>
-                    </tbody>
-                  </table>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-10 w-full mb-6">
+                  <div className="space-y-4">
+                    <h4 className="text-[11px] font-black uppercase text-primary tracking-[0.2em] border-b-2 border-black pb-1 mb-2">१) प्राथमिक माहिती (PRIMARY)</h4>
+                    <div className="space-y-2 text-[12px] font-bold">
+                      <div className="flex justify-between border-b border-dashed border-black/20 pb-1"><span className="text-muted-foreground uppercase text-[10px]">मालक नाव</span><span>{selectedCenter.ownerName || "-"}</span></div>
+                      <div className="flex justify-between border-b border-dashed border-black/20 pb-1"><span className="text-muted-foreground uppercase text-[10px]">मोबाईल</span><span>{selectedCenter.mobile || "-"}</span></div>
+                      <div className="flex flex-col gap-1"><span className="text-muted-foreground uppercase text-[10px]">पत्ता</span><span className="leading-tight">{selectedCenter.address || "-"}</span></div>
+                      <div className="flex justify-between border-b border-dashed border-black/20 pb-1"><span className="text-muted-foreground uppercase text-[10px]">FSSAI क्र.</span><span>{selectedCenter.fssaiNumber || "-"}</span></div>
+                    </div>
+                  </div>
 
-                  <table className="w-full border-2 border-black">
-                    <thead><tr className="bg-slate-800 text-white"><th colSpan={2} className="p-1.5 text-[10px] uppercase font-black">२) तांत्रिक सुविधा</th></tr></thead>
+                  <div className="space-y-4">
+                    <h4 className="text-[11px] font-black uppercase text-primary tracking-[0.2em] border-b-2 border-black pb-1 mb-2">२) तांत्रिक सुविधा (TECHNICAL)</h4>
+                    <div className="space-y-2 text-[12px] font-bold">
+                      <div className="flex justify-between border-b border-dashed border-black/20 pb-1"><span className="text-muted-foreground uppercase text-[10px]">BMC | IBT</span><span>{selectedCenter.hasBmc ? "YES" : "NO"} | {selectedCenter.hasIbt ? "YES" : "NO"}</span></div>
+                      <div className="flex justify-between border-b border-dashed border-black/20 pb-1"><span className="text-muted-foreground uppercase text-[10px]">पाणी स्रोत</span><span>{selectedCenter.waterSource}</span></div>
+                      <div className="flex justify-between border-b border-dashed border-black/20 pb-1"><span className="text-muted-foreground uppercase text-[10px]">पॉवर बॅकअप</span><span>{selectedCenter.powerBackup}</span></div>
+                      <div className="flex justify-between border-b border-dashed border-black/20 pb-1"><span className="text-muted-foreground uppercase text-[10px]">स्वच्छता ग्रेड</span><span className="text-emerald-600 font-black">{selectedCenter.hygieneGrade} GRADE</span></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-10 w-full mb-6">
+                  <div className="space-y-4">
+                    <h4 className="text-[11px] font-black uppercase text-primary tracking-[0.2em] border-b-2 border-black pb-1 mb-2">३) टाक्यांची यादी (TANKS)</h4>
+                    <table className="w-full border-collapse border border-black shadow-sm">
+                      <thead>
+                        <tr className="bg-slate-100"><th className="p-2 border border-black text-left text-[9px] uppercase font-black">टाकी नाव</th><th className="p-2 border border-black text-right text-[9px] uppercase font-black">क्षमता (L)</th></tr>
+                      </thead>
+                      <tbody>
+                        {(selectedCenter.tanks || []).map((t, idx) => (
+                          <tr key={idx} className="border-b border-black last:border-0"><td className="p-2 border border-black text-[11px] font-bold uppercase">{t.label}</td><td className="p-2 border border-black text-right text-[11px] font-black">{t.capacity} L</td></tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  <div className="space-y-4">
+                    <h4 className="text-[11px] font-black uppercase text-rose-800 tracking-[0.2em] border-b-2 border-black pb-1 mb-2">४) टँकर लॉग (TANKER LOG)</h4>
+                    <table className="w-full border-collapse border border-black shadow-sm">
+                      <thead>
+                        <tr className="bg-rose-50"><th className="p-2 border border-black text-left text-[8px] font-black uppercase">टँकर क्र.</th><th className="p-2 border border-black text-center text-[8px] font-black uppercase">वेळ</th><th className="p-2 border border-black text-right text-[8px] font-black uppercase">दूध (L)</th></tr>
+                      </thead>
+                      <tbody>
+                        {(selectedCenter.tankerLogs || []).map((tl, idx) => (
+                          <tr key={idx} className="border-b border-black last:border-0 font-bold text-[10px]"><td className="p-2 border border-black">{tl.tankerNo}</td><td className="p-2 border border-black text-center">{tl.arrivalTime}-{tl.departureTime}</td><td className="p-2 border border-black text-right font-black">{tl.qtyFilled} L</td></tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <div className="space-y-4 w-full">
+                  <h4 className="text-[11px] font-black uppercase text-blue-800 tracking-[0.2em] border-b-2 border-black pb-1 mb-2">५) दूध संकलन सारांश (MILK SUMMARY)</h4>
+                  <table className="w-full border-collapse border-2 border-black text-center">
+                    <thead>
+                      <tr className="bg-blue-800 text-white"><th className="p-2 border border-black text-left text-[9px] uppercase font-black">दूध प्रकार</th><th className="p-2 border border-black uppercase text-[9px] font-black">एकूण प्रमाण (L)</th><th className="p-2 border border-black uppercase text-[9px] font-black">FAT %</th><th className="p-2 border border-black uppercase text-[9px] font-black">SNF %</th></tr>
+                    </thead>
                     <tbody>
-                      <tr className="border-b border-black"><td className="p-2 bg-slate-50 font-black uppercase text-[9px] w-[120px]">BMC | IBT</td><td className="p-2 font-black text-[11px]">{selectedCenter.hasBmc ? "YES" : "NO"} | {selectedCenter.hasIbt ? "YES" : "NO"}</td></tr>
-                      <tr className="border-b border-black"><td className="p-2 bg-slate-50 font-black uppercase text-[9px]">पाणी | पॉवर</td><td className="p-2 font-bold text-[11px]">{selectedCenter.waterSource} | {selectedCenter.powerBackup}</td></tr>
-                      <tr className="border-b border-black"><td className="p-2 bg-slate-50 font-black uppercase text-[9px]">स्वच्छता ग्रेड</td><td className="p-2 font-black text-emerald-600 text-[11px]">{selectedCenter.hygieneGrade} GRADE</td></tr>
-                      <tr><td className="p-2 bg-slate-50 font-black uppercase text-[9px]">सप्लायर संख्या</td><td className="p-2 font-black text-[11px]">{selectedCenter.supplierCount}</td></tr>
+                      <tr className="text-[11px] font-bold">
+                        <td className="p-2 border border-black text-left bg-slate-50 uppercase font-black text-[9px]">गाय (COW MILK)</td>
+                        <td className="p-2 border border-black font-black">{selectedCenter.cowMilk?.quantity || 0} L</td>
+                        <td className="p-2 border border-black">{selectedCenter.cowMilk?.fat || "-"} %</td>
+                        <td className="p-2 border border-black">{selectedCenter.cowMilk?.snf || "-"} %</td>
+                      </tr>
+                      <tr className="text-[11px] font-bold">
+                        <td className="p-2 border border-black text-left bg-slate-50 uppercase font-black text-[9px]">म्हेस (BUF MILK)</td>
+                        <td className="p-2 border border-black font-black">{selectedCenter.buffaloMilk?.quantity || 0} L</td>
+                        <td className="p-2 border border-black">{selectedCenter.buffaloMilk?.fat || "-"} %</td>
+                        <td className="p-2 border border-black">{selectedCenter.buffaloMilk?.snf || "-"} %</td>
+                      </tr>
                     </tbody>
                   </table>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
-                  <table className="w-full border-2 border-black">
-                    <thead>
-                      <tr className="bg-slate-800 text-white"><th colSpan={2} className="p-1.5 text-[10px] uppercase font-black">३) टाक्यांची यादी (TANKS)</th></tr>
-                      <tr className="bg-slate-100 border-b border-black"><th className="p-2 text-left text-[9px] uppercase font-black">टाकी नाव</th><th className="p-2 text-right text-[9px] uppercase font-black">क्षमता (L)</th></tr>
-                    </thead>
-                    <tbody>
-                      {(selectedCenter.tanks || []).map((t, idx) => (
-                        <tr key={idx} className="border-b border-black last:border-0"><td className="p-2 text-[11px] font-bold uppercase">{t.label}</td><td className="p-2 text-right text-[11px] font-black">{t.capacity} L</td></tr>
-                      ))}
-                      {(!selectedCenter.tanks || selectedCenter.tanks.length === 0) && (
-                        <tr><td colSpan={2} className="p-4 text-center italic text-[10px] opacity-50">टाक्यांची माहिती उपलब्ध नाही.</td></tr>
-                      )}
-                    </tbody>
-                  </table>
-                  <table className="w-full border-2 border-black">
-                    <thead>
-                      <tr className="bg-rose-800 text-white"><th colSpan={3} className="p-1.5 text-[10px] uppercase font-black">४) टँकर लॉग (TANKER LOG)</th></tr>
-                      <tr className="bg-rose-50 border-b border-black"><th className="p-2 text-left text-[8px] font-black uppercase">टँकर क्र.</th><th className="p-2 text-center text-[8px] font-black uppercase">वेळ</th><th className="p-2 text-right text-[8px] font-black uppercase">दूध (L)</th></tr>
-                    </thead>
-                    <tbody>
-                      {(selectedCenter.tankerLogs || []).map((tl, idx) => (
-                        <tr key={idx} className="border-b border-black last:border-0 font-bold text-[10px]"><td className="p-2">{tl.tankerNo}</td><td className="p-2 text-center">{tl.arrivalTime}-{tl.departureTime}</td><td className="p-2 text-right font-black">{tl.qtyFilled} L</td></tr>
-                      ))}
-                      {(!selectedCenter.tankerLogs || selectedCenter.tankerLogs.length === 0) && (
-                        <tr><td colSpan={3} className="p-4 text-center italic text-[10px] opacity-50">टँकर लॉग उपलब्ध नाही.</td></tr>
-                      )}
-                    </tbody>
-                  </table>
+                <div className="grid grid-cols-6 gap-2 w-full mt-4">
+                  {[
+                    {l: 'ETP', v: selectedCenter.hasEtp}, {l: 'SOLAR', v: selectedCenter.hasSolar}, 
+                    {l: 'HOT WATER', v: selectedCenter.hasHotWater}, {l: 'DRAINAGE', v: selectedCenter.hasDrainage},
+                    {l: 'LAB', v: selectedCenter.hasLab}, {l: 'UNIFORM', v: selectedCenter.staffUniform}
+                  ].map((it, i) => (
+                    <div key={i} className="p-2 border-2 border-black text-center rounded bg-slate-50"><p className="text-[7px] font-black uppercase mb-1">{it.l}</p><p className="text-[9px] font-black">{it.v ? 'YES' : 'NO'}</p></div>
+                  ))}
                 </div>
-
-                <table className="w-full border-2 border-black text-center">
-                  <thead><tr className="bg-blue-800 text-white"><th colSpan={4} className="p-1.5 text-[10px] uppercase font-black">५) दूध संकलन मॅट्रिक्स (MILK SUMMARY)</th></tr></thead>
-                  <tbody>
-                    <tr className="bg-slate-50 border-b border-black font-black uppercase text-[9px]"><td className="p-2 text-left">दूध प्रकार</td><td className="p-2">एकूण प्रमाण (L)</td><td className="p-2">FAT %</td><td className="p-2">SNF %</td></tr>
-                    <tr className="border-b border-black text-[11px] font-bold">
-                      <td className="p-2 text-left bg-slate-50/50 uppercase font-black text-[9px]">गाय (COW MILK)</td>
-                      <td className="p-2 font-black">{selectedCenter.cowMilk?.quantity || 0} L</td>
-                      <td className="p-2">{selectedCenter.cowMilk?.fat || "-"} %</td>
-                      <td className="p-2">{selectedCenter.cowMilk?.snf || "-"} %</td>
-                    </tr>
-                    <tr className="text-[11px] font-bold">
-                      <td className="p-2 text-left bg-slate-50/50 uppercase font-black text-[9px]">म्हेस (BUF MILK)</td>
-                      <td className="p-2 font-black">{selectedCenter.buffaloMilk?.quantity || 0} L</td>
-                      <td className="p-2">{selectedCenter.buffaloMilk?.fat || "-"} %</td>
-                      <td className="p-2">{selectedCenter.buffaloMilk?.snf || "-"} %</td>
-                    </tr>
-                  </tbody>
-                </table>
-
-                <table className="w-full border-2 border-black">
-                  <thead><tr className="bg-slate-800 text-white"><th colSpan={6} className="p-1.5 text-[10px] uppercase font-black">६) तांत्रिक व ऑडिट स्टेटस</th></tr></thead>
-                  <tbody>
-                    <tr className="text-[8px] font-black uppercase bg-slate-50 text-center border-b border-black"><td>ETP</td><td>SOLAR</td><td>HOT WATER</td><td>DRAINAGE</td><td>LAB</td><td>UNIFORM</td></tr>
-                    <tr className="text-[10px] font-black text-center h-10">
-                      <td>{selectedCenter.hasEtp ? "YES" : "NO"}</td>
-                      <td>{selectedCenter.hasSolar ? "YES" : "NO"}</td>
-                      <td>{selectedCenter.hasHotWater ? "YES" : "NO"}</td>
-                      <td>{selectedCenter.hasDrainage ? "YES" : "NO"}</td>
-                      <td>{selectedCenter.hasLab ? "YES" : "NO"}</td>
-                      <td>{selectedCenter.staffUniform ? "YES" : "NO"}</td>
-                    </tr>
-                  </tbody>
-                </table>
 
                 <div className="w-full mt-auto pt-20 grid grid-cols-2 gap-20 text-center uppercase font-black text-[11pt] tracking-widest">
                   <div className="border-t-2 border-black pt-3">प्रादेशिक अधिकारी</div>
