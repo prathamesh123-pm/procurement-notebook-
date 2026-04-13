@@ -79,13 +79,13 @@ h1, h2, h3, h4 {
 ::-webkit-scrollbar-thumb { @apply bg-slate-200 rounded-full; }
 
 /* 
- * NUCLEAR PRINT ENGINE v30.0 - PHOTO MATCH OPTIMIZED
- * Fixes grids, tables, and centered alignment for professional reports.
+ * NUCLEAR PRINT ENGINE v40.0 - TABLE GRID OPTIMIZED
+ * Fixes grids, tables, and removes black backdrop for professional reports.
  */
 @media print {
   @page {
     size: A4;
-    margin: 5mm;
+    margin: 10mm;
   }
   
   html, body {
@@ -100,6 +100,15 @@ h1, h2, h3, h4 {
     print-color-adjust: exact !important;
   }
 
+  /* KILL THE BLACK BACKDROP */
+  .fixed.inset-0.bg-black\/80,
+  [role="dialog"] > div:first-child,
+  .bg-black\/80 {
+    display: none !important;
+    background: transparent !important;
+    opacity: 0 !important;
+  }
+
   .printable-report, .printable-report * {
     visibility: visible !important;
     opacity: 1 !important;
@@ -109,28 +118,34 @@ h1, h2, h3, h4 {
   }
 
   .printable-report {
-    position: relative !important;
-    width: 200mm !important;
-    max-width: 200mm !important;
+    position: absolute !important;
+    left: 0 !important;
+    right: 0 !important;
+    top: 0 !important;
+    width: 190mm !important;
+    max-width: 190mm !important;
     margin: 0 auto !important;
     padding: 0 !important;
     border: none !important;
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
-    top: 0 !important;
+    z-index: 9999 !important;
   }
 
-  /* Structural Overrides for Grid/Flex in Print */
-  .printable-report .grid { display: grid !important; }
-  .printable-report .flex { display: flex !important; }
-  .printable-report .grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  /* Force grid display in print */
+  .printable-report .grid { 
+    display: grid !important; 
+  }
+  .printable-report .grid-cols-2 { 
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important; 
+  }
   
   .printable-report table {
     display: table !important;
     width: 100% !important;
     border-collapse: collapse !important;
-    border: 1px solid black !important;
+    border: 1.5px solid black !important;
     table-layout: fixed !important;
   }
 
@@ -138,26 +153,25 @@ h1, h2, h3, h4 {
   .printable-report th, .printable-report td {
     display: table-cell !important;
     border: 1px solid black !important;
-    padding: 2px !important;
-    font-size: 8pt !important;
+    padding: 4px !important;
+    font-size: 9pt !important;
     overflow: hidden !important;
   }
 
-  /* Dark headers for Excel style */
-  .printable-report .bg-slate-800,
-  .printable-report .bg-black {
-    background-color: #333 !important;
-    color: white !important;
+  .printable-report .bg-slate-100,
+  .printable-report .bg-slate-50,
+  .printable-report .bg-muted\/10 {
+    background-color: #f1f5f9 !important;
   }
 
-  /* Hide all UI elements */
+  /* Hide UI elements */
   .no-print, button, header, nav, footer, .sidebar, 
-  [role="dialog"] [class*="Close"],
-  .fixed.inset-0.z-50 {
+  [role="dialog"] button,
+  .fixed.inset-0.z-50:not(:has(.printable-report)) {
     display: none !important;
   }
 
-  /* Force content container to expand */
+  /* Expansion */
   div { 
     overflow: visible !important; 
     max-height: none !important;

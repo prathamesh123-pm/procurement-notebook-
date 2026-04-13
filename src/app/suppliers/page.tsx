@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect, useMemo, Suspense } from "react"
@@ -175,7 +174,7 @@ function SuppliersContent() {
         </div>
       </div>
 
-      <Card className="border shadow-2xl rounded-3xl overflow-hidden bg-white border-muted-foreground/10 p-3">
+      <Card className="border shadow-2xl rounded-3xl overflow-hidden bg-white border-muted-foreground/10 p-3 no-print">
         <div className="flex flex-col sm:flex-row gap-3 items-center">
           <div className="relative flex-1 w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
@@ -209,53 +208,71 @@ function SuppliersContent() {
 
             <div className="w-full border-b-4 border-black pb-2 mb-4 text-center">
               <h3 className="text-[18pt] font-black uppercase text-primary tracking-[0.1em]">{selectedSupplier.name}</h3>
-              <p className="text-[10pt] font-black text-muted-foreground uppercase">आयडी: {selectedSupplier.supplierId} | {selectedSupplier.supplierType === 'Center' ? 'संकलन केंद्र' : 'गवळी / सप्लायर'} प्रोफाईल</p>
+              <p className="text-[10pt] font-black text-muted-foreground uppercase">आयडी: {selectedSupplier.supplierId} | {selectedSupplier.supplierType} प्रोफाईल</p>
             </div>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full mb-4 text-left">
-              <div className="space-y-3">
-                <h4 className="text-[10px] font-black uppercase text-primary tracking-widest border-b-2 border-black pb-0.5 mb-1">१) प्राथमिक माहिती (PRIMARY)</h4>
-                <div className="space-y-1.5 text-[11px] font-bold">
-                  <div className="flex justify-between border-b border-dashed border-black/20 pb-0.5"><span className="text-muted-foreground uppercase text-[9px]">ऑपरेटर</span><span>{selectedSupplier.operatorName || "-"}</span></div>
-                  <div className="flex justify-between border-b border-dashed border-black/20 pb-0.5"><span className="text-muted-foreground uppercase text-[9px]">मोबाईल</span><span>{selectedSupplier.mobile || "-"}</span></div>
-                  <div className="flex flex-col gap-0.5"><span className="text-muted-foreground uppercase text-[9px]">पत्ता</span><span className="leading-tight">{selectedSupplier.address || "-"}</span></div>
-                </div>
+            <div className="grid grid-cols-2 gap-4 w-full mb-4">
+              <div className="border-[1.5px] border-black rounded-sm overflow-hidden">
+                <div className="bg-slate-800 text-white p-1 text-[10px] font-black uppercase text-center border-b border-black">१) प्राथमिक माहिती</div>
+                <table className="w-full border-collapse">
+                  <tbody>
+                    <tr className="border-b border-black"><td className="p-2 bg-slate-50 font-black uppercase text-[9px] w-[120px]">ऑपरेटर</td><td className="p-2 font-bold text-[11px]">{selectedSupplier.operatorName || "-"}</td></tr>
+                    <tr className="border-b border-black"><td className="p-2 bg-slate-50 font-black uppercase text-[9px]">मोबाईल</td><td className="p-2 font-bold text-[11px]">{selectedSupplier.mobile || "-"}</td></tr>
+                    <tr><td className="p-2 bg-slate-50 font-black uppercase text-[9px]">पत्ता</td><td className="p-2 font-bold text-[11px] leading-tight">{selectedSupplier.address || "-"}</td></tr>
+                  </tbody>
+                </table>
               </div>
 
-              <div className="space-y-3">
-                <h4 className="text-[10px] font-black uppercase text-primary tracking-widest border-b-2 border-black pb-0.5 mb-1">२) परवाना व तांत्रिक (TECHNICAL)</h4>
-                <div className="space-y-1.5 text-[11px] font-bold">
-                  <div className="flex justify-between border-b border-dashed border-black/20 pb-0.5"><span className="text-muted-foreground uppercase text-[9px]">FSSAI क्र.</span><span>{selectedSupplier.fssaiNumber || "-"}</span></div>
-                  <div className="flex justify-between border-b border-dashed border-black/20 pb-0.5"><span className="text-muted-foreground uppercase text-[9px]">काटा ब्रँड</span><span>{selectedSupplier.scaleBrand || "-"}</span></div>
-                  <div className="flex justify-between border-b border-dashed border-black/20 pb-0.5"><span className="text-muted-foreground uppercase text-[9px]">मशीन ब्रँड</span><span>{selectedSupplier.fatMachineBrand || "-"}</span></div>
-                  <div className="flex justify-between border-b border-dashed border-black/20 pb-0.5"><span className="text-muted-foreground uppercase text-[9px]">बॅटरी स्थिती</span><span>{selectedSupplier.batteryCondition || "-"}</span></div>
-                </div>
+              <div className="border-[1.5px] border-black rounded-sm overflow-hidden">
+                <div className="bg-slate-800 text-white p-1 text-[10px] font-black uppercase text-center border-b border-black">२) परवाना व तांत्रिक</div>
+                <table className="w-full border-collapse">
+                  <tbody>
+                    <tr className="border-b border-black"><td className="p-2 bg-slate-50 font-black uppercase text-[9px] w-[120px]">FSSAI क्र.</td><td className="p-2 font-bold text-[11px]">{selectedSupplier.fssaiNumber || "-"}</td></tr>
+                    <tr className="border-b border-black"><td className="p-2 bg-slate-50 font-black uppercase text-[9px]">काटा ब्रँड</td><td className="p-2 font-bold text-[11px]">{selectedSupplier.scaleBrand || "-"}</td></tr>
+                    <tr><td className="p-2 bg-slate-50 font-black uppercase text-[9px]">मशीन ब्रँड</td><td className="p-2 font-bold text-[11px]">{selectedSupplier.fatMachineBrand || "-"}</td></tr>
+                  </tbody>
+                </table>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full mb-4 text-left">
-              <div className="space-y-3">
-                <h4 className="text-[10px] font-black uppercase text-primary tracking-widest border-b-2 border-black pb-0.5 mb-1">३) व्यावसायिक माहिती (BUSINESS)</h4>
-                <div className="space-y-1.5 text-[11px] font-bold">
-                  <div className="flex justify-between border-b border-dashed border-black/20 pb-0.5"><span className="text-muted-foreground uppercase text-[9px]">पेमेंट सायकल</span><span>{selectedSupplier.paymentCycle || "10 Days"}</span></div>
-                  <div className="flex justify-between border-b border-dashed border-black/20 pb-0.5"><span className="text-muted-foreground uppercase text-[9px]">जागा</span><span>{selectedSupplier.spaceOwnership === 'Self' ? 'स्वतःची' : 'भाड्याची'}</span></div>
-                  <div className="flex justify-between border-b border-dashed border-black/20 pb-0.5"><span className="text-muted-foreground uppercase text-[9px]">स्वच्छता ग्रेड</span><span className="font-black text-emerald-600">{selectedSupplier.hygieneGrade || "A"}</span></div>
-                  <div className="flex justify-between border-b border-dashed border-black/20 pb-0.5"><span className="text-muted-foreground uppercase text-[9px]">बर्फ लाद्या</span><span>{selectedSupplier.iceBlocks || 0}</span></div>
-                </div>
+            <div className="grid grid-cols-2 gap-4 w-full mb-4">
+              <div className="border-[1.5px] border-black rounded-sm overflow-hidden">
+                <div className="bg-slate-800 text-white p-1 text-[10px] font-black uppercase text-center border-b border-black">३) व्यावसायिक माहिती</div>
+                <table className="w-full border-collapse">
+                  <tbody>
+                    <tr className="border-b border-black"><td className="p-2 bg-slate-50 font-black uppercase text-[9px] w-[120px]">पेमेंट सायकल</td><td className="p-2 font-bold text-[11px]">{selectedSupplier.paymentCycle || "10 Days"}</td></tr>
+                    <tr className="border-b border-black"><td className="p-2 bg-slate-50 font-black uppercase text-[9px]">जागा मालकी</td><td className="p-2 font-bold text-[11px]">{selectedSupplier.spaceOwnership === 'Self' ? 'स्वतःची' : 'भाड्याची'}</td></tr>
+                    <tr><td className="p-2 bg-slate-50 font-black uppercase text-[9px]">स्वच्छता ग्रेड</td><td className="p-2 font-black text-emerald-600 text-[11px]">{selectedSupplier.hygieneGrade || "A"} GRADE</td></tr>
+                  </tbody>
+                </table>
               </div>
 
-              <div className="space-y-3">
-                <h4 className="text-[10px] font-black uppercase text-blue-600 tracking-widest border-b-2 border-black pb-0.5 mb-1">४) दूध संकलन सारांश (MILK)</h4>
-                <div className="grid grid-cols-1 gap-2">
-                  <div className="p-2 rounded border border-black flex justify-between items-center bg-blue-50/30">
-                    <span className="text-[9px] font-black uppercase text-blue-600">गाय (COW)</span>
-                    <span className="text-sm font-black">{selectedSupplier.cowMilk?.quantity || 0}L <span className="text-[9px] opacity-60 ml-1">(F:{selectedSupplier.cowMilk?.fat} S:{selectedSupplier.cowMilk?.snf})</span></span>
-                  </div>
-                  <div className="p-2 rounded border border-black flex justify-between items-center bg-amber-50/30">
-                    <span className="text-[9px] font-black uppercase text-amber-600">म्हेस (BUF)</span>
-                    <span className="text-sm font-black">{selectedSupplier.buffaloMilk?.quantity || 0}L <span className="text-[9px] opacity-60 ml-1">(F:{selectedSupplier.buffaloMilk?.fat} S:{selectedSupplier.buffaloMilk?.snf})</span></span>
-                  </div>
-                </div>
+              <div className="border-[1.5px] border-black rounded-sm overflow-hidden">
+                <div className="bg-blue-800 text-white p-1 text-[10px] font-black uppercase text-center border-b border-black">४) दूध संकलन मॅट्रिक्स</div>
+                <table className="w-full border-collapse text-center">
+                  <thead>
+                    <tr className="bg-slate-50 border-b border-black font-black uppercase text-[8px]">
+                      <th className="p-1.5 border-r border-black text-left">प्रकार</th>
+                      <th className="p-1.5 border-r border-black">एकूण प्रमाण</th>
+                      <th className="p-1.5 border-r border-black">FAT</th>
+                      <th className="p-1.5">SNF</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className="border-b border-black text-[10px] font-bold">
+                      <td className="p-1.5 border-r border-black text-left bg-slate-50/50 font-black text-[8px]">COW</td>
+                      <td className="p-1.5 border-r border-black">{selectedSupplier.cowMilk?.quantity || 0} L</td>
+                      <td className="p-1.5 border-r border-black">{selectedSupplier.cowMilk?.fat || "-"} %</td>
+                      <td className="p-1.5">{selectedSupplier.cowMilk?.snf || "-"} %</td>
+                    </tr>
+                    <tr className="text-[10px] font-bold">
+                      <td className="p-1.5 border-r border-black text-left bg-slate-50/50 font-black text-[8px]">BUF</td>
+                      <td className="p-1.5 border-r border-black">{selectedSupplier.buffaloMilk?.quantity || 0} L</td>
+                      <td className="p-1.5 border-r border-black">{selectedCenter.buffaloMilk?.fat || "-"} %</td>
+                      <td className="p-1.5">{selectedCenter.buffaloMilk?.snf || "-"} %</td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
 
@@ -264,7 +281,7 @@ function SuppliersContent() {
               <table className="w-full border-collapse">
                 <thead>
                   <tr className="bg-slate-100">
-                    <th className="p-2 border border-black text-left uppercase text-[9px] w-[55%]">साहित्य नाव (Item Name)</th>
+                    <th className="p-2 border border-black text-left uppercase text-[9px] w-[55%]">साहित्य नाव</th>
                     <th className="p-2 border border-black text-center uppercase text-[9px] w-[15%]">नग</th>
                     <th className="p-2 border border-black text-right uppercase text-[9px] w-[30%]">मालकी</th>
                   </tr>
@@ -272,14 +289,11 @@ function SuppliersContent() {
                 <tbody>
                   {(selectedSupplier.equipment || []).map((it, idx) => (
                     <tr key={idx} className="font-bold border-b border-black">
-                      <td className="p-2 border border-black">{it.name}</td>
-                      <td className="p-2 border border-black text-center">{it.quantity}</td>
-                      <td className="p-2 border border-black text-right uppercase text-[8px]">{it.ownership === 'Self' ? 'स्वतः' : 'डेअरी'}</td>
+                      <td className="p-2 border border-black text-[11px] uppercase">{it.name}</td>
+                      <td className="p-2 border border-black text-center text-[11px]">{it.quantity}</td>
+                      <td className="p-2 border border-black text-right uppercase text-[8px]">{it.ownership === 'Self' ? 'स्वतःची' : 'डेअरीची'}</td>
                     </tr>
                   ))}
-                  {(!selectedSupplier.equipment || selectedSupplier.equipment.length === 0) && (
-                    <tr><td colSpan={3} className="p-4 text-center italic text-[9px] opacity-50 border border-black">कोणतेही साहित्य नोंदवलेले नाही.</td></tr>
-                  )}
                 </tbody>
               </table>
             </div>
@@ -290,7 +304,7 @@ function SuppliersContent() {
             </div>
           </div>
         ) : (
-          <div className="bg-white rounded-3xl border border-muted-foreground/10 shadow-2xl overflow-hidden">
+          <div className="bg-white rounded-3xl border border-muted-foreground/10 shadow-2xl overflow-hidden no-print">
             <Table>
               <TableHeader>
                 <TableRow className="bg-muted/30">
@@ -324,13 +338,6 @@ function SuppliersContent() {
                     </TableCell>
                   </TableRow>
                 ))}
-                {filteredSuppliers.length === 0 && (
-                  <TableRow>
-                    <TableCell colSpan={3} className="p-20 text-center text-muted-foreground font-black uppercase text-[11px] opacity-20 tracking-[0.3em] italic">
-                      सप्लायर सापडले नाहीत.
-                    </TableCell>
-                  </TableRow>
-                )}
               </TableBody>
             </Table>
           </div>
