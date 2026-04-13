@@ -229,8 +229,8 @@ export default function ChillingCentersPage() {
               </div>
               
               <div className="grid grid-cols-2 gap-4 w-full">
-                <table className="w-full border-2 border-black">
-                  <thead><tr className="bg-slate-800 text-white"><th colSpan={2} className="p-1.5 text-[10px] uppercase font-black">१) प्राथमिक माहिती</th></tr></thead>
+                <table className="printable-report-table">
+                  <thead><tr className="bg-slate-800 text-white"><th colSpan={2} className="p-1.5 uppercase font-black">१) प्राथमिक माहिती</th></tr></thead>
                   <tbody>
                     <tr className="border-b border-black"><td className="p-2 bg-slate-50 font-black uppercase text-[9px] w-[120px]">मालक नाव</td><td className="p-2 font-bold text-[11px]">{selectedCenter.ownerName || "-"}</td></tr>
                     <tr className="border-b border-black"><td className="p-2 bg-slate-50 font-black uppercase text-[9px]">मोबाईल</td><td className="p-2 font-bold text-[11px]">{selectedCenter.mobile || "-"}</td></tr>
@@ -239,8 +239,8 @@ export default function ChillingCentersPage() {
                   </tbody>
                 </table>
 
-                <table className="w-full border-2 border-black">
-                  <thead><tr className="bg-slate-800 text-white"><th colSpan={2} className="p-1.5 text-[10px] uppercase font-black">२) तांत्रिक सुविधा</th></tr></thead>
+                <table className="printable-report-table">
+                  <thead><tr className="bg-slate-800 text-white"><th colSpan={2} className="p-1.5 uppercase font-black">२) तांत्रिक सुविधा</th></tr></thead>
                   <tbody>
                     <tr className="border-b border-black"><td className="p-2 bg-slate-50 font-black uppercase text-[9px] w-[120px]">BMC | IBT</td><td className="p-2 font-black text-[11px]">{selectedCenter.hasBmc ? "YES" : "NO"} | {selectedCenter.hasIbt ? "YES" : "NO"}</td></tr>
                     <tr className="border-b border-black"><td className="p-2 bg-slate-50 font-black uppercase text-[9px]">पाणी | पॉवर</td><td className="p-2 font-bold text-[11px]">{selectedCenter.waterSource} | {selectedCenter.powerBackup}</td></tr>
@@ -251,10 +251,10 @@ export default function ChillingCentersPage() {
               </div>
 
               <div className="grid grid-cols-2 gap-4 w-full">
-                <table className="w-full border-2 border-black">
+                <table className="printable-report-table">
                   <thead>
-                    <tr className="bg-slate-800 text-white"><th colSpan={2} className="p-1.5 text-[10px] uppercase font-black">३) टाक्यांची यादी (TANKS)</th></tr>
-                    <tr className="bg-slate-100 border-b border-black"><th className="p-2 text-left text-[9px]">टाकी नाव</th><th className="p-2 text-right text-[9px]">क्षमता (L)</th></tr>
+                    <tr className="bg-slate-800 text-white"><th colSpan={2} className="p-1.5 uppercase font-black">३) टाक्यांची यादी (TANKS)</th></tr>
+                    <tr className="bg-slate-100 border-b border-black"><th className="p-2 text-left">टाकी नाव</th><th className="p-2 text-right">क्षमता (L)</th></tr>
                   </thead>
                   <tbody>
                     {(selectedCenter.tanks || []).map((t, idx) => (
@@ -262,9 +262,9 @@ export default function ChillingCentersPage() {
                     ))}
                   </tbody>
                 </table>
-                <table className="w-full border-2 border-black">
+                <table className="printable-report-table">
                   <thead>
-                    <tr className="bg-rose-800 text-white"><th colSpan={3} className="p-1.5 text-[10px] uppercase font-black">४) टँकर लॉग (TANKER LOG)</th></tr>
+                    <tr className="bg-rose-800 text-white"><th colSpan={3} className="p-1.5 uppercase font-black">४) टँकर लॉग (TANKER LOG)</th></tr>
                     <tr className="bg-rose-50 border-b border-black"><th className="p-2 text-left text-[8px]">टँकर क्र.</th><th className="p-2 text-center text-[8px]">वेळ</th><th className="p-2 text-right text-[8px]">दूध (L)</th></tr>
                   </thead>
                   <tbody>
@@ -275,8 +275,8 @@ export default function ChillingCentersPage() {
                 </table>
               </div>
 
-              <table className="w-full border-2 border-black text-center">
-                <thead><tr className="bg-blue-800 text-white"><th colSpan={4} className="p-1.5 text-[10px] uppercase font-black">५) दूध संकलन मॅट्रिक्स (MILK SUMMARY)</th></tr></thead>
+              <table className="printable-report-table text-center">
+                <thead><tr className="bg-blue-800 text-white"><th colSpan={4} className="p-1.5 uppercase font-black">५) दूध संकलन मॅट्रिक्स (MILK SUMMARY)</th></tr></thead>
                 <tbody>
                   <tr className="bg-slate-50 border-b border-black font-black uppercase text-[9px]"><td className="p-2 text-left">दूध प्रकार</td><td className="p-2">एकूण प्रमाण (L)</td><td className="p-2">FAT %</td><td className="p-2">SNF %</td></tr>
                   <tr className="border-b border-black text-[11px] font-bold">
@@ -294,8 +294,8 @@ export default function ChillingCentersPage() {
                 </tbody>
               </table>
 
-              <table className="w-full border-2 border-black">
-                <thead><tr className="bg-slate-800 text-white"><th colSpan={6} className="p-1.5 text-[10px] uppercase font-black">६) तांत्रिक व ऑडिट स्टेटस</th></tr></thead>
+              <table className="printable-report-table">
+                <thead><tr className="bg-slate-800 text-white"><th colSpan={6} className="p-1.5 uppercase font-black">६) तांत्रिक व ऑडिट स्टेटस</th></tr></thead>
                 <tbody>
                   <tr className="text-[8px] font-black uppercase bg-slate-50 text-center border-b border-black"><td>ETP</td><td>SOLAR</td><td>HOT WATER</td><td>DRAINAGE</td><td>LAB</td><td>UNIFORM</td></tr>
                   <tr className="text-[10px] font-black text-center h-10">

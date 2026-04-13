@@ -44,24 +44,22 @@
     @apply h-8 text-[12px] font-bold bg-slate-50 border border-slate-100 rounded-md px-2 focus-visible:ring-primary shadow-inner w-full outline-none transition-all;
   }
 
-  .compact-button {
-    @apply h-9 px-3 text-[10px] font-black uppercase rounded-lg transition-all shadow-md active:scale-95 flex items-center justify-center gap-1.5;
-  }
-
-  .compact-radio-group {
-    @apply flex flex-wrap gap-1 mt-0.5;
-  }
-
-  .compact-radio-item {
-    @apply flex items-center space-x-1 bg-slate-50 px-1.5 py-1 rounded-md border border-slate-100 transition-all hover:bg-white cursor-pointer;
-  }
-
-  .compact-radio-label {
-    @apply text-[9px] font-black uppercase cursor-pointer leading-none;
-  }
-
   .responsive-table-wrapper {
-    @apply w-full overflow-x-auto rounded-lg border border-slate-100 bg-white;
+    @apply w-full overflow-x-auto rounded-lg border border-slate-200 bg-white mb-4;
+  }
+
+  .printable-report-table {
+    @apply w-full border-collapse border-2 border-black mb-4;
+  }
+
+  .printable-report-table th, .printable-report-table td {
+    @apply border border-black p-2 text-[11px] font-bold leading-tight align-middle;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .printable-report-table th {
+    @apply bg-slate-100 font-black uppercase text-[9px] text-center;
   }
 }
 
@@ -79,8 +77,8 @@ h1, h2, h3, h4 {
 ::-webkit-scrollbar-thumb { @apply bg-slate-200 rounded-full; }
 
 /* 
- * ULTIMATE PRINT ENGINE v50.0 - TABLE GRID OPTIMIZED
- * Guaranteed pure white background, centered A4 content, and no cutoff.
+ * ULTIMATE ROBUST PRINT ENGINE v60.0
+ * Pure white background, centered A4 content, absolute flow, no clipping.
  */
 @media print {
   @page {
@@ -100,19 +98,10 @@ h1, h2, h3, h4 {
     print-color-adjust: exact !important;
   }
 
-  /* KILL ALL OVERLAYS AND BACKGROUNDS */
-  .fixed.inset-0, 
-  [role="dialog"] > div:first-child,
-  .bg-black\/80,
-  .no-print,
-  button,
-  header,
-  nav,
-  footer,
-  .sidebar {
+  /* Hide all UI elements */
+  .no-print, button, header, nav, footer, .sidebar, [role="dialog"] > div:first-child, .fixed.inset-0, .bg-black\/80 {
     display: none !important;
     opacity: 0 !important;
-    background: transparent !important;
   }
 
   .printable-report, .printable-report * {
@@ -125,77 +114,54 @@ h1, h2, h3, h4 {
   }
 
   .printable-report {
-    position: absolute !important;
-    left: 0 !important;
-    right: 0 !important;
-    top: 0 !important;
-    width: 190mm !important;
+    position: relative !important;
+    display: block !important;
+    width: 100% !important;
     max-width: 190mm !important;
     margin: 0 auto !important;
     padding: 0 !important;
     border: none !important;
-    display: block !important;
     z-index: 99999 !important;
+    left: auto !important;
+    right: auto !important;
+    top: auto !important;
+    transform: none !important;
   }
 
-  /* Force tables to behave in print */
-  .printable-report table {
-    display: table !important;
+  /* Ensure tables take full width and don't break awkwardly */
+  table {
     width: 100% !important;
     border-collapse: collapse !important;
-    border: 1.5px solid black !important;
-    table-layout: fixed !important;
-    margin-bottom: 5mm !important;
     page-break-inside: avoid !important;
+    margin-bottom: 10px !important;
+    table-layout: auto !important;
   }
 
-  .printable-report tr { 
-    display: table-row !important; 
+  tr { 
     page-break-inside: avoid !important; 
+    page-break-after: auto !important;
   }
 
-  .printable-report th, 
-  .printable-report td {
-    display: table-cell !important;
+  th, td {
+    padding: 6px !important;
     border: 1px solid black !important;
-    padding: 4px 6px !important;
     font-size: 10pt !important;
-    font-family: Arial, sans-serif !important;
-    vertical-align: middle !important;
     word-wrap: break-word !important;
-    overflow: hidden !important;
   }
 
-  .printable-report th {
-    background-color: #f1f1f1 !important;
-    font-weight: 900 !important;
-    text-transform: uppercase !important;
-  }
-
-  /* Grid Layout Fixes for Print */
-  .printable-report .grid {
-    display: grid !important;
-    gap: 10px !important;
-  }
-  
-  .printable-report .grid-cols-2 {
-    grid-template-columns: repeat(2, 1fr) !important;
-  }
-
-  /* Unhide content within Dialogs for printing */
+  /* Force display of elements usually hidden in Dialogs */
   [role="dialog"] {
     position: static !important;
     display: block !important;
-    background: transparent !important;
+    width: 100% !important;
+    max-width: none !important;
     box-shadow: none !important;
     border: none !important;
-    padding: 0 !important;
-    width: auto !important;
-    max-width: none !important;
+    background: white !important;
     overflow: visible !important;
   }
 
-  /* Remove any transforms or scaling */
+  /* Clear scaling and transforms */
   div, section, article {
     transform: none !important;
     max-height: none !important;
