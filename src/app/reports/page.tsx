@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
@@ -7,7 +6,7 @@ import { Card } from "@/components/ui/card"
 import { 
   Archive, Search, X, Printer, Trash2, FileEdit, Truck, 
   ShieldAlert, ClipboardCheck, Plus, MapPin, FileText,
-  Briefcase, FileSignature, CheckCircle2, Microscope, Layers, Calendar, ChevronRight, AlertCircle, AlertTriangle, Info, BookOpen, Lightbulb, FileCheck, Clock, Milk, TriangleAlert
+  Briefcase, FileSignature, CheckCircle2, Microscope, Layers, Calendar, ChevronRight, AlertCircle, AlertTriangle, Info, BookOpen, Lightbulb, FileCheck, Clock, Milk
 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
@@ -30,6 +29,7 @@ const labelMap: Record<string, string> = {
   centerName: "केंद्राचे नाव",
   centerCode: "केंद्र कोड",
   supplierName: "पुरवठादार नाव",
+  supplierId: "पुरवठादार ID",
   mobile: "मोबाईल",
   address: "पत्ता",
   routeName: "रूट नाव",
@@ -52,7 +52,13 @@ const labelMap: Record<string, string> = {
   slipNo: "SLIP No.",
   visitPerson: "भेट दिलेली व्यक्ती",
   visitPurpose: "भेटीचा उद्देश",
-  officeTaskSubject: "कामाचा विषय"
+  officeTaskSubject: "कामाचा विषय",
+  fineAmount: "दंडाची रक्कम (₹)",
+  seizureQty: "जप्त दूध (L)",
+  actionTaken: "केलेली कार्यवाही",
+  totalMilk: "एकूण दूध (L)",
+  paymentCycle: "पेमेंट सायकल",
+  otherInfo: "इतर माहिती"
 };
 
 const ReportHeader = ({ title, date, subName, subId, shift }: any) => (
@@ -93,34 +99,46 @@ const ProfessionalParagraph = ({ label, content, icon: Icon }: { label: string, 
 
 const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any, profileName: string, profileId: string }) => {
   const d = report.fullData || {};
-  const renderExcelSection = (title: string, rawData: any[]) => {
+  
+  const renderDoubleTable = (title: string, rawData: any[]) => {
     if (!rawData || rawData.length === 0) return null;
+    
+    // Split data into two halves for the double-column layout
+    const half = Math.ceil(rawData.length / 2);
+    const firstHalf = rawData.slice(0, half);
+    const secondHalf = rawData.slice(half);
+
+    const TableContent = ({ items }: { items: any[] }) => (
+      <table className="w-full border-collapse text-[8px] sm:text-[9px]">
+        <thead>
+          <tr className="bg-slate-100 font-black uppercase text-center border-b-2 border-black">
+            <th className="border-r border-black p-1 w-[30px]">SR</th>
+            <th className="border-r border-black p-1 w-[50px]">CODE</th>
+            <th className="border-r border-black p-1 text-left pl-2">ROUTE NAME</th>
+            <th className="border-r border-black p-1 w-[35px]">REQ</th>
+            <th className="p-1 w-[35px]">ALOC</th>
+          </tr>
+        </thead>
+        <tbody>
+          {items.map((it, i) => (
+            <tr key={i} className="font-bold uppercase text-center border-b border-black last:border-b-0 hover:bg-slate-50">
+              <td className="border-r border-black p-1 bg-slate-50">{rawData.indexOf(it) + 1}</td>
+              <td className="border-r border-black p-1 font-black">{it.routeCode || it.routeId}</td>
+              <td className="border-r border-black p-1 text-left pl-2 truncate">{it.routeName}</td>
+              <td className="border-r border-black font-black text-[10pt] text-primary">{it.requested ? '√' : ''}</td>
+              <td className="p-1 font-black text-[10pt] text-emerald-600">{it.allocated ? '√' : ''}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    );
+
     return (
       <div className="w-full mb-6 border-2 border-black overflow-hidden bg-white">
         <div className="bg-slate-900 text-white p-2 text-[9pt] font-black uppercase text-center border-b-2 border-black tracking-widest">{title}</div>
-        <div className="overflow-x-auto w-full">
-          <table className="w-full border-collapse text-[8px] sm:text-[9px]">
-            <thead>
-              <tr className="bg-slate-100 font-black uppercase text-center border-b-2 border-black">
-                <th className="border-r border-black p-1 w-[35px]">SR</th>
-                <th className="border-r border-black p-1 w-[60px]">CODE</th>
-                <th className="border-r border-black p-1 text-left pl-3">ROUTE NAME</th>
-                <th className="border-r border-black p-1 w-[40px]">REQ</th>
-                <th className="p-1 w-[40px]">ALOC</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rawData.map((it, i) => (
-                <tr key={i} className="font-bold uppercase text-center border-b border-black last:border-b-0 hover:bg-slate-50">
-                  <td className="border-r border-black p-1 bg-slate-50">{i + 1}</td>
-                  <td className="border-r border-black p-1 font-black">{it.routeCode || it.routeId}</td>
-                  <td className="border-r border-black p-1 text-left pl-3 truncate max-w-[150px]">{it.routeName}</td>
-                  <td className="border-r border-black font-black text-[11pt] text-primary">{it.requested ? '√' : ''}</td>
-                  <td className="p-1 font-black text-[11pt] text-emerald-600">{it.allocated ? '√' : ''}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="flex flex-col sm:flex-row w-full divide-y sm:divide-y-0 sm:divide-x-2 divide-black">
+          <div className="flex-1"><TableContent items={firstHalf} /></div>
+          <div className="flex-1"><TableContent items={secondHalf} /></div>
         </div>
       </div>
     );
@@ -129,13 +147,13 @@ const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any
   return (
     <div className="bg-white font-sans text-slate-900 w-full p-4 sm:p-8 printable-report flex flex-col items-center">
       <ReportHeader title={d.reportHeading || "ERP दैनिक वाटप अहवाल"} date={report.date} subName={d.name || profileName} subId={d.idNumber || profileId} shift={d.shift} />
-      <SectionTitle icon={Layers} title="मुख्य वाटप तपशील (ALLOCATION)" />
+      <SectionTitle icon={Layers} title="मुख्य वाटप तपशील (DOUBLE TABLE ALLOCATION)" />
       <div className="w-full space-y-4">
-        {renderExcelSection("Can Route Morning", d.morningRoutes)}
-        {renderExcelSection("Can Route Evening", d.eveningRoutes)}
-        {renderExcelSection("Internal Tanker Route", d.tankerRoutes)}
-        {renderExcelSection("External Can Route", d.extCanRoutes)}
-        {renderExcelSection("External Tanker Route", d.extTankerRoutes)}
+        {renderDoubleTable("Can Route Morning (Internal)", d.morningRoutes)}
+        {renderDoubleTable("Can Route Evening (Internal)", d.eveningRoutes)}
+        {renderDoubleTable("Internal Tanker Route", d.tankerRoutes)}
+        {renderDoubleTable("External Can Route", d.extCanRoutes)}
+        {renderDoubleTable("External Tanker Route", d.extTankerRoutes)}
       </div>
       <ProfessionalParagraph label="आजचे महत्त्वाचे प्रॉब्लेम्स / निरीक्षणे" content={d.dailyProblems} icon={AlertCircle} />
       <div className="w-full mt-12 pt-12 grid grid-cols-2 gap-10 text-center uppercase font-black text-[10pt] tracking-widest border-t border-slate-100">
