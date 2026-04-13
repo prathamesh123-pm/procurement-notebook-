@@ -214,98 +214,89 @@ export default function CentersPage() {
               </div>
             </div>
 
-            <div className="w-full border-b-4 border-black pb-3 mb-6 text-center">
+            <div className="w-full border-b-[4px] border-black pb-3 mb-6 text-center">
               <h3 className="text-[20pt] font-black uppercase text-primary tracking-[0.1em]">{selectedCenter.name}</h3>
-              <p className="text-[11pt] font-black text-muted-foreground uppercase tracking-widest mt-1">केंद्र आयडी: {selectedCenter.supplierId} | संकलन केंद्र अधिकृत अहवाल</p>
+              <p className="text-[11pt] font-black text-muted-foreground uppercase tracking-widest mt-1">आयडी: {selectedCenter.supplierId} | संकलन केंद्र अधिकृत अहवाल</p>
             </div>
             
             <div className="grid grid-cols-2 gap-4 w-full mb-4">
-              <div className="border-[1.5px] border-black rounded-sm overflow-hidden">
-                <div className="bg-slate-800 text-white p-1 text-[10px] font-black uppercase text-center border-b border-black">१) प्राथमिक माहिती</div>
-                <table className="w-full border-collapse">
-                  <tbody>
-                    <tr className="border-b border-black"><td className="p-2 bg-slate-50 font-black uppercase text-[9px] w-[120px]">ऑपरेटर नाव</td><td className="p-2 font-bold text-[11px]">{selectedCenter.operatorName || "-"}</td></tr>
-                    <tr className="border-b border-black"><td className="p-2 bg-slate-50 font-black uppercase text-[9px]">मोबाईल</td><td className="p-2 font-bold text-[11px]">{selectedCenter.mobile || "-"}</td></tr>
-                    <tr><td className="p-2 bg-slate-50 font-black uppercase text-[9px]">पत्ता</td><td className="p-2 font-bold text-[11px] leading-tight">{selectedCenter.address || "-"}</td></tr>
-                  </tbody>
-                </table>
-              </div>
+              <table className="w-full border-2 border-black">
+                <thead><tr className="bg-slate-800 text-white"><th colSpan={2} className="p-1.5 text-[10px] uppercase font-black">१) प्राथमिक माहिती</th></tr></thead>
+                <tbody>
+                  <tr className="border-b border-black"><td className="p-2 bg-slate-50 font-black uppercase text-[9px] w-[120px]">ऑपरेटर नाव</td><td className="p-2 font-bold text-[11px]">{selectedCenter.operatorName || "-"}</td></tr>
+                  <tr className="border-b border-black"><td className="p-2 bg-slate-50 font-black uppercase text-[9px]">मोबाईल</td><td className="p-2 font-bold text-[11px]">{selectedCenter.mobile || "-"}</td></tr>
+                  <tr><td className="p-2 bg-slate-50 font-black uppercase text-[9px]">पत्ता</td><td className="p-2 font-bold text-[11px] leading-tight">{selectedCenter.address || "-"}</td></tr>
+                </tbody>
+              </table>
 
-              <div className="border-[1.5px] border-black rounded-sm overflow-hidden">
-                <div className="bg-slate-800 text-white p-1 text-[10px] font-black uppercase text-center border-b border-black">२) तांत्रिक तपशील</div>
-                <table className="w-full border-collapse">
-                  <tbody>
-                    <tr className="border-b border-black"><td className="p-2 bg-slate-50 font-black uppercase text-[9px] w-[120px]">FSSAI क्र.</td><td className="p-2 font-bold text-[11px]">{selectedCenter.fssaiNumber || "-"}</td></tr>
-                    <tr className="border-b border-black"><td className="p-2 bg-slate-50 font-black uppercase text-[9px]">काटा ब्रँड</td><td className="p-2 font-bold text-[11px]">{selectedCenter.scaleBrand || "-"}</td></tr>
-                    <tr><td className="p-2 bg-slate-50 font-black uppercase text-[9px]">मशीन ब्रँड</td><td className="p-2 font-bold text-[11px]">{selectedCenter.fatMachineBrand || "-"}</td></tr>
-                  </tbody>
-                </table>
-              </div>
+              <table className="w-full border-2 border-black">
+                <thead><tr className="bg-slate-800 text-white"><th colSpan={2} className="p-1.5 text-[10px] uppercase font-black">२) तांत्रिक तपशील</th></tr></thead>
+                <tbody>
+                  <tr className="border-b border-black"><td className="p-2 bg-slate-50 font-black uppercase text-[9px] w-[120px]">FSSAI क्र.</td><td className="p-2 font-bold text-[11px]">{selectedCenter.fssaiNumber || "-"}</td></tr>
+                  <tr className="border-b border-black"><td className="p-2 bg-slate-50 font-black uppercase text-[9px]">काटा ब्रँड</td><td className="p-2 font-bold text-[11px]">{selectedCenter.scaleBrand || "-"}</td></tr>
+                  <tr><td className="p-2 bg-slate-50 font-black uppercase text-[9px]">मशीन ब्रँड</td><td className="p-2 font-bold text-[11px]">{selectedCenter.fatMachineBrand || "-"}</td></tr>
+                </tbody>
+              </table>
             </div>
 
             <div className="grid grid-cols-2 gap-4 w-full mb-4">
-              <div className="border-[1.5px] border-black rounded-sm overflow-hidden">
-                <div className="bg-slate-800 text-white p-1 text-[10px] font-black uppercase text-center border-b border-black">३) व्यावसायिक माहिती</div>
-                <table className="w-full border-collapse">
-                  <tbody>
-                    <tr className="border-b border-black"><td className="p-2 bg-slate-50 font-black uppercase text-[9px] w-[120px]">पेमेंट सायकल</td><td className="p-2 font-bold text-[11px]">{selectedCenter.paymentCycle || "10 Days"}</td></tr>
-                    <tr className="border-b border-black"><td className="p-2 bg-slate-50 font-black uppercase text-[9px]">जागा मालकी</td><td className="p-2 font-bold text-[11px]">{selectedCenter.spaceOwnership === 'Self' ? 'स्वतःची' : 'भाड्याची'}</td></tr>
-                    <tr><td className="p-2 bg-slate-50 font-black uppercase text-[9px]">स्वच्छता ग्रेड</td><td className="p-2 font-black text-emerald-600 text-[11px]">{selectedCenter.hygieneGrade || "A"} GRADE</td></tr>
-                  </tbody>
-                </table>
-              </div>
+              <table className="w-full border-2 border-black">
+                <thead><tr className="bg-slate-800 text-white"><th colSpan={2} className="p-1.5 text-[10px] uppercase font-black">३) व्यावसायिक माहिती</th></tr></thead>
+                <tbody>
+                  <tr className="border-b border-black"><td className="p-2 bg-slate-50 font-black uppercase text-[9px] w-[120px]">पेमेंट सायकल</td><td className="p-2 font-bold text-[11px]">{selectedCenter.paymentCycle || "10 Days"}</td></tr>
+                  <tr className="border-b border-black"><td className="p-2 bg-slate-50 font-black uppercase text-[9px]">जागा मालकी</td><td className="p-2 font-bold text-[11px]">{selectedCenter.spaceOwnership === 'Self' ? 'स्वतःची' : 'भाड्याची'}</td></tr>
+                  <tr><td className="p-2 bg-slate-50 font-black uppercase text-[9px]">स्वच्छता ग्रेड</td><td className="p-2 font-black text-emerald-600 text-[11px]">{selectedCenter.hygieneGrade || "A"} GRADE</td></tr>
+                </tbody>
+              </table>
 
-              <div className="border-[1.5px] border-black rounded-sm overflow-hidden">
-                <div className="bg-blue-800 text-white p-1 text-[10px] font-black uppercase text-center border-b border-black">४) दूध संकलन मॅट्रिक्स</div>
-                <table className="w-full border-collapse text-center">
-                  <thead>
-                    <tr className="bg-slate-50 border-b border-black font-black uppercase text-[8px]">
-                      <th className="p-1.5 border-r border-black text-left">प्रकार</th>
-                      <th className="p-1.5 border-r border-black">Ltrs</th>
-                      <th className="p-1.5 border-r border-black">FAT</th>
-                      <th className="p-1.5">SNF</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr className="border-b border-black text-[10px] font-bold">
-                      <td className="p-1.5 border-r border-black text-left bg-slate-50/50 font-black text-[8px]">COW</td>
-                      <td className="p-1.5 border-r border-black">{selectedCenter.cowMilk?.quantity || 0}</td>
-                      <td className="p-1.5 border-r border-black">{selectedCenter.cowMilk?.fat || "-"}</td>
-                      <td className="p-1.5">{selectedCenter.cowMilk?.snf || "-"}</td>
-                    </tr>
-                    <tr className="text-[10px] font-bold">
-                      <td className="p-1.5 border-r border-black text-left bg-slate-50/50 font-black text-[8px]">BUF</td>
-                      <td className="p-1.5 border-r border-black">{selectedCenter.buffaloMilk?.quantity || 0}</td>
-                      <td className="p-1.5 border-r border-black">{selectedCenter.buffaloMilk?.fat || "-"}</td>
-                      <td className="p-1.5">{selectedCenter.buffaloMilk?.snf || "-"}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+              <table className="w-full border-2 border-black text-center">
+                <thead><tr className="bg-blue-800 text-white"><th colSpan={4} className="p-1.5 text-[10px] uppercase font-black">४) दूध संकलन मॅट्रिक्स</th></tr></thead>
+                <tbody>
+                  <tr className="bg-slate-50 border-b border-black font-black uppercase text-[8px]"><td className="p-1.5 text-left">प्रकार</td><td>Qty (L)</td><td>FAT %</td><td>SNF %</td></tr>
+                  <tr className="border-b border-black text-[10px] font-bold">
+                    <td className="p-1.5 text-left bg-slate-50/50 font-black text-[8px]">COW</td>
+                    <td className="p-1.5">{selectedCenter.cowMilk?.quantity || 0}</td>
+                    <td className="p-1.5">{selectedCenter.cowMilk?.fat || "-"}</td>
+                    <td className="p-1.5">{selectedCenter.cowMilk?.snf || "-"}</td>
+                  </tr>
+                  <tr className="text-[10px] font-bold">
+                    <td className="p-1.5 text-left bg-slate-50/50 font-black text-[8px]">BUF</td>
+                    <td className="p-1.5">{selectedCenter.buffaloMilk?.quantity || 0}</td>
+                    <td className="p-1.5">{selectedCenter.buffaloMilk?.fat || "-"}</td>
+                    <td className="p-1.5">{selectedCenter.buffaloMilk?.snf || "-"}</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
 
-            <div className="grid grid-cols-3 gap-2 w-full mb-4">
-              <div className="p-2 border border-black text-center rounded bg-slate-50/30"><p className="text-[7px] font-black uppercase mb-1">COMPUTER</p><p className="text-[10px] font-black">{selectedCenter.computerAvailable ? 'YES' : 'NO'}</p></div>
-              <div className="p-2 border border-black text-center rounded bg-slate-50/30"><p className="text-[7px] font-black uppercase mb-1">UPS/INV</p><p className="text-[10px] font-black">{selectedCenter.upsInverterAvailable ? 'YES' : 'NO'}</p></div>
-              <div className="p-2 border border-black text-center rounded bg-slate-50/30"><p className="text-[7px] font-black uppercase mb-1">SOLAR</p><p className="text-[10px] font-black">{selectedCenter.solarAvailable ? 'YES' : 'NO'}</p></div>
-            </div>
+            <table className="w-full border-2 border-black mb-4">
+              <thead><tr className="bg-slate-800 text-white"><th colSpan={3} className="p-1.5 text-[10px] uppercase font-black">५) तांत्रिक उपकरणे स्थिती</th></tr></thead>
+              <tbody>
+                <tr className="text-[8px] font-black uppercase bg-slate-50 text-center border-b border-black"><td>POP/COMPUTER</td><td>UPS/INVERTER</td><td>SOLAR SYSTEM</td></tr>
+                <tr className="text-[10px] font-black text-center h-10">
+                  <td>{selectedCenter.computerAvailable ? 'AVAILABLE' : 'NO'}</td>
+                  <td>{selectedCenter.upsInverterAvailable ? 'AVAILABLE' : 'NO'}</td>
+                  <td>{selectedCenter.solarAvailable ? 'AVAILABLE' : 'NO'}</td>
+                </tr>
+              </tbody>
+            </table>
 
             <div className="space-y-2 w-full text-left">
-              <h4 className="text-[10px] font-black uppercase text-primary tracking-widest border-b-2 border-black pb-0.5 mb-1">५) साहित्याची यादी (INVENTORY)</h4>
-              <table className="w-full border-collapse">
+              <table className="w-full border-collapse border-2 border-black">
                 <thead>
-                  <tr className="bg-slate-100">
-                    <th className="p-2 border border-black text-left uppercase text-[9px] w-[55%]">साहित्य नाव</th>
-                    <th className="p-2 border border-black text-center uppercase text-[9px] w-[15%]">नग</th>
-                    <th className="p-2 border border-black text-right uppercase text-[9px] w-[30%]">मालकी</th>
+                  <tr className="bg-slate-800 text-white"><th colSpan={3} className="p-1.5 text-[10px] uppercase font-black">६) साहित्याची यादी (INVENTORY)</th></tr>
+                  <tr className="bg-slate-100 border-b border-black">
+                    <th className="p-2 text-left uppercase text-[9px] w-[55%]">साहित्य नाव</th>
+                    <th className="p-2 text-center uppercase text-[9px] w-[15%]">नग</th>
+                    <th className="p-2 text-right uppercase text-[9px] w-[30%]">मालकी</th>
                   </tr>
                 </thead>
                 <tbody>
                   {(selectedCenter.equipment || []).map((it, idx) => (
-                    <tr key={idx} className="font-bold border-b border-black">
-                      <td className="p-2 border border-black text-[11px] uppercase">{it.name}</td>
-                      <td className="p-2 border border-black text-center text-[11px]">{it.quantity}</td>
-                      <td className="p-2 border border-black text-right uppercase text-[8px]">{it.ownership === 'Self' ? 'स्वतःची' : 'डेअरीची'}</td>
+                    <tr key={idx} className="font-bold border-b border-black h-9">
+                      <td className="p-2 text-[11px] uppercase">{it.name}</td>
+                      <td className="p-2 text-center text-[11px]">{it.quantity}</td>
+                      <td className="p-2 text-right uppercase text-[8px]">{it.ownership === 'Self' ? 'स्वतःची' : 'डेअरीची'}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -355,7 +346,7 @@ export default function CentersPage() {
                 <div className="space-y-4">
                   <h4 className="text-[11px] font-black uppercase text-primary border-b pb-1 flex items-center gap-2"><Wallet className="h-4 w-4" /> ३) व्यावसायिक व दूध तपशील</h4>
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-muted-foreground">पेमेंट सायकल</Label><Input value={formData.paymentCycle} onChange={e => setFormData({...formData, paymentCycle: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl shadow-inner" /></div>
+                    <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-muted-foreground">पेमेंट सायकल</Label><Input value={formData.paymentCycle} onChange={e => setFormData({...formData, paymentCycle: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none rounded-xl shadow-inner" /></div>
                     <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-muted-foreground">जागा</Label>
                       <Select value={formData.spaceOwnership} onValueChange={(v: 'Self' | 'Rented') => setFormData({...formData, spaceOwnership: v})}>
                         <SelectTrigger className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl font-black"><SelectValue /></SelectTrigger>

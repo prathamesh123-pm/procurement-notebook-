@@ -79,8 +79,8 @@ h1, h2, h3, h4 {
 ::-webkit-scrollbar-thumb { @apply bg-slate-200 rounded-full; }
 
 /* 
- * NUCLEAR PRINT ENGINE v40.0 - TABLE GRID OPTIMIZED
- * Fixes grids, tables, and removes black backdrop for professional reports.
+ * ULTIMATE PRINT ENGINE v50.0 - TABLE GRID OPTIMIZED
+ * Guaranteed pure white background, centered A4 content, and no cutoff.
  */
 @media print {
   @page {
@@ -100,13 +100,19 @@ h1, h2, h3, h4 {
     print-color-adjust: exact !important;
   }
 
-  /* KILL THE BLACK BACKDROP */
-  .fixed.inset-0.bg-black\/80,
+  /* KILL ALL OVERLAYS AND BACKGROUNDS */
+  .fixed.inset-0, 
   [role="dialog"] > div:first-child,
-  .bg-black\/80 {
+  .bg-black\/80,
+  .no-print,
+  button,
+  header,
+  nav,
+  footer,
+  .sidebar {
     display: none !important;
-    background: transparent !important;
     opacity: 0 !important;
+    background: transparent !important;
   }
 
   .printable-report, .printable-report * {
@@ -115,6 +121,7 @@ h1, h2, h3, h4 {
     color: black !important;
     background-color: white !important;
     box-shadow: none !important;
+    text-shadow: none !important;
   }
 
   .printable-report {
@@ -127,54 +134,72 @@ h1, h2, h3, h4 {
     margin: 0 auto !important;
     padding: 0 !important;
     border: none !important;
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    z-index: 9999 !important;
+    display: block !important;
+    z-index: 99999 !important;
   }
 
-  /* Force grid display in print */
-  .printable-report .grid { 
-    display: grid !important; 
-  }
-  .printable-report .grid-cols-2 { 
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important; 
-  }
-  
+  /* Force tables to behave in print */
   .printable-report table {
     display: table !important;
     width: 100% !important;
     border-collapse: collapse !important;
     border: 1.5px solid black !important;
     table-layout: fixed !important;
+    margin-bottom: 5mm !important;
+    page-break-inside: avoid !important;
   }
 
-  .printable-report tr { display: table-row !important; page-break-inside: avoid !important; }
-  .printable-report th, .printable-report td {
+  .printable-report tr { 
+    display: table-row !important; 
+    page-break-inside: avoid !important; 
+  }
+
+  .printable-report th, 
+  .printable-report td {
     display: table-cell !important;
     border: 1px solid black !important;
-    padding: 4px !important;
-    font-size: 9pt !important;
+    padding: 4px 6px !important;
+    font-size: 10pt !important;
+    font-family: Arial, sans-serif !important;
+    vertical-align: middle !important;
+    word-wrap: break-word !important;
     overflow: hidden !important;
   }
 
-  .printable-report .bg-slate-100,
-  .printable-report .bg-slate-50,
-  .printable-report .bg-muted\/10 {
-    background-color: #f1f5f9 !important;
+  .printable-report th {
+    background-color: #f1f1f1 !important;
+    font-weight: 900 !important;
+    text-transform: uppercase !important;
   }
 
-  /* Hide UI elements */
-  .no-print, button, header, nav, footer, .sidebar, 
-  [role="dialog"] button,
-  .fixed.inset-0.z-50:not(:has(.printable-report)) {
-    display: none !important;
+  /* Grid Layout Fixes for Print */
+  .printable-report .grid {
+    display: grid !important;
+    gap: 10px !important;
+  }
+  
+  .printable-report .grid-cols-2 {
+    grid-template-columns: repeat(2, 1fr) !important;
   }
 
-  /* Expansion */
-  div { 
-    overflow: visible !important; 
+  /* Unhide content within Dialogs for printing */
+  [role="dialog"] {
+    position: static !important;
+    display: block !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+    width: auto !important;
+    max-width: none !important;
+    overflow: visible !important;
+  }
+
+  /* Remove any transforms or scaling */
+  div, section, article {
+    transform: none !important;
     max-height: none !important;
     height: auto !important;
+    overflow: visible !important;
   }
 }

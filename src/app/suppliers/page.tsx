@@ -206,92 +206,77 @@ function SuppliersContent() {
               </div>
             </div>
 
-            <div className="w-full border-b-4 border-black pb-2 mb-4 text-center">
+            <div className="w-full border-b-[4px] border-black pb-2 mb-4 text-center">
               <h3 className="text-[18pt] font-black uppercase text-primary tracking-[0.1em]">{selectedSupplier.name}</h3>
               <p className="text-[10pt] font-black text-muted-foreground uppercase">आयडी: {selectedSupplier.supplierId} | {selectedSupplier.supplierType} प्रोफाईल</p>
             </div>
             
             <div className="grid grid-cols-2 gap-4 w-full mb-4">
-              <div className="border-[1.5px] border-black rounded-sm overflow-hidden">
-                <div className="bg-slate-800 text-white p-1 text-[10px] font-black uppercase text-center border-b border-black">१) प्राथमिक माहिती</div>
-                <table className="w-full border-collapse">
-                  <tbody>
-                    <tr className="border-b border-black"><td className="p-2 bg-slate-50 font-black uppercase text-[9px] w-[120px]">ऑपरेटर</td><td className="p-2 font-bold text-[11px]">{selectedSupplier.operatorName || "-"}</td></tr>
-                    <tr className="border-b border-black"><td className="p-2 bg-slate-50 font-black uppercase text-[9px]">मोबाईल</td><td className="p-2 font-bold text-[11px]">{selectedSupplier.mobile || "-"}</td></tr>
-                    <tr><td className="p-2 bg-slate-50 font-black uppercase text-[9px]">पत्ता</td><td className="p-2 font-bold text-[11px] leading-tight">{selectedSupplier.address || "-"}</td></tr>
-                  </tbody>
-                </table>
-              </div>
+              <table className="w-full border-2 border-black">
+                <thead><tr className="bg-slate-800 text-white"><th colSpan={2} className="p-1.5 text-[10px] uppercase font-black">१) प्राथमिक माहिती</th></tr></thead>
+                <tbody>
+                  <tr className="border-b border-black"><td className="p-2 bg-slate-50 font-black uppercase text-[9px] w-[120px]">ऑपरेटर</td><td className="p-2 font-bold text-[11px]">{selectedSupplier.operatorName || "-"}</td></tr>
+                  <tr className="border-b border-black"><td className="p-2 bg-slate-50 font-black uppercase text-[9px]">मोबाईल</td><td className="p-2 font-bold text-[11px]">{selectedSupplier.mobile || "-"}</td></tr>
+                  <tr><td className="p-2 bg-slate-50 font-black uppercase text-[9px]">पत्ता</td><td className="p-2 font-bold text-[11px] leading-tight">{selectedSupplier.address || "-"}</td></tr>
+                </tbody>
+              </table>
 
-              <div className="border-[1.5px] border-black rounded-sm overflow-hidden">
-                <div className="bg-slate-800 text-white p-1 text-[10px] font-black uppercase text-center border-b border-black">२) परवाना व तांत्रिक</div>
-                <table className="w-full border-collapse">
-                  <tbody>
-                    <tr className="border-b border-black"><td className="p-2 bg-slate-50 font-black uppercase text-[9px] w-[120px]">FSSAI क्र.</td><td className="p-2 font-bold text-[11px]">{selectedSupplier.fssaiNumber || "-"}</td></tr>
-                    <tr className="border-b border-black"><td className="p-2 bg-slate-50 font-black uppercase text-[9px]">काटा ब्रँड</td><td className="p-2 font-bold text-[11px]">{selectedSupplier.scaleBrand || "-"}</td></tr>
-                    <tr><td className="p-2 bg-slate-50 font-black uppercase text-[9px]">मशीन ब्रँड</td><td className="p-2 font-bold text-[11px]">{selectedSupplier.fatMachineBrand || "-"}</td></tr>
-                  </tbody>
-                </table>
-              </div>
+              <table className="w-full border-2 border-black">
+                <thead><tr className="bg-slate-800 text-white"><th colSpan={2} className="p-1.5 text-[10px] uppercase font-black">२) परवाना व तांत्रिक</th></tr></thead>
+                <tbody>
+                  <tr className="border-b border-black"><td className="p-2 bg-slate-50 font-black uppercase text-[9px] w-[120px]">FSSAI क्र.</td><td className="p-2 font-bold text-[11px]">{selectedSupplier.fssaiNumber || "-"}</td></tr>
+                  <tr className="border-b border-black"><td className="p-2 bg-slate-50 font-black uppercase text-[9px]">काटा ब्रँड</td><td className="p-2 font-bold text-[11px]">{selectedSupplier.scaleBrand || "-"}</td></tr>
+                  <tr><td className="p-2 bg-slate-50 font-black uppercase text-[9px]">मशीन ब्रँड</td><td className="p-2 font-bold text-[11px]">{selectedSupplier.fatMachineBrand || "-"}</td></tr>
+                </tbody>
+              </table>
             </div>
 
             <div className="grid grid-cols-2 gap-4 w-full mb-4">
-              <div className="border-[1.5px] border-black rounded-sm overflow-hidden">
-                <div className="bg-slate-800 text-white p-1 text-[10px] font-black uppercase text-center border-b border-black">३) व्यावसायिक माहिती</div>
-                <table className="w-full border-collapse">
-                  <tbody>
-                    <tr className="border-b border-black"><td className="p-2 bg-slate-50 font-black uppercase text-[9px] w-[120px]">पेमेंट सायकल</td><td className="p-2 font-bold text-[11px]">{selectedSupplier.paymentCycle || "10 Days"}</td></tr>
-                    <tr className="border-b border-black"><td className="p-2 bg-slate-50 font-black uppercase text-[9px]">जागा मालकी</td><td className="p-2 font-bold text-[11px]">{selectedSupplier.spaceOwnership === 'Self' ? 'स्वतःची' : 'भाड्याची'}</td></tr>
-                    <tr><td className="p-2 bg-slate-50 font-black uppercase text-[9px]">स्वच्छता ग्रेड</td><td className="p-2 font-black text-emerald-600 text-[11px]">{selectedSupplier.hygieneGrade || "A"} GRADE</td></tr>
-                  </tbody>
-                </table>
-              </div>
+              <table className="w-full border-2 border-black">
+                <thead><tr className="bg-slate-800 text-white"><th colSpan={2} className="p-1.5 text-[10px] uppercase font-black">३) व्यावसायिक माहिती</th></tr></thead>
+                <tbody>
+                  <tr className="border-b border-black"><td className="p-2 bg-slate-50 font-black uppercase text-[9px] w-[120px]">पेमेंट सायकल</td><td className="p-2 font-bold text-[11px]">{selectedSupplier.paymentCycle || "10 Days"}</td></tr>
+                  <tr className="border-b border-black"><td className="p-2 bg-slate-50 font-black uppercase text-[9px]">जागा मालकी</td><td className="p-2 font-bold text-[11px]">{selectedSupplier.spaceOwnership === 'Self' ? 'स्वतःची' : 'भाड्याची'}</td></tr>
+                  <tr><td className="p-2 bg-slate-50 font-black uppercase text-[9px]">स्वच्छता ग्रेड</td><td className="p-2 font-black text-emerald-600 text-[11px]">{selectedSupplier.hygieneGrade || "A"} GRADE</td></tr>
+                </tbody>
+              </table>
 
-              <div className="border-[1.5px] border-black rounded-sm overflow-hidden">
-                <div className="bg-blue-800 text-white p-1 text-[10px] font-black uppercase text-center border-b border-black">४) दूध संकलन मॅट्रिक्स</div>
-                <table className="w-full border-collapse text-center">
-                  <thead>
-                    <tr className="bg-slate-50 border-b border-black font-black uppercase text-[8px]">
-                      <th className="p-1.5 border-r border-black text-left">प्रकार</th>
-                      <th className="p-1.5 border-r border-black">एकूण प्रमाण</th>
-                      <th className="p-1.5 border-r border-black">FAT</th>
-                      <th className="p-1.5">SNF</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr className="border-b border-black text-[10px] font-bold">
-                      <td className="p-1.5 border-r border-black text-left bg-slate-50/50 font-black text-[8px]">COW</td>
-                      <td className="p-1.5 border-r border-black">{selectedSupplier.cowMilk?.quantity || 0} L</td>
-                      <td className="p-1.5 border-r border-black">{selectedSupplier.cowMilk?.fat || "-"} %</td>
-                      <td className="p-1.5">{selectedSupplier.cowMilk?.snf || "-"} %</td>
-                    </tr>
-                    <tr className="text-[10px] font-bold">
-                      <td className="p-1.5 border-r border-black text-left bg-slate-50/50 font-black text-[8px]">BUF</td>
-                      <td className="p-1.5 border-r border-black">{selectedSupplier.buffaloMilk?.quantity || 0} L</td>
-                      <td className="p-1.5 border-r border-black">{selectedCenter.buffaloMilk?.fat || "-"} %</td>
-                      <td className="p-1.5">{selectedCenter.buffaloMilk?.snf || "-"} %</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+              <table className="w-full border-2 border-black text-center">
+                <thead><tr className="bg-blue-800 text-white"><th colSpan={4} className="p-1.5 text-[10px] uppercase font-black">४) दूध संकलन मॅट्रिक्स</th></tr></thead>
+                <tbody>
+                  <tr className="bg-slate-50 border-b border-black font-black uppercase text-[8px]"><td className="p-1.5 text-left">प्रकार</td><td>प्रमाण (L)</td><td>FAT %</td><td>SNF %</td></tr>
+                  <tr className="border-b border-black text-[10px] font-bold">
+                    <td className="p-1.5 text-left bg-slate-50/50 font-black text-[8px]">COW</td>
+                    <td className="p-1.5">{selectedSupplier.cowMilk?.quantity || 0} L</td>
+                    <td className="p-1.5">{selectedSupplier.cowMilk?.fat || "-"} %</td>
+                    <td className="p-1.5">{selectedSupplier.cowMilk?.snf || "-"} %</td>
+                  </tr>
+                  <tr className="text-[10px] font-bold">
+                    <td className="p-1.5 text-left bg-slate-50/50 font-black text-[8px]">BUF</td>
+                    <td className="p-1.5">{selectedSupplier.buffaloMilk?.quantity || 0} L</td>
+                    <td className="p-1.5">{selectedSupplier.buffaloMilk?.fat || "-"} %</td>
+                    <td className="p-1.5">{selectedSupplier.buffaloMilk?.snf || "-"} %</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
 
             <div className="space-y-2 w-full text-left">
-              <h4 className="text-[10px] font-black uppercase text-primary tracking-widest border-b-2 border-black pb-0.5 mb-1">५) साहित्याची यादी (INVENTORY)</h4>
-              <table className="w-full border-collapse">
+              <table className="w-full border-collapse border-2 border-black">
                 <thead>
-                  <tr className="bg-slate-100">
-                    <th className="p-2 border border-black text-left uppercase text-[9px] w-[55%]">साहित्य नाव</th>
-                    <th className="p-2 border border-black text-center uppercase text-[9px] w-[15%]">नग</th>
-                    <th className="p-2 border border-black text-right uppercase text-[9px] w-[30%]">मालकी</th>
+                  <tr className="bg-slate-800 text-white"><th colSpan={3} className="p-1.5 text-[10px] uppercase font-black">५) साहित्याची यादी (INVENTORY)</th></tr>
+                  <tr className="bg-slate-100 border-b border-black">
+                    <th className="p-2 border-r border-black text-left uppercase text-[9px] w-[55%]">साहित्य नाव</th>
+                    <th className="p-2 border-r border-black text-center uppercase text-[9px] w-[15%]">नग</th>
+                    <th className="p-2 text-right uppercase text-[9px] w-[30%]">मालकी</th>
                   </tr>
                 </thead>
                 <tbody>
                   {(selectedSupplier.equipment || []).map((it, idx) => (
-                    <tr key={idx} className="font-bold border-b border-black">
-                      <td className="p-2 border border-black text-[11px] uppercase">{it.name}</td>
-                      <td className="p-2 border border-black text-center text-[11px]">{it.quantity}</td>
-                      <td className="p-2 border border-black text-right uppercase text-[8px]">{it.ownership === 'Self' ? 'स्वतःची' : 'डेअरीची'}</td>
+                    <tr key={idx} className="font-bold border-b border-black h-9">
+                      <td className="p-2 border-r border-black text-[11px] uppercase">{it.name}</td>
+                      <td className="p-2 border-r border-black text-center text-[11px]">{it.quantity}</td>
+                      <td className="p-2 text-right uppercase text-[8px]">{it.ownership === 'Self' ? 'स्वतःची' : 'डेअरीची'}</td>
                     </tr>
                   ))}
                 </tbody>
