@@ -44,18 +44,23 @@
     @apply h-8 text-[12px] font-bold bg-slate-50 border border-slate-100 rounded-md px-2 focus-visible:ring-primary shadow-inner w-full outline-none transition-all;
   }
 
+  /* Robust Responsive Table Wrapper */
   .responsive-table-wrapper {
     @apply w-full overflow-x-auto rounded-lg border border-slate-200 bg-white mb-4;
+    -webkit-overflow-scrolling: touch;
   }
 
+  /* Ultimate Printable Table Styling */
   .printable-report-table {
     @apply w-full border-collapse border-2 border-black mb-4;
+    table-layout: auto;
   }
 
   .printable-report-table th, .printable-report-table td {
     @apply border border-black p-2 text-[11px] font-bold leading-tight align-middle;
     word-wrap: break-word;
     overflow-wrap: break-word;
+    white-space: normal;
   }
 
   .printable-report-table th {
@@ -77,13 +82,13 @@ h1, h2, h3, h4 {
 ::-webkit-scrollbar-thumb { @apply bg-slate-200 rounded-full; }
 
 /* 
- * ULTIMATE ROBUST PRINT ENGINE v60.0
- * Pure white background, centered A4 content, absolute flow, no clipping.
+ * ULTIMATE ROBUST PRINT ENGINE v70.0
+ * Pure white background, sequential flow, zero clipping, zero overlap.
  */
 @media print {
   @page {
     size: A4;
-    margin: 10mm;
+    margin: 15mm;
   }
   
   html, body {
@@ -98,12 +103,15 @@ h1, h2, h3, h4 {
     print-color-adjust: exact !important;
   }
 
-  /* Hide all UI elements */
-  .no-print, button, header, nav, footer, .sidebar, [role="dialog"] > div:first-child, .fixed.inset-0, .bg-black\/80 {
+  /* Hide all UI elements including dark overlays */
+  .no-print, button, header, nav, footer, .sidebar, 
+  [role="dialog"] > div:first-child, .fixed.inset-0, .bg-black\/80 {
     display: none !important;
     opacity: 0 !important;
+    pointer-events: none !important;
   }
 
+  /* Global Container for Print */
   .printable-report, .printable-report * {
     visibility: visible !important;
     opacity: 1 !important;
@@ -114,39 +122,53 @@ h1, h2, h3, h4 {
   }
 
   .printable-report {
-    position: relative !important;
+    position: static !important; /* Stop absolute overlapping */
     display: block !important;
     width: 100% !important;
-    max-width: 190mm !important;
-    margin: 0 auto !important;
+    max-width: none !important;
+    margin: 0 !important;
     padding: 0 !important;
     border: none !important;
-    z-index: 99999 !important;
-    left: auto !important;
-    right: auto !important;
-    top: auto !important;
+    z-index: auto !important;
     transform: none !important;
+    overflow: visible !important;
   }
 
-  /* Ensure tables take full width and don't break awkwardly */
+  /* Table Specific Print Fixes */
   table {
     width: 100% !important;
     border-collapse: collapse !important;
     page-break-inside: avoid !important;
-    margin-bottom: 10px !important;
+    margin-bottom: 15px !important;
     table-layout: auto !important;
   }
 
-  tr { 
-    page-break-inside: avoid !important; 
-    page-break-after: auto !important;
-  }
-
+  thead { display: table-header-group !important; }
+  tr { page-break-inside: avoid !important; }
+  
   th, td {
-    padding: 6px !important;
-    border: 1px solid black !important;
+    padding: 8px !important;
+    border: 1.5px solid black !important;
     font-size: 10pt !important;
     word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+  }
+
+  /* Grid/Flex fixes for print */
+  .grid, .flex {
+    display: block !important; /* Stack elements sequentially in print */
+  }
+
+  /* Keep 2-column ERP layout IF it fits, otherwise stack */
+  .print-excel-grid {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    gap: 10px !important;
+  }
+  .print-excel-grid > * {
+    width: calc(50% - 5px) !important;
+    flex-basis: calc(50% - 5px) !important;
   }
 
   /* Force display of elements usually hidden in Dialogs */
@@ -155,13 +177,12 @@ h1, h2, h3, h4 {
     display: block !important;
     width: 100% !important;
     max-width: none !important;
-    box-shadow: none !important;
-    border: none !important;
     background: white !important;
     overflow: visible !important;
+    border: none !important;
+    box-shadow: none !important;
   }
 
-  /* Clear scaling and transforms */
   div, section, article {
     transform: none !important;
     max-height: none !important;

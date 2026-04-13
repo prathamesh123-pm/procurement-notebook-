@@ -119,11 +119,11 @@ const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any
       <table className="w-full border-collapse border border-black text-[9px] table-fixed">
         <thead>
           <tr className="bg-slate-100 font-black uppercase text-center h-8 border-b border-black">
-            <th className="border-r border-black p-1 w-[30px]">SR</th>
-            <th className="border-r border-black p-1 w-[50px]">ID</th>
+            <th className="border-r border-black p-1 w-[25px]">SR</th>
+            <th className="border-r border-black p-1 w-[45px]">ID</th>
             <th className="border-r border-black p-1 text-left pl-2">ROUTE NAME</th>
-            <th className="border-r border-black p-1 w-[40px]">REQ</th>
-            <th className="p-1 w-[40px]">ALLOC</th>
+            <th className="border-r border-black p-1 w-[35px]">REQ</th>
+            <th className="p-1 w-[35px]">ALOC</th>
           </tr>
         </thead>
         <tbody>
@@ -145,9 +145,9 @@ const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any
         <div className="bg-slate-800 text-white p-2 text-[11px] font-black uppercase text-center border-b border-black">
           {title}
         </div>
-        <div className="flex w-full divide-x divide-black">
-          <div className="w-1/2"><TablePart items={leftCol} startIdx={0} /></div>
-          <div className="w-1/2"><TablePart items={rightCol} startIdx={mid} /></div>
+        <div className="print-excel-grid flex w-full divide-x divide-black">
+          <div className="w-1/2 flex-1"><TablePart items={leftCol} startIdx={0} /></div>
+          <div className="w-1/2 flex-1"><TablePart items={rightCol} startIdx={mid} /></div>
         </div>
       </div>
     );
@@ -197,7 +197,7 @@ const RouteVisitLayout = ({ report, profileName, profileId }: { report: any, pro
           <tr className="border-b border-black h-10">
             <td className="p-2 bg-slate-50 font-black uppercase text-[10px] border-r border-black w-1/4">दुध संकलन रूटचे नाव</td>
             <td className="p-2 font-bold text-[12px] w-1/4">{d.routeName}</td>
-            <td className="p-2 bg-slate-50 font-black uppercase text-[10px] border-r border-black w-1/4">गाडीचा नंबर</td>
+            <td className="p-2 bg-slate-50 font-black uppercase text-[10px] border-r border-black w-1/4">वाहन नंबर</td>
             <td className="p-2 font-bold text-[12px] w-1/4">{d.vehicleNumber}</td>
           </tr>
           <tr className="h-10">
@@ -209,23 +209,23 @@ const RouteVisitLayout = ({ report, profileName, profileId }: { report: any, pro
         </tbody>
       </table>
 
-      <table className="w-full border-collapse border-2 border-black mb-6 table-fixed">
+      <table className="w-full border-collapse border-2 border-black mb-6">
         <thead>
           <tr className="bg-slate-800 text-white text-[9px] font-black uppercase text-center h-10">
-            <th className="border border-white/20 w-[40px]">SR</th>
-            <th className="border border-white/20 w-[70px]">CODE</th>
-            <th className="border border-white/20 text-left pl-3">CENTER NAME</th>
-            <th className="border border-white/20 w-[110px]">IN/OUT TIME</th>
-            <th className="border border-white/20 w-[75px]">CANS E/F</th>
-            <th className="border border-white/20 w-[70px]">ICE</th>
+            <th className="border-r border-white/20 w-[35px]">SR</th>
+            <th className="border-r border-white/20 w-[65px]">CODE</th>
+            <th className="border-r border-white/20 text-left pl-3">CENTER NAME</th>
+            <th className="border-r border-white/20 w-[110px]">IN/OUT TIME</th>
+            <th className="border-r border-white/20 w-[75px]">CANS E/F</th>
+            <th className="w-[65px]">ICE</th>
           </tr>
         </thead>
         <tbody>
           {logs.map((log: any, i: number) => (
             <tr key={i} className="text-[11px] font-bold uppercase text-center h-9 border-b border-black">
-              <td className="border-r border-black">{i + 1}</td>
-              <td className="border-r border-black truncate">{log.centerCode}</td>
-              <td className="border-r border-black text-left pl-3 truncate font-black text-[12px]">{log.supplierName}</td>
+              <td className="border-r border-black bg-slate-50">{i + 1}</td>
+              <td className="border-r border-black truncate px-1">{log.centerCode}</td>
+              <td className="border-r border-black text-left pl-3 font-black text-[12px]">{log.supplierName}</td>
               <td className="border-r border-black">{log.arrivalTime}-{log.departureTime}</td>
               <td className="border-r border-black">{log.emptyCans}/{log.fullCans}</td>
               <td className="">{log.iceUsed}</td>
@@ -235,9 +235,9 @@ const RouteVisitLayout = ({ report, profileName, profileId }: { report: any, pro
       </table>
 
       <div className="w-full space-y-3 mb-10 text-left">
-        {d.achievements && <div className="border-2 border-black p-4 rounded-sm bg-emerald-50/10"><span className="font-black uppercase text-emerald-700 block mb-1 text-[10px]">१) आजची मोठी कामगिरी:</span> <p className="text-[12px] font-bold">{d.achievements}</p></div>}
-        {d.problems && <div className="border-2 border-black p-4 rounded-sm bg-rose-50/10"><span className="font-black uppercase text-rose-700 block mb-1 text-[10px]">२) महत्त्वाच्या समस्या:</span> <p className="text-[12px] font-bold">{d.problems}</p></div>}
-        {d.actionsTaken && <div className="border-2 border-black p-4 rounded-sm bg-blue-50/10"><span className="font-black uppercase text-blue-700 block mb-1 text-[10px]">३) केलेली कार्यवाही:</span> <p className="text-[12px] font-bold">{d.actionsTaken}</p></div>}
+        {d.achievements && <div className="border-2 border-black p-4 rounded-sm bg-emerald-50/5"><span className="font-black uppercase text-emerald-700 block mb-1 text-[10px]">१) आजची मोठी कामगिरी:</span> <p className="text-[12px] font-bold">{d.achievements}</p></div>}
+        {d.problems && <div className="border-2 border-black p-4 rounded-sm bg-rose-50/5"><span className="font-black uppercase text-rose-700 block mb-1 text-[10px]">२) महत्त्वाच्या समस्या:</span> <p className="text-[12px] font-bold">{d.problems}</p></div>}
+        {d.actionsTaken && <div className="border-2 border-black p-4 rounded-sm bg-blue-50/5"><span className="font-black uppercase text-blue-700 block mb-1 text-[10px]">३) केलेली कार्यवाही:</span> <p className="text-[12px] font-bold">{d.actionsTaken}</p></div>}
       </div>
 
       <div className="w-full mt-auto pt-24 grid grid-cols-2 gap-24 text-center uppercase font-black text-[11px] tracking-widest">
@@ -295,7 +295,7 @@ const BreakdownLayout = ({ report, profileName, profileId }: { report: any, prof
       {losses && losses.length > 0 && (
         <div className="w-full border-2 border-black rounded-sm overflow-hidden mb-6">
           <div className="bg-slate-800 text-white p-2 text-[10px] font-black uppercase text-center border-b border-black">आर्थिक नुकसान तपशील (LOSS LOG)</div>
-          <table className="w-full border-collapse table-fixed">
+          <table className="w-full border-collapse">
             <thead>
               <tr className="bg-slate-100 text-black font-black text-[9px] uppercase text-center h-10">
                 <th className="border-r border-black text-left pl-3">सेंटर/गवळी नाव</th>
@@ -384,7 +384,7 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
       {(d.cowMilk || d.buffaloMilk || d.cowQty || d.bufQty) && (
         <div className="w-full mb-8 text-left">
           <span className="text-[11px] font-black uppercase block border-b-2 border-black pb-2 mb-3">दूध संकलन मॅट्रिक्स (MILK DETAILS):</span>
-          <table className="w-full border-collapse border-2 border-black table-fixed">
+          <table className="w-full border-collapse border-2 border-black">
             <thead>
               <tr className="bg-slate-800 text-white text-[10px] font-black uppercase text-center h-10">
                 <th className="text-left pl-3">दूध प्रकार</th>
@@ -414,7 +414,7 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
       {inventory.length > 0 && (
         <div className="w-full mb-8 text-left">
           <span className="text-[11px] font-black uppercase block border-b-2 border-black pb-2 mb-3">साहित्याची यादी (INVENTORY ASSETS):</span>
-          <table className="w-full border-collapse border-2 border-black table-fixed">
+          <table className="w-full border-collapse border-2 border-black">
             <thead>
               <tr className="bg-slate-800 text-white text-[10px] font-black uppercase h-10 text-center">
                 <th className="text-left pl-3 border-r border-white/20">साहित्य नाव (Item Name)</th>
