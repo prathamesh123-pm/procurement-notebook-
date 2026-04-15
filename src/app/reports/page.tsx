@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
@@ -6,7 +7,7 @@ import { Card } from "@/components/ui/card"
 import { 
   Archive, Search, X, Printer, Trash2, FileEdit, Truck, 
   ShieldAlert, ClipboardCheck, Plus, MapPin, FileText,
-  Briefcase, FileSignature, CheckCircle2, Microscope, Layers, Calendar, ChevronRight, AlertCircle, AlertTriangle, Info, BookOpen, Lightbulb, FileCheck, Clock, Milk
+  Briefcase, FileSignature, CheckCircle2, Microscope, Layers, Calendar, ChevronRight, AlertCircle, AlertTriangle, Info, BookOpen, Lightbulb, FileCheck, Clock, Milk, User
 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
@@ -58,7 +59,12 @@ const labelMap: Record<string, string> = {
   actionTaken: "केलेली कार्यवाही",
   totalMilk: "एकूण दूध (L)",
   paymentCycle: "पेमेंट सायकल",
-  otherInfo: "इतर माहिती"
+  otherInfo: "इतर माहिती",
+  estimatedRepairTime: "दुरुस्ती वेळ",
+  recoveryVehicleNo: "पर्यायी गाडी",
+  recoveryArrivalTime: "पर्यायी गाडी वेळ",
+  milkHot: "दूध गरम झाले का",
+  milkSour: "दूध खराब झाले का"
 };
 
 const ReportHeader = ({ title, date, subName, subId, shift }: any) => (
