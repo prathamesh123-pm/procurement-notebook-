@@ -7,7 +7,7 @@ import { Card } from "@/components/ui/card"
 import { 
   Archive, Search, X, Printer, Trash2, FileEdit, Truck, 
   ShieldAlert, ClipboardCheck, Plus, MapPin, FileText,
-  Briefcase, FileSignature, CheckCircle2, Microscope, Layers, Calendar, ChevronRight, AlertCircle, AlertTriangle, Info, BookOpen, Lightbulb, FileCheck, Clock, Milk, User
+  Briefcase, FileSignature, CheckCircle2, Microscope, Layers, Calendar, ChevronRight, AlertCircle, AlertTriangle, Info, BookOpen, Lightbulb, FileCheck, Clock, Milk, User, IndianRupee
 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
@@ -48,7 +48,7 @@ const labelMap: Record<string, string> = {
   fat: "फॅट (%)",
   snf: "SNF (%)",
   result: "निकाल",
-  totalLossAmount: "आर्थिक नुकसान (₹)",
+  totalLossAmount: "एकूण आर्थिक नुकसान (₹)",
   dailyProblems: "प्रॉब्लेम्स / निरीक्षणे",
   slipNo: "SLIP No.",
   visitPerson: "भेट दिलेली व्यक्ती",
@@ -71,9 +71,11 @@ const ReportHeader = ({ title, date, subName, subId, shift }: any) => (
   <div className="w-full border-b-[3px] border-black pb-4 mb-6 text-center">
     <h1 className="text-[16pt] sm:text-[22pt] font-black uppercase tracking-tight text-slate-900 leading-tight">{title || "अधिकृत अहवाल"}</h1>
     <div className="flex flex-col sm:flex-row justify-between items-center text-[8pt] sm:text-[10pt] font-black uppercase text-slate-700 tracking-wider mt-4 border-t border-black/10 pt-3 gap-2">
-      <div className="flex flex-wrap justify-center sm:justify-start gap-x-4 gap-y-1">
-        <span className="flex items-center gap-1.5"><FileCheck className="h-3.5 w-3.5" /> सादरकर्ता: {subName}</span>
-        {subId && <span className="opacity-70">ID: {subId}</span>}
+      <div className="flex flex-wrap justify-center sm:justify-start gap-x-4 gap-y-1 text-left">
+        <div className="flex flex-col">
+          <span className="flex items-center gap-1.5"><FileCheck className="h-3.5 w-3.5" /> सादरकर्ता: {subName}</span>
+          {subId && <span className="text-[7pt] opacity-70 ml-5">अधिकृत आयडी: {subId}</span>}
+        </div>
         {shift && <Badge variant="outline" className="h-5 text-[8px] border-black/20 font-black">{shift}</Badge>}
       </div>
       <span className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" /> दिनांक: {date}</span>
@@ -243,28 +245,35 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
 
   const renderLossLogTable = () => {
     if (d.centerLosses && d.centerLosses.length > 0) {
+      const totalLoss = d.centerLosses.reduce((acc: number, curr: any) => acc + (Number(curr.lossAmount) || 0), 0);
       return (
         <div className="w-full mb-8 border-2 border-black overflow-hidden shadow-sm break-inside-avoid">
           <div className="bg-rose-800 text-white p-2 text-[9pt] font-black uppercase text-center tracking-widest">नुकसान तपशील (LOSS LOG)</div>
           <table className="w-full border-collapse text-[8.5pt]">
             <thead>
               <tr className="bg-slate-100 font-black uppercase border-b-2 border-black">
-                <th className="border-r border-black p-2">केंद्राचे नाव</th>
-                <th className="border-r border-black p-2">प्रकार</th>
-                <th className="border-r border-black p-2">लिटर</th>
-                <th className="p-2">रक्कम (₹)</th>
+                <th className="border-r border-black p-2">केंद्राचे नाव / कोड</th>
+                <th className="border-r border-black p-2 w-20">प्रकार</th>
+                <th className="border-r border-black p-2 w-20">लिटर</th>
+                <th className="p-2 w-32">रक्कम (₹)</th>
               </tr>
             </thead>
             <tbody>
               {d.centerLosses.map((it: any, i: number) => (
                 <tr key={it.id || `loss-${i}`} className="font-bold uppercase border-b border-black last:border-0">
-                  <td className="border-r border-black p-2 pl-3">{it.centerName} ({it.centerCode})</td>
+                  <td className="border-r border-black p-2 pl-3">{it.centerName} {it.centerCode ? `(${it.centerCode})` : ""}</td>
                   <td className="border-r border-black p-2 text-center">{it.milkType}</td>
                   <td className="border-r border-black p-2 text-center">{it.qtyLiters}</td>
                   <td className="p-2 text-right pr-3 font-black text-rose-600">₹{it.lossAmount}</td>
                 </tr>
               ))}
             </tbody>
+            <tfoot>
+              <tr className="bg-rose-50 font-black border-t-2 border-black">
+                <td colSpan={3} className="p-2 text-right uppercase tracking-widest pr-4">एकूण आर्थिक नुकसान:</td>
+                <td className="p-2 text-right pr-3 text-rose-700 text-[11pt]">₹{totalLoss}</td>
+              </tr>
+            </tfoot>
           </table>
         </div>
       )
@@ -276,6 +285,10 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
     <div className="bg-white font-sans text-slate-900 w-full p-4 sm:p-10 printable-report flex flex-col items-center min-h-full">
       <ReportHeader title={d.reportHeading || report.type} date={report.date} subName={d.name || d.repName || profileName} subId={d.idNumber || d.repId || profileId} shift={d.shift} />
       
+      <div className="w-full text-left mb-6 text-[10pt] font-bold leading-relaxed italic text-slate-600 border-l-4 border-slate-200 pl-4">
+        सदर अहवाल {d.name || d.repName || profileName} (आयडी: {d.idNumber || d.repId || profileId}) यांच्याद्वारे अधिकृतपणे {report.date} रोजी सादर करण्यात येत आहे.
+      </div>
+
       <SectionTitle icon={Info} title="१) मुख्य माहिती तपशील (DETAILS)" />
       <div className="w-full border-2 border-black mb-8 overflow-hidden">
         <table className="w-full border-collapse">
@@ -316,6 +329,18 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
                 <span>{p}</span>
               </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {d.fineAmount && (
+        <div className="w-full mt-6 break-inside-avoid">
+          <div className="bg-rose-600 text-white p-4 rounded-xl flex items-center justify-between shadow-lg">
+            <div className="flex items-center gap-3">
+              <ShieldAlert className="h-6 w-6" />
+              <span className="text-[10pt] font-black uppercase tracking-widest">आकारलेला एकूण दंड:</span>
+            </div>
+            <span className="text-xl font-black">₹{d.fineAmount}</span>
           </div>
         </div>
       )}
