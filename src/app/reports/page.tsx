@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card"
 import { 
   Archive, Search, X, Printer, Trash2, FileEdit, Truck, 
   ShieldAlert, ClipboardCheck, Plus, MapPin, FileText,
-  Briefcase, FileSignature, CheckCircle2, Microscope, Layers, Calendar, ChevronRight, AlertCircle, AlertTriangle, Info, BookOpen, Lightbulb, FileCheck, Clock, Milk, User, IndianRupee
+  Briefcase, FileSignature, CheckCircle2, Microscope, Layers, Calendar, ChevronRight, AlertCircle, AlertTriangle, Info, BookOpen, Lightbulb, FileCheck, Clock, Milk, User, IndianRupee, Hash
 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
@@ -202,7 +202,7 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
     );
   }
 
-  const excludeFields = ["reportHeading", "name", "repName", "shift", "idNumber", "repId", "routeVisitLogs", "centerLosses", "morningRoutes", "eveningRoutes", "tankerRoutes", "extCanRoutes", "extTankerRoutes", "points", "remarkPoints", "dailyProblems", "equipment", "cowMilk", "buffaloMilk", "cowQty", "cowFat", "cowSnf", "bufQty", "bufFat", "bufSnf", "summary", "achievements", "problems", "actionsTaken", "actionTaken", "isWordDoc", "content", "title", "type", "visitDiscussion", "officeTaskDetails", "remark"];
+  const excludeFields = ["reportHeading", "name", "repName", "shift", "idNumber", "repId", "routeVisitLogs", "centerLosses", "morningRoutes", "eveningRoutes", "tankerRoutes", "extCanRoutes", "extTankerRoutes", "points", "remarkPoints", "dailyProblems", "equipment", "cowMilk", "buffaloMilk", "cowQty", "cowFat", "cowSnf", "bufQty", "bufFat", "bufSnf", "summary", "achievements", "problems", "actionsTaken", "actionTaken", "isWordDoc", "content", "title", "type", "visitDiscussion", "officeTaskDetails", "remark", "supplierName", "supplierId"];
 
   const orderedEntries = Object.keys(d)
     .filter(key => d[key] && labelMap[key] && !excludeFields.includes(key))
@@ -295,18 +295,18 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
       <div className="w-full border-2 border-black mb-8 overflow-hidden">
         <table className="w-full border-collapse">
           <tbody>
-            {report.type === 'Daily Task' && (
+            {(report.type === 'Daily Task' || d.supplierName) && (
               <>
                 <tr className="text-[9pt] sm:text-[10pt] font-bold border-b border-black hover:bg-slate-50">
-                  <td className="p-2.5 bg-slate-100 uppercase font-black border-r border-black w-1/3 text-slate-700 pl-3">पुरवठादार / केंद्राचे नाव</td>
+                  <td className="p-2.5 bg-slate-100 uppercase font-black border-r border-black w-1/3 text-slate-700 pl-3 flex items-center gap-2"><User className="h-3.5 w-3.5" /> पुरवठादार / केंद्राचे नाव</td>
                   <td className="p-2.5 pl-3 font-black text-primary">{d.supplierName || "-"}</td>
                 </tr>
                 <tr className="text-[9pt] sm:text-[10pt] font-bold border-b border-black hover:bg-slate-50">
-                  <td className="p-2.5 bg-slate-100 uppercase font-black border-r border-black w-1/3 text-slate-700 pl-3">पुरवठादार कोड (CODE)</td>
+                  <td className="p-2.5 bg-slate-100 uppercase font-black border-r border-black w-1/3 text-slate-700 pl-3 flex items-center gap-2"><Hash className="h-3.5 w-3.5" /> पुरवठादार कोड (CODE)</td>
                   <td className="p-2.5 pl-3 font-black">{d.supplierId || "-"}</td>
                 </tr>
                 <tr className="text-[9pt] sm:text-[10pt] font-bold border-b border-black hover:bg-slate-50">
-                  <td className="p-2.5 bg-slate-100 uppercase font-black border-r border-black w-1/3 text-slate-700 pl-3">पूर्ण करावयाच्या कामाचे नाव</td>
+                  <td className="p-2.5 bg-slate-100 uppercase font-black border-r border-black w-1/3 text-slate-700 pl-3 flex items-center gap-2"><Briefcase className="h-3.5 w-3.5" /> पूर्ण करावयाच्या कामाचे नाव</td>
                   <td className="p-2.5 pl-3 font-black text-rose-600 uppercase">{d.title || "-"}</td>
                 </tr>
               </>
@@ -330,7 +330,7 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
           <div className="w-full text-left space-y-2">
             <ProfessionalParagraph label="प्रस्तावना / सारांश" content={d.summary} icon={Info} />
             <ProfessionalParagraph label="झालेली चर्चा / तपशील" content={d.visitDiscussion || d.officeTaskDetails} icon={FileText} />
-            <ProfessionalParagraph label="कामाबद्दल सविस्तर शेरा" content={d.remark} icon={Edit} />
+            <ProfessionalParagraph label="कामाबद्दल सविस्तर शेरा" content={d.remark} icon={FileEdit} />
             <ProfessionalParagraph label="महत्त्वाची कामगिरी" content={d.achievements} icon={CheckCircle2} />
             <ProfessionalParagraph label="समस्येचे स्वरूप" content={d.problems} icon={AlertTriangle} />
             <ProfessionalParagraph label="केलेली कार्यवाही / शिफारसी" content={d.actionsTaken || d.actionTaken} icon={Lightbulb} />
@@ -545,7 +545,7 @@ export default function ReportsPage() {
 
       <Dialog open={isViewOpen} onOpenChange={setIsViewOpen}>
         <DialogContent className={cn(
-          "p-0 rounded-2xl overflow-hidden border-none shadow-2xl bg-white flex flex-col h-[95vh] md:h-auto md:max-h-[98vh]",
+          "p-0 rounded-2xl overflow-hidden border-none shadow-2xl bg-white flex flex-col h-[95vh] md:h-auto md:max-h-[98vh] no-print-background",
           selectedReport?.type === 'Route Allocation Report' ? "max-w-[1100px] w-[98vw]" : "max-w-[950px] w-[98vw]"
         )}>
           <DialogHeader className="p-4 bg-white border-b flex flex-row items-center justify-between no-print w-full shrink-0">

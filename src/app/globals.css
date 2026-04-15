@@ -74,12 +74,12 @@ h1, h2, h3, h4 {
 
 @media print {
   @page {
-    margin: 5mm;
+    margin: 0;
     padding: 0;
     size: auto;
   }
   
-  /* Reset layout for print to ensure it starts at the very top */
+  /* Reset layout for print - Critical Fix for Blank Pages */
   html, body {
     height: auto !important;
     min-height: auto !important;
@@ -89,41 +89,36 @@ h1, h2, h3, h4 {
     padding: 0 !important;
   }
 
-  /* Extreme hiding of background elements to prevent blank pages */
-  .no-print, 
-  button, 
-  header, 
-  nav, 
-  footer, 
-  aside, 
-  .sidebar, 
-  .fixed,
-  [data-radix-scroll-area-scrollbar],
-  .bg-black\/80,
-  [role="dialog"] > div:first-child {
-    display: none !important;
-    opacity: 0 !important;
-    visibility: hidden !important;
-    width: 0 !important;
-    height: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    position: absolute !important;
-    top: -9999px !important;
+  /* Force the report to the absolute top of the print stream */
+  #__next, [data-radix-portal] {
+    position: static !important;
   }
 
-  /* Force the dialog content to be a normal block at the top */
+  /* Hide everything except the report */
+  header, nav, footer, aside, .sidebar, main, .no-print, button, 
+  [role="dialog"] > div:first-child, /* Dialog Overlay */
+  .fixed, .sticky {
+    display: none !important;
+    height: 0 !important;
+    width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    visibility: hidden !important;
+  }
+
+  /* Target the dialog portal specifically */
   [role="dialog"] {
     display: block !important;
-    position: relative !important;
+    position: absolute !important;
     top: 0 !important;
+    left: 0 !important;
     width: 100% !important;
     height: auto !important;
     margin: 0 !important;
     padding: 0 !important;
-    overflow: visible !important;
     border: none !important;
     box-shadow: none !important;
+    background: white !important;
     transform: none !important;
   }
 
@@ -136,7 +131,7 @@ h1, h2, h3, h4 {
     width: 100% !important;
     max-width: none !important;
     margin: 0 !important;
-    padding: 0 !important;
+    padding: 10mm !important; /* Proper paper margin */
     background: white !important;
     border: none !important;
     visibility: visible !important;
@@ -145,24 +140,26 @@ h1, h2, h3, h4 {
     transform: none !important;
   }
 
+  /* Ensure all text is black */
   .printable-report * {
     visibility: visible !important;
     opacity: 1 !important;
     color: black !important;
+    background-color: transparent !important;
   }
 
-  /* Table styling */
+  /* Tables in print */
   table {
     width: 100% !important;
     border-collapse: collapse !important;
     border: 1px solid black !important;
-    margin-bottom: 10px !important;
+    margin-bottom: 5mm !important;
     page-break-inside: auto !important;
   }
 
   th, td {
     border: 1px solid black !important;
-    padding: 4pt !important;
+    padding: 3pt !important;
     color: black !important;
     background: white !important;
   }
