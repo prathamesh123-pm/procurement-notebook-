@@ -64,8 +64,8 @@ const labelMap: Record<string, string> = {
 
 const ReportHeader = ({ title, date, subName, subId, shift }: any) => (
   <div className="w-full border-b-[3px] border-black pb-4 mb-6 text-center">
-    <h1 className="text-[18pt] sm:text-[22pt] font-black uppercase tracking-tight text-slate-900 leading-tight">{title || "अधिकृत अहवाल"}</h1>
-    <div className="flex flex-col sm:flex-row justify-between items-center text-[9pt] sm:text-[10pt] font-black uppercase text-slate-700 tracking-wider mt-4 border-t border-black/10 pt-3 gap-2">
+    <h1 className="text-[16pt] sm:text-[22pt] font-black uppercase tracking-tight text-slate-900 leading-tight">{title || "अधिकृत अहवाल"}</h1>
+    <div className="flex flex-col sm:flex-row justify-between items-center text-[8pt] sm:text-[10pt] font-black uppercase text-slate-700 tracking-wider mt-4 border-t border-black/10 pt-3 gap-2">
       <div className="flex flex-wrap justify-center sm:justify-start gap-x-4 gap-y-1">
         <span className="flex items-center gap-1.5"><FileCheck className="h-3.5 w-3.5" /> सादरकर्ता: {subName}</span>
         {subId && <span className="opacity-70">ID: {subId}</span>}
@@ -79,7 +79,7 @@ const ReportHeader = ({ title, date, subName, subId, shift }: any) => (
 const SectionTitle = ({ icon: Icon, title, color = "text-slate-900" }: any) => (
   <div className="w-full flex items-center gap-2 border-b-2 border-black pb-1 mb-4 mt-6">
     {Icon && <Icon className={cn("h-4 w-4", color)} />}
-    <h3 className={cn("text-[10pt] sm:text-[11pt] font-black uppercase tracking-widest", color)}>{title}</h3>
+    <h3 className={cn("text-[9pt] sm:text-[11pt] font-black uppercase tracking-widest", color)}>{title}</h3>
   </div>
 )
 
@@ -92,7 +92,7 @@ const ProfessionalParagraph = ({ label, content, icon: Icon }: { label: string, 
         <span className="text-[8pt] sm:text-[9pt] font-black uppercase text-primary tracking-widest">{label}</span>
       </div>
       <div className="p-3 sm:p-4 bg-slate-50 border-l-4 border-primary rounded-r-lg shadow-sm">
-        <p className="text-[10pt] sm:text-[11pt] font-medium leading-relaxed text-slate-800 whitespace-pre-wrap">{content}</p>
+        <p className="text-[9pt] sm:text-[11pt] font-medium leading-relaxed text-slate-800 whitespace-pre-wrap">{content}</p>
       </div>
     </div>
   )
@@ -106,29 +106,29 @@ const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any
     
     return (
       <div key={tableKey} className="w-full mb-4 break-inside-avoid">
-        <div className="bg-slate-100 border-2 border-black border-b-0 p-1.5 font-black text-[9pt] uppercase text-left tracking-wider">
+        <div className="bg-slate-100 border-2 border-black border-b-0 p-1.5 font-black text-[8pt] uppercase text-left tracking-wider">
           Type : {title}
         </div>
-        <table className="w-full border-collapse border-2 border-black text-[8.5pt]">
+        <table className="w-full border-collapse border-2 border-black text-[8pt]">
           <thead>
             <tr className="bg-slate-50 font-black uppercase text-center border-b-2 border-black">
-              <th className="border-r border-black p-1.5 w-[40px]">Sr.No</th>
-              <th className="border-r border-black p-1.5 w-[70px]">Route ID</th>
-              <th className="border-r border-black p-1.5 text-left pl-3">Route Name</th>
-              <th className="border-r border-black p-1.5 w-[85px]">Requested Route (✓)</th>
-              <th className="p-1.5 w-[85px]">Allocated Route (✓)</th>
+              <th className="border-r border-black p-1 w-[35px]">SR</th>
+              <th className="border-r border-black p-1 w-[60px]">ID</th>
+              <th className="border-r border-black p-1 text-left pl-2">NAME</th>
+              <th className="border-r border-black p-1 w-[70px]">REQ (✓)</th>
+              <th className="p-1 w-[70px]">ALLOC (✓)</th>
             </tr>
           </thead>
           <tbody>
             {rawData.map((it, i) => (
-              <tr key={it.id || i} className="font-bold uppercase text-center border-b border-black last:border-b-0 hover:bg-slate-50 h-8">
+              <tr key={it.id || `${tableKey}-${i}`} className="font-bold uppercase text-center border-b border-black last:border-b-0 hover:bg-slate-50 h-8">
                 <td className="border-r border-black p-1">{i + 1}</td>
                 <td className="border-r border-black p-1 text-slate-600">{it.routeCode || it.routeId || "---"}</td>
-                <td className="border-r border-black p-1 text-left pl-3 truncate max-w-[200px]">{it.routeName}</td>
-                <td className="border-r border-black p-1 text-[14pt] text-rose-600 font-serif leading-none">
+                <td className="border-r border-black p-1 text-left pl-2 truncate max-w-[120px]">{it.routeName}</td>
+                <td className="border-r border-black p-1 text-[12pt] text-rose-600 font-serif leading-none">
                   {it.requested ? '✓' : ''}
                 </td>
-                <td className="p-1 text-[14pt] text-blue-700 font-serif leading-none">
+                <td className="p-1 text-[12pt] text-blue-700 font-serif leading-none">
                   {it.allocated ? '✓' : ''}
                 </td>
               </tr>
@@ -151,11 +151,11 @@ const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any
     <div className="bg-white font-sans text-slate-900 w-full p-4 sm:p-8 printable-report flex flex-col items-center landscape-mode-active">
       <ReportHeader title={d.reportHeading || "ERP Daily Route Allocation Register"} date={report.date} subName={d.name || profileName} subId={d.idNumber || profileId} shift={d.shift} />
       
-      <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-x-6 items-start">
-        <div className="flex flex-col gap-4">
+      <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-x-4 items-start">
+        <div className="flex flex-col gap-2">
           {sections.filter((_, idx) => idx % 2 === 0).map(s => renderRegisterTable(s.label, s.data, s.key))}
         </div>
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-2">
           {sections.filter((_, idx) => idx % 2 !== 0).map(s => renderRegisterTable(s.label, s.data, s.key))}
         </div>
       </div>
@@ -163,10 +163,10 @@ const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any
       {d.dailyProblems && (
         <div className="w-full mt-6 break-inside-avoid">
           <div className="bg-rose-50 border-2 border-black p-3 rounded shadow-sm">
-            <h4 className="text-[10pt] font-black uppercase text-rose-700 flex items-center gap-2 mb-2">
+            <h4 className="text-[9pt] font-black uppercase text-rose-700 flex items-center gap-2 mb-2">
               <AlertCircle className="h-4 w-4" /> महत्त्वाच्या नोंदी / प्रॉब्लेम्स (Daily Text Pad)
             </h4>
-            <div className="font-bold text-[10pt] text-slate-800 leading-relaxed whitespace-pre-wrap border-t border-rose-200 pt-2">
+            <div className="font-bold text-[9pt] text-slate-800 leading-relaxed whitespace-pre-wrap border-t border-rose-200 pt-2">
               {d.dailyProblems}
             </div>
           </div>
@@ -187,8 +187,8 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
   if (report.type === 'Official Document') {
     return (
       <div className="bg-white font-sans text-slate-900 w-full p-6 sm:p-12 printable-report flex flex-col">
-        <div className="w-full text-center mb-12"><h1 className="text-[22pt] font-black uppercase tracking-tight border-b-4 border-black pb-2 inline-block">{d.title || "अधिकृत दस्तऐवज"}</h1></div>
-        <div className="w-full prose prose-sm sm:prose-lg max-w-none text-left text-[12pt] leading-relaxed text-slate-900" dangerouslySetInnerHTML={{ __html: d.content || "" }} />
+        <div className="w-full text-center mb-12"><h1 className="text-[20pt] font-black uppercase tracking-tight border-b-4 border-black pb-2 inline-block">{d.title || "अधिकृत दस्तऐवज"}</h1></div>
+        <div className="w-full prose prose-sm sm:prose-lg max-w-none text-left text-[11pt] leading-relaxed text-slate-900" dangerouslySetInnerHTML={{ __html: d.content || "" }} />
       </div>
     );
   }
@@ -203,25 +203,25 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
     if (d.routeVisitLogs && d.routeVisitLogs.length > 0) {
       return (
         <div className="w-full mb-8 border-2 border-black overflow-hidden shadow-sm">
-          <div className="bg-slate-800 text-white p-2 text-[10pt] font-black uppercase text-center tracking-widest">व्हिजिट लॉग (VISIT LOG)</div>
+          <div className="bg-slate-800 text-white p-2 text-[9pt] font-black uppercase text-center tracking-widest">व्हिजिट लॉग (VISIT LOG)</div>
           <div className="overflow-x-auto">
-            <table className="w-full border-collapse text-[9pt]">
+            <table className="w-full border-collapse text-[8.5pt]">
               <thead>
                 <tr className="bg-slate-100 font-black uppercase border-b-2 border-black">
-                  <th className="border-r border-black p-2 w-[40px]">SR</th>
-                  <th className="border-r border-black p-2 w-[60px]">CODE</th>
-                  <th className="border-r border-black p-2 text-left pl-4">CENTER NAME</th>
-                  <th className="border-r border-black p-2 w-[100px]">IN / OUT</th>
-                  <th className="border-r border-black p-2 w-[80px]">CANS (E/F)</th>
+                  <th className="border-r border-black p-2 w-[35px]">SR</th>
+                  <th className="border-r border-black p-2 w-[55px]">CODE</th>
+                  <th className="border-r border-black p-2 text-left pl-3">CENTER NAME</th>
+                  <th className="border-r border-black p-2 w-[90px]">IN / OUT</th>
+                  <th className="border-r border-black p-2 w-[70px]">CANS</th>
                   <th className="p-2">ICE USED</th>
                 </tr>
               </thead>
               <tbody>
                 {d.routeVisitLogs.map((it: any, i: number) => (
-                  <tr key={it.id || i} className="font-bold uppercase border-b border-black last:border-0 hover:bg-slate-50">
+                  <tr key={it.id || `visit-${i}`} className="font-bold uppercase border-b border-black last:border-0 hover:bg-slate-50">
                     <td className="border-r border-black p-2 text-center bg-slate-50">{i + 1}</td>
                     <td className="border-r border-black p-2 text-center font-black">{it.centerCode}</td>
-                    <td className="border-r border-black p-2 text-left pl-4">{it.supplierName}</td>
+                    <td className="border-r border-black p-2 text-left pl-3">{it.supplierName}</td>
                     <td className="border-r border-black p-2 text-center">{it.arrivalTime} - {it.departureTime}</td>
                     <td className="border-r border-black p-2 text-center">{it.emptyCans} / {it.fullCans}</td>
                     <td className="p-2 text-center">{it.iceUsed}</td>
@@ -240,8 +240,8 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
     if (d.centerLosses && d.centerLosses.length > 0) {
       return (
         <div className="w-full mb-8 border-2 border-black overflow-hidden shadow-sm">
-          <div className="bg-rose-800 text-white p-2 text-[10pt] font-black uppercase text-center tracking-widest">नुकसान तपशील (LOSS LOG)</div>
-          <table className="w-full border-collapse text-[9pt]">
+          <div className="bg-rose-800 text-white p-2 text-[9pt] font-black uppercase text-center tracking-widest">नुकसान तपशील (LOSS LOG)</div>
+          <table className="w-full border-collapse text-[8.5pt]">
             <thead>
               <tr className="bg-slate-100 font-black uppercase border-b-2 border-black">
                 <th className="border-r border-black p-2">केंद्राचे नाव</th>
@@ -252,11 +252,11 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
             </thead>
             <tbody>
               {d.centerLosses.map((it: any, i: number) => (
-                <tr key={it.id || i} className="font-bold uppercase border-b border-black last:border-0">
-                  <td className="border-r border-black p-2 pl-4">{it.centerName} ({it.centerCode})</td>
+                <tr key={it.id || `loss-${i}`} className="font-bold uppercase border-b border-black last:border-0">
+                  <td className="border-r border-black p-2 pl-3">{it.centerName} ({it.centerCode})</td>
                   <td className="border-r border-black p-2 text-center">{it.milkType}</td>
                   <td className="border-r border-black p-2 text-center">{it.qtyLiters}</td>
-                  <td className="p-2 text-right pr-4 font-black text-rose-600">₹{it.lossAmount}</td>
+                  <td className="p-2 text-right pr-3 font-black text-rose-600">₹{it.lossAmount}</td>
                 </tr>
               ))}
             </tbody>
@@ -276,9 +276,9 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
         <table className="w-full border-collapse">
           <tbody>
             {orderedEntries.map(([k, v]: any) => (
-              <tr key={k} className="text-[10pt] font-bold border-b border-black last:border-0 hover:bg-slate-50">
-                <td className="p-3 bg-slate-100 uppercase font-black border-r border-black w-1/3 text-[9pt] text-slate-700 pl-4">{labelMap[k]}</td>
-                <td className="p-3 pl-4 whitespace-pre-wrap">{String(v)}</td>
+              <tr key={k} className="text-[9pt] sm:text-[10pt] font-bold border-b border-black last:border-0 hover:bg-slate-50">
+                <td className="p-2.5 bg-slate-100 uppercase font-black border-r border-black w-1/3 text-[8pt] sm:text-[9pt] text-slate-700 pl-3">{labelMap[k]}</td>
+                <td className="p-2.5 pl-3 whitespace-pre-wrap">{String(v)}</td>
               </tr>
             ))}
           </tbody>
@@ -306,7 +306,7 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
           <SectionTitle icon={Layers} title="३) विशेष निरीक्षणे (POINTS)" />
           <div className="p-4 bg-slate-50 border-2 border-black rounded-lg space-y-2">
             {(d.remarkPoints || d.points).map((p: string, i: number) => (
-              <div key={i} className="flex gap-3 text-[10pt] font-bold text-slate-800">
+              <div key={i} className="flex gap-3 text-[9pt] sm:text-[10pt] font-bold text-slate-800">
                 <span className="text-primary font-black">{i + 1}.</span>
                 <span>{p}</span>
               </div>
@@ -513,8 +513,10 @@ export default function ReportsPage() {
             <div className="report-preview-container p-2 sm:p-6 overflow-x-auto overflow-y-visible flex flex-col items-center">
               {selectedReport && (
                 <div className={cn(
-                  "bg-white shadow-2xl overflow-visible rounded-sm origin-top transform-gpu mb-10",
-                  selectedReport.type === 'Route Allocation Report' ? "w-[297mm] min-w-[297mm] min-h-[210mm]" : "w-[210mm] min-w-[210mm] min-h-[297mm]"
+                  "bg-white shadow-2xl overflow-visible rounded-sm origin-top transform-gpu mb-10 transition-all",
+                  selectedReport.type === 'Route Allocation Report' 
+                    ? "w-full max-w-[297mm] min-h-[210mm]" 
+                    : "w-full max-w-[210mm] min-h-[297mm]"
                 )}>
                   {selectedReport.type === 'Route Allocation Report' ? 
                     <RouteAllocationLayout report={selectedReport} profileName={profileName} profileId={profileId} /> :
