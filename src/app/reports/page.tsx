@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
@@ -100,11 +101,11 @@ const ProfessionalParagraph = ({ label, content, icon: Icon }: { label: string, 
 const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any, profileName: string, profileId: string }) => {
   const d = report.fullData || {};
   
-  const renderRegisterTable = (title: string, rawData: any[]) => {
+  const renderRegisterTable = (title: string, rawData: any[], tableKey: string) => {
     if (!rawData || rawData.length === 0) return null;
     
     return (
-      <div className="w-full mb-4 break-inside-avoid">
+      <div key={tableKey} className="w-full mb-4 break-inside-avoid">
         <div className="bg-slate-100 border-2 border-black border-b-0 p-1.5 font-black text-[9pt] uppercase text-left tracking-wider">
           Type : {title}
         </div>
@@ -120,7 +121,7 @@ const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any
           </thead>
           <tbody>
             {rawData.map((it, i) => (
-              <tr key={i} className="font-bold uppercase text-center border-b border-black last:border-b-0 hover:bg-slate-50 h-8">
+              <tr key={it.id || i} className="font-bold uppercase text-center border-b border-black last:border-b-0 hover:bg-slate-50 h-8">
                 <td className="border-r border-black p-1">{i + 1}</td>
                 <td className="border-r border-black p-1 text-slate-600">{it.routeCode || it.routeId || "---"}</td>
                 <td className="border-r border-black p-1 text-left pl-3 truncate max-w-[200px]">{it.routeName}</td>
@@ -138,29 +139,24 @@ const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any
     );
   };
 
-  // Divide routes into two columns for the "Double Table" layout shown in photo
   const sections = [
-    { label: "Can Route Morning (Internal)", data: d.morningRoutes },
-    { label: "Can Route Evening (Internal)", data: d.eveningRoutes },
-    { label: "Internal Tanker Route", data: d.tankerRoutes },
-    { label: "External Can Route", data: d.extCanRoutes },
-    { label: "External Tanker Route", data: d.extTankerRoutes }
+    { label: "Can Route Morning (Internal)", data: d.morningRoutes, key: "morn" },
+    { label: "Can Route Evening (Internal)", data: d.eveningRoutes, key: "eve" },
+    { label: "Internal Tanker Route", data: d.tankerRoutes, key: "tank" },
+    { label: "External Can Route", data: d.extCanRoutes, key: "extcan" },
+    { label: "External Tanker Route", data: d.extTankerRoutes, key: "exttank" }
   ].filter(s => s.data && s.data.length > 0);
 
   return (
     <div className="bg-white font-sans text-slate-900 w-full p-4 sm:p-8 printable-report flex flex-col items-center landscape-mode-active">
       <ReportHeader title={d.reportHeading || "ERP Daily Route Allocation Register"} date={report.date} subName={d.name || profileName} subId={d.idNumber || profileId} shift={d.shift} />
       
-      {/* Photo-Style Double Column Grid */}
-      <div className="w-full grid grid-cols-2 gap-x-6 items-start">
-        {/* Left Column */}
+      <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-x-6 items-start">
         <div className="flex flex-col gap-4">
-          {sections.filter((_, idx) => idx % 2 === 0).map(s => renderRegisterTable(s.label, s.data))}
+          {sections.filter((_, idx) => idx % 2 === 0).map(s => renderRegisterTable(s.label, s.data, s.key))}
         </div>
-        
-        {/* Right Column */}
         <div className="flex flex-col gap-4">
-          {sections.filter((_, idx) => idx % 2 !== 0).map(s => renderRegisterTable(s.label, s.data))}
+          {sections.filter((_, idx) => idx % 2 !== 0).map(s => renderRegisterTable(s.label, s.data, s.key))}
         </div>
       </div>
 
@@ -178,8 +174,8 @@ const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any
       )}
 
       <div className="w-full mt-12 pt-8 grid grid-cols-2 gap-20 text-center uppercase font-black text-[10pt] tracking-widest border-t border-slate-100">
-        <div className="border-t-2 border-black pt-2">अधिकारी स्वाक्षरी (Auth. Officer)</div>
-        <div className="border-t-2 border-black pt-2">सुपरवायझर स्वाक्षरी (Supervisor)</div>
+        <div className="border-t-2 border-black pt-2">अधिकारी स्वाक्षरी</div>
+        <div className="border-t-2 border-black pt-2">सुपरवायझर स्वाक्षरी</div>
       </div>
     </div>
   )
@@ -222,7 +218,7 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
               </thead>
               <tbody>
                 {d.routeVisitLogs.map((it: any, i: number) => (
-                  <tr key={i} className="font-bold uppercase border-b border-black last:border-0 hover:bg-slate-50">
+                  <tr key={it.id || i} className="font-bold uppercase border-b border-black last:border-0 hover:bg-slate-50">
                     <td className="border-r border-black p-2 text-center bg-slate-50">{i + 1}</td>
                     <td className="border-r border-black p-2 text-center font-black">{it.centerCode}</td>
                     <td className="border-r border-black p-2 text-left pl-4">{it.supplierName}</td>
@@ -256,7 +252,7 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
             </thead>
             <tbody>
               {d.centerLosses.map((it: any, i: number) => (
-                <tr key={i} className="font-bold uppercase border-b border-black last:border-0">
+                <tr key={it.id || i} className="font-bold uppercase border-b border-black last:border-0">
                   <td className="border-r border-black p-2 pl-4">{it.centerName} ({it.centerCode})</td>
                   <td className="border-r border-black p-2 text-center">{it.milkType}</td>
                   <td className="border-r border-black p-2 text-center">{it.qtyLiters}</td>
