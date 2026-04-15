@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
@@ -77,7 +76,7 @@ const ReportHeader = ({ title, date, subName, subId, shift }: any) => (
 )
 
 const SectionTitle = ({ icon: Icon, title, color = "text-slate-900" }: any) => (
-  <div className="w-full flex items-center gap-2 border-b-2 border-black pb-1 mb-4 mt-6">
+  <div className="w-full flex items-center gap-2 border-b-2 border-black pb-1 mb-4 mt-6 break-after-avoid section-title">
     {Icon && <Icon className={cn("h-4 w-4", color)} />}
     <h3 className={cn("text-[9pt] sm:text-[11pt] font-black uppercase tracking-widest", color)}>{title}</h3>
   </div>
@@ -86,12 +85,12 @@ const SectionTitle = ({ icon: Icon, title, color = "text-slate-900" }: any) => (
 const ProfessionalParagraph = ({ label, content, icon: Icon }: { label: string, content: string, icon?: any }) => {
   if (!content) return null;
   return (
-    <div className="mb-6 text-left w-full">
+    <div className="mb-6 text-left w-full break-inside-avoid">
       <div className="flex items-center gap-2 mb-1.5">
         {Icon && <Icon className="h-3.5 w-3.5 text-primary" />}
         <span className="text-[8pt] sm:text-[9pt] font-black uppercase text-primary tracking-widest">{label}</span>
       </div>
-      <div className="p-3 sm:p-4 bg-slate-50 border-l-4 border-primary rounded-r-lg shadow-sm">
+      <div className="p-3 sm:p-4 bg-slate-50 border-l-4 border-primary rounded-r-lg shadow-sm print:shadow-none print:border-slate-300">
         <p className="text-[9pt] sm:text-[11pt] font-medium leading-relaxed text-slate-800 whitespace-pre-wrap">{content}</p>
       </div>
     </div>
@@ -162,7 +161,7 @@ const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any
 
       {d.dailyProblems && (
         <div className="w-full mt-6 break-inside-avoid">
-          <div className="bg-rose-50 border-2 border-black p-3 rounded shadow-sm">
+          <div className="bg-rose-50 border-2 border-black p-3 rounded shadow-sm print:shadow-none">
             <h4 className="text-[9pt] font-black uppercase text-rose-700 flex items-center gap-2 mb-2">
               <AlertCircle className="h-4 w-4" /> महत्त्वाच्या नोंदी / प्रॉब्लेम्स (Daily Text Pad)
             </h4>
@@ -186,7 +185,7 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
   
   if (report.type === 'Official Document') {
     return (
-      <div className="bg-white font-sans text-slate-900 w-full p-6 sm:p-12 printable-report flex flex-col">
+      <div className="bg-white font-sans text-slate-900 w-full p-6 sm:p-12 printable-report flex flex-col min-h-full">
         <div className="w-full text-center mb-12"><h1 className="text-[20pt] font-black uppercase tracking-tight border-b-4 border-black pb-2 inline-block">{d.title || "अधिकृत दस्तऐवज"}</h1></div>
         <div className="w-full prose prose-sm sm:prose-lg max-w-none text-left text-[11pt] leading-relaxed text-slate-900" dangerouslySetInnerHTML={{ __html: d.content || "" }} />
       </div>
@@ -202,7 +201,7 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
   const renderLogsTable = () => {
     if (d.routeVisitLogs && d.routeVisitLogs.length > 0) {
       return (
-        <div className="w-full mb-8 border-2 border-black overflow-hidden shadow-sm">
+        <div className="w-full mb-8 border-2 border-black overflow-hidden shadow-sm break-inside-avoid">
           <div className="bg-slate-800 text-white p-2 text-[9pt] font-black uppercase text-center tracking-widest">व्हिजिट लॉग (VISIT LOG)</div>
           <div className="overflow-x-auto">
             <table className="w-full border-collapse text-[8.5pt]">
@@ -239,7 +238,7 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
   const renderLossLogTable = () => {
     if (d.centerLosses && d.centerLosses.length > 0) {
       return (
-        <div className="w-full mb-8 border-2 border-black overflow-hidden shadow-sm">
+        <div className="w-full mb-8 border-2 border-black overflow-hidden shadow-sm break-inside-avoid">
           <div className="bg-rose-800 text-white p-2 text-[9pt] font-black uppercase text-center tracking-widest">नुकसान तपशील (LOSS LOG)</div>
           <table className="w-full border-collapse text-[8.5pt]">
             <thead>
@@ -268,7 +267,7 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
   }
 
   return (
-    <div className="bg-white font-sans text-slate-900 w-full p-4 sm:p-10 printable-report flex flex-col items-center">
+    <div className="bg-white font-sans text-slate-900 w-full p-4 sm:p-10 printable-report flex flex-col items-center min-h-full">
       <ReportHeader title={d.reportHeading || report.type} date={report.date} subName={d.name || d.repName || profileName} subId={d.idNumber || d.repId || profileId} shift={d.shift} />
       
       <SectionTitle icon={Info} title="१) मुख्य माहिती तपशील (DETAILS)" />
@@ -302,7 +301,7 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
       )}
 
       { (d.remarkPoints || d.points) && (
-        <div className="w-full mt-6 text-left">
+        <div className="w-full mt-6 text-left break-inside-avoid">
           <SectionTitle icon={Layers} title="३) विशेष निरीक्षणे (POINTS)" />
           <div className="p-4 bg-slate-50 border-2 border-black rounded-lg space-y-2">
             {(d.remarkPoints || d.points).map((p: string, i: number) => (
@@ -315,7 +314,7 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
         </div>
       )}
 
-      <div className="w-full mt-auto pt-16 grid grid-cols-2 gap-20 text-center uppercase font-black text-[10pt] tracking-widest border-t border-slate-100">
+      <div className="w-full mt-auto pt-16 grid grid-cols-2 gap-20 text-center uppercase font-black text-[10pt] tracking-widest border-t border-slate-100 break-inside-avoid">
         <div className="border-t-2 border-black pt-3">अधिकारी स्वाक्षरी</div>
         <div className="border-t-2 border-black pt-3">सुपरवायझर स्वाक्षरी</div>
       </div>
