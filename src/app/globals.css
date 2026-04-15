@@ -74,12 +74,12 @@ h1, h2, h3, h4 {
 
 @media print {
   @page {
-    margin: 0;
+    margin: 5mm;
     padding: 0;
     size: auto;
   }
   
-  /* Reset layout for print - Critical Fix for Blank Pages */
+  /* Reset layout for print - Fix for Blank Pages */
   html, body {
     height: auto !important;
     min-height: auto !important;
@@ -89,13 +89,8 @@ h1, h2, h3, h4 {
     padding: 0 !important;
   }
 
-  /* Force the report to the absolute top of the print stream */
-  #__next, [data-radix-portal] {
-    position: static !important;
-  }
-
-  /* Hide everything except the report */
-  header, nav, footer, aside, .sidebar, main, .no-print, button, 
+  /* Hide everything UI related except the printable report */
+  header, nav, footer, aside, .sidebar, .no-print, button, 
   [role="dialog"] > div:first-child, /* Dialog Overlay */
   .fixed, .sticky {
     display: none !important;
@@ -104,6 +99,13 @@ h1, h2, h3, h4 {
     margin: 0 !important;
     padding: 0 !important;
     visibility: hidden !important;
+  }
+
+  /* Ensure main container doesn't block print if the report is inside */
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+    display: block !important;
   }
 
   /* Target the dialog portal specifically */
@@ -131,7 +133,7 @@ h1, h2, h3, h4 {
     width: 100% !important;
     max-width: none !important;
     margin: 0 !important;
-    padding: 10mm !important; /* Proper paper margin */
+    padding: 5mm !important; 
     background: white !important;
     border: none !important;
     visibility: visible !important;
@@ -152,14 +154,14 @@ h1, h2, h3, h4 {
   table {
     width: 100% !important;
     border-collapse: collapse !important;
-    border: 1px solid black !important;
+    border: 1.5px solid black !important;
     margin-bottom: 5mm !important;
     page-break-inside: auto !important;
   }
 
   th, td {
     border: 1px solid black !important;
-    padding: 3pt !important;
+    padding: 4pt !important;
     color: black !important;
     background: white !important;
   }

@@ -121,11 +121,11 @@ const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any
         <table className="w-full border-collapse border-[1.5px] border-black text-[8pt]">
           <thead>
             <tr className="bg-slate-50 font-black uppercase text-center border-b-[1.5px] border-black">
-              <th className="border-r border-black p-1 w-[35px]">Sr.No</th>
+              <th className="border-r border-black p-1 w-[35px]">SR</th>
               <th className="border-r border-black p-1 w-[60px]">Route ID</th>
-              <th className="border-r border-black p-1 text-left pl-2">Route Name (Internal)</th>
-              <th className="border-r border-black p-1 w-[70px]">Requested Route (v)</th>
-              <th className="p-1 w-[70px]">Allocated Route (v)</th>
+              <th className="border-r border-black p-1 text-left pl-2">Route Name</th>
+              <th className="border-r border-black p-1 w-[50px]">REQ</th>
+              <th className="p-1 w-[50px]">ALLOC</th>
             </tr>
           </thead>
           <tbody>
@@ -133,11 +133,11 @@ const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any
               <tr key={it.id || `${tableKey}-${i}`} className="font-bold uppercase text-center border-b border-black last:border-b-0 h-8">
                 <td className="border-r border-black p-1">{i + 1}</td>
                 <td className="border-r border-black p-1 text-slate-600 font-mono">{it.routeCode || it.routeId || "---"}</td>
-                <td className="border-r border-black p-1 text-left pl-2 truncate max-w-[150px]">{it.routeName}</td>
-                <td className="border-r border-black p-1 text-[14pt] text-rose-600 font-serif leading-none">
+                <td className="border-r border-black p-1 text-left pl-2 truncate">{it.routeName}</td>
+                <td className="border-r border-black p-1 text-[12pt] text-rose-600 font-serif leading-none">
                   {it.requested ? '✓' : ''}
                 </td>
-                <td className="p-1 text-[14pt] text-blue-700 font-serif leading-none">
+                <td className="p-1 text-[12pt] text-blue-700 font-serif leading-none">
                   {it.allocated ? '✓' : ''}
                 </td>
               </tr>
@@ -149,18 +149,18 @@ const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any
   };
 
   const sections = [
-    { label: "Can Route Morning (Internal)", data: d.morningRoutes, key: "morn" },
-    { label: "Can Route Evening (Internal)", data: d.eveningRoutes, key: "eve" },
-    { label: "Internal Tanker Route", data: d.tankerRoutes, key: "tank" },
-    { label: "External Can Route", data: d.extCanRoutes, key: "extcan" },
-    { label: "External Tanker Route", data: d.extTankerRoutes, key: "exttank" }
+    { label: "Can Morning (Int)", data: d.morningRoutes, key: "morn" },
+    { label: "Can Evening (Int)", data: d.eveningRoutes, key: "eve" },
+    { label: "Internal Tanker", data: d.tankerRoutes, key: "tank" },
+    { label: "External Can", data: d.extCanRoutes, key: "extcan" },
+    { label: "External Tanker", data: d.extTankerRoutes, key: "exttank" }
   ].filter(s => s.data && s.data.length > 0);
 
   return (
-    <div className="bg-white font-sans text-slate-900 w-full p-4 sm:p-8 printable-report flex flex-col items-center">
+    <div className="bg-white font-sans text-slate-900 w-full p-4 sm:p-8 printable-report flex flex-col items-center min-h-screen">
       <ReportHeader title={d.reportHeading || "ERP Daily Route Allocation Register"} date={report.date} subName={d.name || profileName} subId={d.idNumber || profileId} shift={d.shift} />
       
-      <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-x-6 items-start">
+      <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-x-4 items-start">
         <div className="flex flex-col gap-2">
           {sections.filter((_, idx) => idx % 2 === 0).map(s => renderRegisterTable(s.label, s.data, s.key))}
         </div>
@@ -195,7 +195,7 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
   
   if (report.type === 'Official Document') {
     return (
-      <div className="bg-white font-sans text-slate-900 w-full p-6 sm:p-12 printable-report flex flex-col min-h-full">
+      <div className="bg-white font-sans text-slate-900 w-full p-6 sm:p-12 printable-report flex flex-col min-h-screen">
         <div className="w-full text-center mb-12"><h1 className="text-[20pt] font-black uppercase tracking-tight border-b-4 border-black pb-2 inline-block">{d.title || "अधिकृत दस्तऐवज"}</h1></div>
         <div className="w-full prose prose-sm sm:prose-lg max-w-none text-left text-[11pt] leading-relaxed text-slate-900" dangerouslySetInnerHTML={{ __html: d.content || "" }} />
       </div>
@@ -284,7 +284,7 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
   }
 
   return (
-    <div className="bg-white font-sans text-slate-900 w-full p-4 sm:p-10 printable-report flex flex-col items-center min-h-full">
+    <div className="bg-white font-sans text-slate-900 w-full p-4 sm:p-10 printable-report flex flex-col items-center min-h-screen">
       <ReportHeader title={d.reportHeading || report.type} date={report.date} subName={d.name || d.repName || profileName} subId={d.idNumber || d.repId || profileId} shift={d.shift} />
       
       <div className="w-full text-left mb-6 text-[10pt] font-bold leading-relaxed italic text-slate-600 border-l-4 border-slate-200 pl-4">
@@ -307,7 +307,7 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
                 </tr>
                 <tr className="text-[9pt] sm:text-[10pt] font-bold border-b border-black hover:bg-slate-50">
                   <td className="p-2.5 bg-slate-100 uppercase font-black border-r border-black w-1/3 text-slate-700 pl-3 flex items-center gap-2"><Briefcase className="h-3.5 w-3.5" /> पूर्ण करावयाच्या कामाचे नाव</td>
-                  <td className="p-2.5 pl-3 font-black text-rose-600 uppercase">{d.title || "-"}</td>
+                  <td className="p-2.5 pl-3 font-black text-rose-600 uppercase">{d.title || d.workType || "-"}</td>
                 </tr>
               </>
             )}
@@ -545,8 +545,8 @@ export default function ReportsPage() {
 
       <Dialog open={isViewOpen} onOpenChange={setIsViewOpen}>
         <DialogContent className={cn(
-          "p-0 rounded-2xl overflow-hidden border-none shadow-2xl bg-white flex flex-col h-[95vh] md:h-auto md:max-h-[98vh] no-print-background",
-          selectedReport?.type === 'Route Allocation Report' ? "max-w-[1100px] w-[98vw]" : "max-w-[950px] w-[98vw]"
+          "p-0 rounded-2xl overflow-hidden border-none shadow-2xl bg-white flex flex-col h-full max-h-screen md:max-h-[98vh] no-print-background",
+          selectedReport?.type === 'Route Allocation Report' ? "max-w-[1100px] w-full" : "max-w-[950px] w-full"
         )}>
           <DialogHeader className="p-4 bg-white border-b flex flex-row items-center justify-between no-print w-full shrink-0">
             <DialogTitle className="text-[11px] font-black uppercase tracking-widest flex items-center gap-2">
@@ -559,13 +559,13 @@ export default function ReportsPage() {
           </DialogHeader>
           
           <ScrollArea className="flex-1 bg-slate-100 w-full overflow-auto">
-            <div className="report-preview-container p-2 sm:p-6 overflow-x-auto overflow-y-visible flex flex-col items-center">
+            <div className="report-preview-container p-2 sm:p-6 overflow-visible flex flex-col items-center">
               {selectedReport && (
                 <div className={cn(
                   "bg-white shadow-2xl overflow-visible rounded-sm origin-top transform-gpu mb-10 transition-all",
                   selectedReport.type === 'Route Allocation Report' 
-                    ? "w-full max-w-[297mm] min-h-[210mm]" 
-                    : "w-full max-w-[210mm] min-h-[297mm]"
+                    ? "w-full max-w-[297mm] min-h-screen" 
+                    : "w-full max-w-[210mm] min-h-screen"
                 )}>
                   {selectedReport.type === 'Route Allocation Report' ? 
                     <RouteAllocationLayout report={selectedReport} profileName={profileName} profileId={profileId} /> :
