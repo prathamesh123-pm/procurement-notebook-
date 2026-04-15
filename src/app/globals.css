@@ -74,12 +74,12 @@ h1, h2, h3, h4 {
 
 @media print {
   @page {
-    margin: 5mm;
+    margin: 0;
     padding: 0;
     size: auto;
   }
   
-  /* Reset layout for print - Fix for Blank Pages */
+  /* Reset layout for print - Complete Overhaul */
   html, body {
     height: auto !important;
     min-height: auto !important;
@@ -89,23 +89,35 @@ h1, h2, h3, h4 {
     padding: 0 !important;
   }
 
-  /* Hide everything UI related except the printable report */
+  /* Force hide dashboard elements */
   header, nav, footer, aside, .sidebar, .no-print, button, 
   [role="dialog"] > div:first-child, /* Dialog Overlay */
-  .fixed, .sticky {
+  .fixed, .sticky, div[data-sidebar-wrapper] {
     display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    position: static !important;
     height: 0 !important;
     width: 0 !important;
     margin: 0 !important;
     padding: 0 !important;
-    visibility: hidden !important;
   }
 
-  /* Ensure main container doesn't block print if the report is inside */
+  /* Reset main container */
   main {
     padding: 0 !important;
     margin: 0 !important;
     display: block !important;
+    overflow: visible !important;
+  }
+
+  /* Reset layout constraints */
+  .sidebar-inset, [data-sidebar-inset] {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    background: white !important;
   }
 
   /* Target the dialog portal specifically */
@@ -142,12 +154,14 @@ h1, h2, h3, h4 {
     transform: none !important;
   }
 
-  /* Ensure all text is black */
+  /* Ensure all text is black and readable */
   .printable-report * {
     visibility: visible !important;
     opacity: 1 !important;
     color: black !important;
     background-color: transparent !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
   /* Tables in print */
@@ -171,7 +185,7 @@ h1, h2, h3, h4 {
     page-break-after: auto !important;
   }
 
-  /* Prevent blank pages caused by scroll containers */
+  /* Fix for scroll containers causing blank space */
   [data-radix-scroll-area-viewport] {
     display: block !important;
     overflow: visible !important;
