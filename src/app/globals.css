@@ -74,20 +74,19 @@ h1, h2, h3, h4 {
 
 @media print {
   @page {
-    margin: 0;
+    margin: 5mm;
     padding: 0;
     size: auto;
   }
   
-  /* Kill everything by default */
-  html, body, #__next, main, [role="main"] {
-    margin: 0 !important;
-    padding: 0 !important;
+  /* Reset layout for print to ensure it starts at the very top */
+  html, body {
     height: auto !important;
     min-height: auto !important;
     overflow: visible !important;
     background: white !important;
-    position: static !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
   /* Extreme hiding of background elements to prevent blank pages */
@@ -99,7 +98,6 @@ h1, h2, h3, h4 {
   aside, 
   .sidebar, 
   .fixed,
-  .absolute:not(.printable-report *),
   [data-radix-scroll-area-scrollbar],
   .bg-black\/80,
   [role="dialog"] > div:first-child {
@@ -117,7 +115,8 @@ h1, h2, h3, h4 {
   /* Force the dialog content to be a normal block at the top */
   [role="dialog"] {
     display: block !important;
-    position: static !important;
+    position: relative !important;
+    top: 0 !important;
     width: 100% !important;
     height: auto !important;
     margin: 0 !important;
@@ -137,7 +136,7 @@ h1, h2, h3, h4 {
     width: 100% !important;
     max-width: none !important;
     margin: 0 !important;
-    padding: 10mm !important;
+    padding: 0 !important;
     background: white !important;
     border: none !important;
     visibility: visible !important;
@@ -156,14 +155,14 @@ h1, h2, h3, h4 {
   table {
     width: 100% !important;
     border-collapse: collapse !important;
-    border: 1.5px solid black !important;
-    margin-bottom: 15px !important;
+    border: 1px solid black !important;
+    margin-bottom: 10px !important;
     page-break-inside: auto !important;
   }
 
   th, td {
     border: 1px solid black !important;
-    padding: 6pt !important;
+    padding: 4pt !important;
     color: black !important;
     background: white !important;
   }

@@ -63,7 +63,10 @@ const labelMap: Record<string, string> = {
   recoveryVehicleNo: "पर्यायी गाडी",
   recoveryArrivalTime: "पर्यायी गाडी वेळ",
   milkHot: "दूध गरम झाले का",
-  milkSour: "दूध खराब झाले का"
+  milkSour: "दूध खराब झाले का",
+  title: "कामाचे नाव",
+  description: "कामाचा तपशील",
+  remark: "पूर्ण केलेल्या कामाचा शेरा"
 };
 
 const ReportHeader = ({ title, date, subName, subId, shift }: any) => (
@@ -112,29 +115,29 @@ const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any
     
     return (
       <div key={tableKey} className="w-full mb-4 break-inside-avoid">
-        <div className="bg-slate-100 border-2 border-black border-b-0 p-1.5 font-black text-[8pt] uppercase text-left tracking-wider">
+        <div className="bg-slate-100 border-[1.5px] border-black border-b-0 p-1.5 font-black text-[8pt] uppercase text-left tracking-wider">
           Type : {title}
         </div>
-        <table className="w-full border-collapse border-2 border-black text-[8pt]">
+        <table className="w-full border-collapse border-[1.5px] border-black text-[8pt]">
           <thead>
-            <tr className="bg-slate-50 font-black uppercase text-center border-b-2 border-black">
-              <th className="border-r border-black p-1 w-[35px]">SR</th>
-              <th className="border-r border-black p-1 w-[60px]">ID</th>
-              <th className="border-r border-black p-1 text-left pl-2">NAME</th>
-              <th className="border-r border-black p-1 w-[70px]">REQ (✓)</th>
-              <th className="p-1 w-[70px]">ALLOC (✓)</th>
+            <tr className="bg-slate-50 font-black uppercase text-center border-b-[1.5px] border-black">
+              <th className="border-r border-black p-1 w-[35px]">Sr.No</th>
+              <th className="border-r border-black p-1 w-[60px]">Route ID</th>
+              <th className="border-r border-black p-1 text-left pl-2">Route Name (Internal)</th>
+              <th className="border-r border-black p-1 w-[70px]">Requested Route (v)</th>
+              <th className="p-1 w-[70px]">Allocated Route (v)</th>
             </tr>
           </thead>
           <tbody>
             {rawData.map((it, i) => (
-              <tr key={it.id || `${tableKey}-${i}`} className="font-bold uppercase text-center border-b border-black last:border-b-0 hover:bg-slate-50 h-8">
+              <tr key={it.id || `${tableKey}-${i}`} className="font-bold uppercase text-center border-b border-black last:border-b-0 h-8">
                 <td className="border-r border-black p-1">{i + 1}</td>
-                <td className="border-r border-black p-1 text-slate-600">{it.routeCode || it.routeId || "---"}</td>
-                <td className="border-r border-black p-1 text-left pl-2 truncate max-w-[120px]">{it.routeName}</td>
-                <td className="border-r border-black p-1 text-[12pt] text-rose-600 font-serif leading-none">
+                <td className="border-r border-black p-1 text-slate-600 font-mono">{it.routeCode || it.routeId || "---"}</td>
+                <td className="border-r border-black p-1 text-left pl-2 truncate max-w-[150px]">{it.routeName}</td>
+                <td className="border-r border-black p-1 text-[14pt] text-rose-600 font-serif leading-none">
                   {it.requested ? '✓' : ''}
                 </td>
-                <td className="p-1 text-[12pt] text-blue-700 font-serif leading-none">
+                <td className="p-1 text-[14pt] text-blue-700 font-serif leading-none">
                   {it.allocated ? '✓' : ''}
                 </td>
               </tr>
@@ -154,10 +157,10 @@ const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any
   ].filter(s => s.data && s.data.length > 0);
 
   return (
-    <div className="bg-white font-sans text-slate-900 w-full p-4 sm:p-8 printable-report flex flex-col items-center landscape-mode-active">
+    <div className="bg-white font-sans text-slate-900 w-full p-4 sm:p-8 printable-report flex flex-col items-center">
       <ReportHeader title={d.reportHeading || "ERP Daily Route Allocation Register"} date={report.date} subName={d.name || profileName} subId={d.idNumber || profileId} shift={d.shift} />
       
-      <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-x-4 items-start">
+      <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-x-6 items-start">
         <div className="flex flex-col gap-2">
           {sections.filter((_, idx) => idx % 2 === 0).map(s => renderRegisterTable(s.label, s.data, s.key))}
         </div>
@@ -168,7 +171,7 @@ const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any
 
       {d.dailyProblems && (
         <div className="w-full mt-6 break-inside-avoid">
-          <div className="bg-rose-50 border-2 border-black p-3 rounded shadow-sm print:shadow-none">
+          <div className="bg-rose-50 border-[1.5px] border-black p-3 rounded shadow-sm print:shadow-none">
             <h4 className="text-[9pt] font-black uppercase text-rose-700 flex items-center gap-2 mb-2">
               <AlertCircle className="h-4 w-4" /> महत्त्वाच्या नोंदी / प्रॉब्लेम्स (Daily Text Pad)
             </h4>
@@ -179,9 +182,9 @@ const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any
         </div>
       )}
 
-      <div className="w-full mt-12 pt-8 grid grid-cols-2 gap-20 text-center uppercase font-black text-[10pt] tracking-widest border-t border-slate-100">
-        <div className="border-t-2 border-black pt-2">अधिकारी स्वाक्षरी</div>
-        <div className="border-t-2 border-black pt-2">सुपरवायझर स्वाक्षरी</div>
+      <div className="w-full mt-auto pt-16 grid grid-cols-2 gap-20 text-center uppercase font-black text-[10pt] tracking-widest">
+        <div className="border-t-2 border-black pt-3">अधिकारी स्वाक्षरी</div>
+        <div className="border-t-2 border-black pt-3">सुपरवायझर स्वाक्षरी</div>
       </div>
     </div>
   )
@@ -199,7 +202,7 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
     );
   }
 
-  const excludeFields = ["reportHeading", "name", "repName", "shift", "idNumber", "repId", "routeVisitLogs", "centerLosses", "morningRoutes", "eveningRoutes", "tankerRoutes", "extCanRoutes", "extTankerRoutes", "points", "remarkPoints", "dailyProblems", "equipment", "cowMilk", "buffaloMilk", "cowQty", "cowFat", "cowSnf", "bufQty", "bufFat", "bufSnf", "summary", "achievements", "problems", "actionsTaken", "actionTaken", "isWordDoc", "content", "title", "type", "visitDiscussion", "officeTaskDetails"];
+  const excludeFields = ["reportHeading", "name", "repName", "shift", "idNumber", "repId", "routeVisitLogs", "centerLosses", "morningRoutes", "eveningRoutes", "tankerRoutes", "extCanRoutes", "extTankerRoutes", "points", "remarkPoints", "dailyProblems", "equipment", "cowMilk", "buffaloMilk", "cowQty", "cowFat", "cowSnf", "bufQty", "bufFat", "bufSnf", "summary", "achievements", "problems", "actionsTaken", "actionTaken", "isWordDoc", "content", "title", "type", "visitDiscussion", "officeTaskDetails", "remark"];
 
   const orderedEntries = Object.keys(d)
     .filter(key => d[key] && labelMap[key] && !excludeFields.includes(key))
@@ -292,6 +295,22 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
       <div className="w-full border-2 border-black mb-8 overflow-hidden">
         <table className="w-full border-collapse">
           <tbody>
+            {report.type === 'Daily Task' && (
+              <>
+                <tr className="text-[9pt] sm:text-[10pt] font-bold border-b border-black hover:bg-slate-50">
+                  <td className="p-2.5 bg-slate-100 uppercase font-black border-r border-black w-1/3 text-slate-700 pl-3">पुरवठादार / केंद्राचे नाव</td>
+                  <td className="p-2.5 pl-3 font-black text-primary">{d.supplierName || "-"}</td>
+                </tr>
+                <tr className="text-[9pt] sm:text-[10pt] font-bold border-b border-black hover:bg-slate-50">
+                  <td className="p-2.5 bg-slate-100 uppercase font-black border-r border-black w-1/3 text-slate-700 pl-3">पुरवठादार कोड (CODE)</td>
+                  <td className="p-2.5 pl-3 font-black">{d.supplierId || "-"}</td>
+                </tr>
+                <tr className="text-[9pt] sm:text-[10pt] font-bold border-b border-black hover:bg-slate-50">
+                  <td className="p-2.5 bg-slate-100 uppercase font-black border-r border-black w-1/3 text-slate-700 pl-3">पूर्ण करावयाच्या कामाचे नाव</td>
+                  <td className="p-2.5 pl-3 font-black text-rose-600 uppercase">{d.title || "-"}</td>
+                </tr>
+              </>
+            )}
             {orderedEntries.map(([k, v]: any) => (
               <tr key={k} className="text-[9pt] sm:text-[10pt] font-bold border-b border-black last:border-0 hover:bg-slate-50">
                 <td className="p-2.5 bg-slate-100 uppercase font-black border-r border-black w-1/3 text-[8pt] sm:text-[9pt] text-slate-700 pl-3">{labelMap[k]}</td>
@@ -305,12 +324,13 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
       {renderLogsTable()}
       {renderLossLogTable()}
 
-      {(d.summary || d.achievements || d.problems || d.actionsTaken || d.actionTaken || d.visitDiscussion || d.officeTaskDetails) && (
+      {(d.summary || d.achievements || d.problems || d.actionsTaken || d.actionTaken || d.visitDiscussion || d.officeTaskDetails || d.remark) && (
         <>
           <SectionTitle icon={BookOpen} title="२) सविस्तर अहवाल व कामकाज (NARRATIVE)" />
           <div className="w-full text-left space-y-2">
             <ProfessionalParagraph label="प्रस्तावना / सारांश" content={d.summary} icon={Info} />
             <ProfessionalParagraph label="झालेली चर्चा / तपशील" content={d.visitDiscussion || d.officeTaskDetails} icon={FileText} />
+            <ProfessionalParagraph label="कामाबद्दल सविस्तर शेरा" content={d.remark} icon={Edit} />
             <ProfessionalParagraph label="महत्त्वाची कामगिरी" content={d.achievements} icon={CheckCircle2} />
             <ProfessionalParagraph label="समस्येचे स्वरूप" content={d.problems} icon={AlertTriangle} />
             <ProfessionalParagraph label="केलेली कार्यवाही / शिफारसी" content={d.actionsTaken || d.actionTaken} icon={Lightbulb} />
