@@ -118,26 +118,26 @@ const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any
         <div className="bg-slate-100 border-[1.5px] border-black border-b-0 p-1.5 font-black text-[8pt] uppercase text-left tracking-wider">
           Type : {title}
         </div>
-        <table className="w-full border-collapse border-[1.5px] border-black text-[8pt]">
+        <table className="w-full border-collapse border-[1.5px] border-black text-[7.5pt]">
           <thead>
             <tr className="bg-slate-50 font-black uppercase text-center border-b-[1.5px] border-black">
-              <th className="border-r border-black p-1 w-[35px]">SR</th>
-              <th className="border-r border-black p-1 w-[60px]">Route ID</th>
-              <th className="border-r border-black p-1 text-left pl-2">Route Name</th>
-              <th className="border-r border-black p-1 w-[50px]">REQ</th>
-              <th className="p-1 w-[50px]">ALLOC</th>
+              <th className="border-r border-black p-1 w-[25px]">SR</th>
+              <th className="border-r border-black p-1 w-[45px]">ID</th>
+              <th className="border-r border-black p-1 text-left pl-2">ROUTE NAME</th>
+              <th className="border-r border-black p-1 w-[35px]">REQ</th>
+              <th className="p-1 w-[35px]">ALLOC</th>
             </tr>
           </thead>
           <tbody>
             {rawData.map((it, i) => (
-              <tr key={it.id || `${tableKey}-${i}`} className="font-bold uppercase text-center border-b border-black last:border-b-0 h-8">
-                <td className="border-r border-black p-1">{i + 1}</td>
-                <td className="border-r border-black p-1 text-slate-600 font-mono">{it.routeCode || it.routeId || "---"}</td>
-                <td className="border-r border-black p-1 text-left pl-2 truncate">{it.routeName}</td>
-                <td className="border-r border-black p-1 text-[12pt] text-rose-600 font-serif leading-none">
+              <tr key={it.id || `${tableKey}-${i}`} className="font-bold uppercase text-center border-b border-black last:border-b-0 h-7">
+                <td className="border-r border-black p-0.5">{i + 1}</td>
+                <td className="border-r border-black p-0.5 text-slate-600">{it.routeCode || it.routeId || "-"}</td>
+                <td className="border-r border-black p-0.5 text-left pl-2 truncate">{it.routeName}</td>
+                <td className="border-r border-black p-0.5 text-[11pt] text-rose-600 font-serif leading-none">
                   {it.requested ? '✓' : ''}
                 </td>
-                <td className="p-1 text-[12pt] text-blue-700 font-serif leading-none">
+                <td className="p-0.5 text-[11pt] text-blue-700 font-serif leading-none">
                   {it.allocated ? '✓' : ''}
                 </td>
               </tr>
@@ -149,8 +149,8 @@ const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any
   };
 
   const sections = [
-    { label: "Can Morning (Int)", data: d.morningRoutes, key: "morn" },
-    { label: "Can Evening (Int)", data: d.eveningRoutes, key: "eve" },
+    { label: "Morning (Internal)", data: d.morningRoutes, key: "morn" },
+    { label: "Evening (Internal)", data: d.eveningRoutes, key: "eve" },
     { label: "Internal Tanker", data: d.tankerRoutes, key: "tank" },
     { label: "External Can", data: d.extCanRoutes, key: "extcan" },
     { label: "External Tanker", data: d.extTankerRoutes, key: "exttank" }
@@ -160,18 +160,19 @@ const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any
     <div className="bg-white font-sans text-slate-900 w-full p-4 sm:p-8 printable-report flex flex-col items-center min-h-screen">
       <ReportHeader title={d.reportHeading || "ERP Daily Route Allocation Register"} date={report.date} subName={d.name || profileName} subId={d.idNumber || profileId} shift={d.shift} />
       
-      <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-x-4 items-start">
-        <div className="flex flex-col gap-2">
+      {/* PROFESSIONAL TWO COLUMN GRID FOR ERP REGISTER */}
+      <div className="w-full grid grid-cols-2 gap-x-4 items-start print:grid-cols-2">
+        <div className="flex flex-col gap-1">
           {sections.filter((_, idx) => idx % 2 === 0).map(s => renderRegisterTable(s.label, s.data, s.key))}
         </div>
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-1">
           {sections.filter((_, idx) => idx % 2 !== 0).map(s => renderRegisterTable(s.label, s.data, s.key))}
         </div>
       </div>
 
       {d.dailyProblems && (
-        <div className="w-full mt-6 break-inside-avoid">
-          <div className="bg-rose-50 border-[1.5px] border-black p-3 rounded shadow-sm print:shadow-none">
+        <div className="w-full mt-4 break-inside-avoid">
+          <div className="bg-rose-50 border-[1.5px] border-black p-3 rounded shadow-sm">
             <h4 className="text-[9pt] font-black uppercase text-rose-700 flex items-center gap-2 mb-2">
               <AlertCircle className="h-4 w-4" /> महत्त्वाच्या नोंदी / प्रॉब्लेम्स (Daily Text Pad)
             </h4>
@@ -295,21 +296,24 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
       <div className="w-full border-2 border-black mb-8 overflow-hidden">
         <table className="w-full border-collapse">
           <tbody>
-            {(report.type === 'Daily Task' || d.supplierName) && (
-              <>
-                <tr className="text-[9pt] sm:text-[10pt] font-bold border-b border-black hover:bg-slate-50">
-                  <td className="p-2.5 bg-slate-100 uppercase font-black border-r border-black w-1/3 text-slate-700 pl-3 flex items-center gap-2"><User className="h-3.5 w-3.5" /> पुरवठादार / केंद्राचे नाव</td>
-                  <td className="p-2.5 pl-3 font-black text-primary">{d.supplierName || "-"}</td>
-                </tr>
-                <tr className="text-[9pt] sm:text-[10pt] font-bold border-b border-black hover:bg-slate-50">
-                  <td className="p-2.5 bg-slate-100 uppercase font-black border-r border-black w-1/3 text-slate-700 pl-3 flex items-center gap-2"><Hash className="h-3.5 w-3.5" /> पुरवठादार कोड (CODE)</td>
-                  <td className="p-2.5 pl-3 font-black">{d.supplierId || "-"}</td>
-                </tr>
-                <tr className="text-[9pt] sm:text-[10pt] font-bold border-b border-black hover:bg-slate-50">
-                  <td className="p-2.5 bg-slate-100 uppercase font-black border-r border-black w-1/3 text-slate-700 pl-3 flex items-center gap-2"><Briefcase className="h-3.5 w-3.5" /> पूर्ण करावयाच्या कामाचे नाव</td>
-                  <td className="p-2.5 pl-3 font-black text-rose-600 uppercase">{d.title || d.workType || "-"}</td>
-                </tr>
-              </>
+            {/* FORCE DISPLAY OF SUPPLIER NAME AND CODE IF AVAILABLE */}
+            {d.supplierName && (
+              <tr className="text-[9pt] sm:text-[10pt] font-bold border-b border-black hover:bg-slate-50">
+                <td className="p-2.5 bg-slate-100 uppercase font-black border-r border-black w-1/3 text-slate-700 pl-3 flex items-center gap-2"><User className="h-3.5 w-3.5" /> पुरवठादार / केंद्राचे नाव</td>
+                <td className="p-2.5 pl-3 font-black text-primary uppercase">{d.supplierName}</td>
+              </tr>
+            )}
+            {d.supplierId && (
+              <tr className="text-[9pt] sm:text-[10pt] font-bold border-b border-black hover:bg-slate-50">
+                <td className="p-2.5 bg-slate-100 uppercase font-black border-r border-black w-1/3 text-slate-700 pl-3 flex items-center gap-2"><Hash className="h-3.5 w-3.5" /> पुरवठादार कोड (CODE)</td>
+                <td className="p-2.5 pl-3 font-black">{d.supplierId}</td>
+              </tr>
+            )}
+            {d.title && (
+              <tr className="text-[9pt] sm:text-[10pt] font-bold border-b border-black hover:bg-slate-50">
+                <td className="p-2.5 bg-slate-100 uppercase font-black border-r border-black w-1/3 text-slate-700 pl-3 flex items-center gap-2"><Briefcase className="h-3.5 w-3.5" /> पूर्ण करावयाच्या कामाचे नाव</td>
+                <td className="p-2.5 pl-3 font-black text-rose-600 uppercase">{d.title}</td>
+              </tr>
             )}
             {orderedEntries.map(([k, v]: any) => (
               <tr key={k} className="text-[9pt] sm:text-[10pt] font-bold border-b border-black last:border-0 hover:bg-slate-50">
@@ -545,7 +549,7 @@ export default function ReportsPage() {
 
       <Dialog open={isViewOpen} onOpenChange={setIsViewOpen}>
         <DialogContent className={cn(
-          "p-0 rounded-2xl overflow-hidden border-none shadow-2xl bg-white flex flex-col h-full max-h-screen md:max-h-[98vh] no-print-background",
+          "p-0 rounded-2xl overflow-hidden border-none shadow-2xl bg-white flex flex-col h-full max-h-screen md:max-h-[98vh] no-print",
           selectedReport?.type === 'Route Allocation Report' ? "max-w-[1100px] w-full" : "max-w-[950px] w-full"
         )}>
           <DialogHeader className="p-4 bg-white border-b flex flex-row items-center justify-between no-print w-full shrink-0">
@@ -558,7 +562,7 @@ export default function ReportsPage() {
             </div>
           </DialogHeader>
           
-          <ScrollArea className="flex-1 bg-slate-100 w-full overflow-auto">
+          <ScrollArea className="flex-1 bg-slate-100 w-full overflow-auto no-print">
             <div className="report-preview-container p-2 sm:p-6 overflow-visible flex flex-col items-center">
               {selectedReport && (
                 <div className={cn(
