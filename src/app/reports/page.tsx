@@ -566,7 +566,7 @@ export default function ReportsPage() {
                 <div className={cn(
                   "bg-white shadow-2xl overflow-visible rounded-sm origin-top transform-gpu mb-10 transition-all print:shadow-none print:m-0",
                   selectedReport.type === 'Route Allocation Report' 
-                    ? "w-full max-w-[297mm] min-h-screen landscape-mode" 
+                    ? "w-full max-w-[297mm] min-h-screen" 
                     : "w-full max-w-[210mm] min-h-screen"
                 )}>
                   {selectedReport.type === 'Route Allocation Report' ? 

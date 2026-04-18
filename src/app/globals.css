@@ -68,96 +68,80 @@ h1, h2, h3, h4 {
 ::-webkit-scrollbar-thumb { @apply bg-slate-200 rounded-full; }
 
 @media print {
-  @page {
-    margin: 5mm;
-    size: A4 portrait;
-  }
-
-  .landscape-mode {
-    @page {
-      size: A4 landscape;
-    }
-  }
-  
-  /* ULTIMATE RESET: Force White Background and Black Text */
-  html, body {
-    background-color: white !important;
-    background: white !important;
-    color: black !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    height: auto !important;
-    overflow: visible !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-
-  /* HIDE EVERYTHING EXCEPT THE REPORT */
-  /* Target common UI wrappers and portal containers */
-  body > *:not(div[data-radix-portal]),
-  [data-sidebar-wrapper],
-  header, nav, aside, footer, .no-print, button,
-  div[data-radix-portal] > div:not(div[role="dialog"]),
-  .DialogOverlay,
-  [data-state="open"]::before,
-  .bg-black\/80 {
+  /* ULTIMATE HIDE: Hide everything at the root */
+  body > *:not(div[data-radix-portal]) {
     display: none !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
-    background: transparent !important;
   }
 
-  /* RESET DIALOG FOR PRINT */
+  /* Show only the portal containing the dialog */
   div[data-radix-portal] {
-    position: absolute !important;
-    left: 0 !important;
-    top: 0 !important;
-    width: 100% !important;
+    display: block !important;
+    position: static !important;
+    visibility: visible !important;
   }
 
+  /* Reset Dialog Content for Full Page Visibility */
   div[role="dialog"] {
     position: absolute !important;
     left: 0 !important;
     top: 0 !important;
     width: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
+    min-height: 100vh !important;
+    display: block !important;
     background: white !important;
     box-shadow: none !important;
     border: none !important;
     transform: none !important;
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    overflow: visible !important;
-  }
-
-  /* Ensure the report content is the only thing visible and fills the page */
-  .printable-report {
-    display: block !important;
-    width: 100% !important;
-    max-width: none !important;
     margin: 0 !important;
     padding: 0 !important;
+    overflow: visible !important;
+    visibility: visible !important;
+  }
+
+  /* Hide Overlay, Close Button, and Sidebar */
+  div[data-state="open"]::before,
+  .bg-black\/80,
+  button[aria-label="Close"],
+  .no-print,
+  .no-print-dialog,
+  [data-sidebar-wrapper],
+  header {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+  }
+
+  /* Force White Background and Black Text */
+  html, body {
     background: white !important;
     color: black !important;
     height: auto !important;
     overflow: visible !important;
+  }
+
+  .printable-report {
+    display: block !important;
+    width: 100% !important;
+    max-width: none !important;
+    background: white !important;
+    color: black !important;
+    padding: 10mm !important;
+    margin: 0 !important;
+    transform: none !important;
+    visibility: visible !important;
   }
 
   .printable-report * {
     color: black !important;
     background-color: transparent !important;
     border-color: black !important;
+    box-shadow: none !important;
   }
 
-  /* Professional Table Borders for Print */
+  /* Professional Table Borders */
   table {
-    width: 100% !important;
     border-collapse: collapse !important;
     border: 1.5px solid black !important;
-    margin-bottom: 5mm !important;
   }
 
   th, td {
@@ -165,10 +149,12 @@ h1, h2, h3, h4 {
     padding: 4pt !important;
   }
 
-  /* Remove any background gradients/shadows */
-  div, card, section {
-    background-image: none !important;
-    box-shadow: none !important;
-    background-color: white !important;
+  .section-title {
+    border-bottom: 2px solid black !important;
+  }
+
+  @page {
+    margin: 5mm;
+    size: auto;
   }
 }
