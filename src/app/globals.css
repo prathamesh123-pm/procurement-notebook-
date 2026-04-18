@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -75,10 +76,16 @@ h1, h2, h3, h4 {
 @media print {
   @page {
     margin: 5mm;
-    size: auto;
+    size: A4 portrait;
+  }
+
+  .landscape-mode {
+    @page {
+      size: A4 landscape;
+    }
   }
   
-  /* ULTIMATE RESET: Force-hide everything except report */
+  /* FORCE RESET: Hide everything except the dialog being printed */
   html, body {
     height: auto !important;
     min-height: auto !important;
@@ -88,7 +95,8 @@ h1, h2, h3, h4 {
     padding: 0 !important;
   }
 
-  /* Force hide all UI elements */
+  /* Ultimate hiding of non-print elements */
+  body > *:not(div[role="dialog"]),
   header, nav, footer, aside, .sidebar, .no-print, button, 
   [role="dialog"] > div:first-child, /* Dialog Overlay */
   .fixed, .sticky, div[data-sidebar-wrapper], 
@@ -114,7 +122,9 @@ h1, h2, h3, h4 {
   /* Ensure the Dialog container doesn't create blank pages */
   [role="dialog"] {
     display: block !important;
-    position: static !important;
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
     width: 100% !important;
     height: auto !important;
     margin: 0 !important;
@@ -123,6 +133,7 @@ h1, h2, h3, h4 {
     box-shadow: none !important;
     background: white !important;
     transform: none !important;
+    visibility: visible !important;
   }
 
   /* The actual report container must start at the very top */
@@ -139,6 +150,8 @@ h1, h2, h3, h4 {
     opacity: 1 !important;
     box-shadow: none !important;
     transform: none !important;
+    height: auto !important;
+    overflow: visible !important;
   }
 
   /* Force all text to be black for printing */

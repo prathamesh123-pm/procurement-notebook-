@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
@@ -160,7 +161,6 @@ const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any
     <div className="bg-white font-sans text-slate-900 w-full p-4 sm:p-8 printable-report flex flex-col items-center min-h-screen">
       <ReportHeader title={d.reportHeading || "ERP Daily Route Allocation Register"} date={report.date} subName={d.name || profileName} subId={d.idNumber || profileId} shift={d.shift} />
       
-      {/* PROFESSIONAL TWO COLUMN GRID FOR ERP REGISTER */}
       <div className="w-full grid grid-cols-2 gap-x-4 items-start print:grid-cols-2">
         <div className="flex flex-col gap-1">
           {sections.filter((_, idx) => idx % 2 === 0).map(s => renderRegisterTable(s.label, s.data, s.key))}
@@ -296,7 +296,6 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
       <div className="w-full border-2 border-black mb-8 overflow-hidden">
         <table className="w-full border-collapse">
           <tbody>
-            {/* FORCE DISPLAY OF SUPPLIER NAME AND CODE IF AVAILABLE */}
             {d.supplierName && (
               <tr className="text-[9pt] sm:text-[10pt] font-bold border-b border-black hover:bg-slate-50">
                 <td className="p-2.5 bg-slate-100 uppercase font-black border-r border-black w-1/3 text-slate-700 pl-3 flex items-center gap-2"><User className="h-3.5 w-3.5" /> पुरवठादार / केंद्राचे नाव</td>
@@ -549,7 +548,7 @@ export default function ReportsPage() {
 
       <Dialog open={isViewOpen} onOpenChange={setIsViewOpen}>
         <DialogContent className={cn(
-          "p-0 rounded-2xl overflow-hidden border-none shadow-2xl bg-white flex flex-col h-full max-h-screen md:max-h-[98vh] no-print",
+          "p-0 rounded-2xl overflow-hidden border-none shadow-2xl bg-white flex flex-col h-full max-h-screen md:max-h-[98vh]",
           selectedReport?.type === 'Route Allocation Report' ? "max-w-[1100px] w-full" : "max-w-[950px] w-full"
         )}>
           <DialogHeader className="p-4 bg-white border-b flex flex-row items-center justify-between no-print w-full shrink-0">
@@ -562,13 +561,13 @@ export default function ReportsPage() {
             </div>
           </DialogHeader>
           
-          <ScrollArea className="flex-1 bg-slate-100 w-full overflow-auto no-print">
+          <ScrollArea className="flex-1 bg-slate-100 w-full overflow-auto">
             <div className="report-preview-container p-2 sm:p-6 overflow-visible flex flex-col items-center">
               {selectedReport && (
                 <div className={cn(
                   "bg-white shadow-2xl overflow-visible rounded-sm origin-top transform-gpu mb-10 transition-all",
                   selectedReport.type === 'Route Allocation Report' 
-                    ? "w-full max-w-[297mm] min-h-screen" 
+                    ? "w-full max-w-[297mm] min-h-screen landscape-mode" 
                     : "w-full max-w-[210mm] min-h-screen"
                 )}>
                   {selectedReport.type === 'Route Allocation Report' ? 
