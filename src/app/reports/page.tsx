@@ -161,7 +161,7 @@ const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any
     <div className="bg-white font-sans text-slate-900 w-full p-4 sm:p-8 printable-report flex flex-col items-center min-h-screen">
       <ReportHeader title={d.reportHeading || "ERP Daily Route Allocation Register"} date={report.date} subName={d.name || profileName} subId={d.idNumber || profileId} shift={d.shift} />
       
-      <div className="w-full grid grid-cols-2 gap-x-4 items-start print:grid-cols-2">
+      <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-x-4 items-start print:grid-cols-2">
         <div className="flex flex-col gap-1">
           {sections.filter((_, idx) => idx % 2 === 0).map(s => renderRegisterTable(s.label, s.data, s.key))}
         </div>

@@ -85,86 +85,70 @@ h1, h2, h3, h4 {
     }
   }
   
-  /* FORCE RESET: Hide everything except the dialog being printed */
+  /* ULTIMATE FIX: Hide every single thing by default */
   html, body {
-    height: auto !important;
-    min-height: auto !important;
-    overflow: visible !important;
     background: white !important;
     margin: 0 !important;
     padding: 0 !important;
-  }
-
-  /* Ultimate hiding of non-print elements */
-  body > *:not(div[role="dialog"]),
-  header, nav, footer, aside, .sidebar, .no-print, button, 
-  [role="dialog"] > div:first-child, /* Dialog Overlay */
-  .fixed, .sticky, div[data-sidebar-wrapper], 
-  [data-sidebar-inset], .sidebar-inset {
-    display: none !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
-    height: 0 !important;
-    width: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-  }
-
-  /* Reset layout constraints to free the content */
-  main {
-    padding: 0 !important;
-    margin: 0 !important;
-    display: block !important;
+    height: auto !important;
     overflow: visible !important;
   }
 
-  /* Ensure the Dialog container doesn't create blank pages */
-  [role="dialog"] {
+  /* Hide main app, sidebar, header, etc. */
+  body > *:not(div[role="dialog"]),
+  [data-sidebar-wrapper],
+  header, nav, aside, footer, .no-print, button {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    width: 0 !important;
+  }
+
+  /* Ensure the Dialog Portal is visible and resets its position */
+  div[role="dialog"] {
     display: block !important;
     position: absolute !important;
     left: 0 !important;
     top: 0 !important;
     width: 100% !important;
-    height: auto !important;
     margin: 0 !important;
     padding: 0 !important;
-    border: none !important;
-    box-shadow: none !important;
     background: white !important;
+    box-shadow: none !important;
+    border: none !important;
     transform: none !important;
-    visibility: visible !important;
   }
 
-  /* The actual report container must start at the very top */
+  /* Hide Dialog Overlay and other UI parts */
+  div[role="dialog"] > div:first-child,
+  [data-radix-collection-item],
+  header[class*="DialogHeader"] {
+    display: none !important;
+  }
+
+  /* The actual report content */
   .printable-report {
     display: block !important;
-    position: relative !important;
     width: 100% !important;
     max-width: none !important;
     margin: 0 !important;
-    padding: 0 !important; 
+    padding: 0 !important;
     background: white !important;
-    border: none !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    box-shadow: none !important;
-    transform: none !important;
+    color: black !important;
+    position: relative !important;
+    top: 0 !important;
+    left: 0 !important;
     height: auto !important;
     overflow: visible !important;
   }
 
-  /* Force all text to be black for printing */
   .printable-report * {
-    visibility: visible !important;
-    opacity: 1 !important;
     color: black !important;
     background-color: transparent !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
 
-  /* Table rules for professional look */
   table {
     width: 100% !important;
     border-collapse: collapse !important;
@@ -175,14 +159,11 @@ h1, h2, h3, h4 {
 
   th, td {
     border: 1px solid black !important;
-    padding: 4pt !important;
-    color: black !important;
-    background: white !important;
+    padding: 3pt !important;
   }
 
   tr {
     page-break-inside: avoid !important;
-    page-break-after: auto !important;
   }
 
   /* Fix for scroll containers causing blank space */
@@ -191,6 +172,5 @@ h1, h2, h3, h4 {
     overflow: visible !important;
     height: auto !important;
     max-height: none !important;
-    position: static !important;
   }
 }
