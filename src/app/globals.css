@@ -85,28 +85,32 @@ h1, h2, h3, h4 {
     }
   }
   
-  /* ULTIMATE FIX: Hide every single thing by default */
+  /* ULTIMATE RESET: Force White Background and Black Text */
   html, body {
-    background: white !important;
+    background-color: white !important;
+    color: black !important;
     margin: 0 !important;
     padding: 0 !important;
     height: auto !important;
     overflow: visible !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
-  /* Hide main app, sidebar, header, etc. */
+  /* HIDE EVERYTHING EXCEPT THE REPORT */
   body > *:not(div[role="dialog"]),
   [data-sidebar-wrapper],
-  header, nav, aside, footer, .no-print, button {
+  header, nav, aside, footer, .no-print, button,
+  div[data-radix-portal] > div:not(div[role="dialog"]),
+  div[class*="DialogOverlay"] {
     display: none !important;
     visibility: hidden !important;
-    height: 0 !important;
-    width: 0 !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
   }
 
-  /* Ensure the Dialog Portal is visible and resets its position */
+  /* RESET DIALOG FOR PRINT */
   div[role="dialog"] {
-    display: block !important;
     position: absolute !important;
     left: 0 !important;
     top: 0 !important;
@@ -117,16 +121,13 @@ h1, h2, h3, h4 {
     box-shadow: none !important;
     border: none !important;
     transform: none !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    overflow: visible !important;
   }
 
-  /* Hide Dialog Overlay and other UI parts */
-  div[role="dialog"] > div:first-child,
-  [data-radix-collection-item],
-  header[class*="DialogHeader"] {
-    display: none !important;
-  }
-
-  /* The actual report content */
+  /* Ensure the report content is the only thing visible and fills the page */
   .printable-report {
     display: block !important;
     width: 100% !important;
@@ -135,9 +136,6 @@ h1, h2, h3, h4 {
     padding: 0 !important;
     background: white !important;
     color: black !important;
-    position: relative !important;
-    top: 0 !important;
-    left: 0 !important;
     height: auto !important;
     overflow: visible !important;
   }
@@ -145,32 +143,24 @@ h1, h2, h3, h4 {
   .printable-report * {
     color: black !important;
     background-color: transparent !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
   }
 
+  /* Professional Table Borders */
   table {
     width: 100% !important;
     border-collapse: collapse !important;
-    border: 1.5px solid black !important;
+    border: 1px solid black !important;
     margin-bottom: 5mm !important;
-    page-break-inside: auto !important;
   }
 
   th, td {
     border: 1px solid black !important;
-    padding: 3pt !important;
+    padding: 4pt !important;
   }
 
-  tr {
-    page-break-inside: avoid !important;
-  }
-
-  /* Fix for scroll containers causing blank space */
-  [data-radix-scroll-area-viewport] {
-    display: block !important;
-    overflow: visible !important;
-    height: auto !important;
-    max-height: none !important;
+  /* Remove any background gradients/shadows */
+  div, card, section {
+    background-image: none !important;
+    box-shadow: none !important;
   }
 }

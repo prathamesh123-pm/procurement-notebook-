@@ -296,16 +296,16 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
       <div className="w-full border-2 border-black mb-8 overflow-hidden">
         <table className="w-full border-collapse">
           <tbody>
-            {d.supplierName && (
+            {(d.supplierName || d.centerName) && (
               <tr className="text-[9pt] sm:text-[10pt] font-bold border-b border-black hover:bg-slate-50">
                 <td className="p-2.5 bg-slate-100 uppercase font-black border-r border-black w-1/3 text-slate-700 pl-3 flex items-center gap-2"><User className="h-3.5 w-3.5" /> पुरवठादार / केंद्राचे नाव</td>
-                <td className="p-2.5 pl-3 font-black text-primary uppercase">{d.supplierName}</td>
+                <td className="p-2.5 pl-3 font-black text-primary uppercase">{d.supplierName || d.centerName}</td>
               </tr>
             )}
-            {d.supplierId && (
+            {(d.supplierId || d.centerCode) && (
               <tr className="text-[9pt] sm:text-[10pt] font-bold border-b border-black hover:bg-slate-50">
                 <td className="p-2.5 bg-slate-100 uppercase font-black border-r border-black w-1/3 text-slate-700 pl-3 flex items-center gap-2"><Hash className="h-3.5 w-3.5" /> पुरवठादार कोड (CODE)</td>
-                <td className="p-2.5 pl-3 font-black">{d.supplierId}</td>
+                <td className="p-2.5 pl-3 font-black">{d.supplierId || d.centerCode}</td>
               </tr>
             )}
             {d.title && (
