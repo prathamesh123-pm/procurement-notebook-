@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
@@ -548,7 +547,7 @@ export default function ReportsPage() {
 
       <Dialog open={isViewOpen} onOpenChange={setIsViewOpen}>
         <DialogContent className={cn(
-          "p-0 rounded-2xl overflow-hidden border-none shadow-2xl bg-white flex flex-col h-full max-h-screen md:max-h-[98vh]",
+          "p-0 rounded-2xl overflow-hidden border-none shadow-2xl bg-white flex flex-col h-full max-h-screen md:max-h-[98vh] no-print-dialog",
           selectedReport?.type === 'Route Allocation Report' ? "max-w-[1100px] w-full" : "max-w-[950px] w-full"
         )}>
           <DialogHeader className="p-4 bg-white border-b flex flex-row items-center justify-between no-print w-full shrink-0">
@@ -561,11 +560,11 @@ export default function ReportsPage() {
             </div>
           </DialogHeader>
           
-          <ScrollArea className="flex-1 bg-slate-100 w-full overflow-auto">
-            <div className="report-preview-container p-2 sm:p-6 overflow-visible flex flex-col items-center">
+          <ScrollArea className="flex-1 bg-slate-100 w-full overflow-auto print:bg-white">
+            <div className="report-preview-container p-2 sm:p-6 overflow-visible flex flex-col items-center print:p-0 print:m-0">
               {selectedReport && (
                 <div className={cn(
-                  "bg-white shadow-2xl overflow-visible rounded-sm origin-top transform-gpu mb-10 transition-all",
+                  "bg-white shadow-2xl overflow-visible rounded-sm origin-top transform-gpu mb-10 transition-all print:shadow-none print:m-0",
                   selectedReport.type === 'Route Allocation Report' 
                     ? "w-full max-w-[297mm] min-h-screen landscape-mode" 
                     : "w-full max-w-[210mm] min-h-screen"

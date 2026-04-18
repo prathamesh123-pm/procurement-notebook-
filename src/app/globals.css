@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -68,11 +67,6 @@ h1, h2, h3, h4 {
 ::-webkit-scrollbar-track { @apply bg-transparent; }
 ::-webkit-scrollbar-thumb { @apply bg-slate-200 rounded-full; }
 
-.report-preview-container {
-  @apply w-full h-full bg-slate-100 flex flex-col items-center overflow-auto p-2 sm:p-4;
-  -webkit-overflow-scrolling: touch;
-}
-
 @media print {
   @page {
     margin: 5mm;
@@ -88,6 +82,7 @@ h1, h2, h3, h4 {
   /* ULTIMATE RESET: Force White Background and Black Text */
   html, body {
     background-color: white !important;
+    background: white !important;
     color: black !important;
     margin: 0 !important;
     padding: 0 !important;
@@ -98,18 +93,29 @@ h1, h2, h3, h4 {
   }
 
   /* HIDE EVERYTHING EXCEPT THE REPORT */
-  body > *:not(div[role="dialog"]),
+  /* Target common UI wrappers and portal containers */
+  body > *:not(div[data-radix-portal]),
   [data-sidebar-wrapper],
   header, nav, aside, footer, .no-print, button,
   div[data-radix-portal] > div:not(div[role="dialog"]),
-  div[class*="DialogOverlay"] {
+  .DialogOverlay,
+  [data-state="open"]::before,
+  .bg-black\/80 {
     display: none !important;
     visibility: hidden !important;
     opacity: 0 !important;
     pointer-events: none !important;
+    background: transparent !important;
   }
 
   /* RESET DIALOG FOR PRINT */
+  div[data-radix-portal] {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+  }
+
   div[role="dialog"] {
     position: absolute !important;
     left: 0 !important;
@@ -143,13 +149,14 @@ h1, h2, h3, h4 {
   .printable-report * {
     color: black !important;
     background-color: transparent !important;
+    border-color: black !important;
   }
 
-  /* Professional Table Borders */
+  /* Professional Table Borders for Print */
   table {
     width: 100% !important;
     border-collapse: collapse !important;
-    border: 1px solid black !important;
+    border: 1.5px solid black !important;
     margin-bottom: 5mm !important;
   }
 
@@ -162,5 +169,6 @@ h1, h2, h3, h4 {
   div, card, section {
     background-image: none !important;
     box-shadow: none !important;
+    background-color: white !important;
   }
 }
