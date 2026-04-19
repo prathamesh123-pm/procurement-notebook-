@@ -65,7 +65,6 @@ function SuppliersContent() {
     hygieneGrade: "A",
     chemicalsStock: "",
     batteryCondition: "",
-    // NEW FIELDS
     morning_collection_time: "", evening_collection_time: "",
     total_producers: "0", active_producers: "0", inactive_producers: "0",
     total_animals: "0", cows: "0", buffalo: "0", calves: "0",
@@ -133,7 +132,7 @@ function SuppliersContent() {
       long_term_producers: formData.longTermProducers,
       decreasing_producers: formData.decreasingProducers,
       can_expand_8_10_cows: formData.can_expand_8_10_cows,
-      high_capacity_producer_list: formData.highCapacityProducers.map(p => p.name),
+      high_capacity_producer_list: formData.highCapacityProducers,
       has_100_plus_milk: formData.has_100_plus_milk,
       high_milk_producer_list: formData.highMilkProducers.map(p => p.name),
       facilities_provided: formData.facilitiesProvided.map(f => f.name),
@@ -178,7 +177,7 @@ function SuppliersContent() {
       long_term_producers: formData.longTermProducers,
       decreasing_producers: formData.decreasingProducers,
       can_expand_8_10_cows: formData.can_expand_8_10_cows,
-      high_capacity_producer_list: formData.highCapacityProducers.map(p => p.name),
+      high_capacity_producer_list: formData.highCapacityProducers,
       has_100_plus_milk: formData.has_100_plus_milk,
       high_milk_producer_list: formData.highMilkProducers.map(p => p.name),
       facilities_provided: formData.facilitiesProvided.map(f => f.name),
@@ -260,7 +259,6 @@ function SuppliersContent() {
       hygieneGrade: supp.hygieneGrade || "A",
       chemicalsStock: supp.chemicalsStock || "",
       batteryCondition: supp.batteryCondition || "",
-      // NEW FIELDS
       morning_collection_time: details.morning_collection_time || "",
       evening_collection_time: details.evening_collection_time || "",
       total_producers: String(details.total_producers || 0),
@@ -273,7 +271,7 @@ function SuppliersContent() {
       longTermProducers: details.long_term_producers || [],
       decreasingProducers: details.decreasing_producers || [],
       can_expand_8_10_cows: details.can_expand_8_10_cows || false,
-      highCapacityProducers: (details.high_capacity_producer_list || []).map(name => ({ id: crypto.randomUUID(), name })),
+      highCapacityProducers: details.high_capacity_producer_list || [],
       has_100_plus_milk: details.has_100_plus_milk || false,
       highMilkProducers: (details.high_milk_producer_list || []).map(name => ({ id: crypto.randomUUID(), name })),
       facilitiesProvided: (details.facilities_provided || []).map(name => ({ id: crypto.randomUUID(), name })),
@@ -341,7 +339,6 @@ function SuppliersContent() {
                   </div>
                 </div>
 
-                {/* NEW APPENDED SECTIONS FOR ADD DIALOG */}
                 {formData.supplierType === 'Center' && (
                   <div className="space-y-8 animate-in fade-in duration-300">
                     <div className="space-y-4 p-4 border border-primary/20 rounded-2xl bg-primary/5">
@@ -404,9 +401,16 @@ function SuppliersContent() {
                           </div>
                           {formData.can_expand_8_10_cows && (
                             <div className="space-y-2">
-                               <Button size="sm" variant="outline" className="h-6 text-[8px] uppercase w-full" onClick={() => addDynamicRow('highCapacityProducers', { name: "" })}>उत्पादक जोडा</Button>
+                               <Button size="sm" variant="outline" className="h-6 text-[8px] uppercase w-full" onClick={() => addDynamicRow('highCapacityProducers', { name: "", current_milk: 0, supply_years: 0, current_animals: 0, land: "", fodder_available: "YES", shed_available: "YES" })}>उत्पादक जोडा</Button>
                                {formData.highCapacityProducers.map(p => (
-                                 <div key={p.id} className="flex gap-1"><Input value={p.name} onChange={e => updateDynamicRow('highCapacityProducers', p.id, { name: e.target.value })} className="h-7 text-[9px] border-slate-300" /><Button size="icon" variant="ghost" onClick={() => removeDynamicRow('highCapacityProducers', p.id)} className="h-7 w-7 text-rose-500"><X className="h-3 w-3"/></Button></div>
+                                 <div key={p.id} className="p-2 border rounded-lg space-y-2 bg-slate-50">
+                                   <Input value={p.name} placeholder="नाव" onChange={e => updateDynamicRow('highCapacityProducers', p.id, { name: e.target.value })} className="h-7 text-[9px]" />
+                                   <div className="grid grid-cols-2 gap-2">
+                                     <Input type="number" placeholder="दूध" value={p.current_milk} onChange={e => updateDynamicRow('highCapacityProducers', p.id, { current_milk: e.target.value })} className="h-7 text-[9px]" />
+                                     <Input placeholder="शेती" value={p.land} onChange={e => updateDynamicRow('highCapacityProducers', p.id, { land: e.target.value })} className="h-7 text-[9px]" />
+                                   </div>
+                                   <Button variant="ghost" size="sm" onClick={() => removeDynamicRow('highCapacityProducers', p.id)} className="h-7 w-full text-rose-500 text-[8px]">काढा</Button>
+                                 </div>
                                ))}
                             </div>
                           )}
@@ -442,22 +446,22 @@ function SuppliersContent() {
                   <h4 className="text-[10px] font-black uppercase text-primary border-b pb-1 flex items-center gap-2"><Wallet className="h-4 w-4" /> २) दूध व व्यावसायिक तपशील</h4>
                   <div className="grid grid-cols-3 gap-2 p-2.5 bg-blue-50/50 rounded-xl border border-blue-100">
                     <div className="col-span-3 text-[9px] font-black uppercase text-blue-600 mb-0.5">गाय (Qty/F/S)</div>
-                    <Input type="number" value={formData.cowQty} onChange={e => setFormData({...formData, cowQty: e.target.value})} className="h-8 text-[10px] bg-white border border-slate-300 font-bold" placeholder="L" />
-                    <Input type="number" value={formData.cowFat} onChange={e => setFormData({...formData, cowFat: e.target.value})} className="h-8 text-[10px] bg-white border border-slate-300 font-bold" placeholder="F" />
-                    <Input type="number" value={formData.cowSnf} onChange={e => setFormData({...formData, cowSnf: e.target.value})} className="h-8 text-[10px] bg-white border border-slate-300 font-bold" placeholder="S" />
+                    <Input type="number" value={formData.cowQty} onChange={e => setFormData({...formData, cowQty: e.target.value})} className="h-8 text-[10px] bg-white border-slate-300 font-bold" placeholder="L" />
+                    <Input type="number" value={formData.cowFat} onChange={e => setFormData({...formData, cowFat: e.target.value})} className="h-8 text-[10px] bg-white border-slate-300 font-bold" placeholder="F" />
+                    <Input type="number" value={formData.cowSnf} onChange={e => setFormData({...formData, cowSnf: e.target.value})} className="h-8 text-[10px] bg-white border-slate-300 font-bold" placeholder="S" />
                   </div>
                   <div className="grid grid-cols-3 gap-2 p-2.5 bg-amber-50/50 rounded-xl border border-amber-100">
                     <div className="col-span-3 text-[9px] font-black uppercase text-amber-600 mb-0.5">म्हेस (Qty/F/S)</div>
-                    <Input type="number" value={formData.bufQty} onChange={e => setFormData({...formData, bufQty: e.target.value})} className="h-8 text-[10px] bg-white border border-slate-300 font-bold" placeholder="L" />
-                    <Input type="number" value={formData.bufFat} onChange={e => setFormData({...formData, bufFat: e.target.value})} className="h-8 text-[10px] bg-white border border-slate-300 font-bold" placeholder="F" />
-                    <Input type="number" value={formData.bufSnf} onChange={e => setFormData({...formData, bufSnf: e.target.value})} className="h-8 text-[10px] bg-white border border-slate-300 font-bold" placeholder="S" />
+                    <Input type="number" value={formData.bufQty} onChange={e => setFormData({...formData, bufQty: e.target.value})} className="h-8 text-[10px] bg-white border-slate-300 font-bold" placeholder="L" />
+                    <Input type="number" value={formData.bufFat} onChange={e => setFormData({...formData, bufFat: e.target.value})} className="h-8 text-[10px] bg-white border-slate-300 font-bold" placeholder="F" />
+                    <Input type="number" value={formData.bufSnf} onChange={e => setFormData({...formData, bufSnf: e.target.value})} className="h-8 text-[10px] bg-white border-slate-300 font-bold" placeholder="S" />
                   </div>
                 </div>
 
                 <div className="space-y-4">
                   <h4 className="text-[10px] font-black uppercase text-primary border-b pb-1 flex items-center gap-2"><Box className="h-4 w-4" /> ३) इन्व्हेंटरी</h4>
                   <div className="space-y-3">
-                    <div className="flex items-center justify-between"><h4 className="text-[9px] font-black uppercase tracking-widest">साहित्य यादी</h4><Button variant="outline" size="sm" onClick={addEquipmentRow} className="h-7 text-[8px] font-black px-3 rounded-xl">जोडा</Button></div>
+                    <div className="flex items-center justify-between"><h4 className="text-[9px] font-black uppercase tracking-widest">साहित्य यादी</h4><Button variant="outline" size="sm" onClick={addEquipmentRow} className="h-7 text-[8px] font-black px-3 rounded-xl border-primary/20 text-primary">जोडा</Button></div>
                     <div className="space-y-2">
                       {formData.equipment.map(item => (
                         <div key={item.id} className="grid grid-cols-12 gap-1.5 bg-muted/10 p-2 rounded-xl border border-muted-foreground/5 items-center">
@@ -542,7 +546,6 @@ function SuppliersContent() {
                 </div>
               </div>
 
-              {/* CENTER ADDITIONAL DETAILS IN REPORT */}
               {selectedSupplier.supplierType === 'Center' && selectedSupplier.producer_center?.additional_details && (
                 <div className="w-full space-y-6">
                   <div className="grid grid-cols-2 gap-8">
@@ -689,7 +692,6 @@ function SuppliersContent() {
                 </div>
               </div>
 
-              {/* APPEND NEW FIELDS TO EDIT DIALOG */}
               {formData.supplierType === 'Center' && (
                 <div className="space-y-8 animate-in fade-in duration-300">
                   <div className="space-y-4 p-4 border border-primary/20 rounded-2xl bg-primary/5">
@@ -752,16 +754,23 @@ function SuppliersContent() {
                         </div>
                         {formData.can_expand_8_10_cows && (
                           <div className="space-y-2">
-                             <Button size="sm" variant="outline" className="h-6 text-[8px] uppercase w-full" onClick={() => addDynamicRow('highCapacityProducers', { name: "" })}>उत्पादक जोडा</Button>
+                             <Button size="sm" variant="outline" className="h-6 text-[8px] uppercase w-full" onClick={() => addDynamicRow('highCapacityProducers', { name: "", current_milk: 0, supply_years: 0, current_animals: 0, land: "", fodder_available: "YES", shed_available: "YES" })}>उत्पादक जोडा</Button>
                              {formData.highCapacityProducers.map(p => (
-                               <div key={p.id} className="flex gap-1"><Input value={p.name} onChange={e => updateDynamicRow('highCapacityProducers', p.id, { name: e.target.value })} className="h-7 text-[9px] border-slate-300" /><Button size="icon" variant="ghost" onClick={() => removeDynamicRow('highCapacityProducers', p.id)} className="h-7 w-7 text-rose-500"><X className="h-3 w-3"/></Button></div>
+                               <div key={p.id} className="p-2 border rounded bg-slate-50 space-y-2">
+                                 <Input value={p.name} placeholder="नाव" onChange={e => updateDynamicRow('highCapacityProducers', p.id, { name: e.target.value })} className="h-7 text-[9px]" />
+                                 <div className="grid grid-cols-2 gap-1">
+                                   <Input type="number" placeholder="दूध" onChange={e => updateDynamicRow('highCapacityProducers', p.id, { current_milk: e.target.value })} className="h-7 text-[9px]" />
+                                   <Input placeholder="शेती" onChange={e => updateDynamicRow('highCapacityProducers', p.id, { land: e.target.value })} className="h-7 text-[9px]" />
+                                 </div>
+                                 <Button variant="ghost" size="sm" onClick={() => removeDynamicRow('highCapacityProducers', p.id)} className="h-7 w-full text-rose-500 text-[8px]">काढा</Button>
+                               </div>
                              ))}
                           </div>
                         )}
                      </div>
                      <div className="space-y-4 p-4 border border-slate-200 rounded-2xl bg-white shadow-sm">
                         <div className="flex items-center justify-between">
-                          <Label className="text-[9px] font-black uppercase">१००+ लिटर दूध उत्पादक?</Label>
+                          <Label className="text-[9px] font-black uppercase">३० ते १००+ लिटर दूध उत्पादक?</Label>
                           <Switch checked={formData.has_100_plus_milk} onCheckedChange={(v) => setFormData({...formData, has_100_plus_milk: v})} />
                         </div>
                         {formData.has_100_plus_milk && (
@@ -776,7 +785,7 @@ function SuppliersContent() {
                   </div>
 
                   <div className="space-y-4 p-4 border border-slate-200 rounded-2xl bg-slate-50/50">
-                     <h4 className="text-[10px] font-black uppercase text-primary border-b pb-1">विश्लेषण & उपाययोजना</h4>
+                     <h4 className="text-[10px] font-black uppercase text-primary border-b pb-1">विशेष विश्लेषण</h4>
                      <div className="space-y-3">
                         <div className="space-y-1"><Label className="text-[9px] font-black uppercase">दूध कमी होण्याची कारणे</Label><Textarea value={formData.milk_decrease_reasons} onChange={e => setFormData({...formData, milk_decrease_reasons: e.target.value})} className="h-14 text-[10px] border-slate-300" /></div>
                         <div className="space-y-1"><Label className="text-[9px] font-black uppercase">सेंटरने केलेले प्रयत्न</Label><Textarea value={formData.efforts_taken} onChange={e => setFormData({...formData, efforts_taken: e.target.value})} className="h-14 text-[10px] border-slate-300" /></div>
@@ -842,4 +851,8 @@ function SuppliersContent() {
       </Dialog>
     </div>
   )
+}
+
+export default function SuppliersPage() {
+  return <Suspense fallback={<div className="p-10 text-center font-black uppercase text-[10px] opacity-50">लोड होत आहे...</div>}><SuppliersContent /></Suspense>
 }

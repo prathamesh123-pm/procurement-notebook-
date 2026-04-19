@@ -41,7 +41,7 @@
   }
 
   .compact-input {
-    @apply h-8 text-[12px] font-bold bg-slate-50 border border-slate-100 rounded-md px-2 focus-visible:ring-primary shadow-inner w-full outline-none transition-all;
+    @apply h-8 text-[12px] font-bold bg-slate-50 border border-slate-300 rounded-md px-2 focus-visible:ring-primary shadow-inner w-full outline-none transition-all;
   }
 
   .responsive-table-wrapper {
@@ -60,6 +60,11 @@ body {
 
 h1, h2, h3, h4 {
   @apply font-headline font-black tracking-tight uppercase;
+}
+
+/* Force visible borders for all inputs */
+input, textarea, select, .shadcn-input-like {
+  border: 1px solid #94a3b8 !important; /* slate-400 */
 }
 
 /* Custom Scrollbar */
