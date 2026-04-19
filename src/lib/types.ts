@@ -44,6 +44,32 @@ export interface TankerLogItem {
 
 export type SupplierType = 'Gavali' | 'Gotha' | 'Center';
 
+export interface ProducerCenterAdditionalDetails {
+  morning_collection_time?: string;
+  evening_collection_time?: string;
+  total_producers?: number;
+  active_producers?: number;
+  inactive_producers?: number;
+  total_animals?: number;
+  cows?: number;
+  buffalo?: number;
+  calves?: number;
+  long_term_producers?: any[];
+  decreasing_producers?: any[];
+  can_expand_8_10_cows?: boolean;
+  high_capacity_producer_list?: any[];
+  has_100_plus_milk?: boolean;
+  high_milk_producer_list?: any[];
+  facilities_provided?: any[];
+  lss_details?: any[];
+  competitor_dairies?: any[];
+  local_employees?: any[];
+  milkman_gavali_details?: any[];
+  milk_decrease_reasons?: string;
+  efforts_taken?: string;
+  required_actions?: string;
+}
+
 export interface Supplier {
   id: string;
   supplierId: string; // Manual Business ID
@@ -80,6 +106,10 @@ export interface Supplier {
   chemicalsStock?: string;
   batteryCondition?: string;
   equipment?: EquipmentItem[];
+  // NEW ADDITIONS
+  producer_center?: {
+    additional_details?: ProducerCenterAdditionalDetails;
+  };
   updatedAt: string;
 }
 

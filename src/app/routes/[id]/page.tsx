@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Supplier, EquipmentItem, SupplierType, Route } from "@/lib/types"
 import { 
   Plus, Search, User, 
-  Truck, Edit, ChevronRight, ArrowLeft, X, Laptop, Zap, Sun, Trash2, Milk, Box, Wallet, ShieldCheck, Printer, CheckCircle2, ListPlus
+  Truck, Edit, ChevronRight, ArrowLeft, X, Laptop, Zap, Sun, Trash2, Milk, Box, Wallet, ShieldCheck, Printer, CheckCircle2, ListPlus, Clock, Layers, Users, TrendingDown
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
@@ -19,6 +19,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking } from "@/firebase"
 import { collection, doc } from "firebase/firestore"
 import { Textarea } from "@/components/ui/textarea"
+import { Switch } from "@/components/ui/switch"
 
 export default function RouteDetailsPage() {
   const params = useParams()
@@ -62,13 +63,30 @@ export default function RouteDetailsPage() {
     competition: "", cattleFeedBrand: "", iceBlocks: "0",
     cowQty: "0", cowFat: "0", cowSnf: "0", bufQty: "0", bufFat: "0", bufSnf: "0",
     milkCansCount: "0", computerAvailable: false, upsInverterAvailable: false, solarAvailable: false,
-    adulterationKitInfo: "", additionalNotes: "", equipment: [] as EquipmentItem[]
+    adulterationKitInfo: "", additionalNotes: "", equipment: [] as EquipmentItem[],
+    // NEW FIELDS
+    morning_collection_time: "", evening_collection_time: "",
+    total_producers: "0", active_producers: "0", inactive_producers: "0",
+    total_animals: "0", cows: "0", buffalo: "0", calves: "0",
+    longTermProducers: [] as any[],
+    decreasingProducers: [] as any[],
+    can_expand_8_10_cows: false,
+    highCapacityProducers: [] as any[],
+    has_100_plus_milk: false,
+    highMilkProducers: [] as any[],
+    facilitiesProvided: [] as any[],
+    lssDetails: [] as any[],
+    competitorDairies: [] as any[],
+    localEmployees: [] as any[],
+    localGavali: [] as any[],
+    milk_decrease_reasons: "",
+    efforts_taken: "",
+    required_actions: ""
   })
 
   useEffect(() => setMounted(true), [])
 
-  const openAddDialog = () => {
-    setDialogMode('add'); setEditingId(null);
+  const resetFormData = () => {
     setFormData({
       name: "", supplierId: "", address: "", mobile: "", operatorName: "",
       routeId: currentRouteId,
@@ -77,13 +95,27 @@ export default function RouteDetailsPage() {
       hygieneGrade: "A", competition: "", cattleFeedBrand: "", iceBlocks: "0",
       cowQty: "0", cowFat: "0", cowSnf: "0", bufQty: "0", bufFat: "0", bufSnf: "0",
       milkCansCount: "0", computerAvailable: false, upsInverterAvailable: false, solarAvailable: false,
-      adulterationKitInfo: "", additionalNotes: "", equipment: []
+      adulterationKitInfo: "", additionalNotes: "", equipment: [],
+      morning_collection_time: "", evening_collection_time: "",
+      total_producers: "0", active_producers: "0", inactive_producers: "0",
+      total_animals: "0", cows: "0", buffalo: "0", calves: "0",
+      longTermProducers: [], decreasingProducers: [], can_expand_8_10_cows: false,
+      highCapacityProducers: [], has_100_plus_milk: false, highMilkProducers: [],
+      facilitiesProvided: [], lssDetails: [], competitorDairies: [],
+      localEmployees: [], localGavali: [], milk_decrease_reasons: "",
+      efforts_taken: "", required_actions: ""
     })
+  }
+
+  const openAddDialog = () => {
+    setDialogMode('add'); setEditingId(null);
+    resetFormData();
     setIsDialogOpen(true)
   }
 
   const openEditDialog = (s: Supplier) => {
     setDialogMode('edit'); setEditingId(s.id);
+    const details = s.producer_center?.additional_details || {};
     setFormData({
       name: s.name || "", supplierId: s.supplierId || "", address: s.address || "",
       mobile: s.mobile || "", operatorName: s.operatorName || "",
@@ -100,21 +132,74 @@ export default function RouteDetailsPage() {
       milkCansCount: String(s.milkCansCount || 0), computerAvailable: s.computerAvailable || false,
       upsInverterAvailable: s.upsInverterAvailable || false, solarAvailable: s.solarAvailable || false,
       adulterationKitInfo: s.adulterationKitInfo || "", additionalNotes: s.additionalNotes || s.additionalInfo || "",
-      equipment: s.equipment || []
+      equipment: s.equipment || [],
+      // MAP NEW FIELDS
+      morning_collection_time: details.morning_collection_time || "",
+      evening_collection_time: details.evening_collection_time || "",
+      total_producers: String(details.total_producers || 0),
+      active_producers: String(details.active_producers || 0),
+      inactive_producers: String(details.inactive_producers || 0),
+      total_animals: String(details.total_animals || 0),
+      cows: String(details.cows || 0),
+      buffalo: String(details.buffalo || 0),
+      calves: String(details.calves || 0),
+      longTermProducers: details.long_term_producers || [],
+      decreasingProducers: details.decreasing_producers || [],
+      can_expand_8_10_cows: details.can_expand_8_10_cows || false,
+      highCapacityProducers: (details.high_capacity_producer_list || []).map(name => ({ id: crypto.randomUUID(), name })),
+      has_100_plus_milk: details.has_100_plus_milk || false,
+      highMilkProducers: (details.high_milk_producer_list || []).map(name => ({ id: crypto.randomUUID(), name })),
+      facilitiesProvided: (details.facilities_provided || []).map(name => ({ id: crypto.randomUUID(), name })),
+      lssDetails: details.lss_details || [],
+      competitorDairies: details.competitor_dairies || [],
+      localEmployees: details.local_employees || [],
+      localGavali: details.milkman_gavali_details || [],
+      milk_decrease_reasons: details.milk_decrease_reasons || "",
+      efforts_taken: details.efforts_taken || "",
+      required_actions: details.required_actions || ""
     })
     setIsDialogOpen(true)
   }
 
   const handleSaveSupplier = () => {
     if (!formData.name || !formData.supplierId || !db) return;
+    
+    const additional_details = {
+      morning_collection_time: formData.morning_collection_time,
+      evening_collection_time: formData.evening_collection_time,
+      total_producers: Number(formData.total_producers),
+      active_producers: Number(formData.active_producers),
+      inactive_producers: Number(formData.inactive_producers),
+      total_animals: Number(formData.total_animals),
+      cows: Number(formData.cows),
+      buffalo: Number(formData.buffalo),
+      calves: Number(formData.calves),
+      long_term_producers: formData.longTermProducers,
+      decreasing_producers: formData.decreasingProducers,
+      can_expand_8_10_cows: formData.can_expand_8_10_cows,
+      high_capacity_producer_list: formData.highCapacityProducers.map(p => p.name),
+      has_100_plus_milk: formData.has_100_plus_milk,
+      high_milk_producer_list: formData.highMilkProducers.map(p => p.name),
+      facilities_provided: formData.facilitiesProvided.map(f => f.name),
+      lss_details: formData.lssDetails,
+      competitor_dairies: formData.competitorDairies,
+      local_employees: formData.localEmployees,
+      milkman_gavali_details: formData.localGavali,
+      milk_decrease_reasons: formData.milk_decrease_reasons,
+      efforts_taken: formData.efforts_taken,
+      required_actions: formData.required_actions
+    };
+
     const data = {
       ...formData,
       routeId: formData.routeId === "none" ? "" : formData.routeId,
       cowMilk: { quantity: Number(formData.cowQty), fat: Number(formData.cowFat), snf: Number(formData.cowSnf) },
       buffaloMilk: { quantity: Number(formData.bufQty), fat: Number(formData.bufFat), snf: Number(formData.bufSnf) },
       iceBlocks: Number(formData.iceBlocks), milkCansCount: Number(formData.milkCansCount),
+      producer_center: formData.supplierType === 'Center' ? { additional_details } : null,
       updatedAt: new Date().toISOString()
     }
+
     if (dialogMode === 'add') addDocumentNonBlocking(collection(db, 'suppliers'), data)
     else if (editingId) updateDocumentNonBlocking(doc(db, 'suppliers', editingId), data)
     setIsDialogOpen(false); toast({ title: "यशस्वी", description: "माहिती जतन झाली." })
@@ -126,6 +211,22 @@ export default function RouteDetailsPage() {
     setIsMasterDialogOpen(false)
     toast({ title: "यशस्वी", description: "सप्लायर या रूटला जोडला गेला." })
   }
+
+  const addDynamicRow = (key: string, initialData: any) => {
+    setFormData(prev => ({ ...prev, [key]: [...(prev[key as keyof typeof prev] as any[]), { id: crypto.randomUUID(), ...initialData }] }))
+  }
+
+  const removeDynamicRow = (key: string, id: string) => {
+    setFormData(prev => ({ ...prev, [key]: (prev[key as keyof typeof prev] as any[]).filter(r => r.id !== id) }))
+  }
+
+  const updateDynamicRow = (key: string, id: string, updates: any) => {
+    setFormData(prev => ({ ...prev, [key]: (prev[key as keyof typeof prev] as any[]).map(r => r.id === id ? { ...r, ...updates } : r) }))
+  }
+
+  const addEquipmentRow = () => addDynamicRow('equipment', { name: "", quantity: 1, ownership: 'Company' })
+  const removeEquipmentRow = (id: string) => removeDynamicRow('equipment', id)
+  const updateEquipmentRow = (id: string, updates: Partial<EquipmentItem>) => updateDynamicRow('equipment', id, updates)
 
   const availableMasterSuppliers = useMemo(() => {
     return (allSuppliers || []).filter(s => {
@@ -139,18 +240,6 @@ export default function RouteDetailsPage() {
   const getRouteName = (rid: string) => {
     if (!rid) return "रूट नाही";
     return allRoutes?.find(r => r.id === rid)?.name || "---"
-  }
-
-  const addEquipmentRow = () => {
-    setFormData({ ...formData, equipment: [...formData.equipment, { id: crypto.randomUUID(), name: "", quantity: 1, ownership: 'Company' }] })
-  }
-
-  const updateEquipmentRow = (id: string, updates: Partial<EquipmentItem>) => {
-    setFormData({ ...formData, equipment: formData.equipment.map(e => e.id === id ? { ...e, ...updates } : e) })
-  }
-
-  const removeEquipmentRow = (id: string) => {
-    setFormData({ ...formData, equipment: formData.equipment.filter(e => e.id !== id) })
   }
 
   const deleteSupplier = (id: string) => {
@@ -191,7 +280,7 @@ export default function RouteDetailsPage() {
           <div className="p-3 border-b">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
-              <input placeholder="या रूटमध्ये शोधा..." className="w-full pl-9 h-10 text-[12px] bg-muted/10 border-none rounded-xl font-black uppercase outline-none focus:ring-1 focus:ring-primary shadow-inner" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
+              <input placeholder="या रूटमध्ये शोधा..." className="w-full pl-9 h-10 text-[12px] bg-muted/10 border border-slate-200 rounded-xl font-black uppercase outline-none focus:ring-1 focus:ring-primary shadow-inner" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
             </div>
           </div>
           <ScrollArea className="h-[500px]">
@@ -214,104 +303,149 @@ export default function RouteDetailsPage() {
 
         <Card className="lg:col-span-8 border shadow-2xl bg-white rounded-3xl overflow-hidden min-h-[500px] flex flex-col items-center">
           {selectedSupplier ? (
-            <div className="p-8 space-y-8 animate-in slide-in-from-right-2 duration-300 printable-report flex flex-col items-center shadow-none w-full max-w-[210mm] mx-auto text-left bg-white">
-              <div className="w-full flex items-center justify-between no-print mb-4 border-b pb-2">
-                <Badge className="bg-primary/10 text-primary border-none uppercase text-[10px] font-black">{selectedSupplier.supplierType} PROFILE REPORT</Badge>
-                <div className="flex gap-2">
-                  <Button variant="outline" size="sm" className="h-8 rounded-xl font-black uppercase text-[10px]" onClick={() => window.print()}><Printer className="h-4 w-4 mr-1.5" /> प्रिंट</Button>
-                  <Button variant="outline" size="sm" className="h-8 rounded-xl font-black uppercase text-[10px]" onClick={() => openEditDialog(selectedSupplier)}><Edit className="h-4 w-4 mr-1.5" /> बदल करा</Button>
-                  <Button variant="outline" size="sm" className="h-8 rounded-xl font-black uppercase text-[10px] text-destructive border-destructive/20" onClick={() => deleteSupplier(selectedSupplier.id)}><Trash2 className="h-4 w-4 mr-1.5" /> हटवा</Button>
-                </div>
-              </div>
-
-              <div className="w-full border-b-4 border-black pb-3 mb-6 text-center">
-                <h3 className="text-[20pt] font-black uppercase text-primary tracking-[0.1em]">{selectedSupplier.name}</h3>
-                <p className="text-[11pt] font-black text-muted-foreground uppercase tracking-widest mt-1">आयडी: {selectedSupplier.supplierId} | {selectedSupplier.supplierType === 'Center' ? 'संकलन केंद्र' : 'गवळी / सप्लायर'} प्रोफाईल</p>
-              </div>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-10 w-full mb-6 text-left">
-                <div className="space-y-4">
-                  <h4 className="text-[11px] font-black uppercase text-primary tracking-[0.2em] border-b-2 border-black pb-1 mb-2">१) प्राथमिक माहिती (PRIMARY)</h4>
-                  <div className="space-y-2 text-[12px] font-bold">
-                    <div className="flex justify-between border-b border-dashed border-black/20 pb-1"><span className="text-muted-foreground uppercase text-[10px]">ऑपरेटर नाव</span><span>{selectedSupplier.operatorName || "-"}</span></div>
-                    <div className="flex justify-between border-b border-dashed border-black/20 pb-1"><span className="text-muted-foreground uppercase text-[10px]">मोबाईल नंबर</span><span>{selectedSupplier.mobile || "-"}</span></div>
-                    <div className="flex flex-col gap-1"><span className="text-muted-foreground uppercase text-[10px]">पूर्ण पत्ता</span><span className="leading-relaxed">{selectedSupplier.address || "-"}</span></div>
+            <ScrollArea className="w-full h-full">
+              <div className="p-8 space-y-8 animate-in slide-in-from-right-2 duration-300 printable-report flex flex-col items-center shadow-none w-full max-w-[210mm] mx-auto text-left bg-white">
+                <div className="w-full flex items-center justify-between no-print mb-4 border-b pb-2">
+                  <Badge className="bg-primary/10 text-primary border-none uppercase text-[10px] font-black">{selectedSupplier.supplierType} PROFILE REPORT</Badge>
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm" className="h-8 rounded-xl font-black uppercase text-[10px]" onClick={() => window.print()}><Printer className="h-4 w-4 mr-1.5" /> प्रिंट</Button>
+                    <Button variant="outline" size="sm" className="h-8 rounded-xl font-black uppercase text-[10px]" onClick={() => openEditDialog(selectedSupplier)}><Edit className="h-4 w-4 mr-1.5" /> बदल करा</Button>
+                    <Button variant="outline" size="sm" className="h-8 rounded-xl font-black uppercase text-[10px] text-destructive border-destructive/20" onClick={() => deleteSupplier(selectedSupplier.id)}><Trash2 className="h-4 w-4 mr-1.5" /> हटवा</Button>
                   </div>
                 </div>
 
-                <div className="space-y-4">
-                  <h4 className="text-[11px] font-black uppercase text-primary tracking-[0.2em] border-b-2 border-black pb-1 mb-2">२) परवाना व तांत्रिक (TECHNICAL)</h4>
-                  <div className="space-y-2 text-[12px] font-bold">
-                    <div className="flex justify-between border-b border-dashed border-black/20 pb-1"><span className="text-muted-foreground uppercase text-[10px]">FSSAI क्र.</span><span>{selectedSupplier.fssaiNumber || "-"}</span></div>
-                    <div className="flex justify-between border-b border-dashed border-black/20 pb-1"><span className="text-muted-foreground uppercase text-[10px]">काटा ब्रँड नाव</span><span>{selectedSupplier.scaleBrand || "-"}</span></div>
-                    <div className="flex justify-between border-b border-dashed border-black/20 pb-1"><span className="text-muted-foreground uppercase text-[10px]">मशीन ब्रँड</span><span>{selectedSupplier.fatMachineBrand || "-"}</span></div>
-                    <div className="flex justify-between border-b border-dashed border-black/20 pb-1"><span className="text-muted-foreground uppercase text-[10px]">बॅटरी स्थिती</span><span>{selectedSupplier.batteryCondition || "-"}</span></div>
-                  </div>
+                <div className="w-full border-b-4 border-black pb-3 mb-6 text-center">
+                  <h3 className="text-[20pt] font-black uppercase text-primary tracking-[0.1em]">{selectedSupplier.name}</h3>
+                  <p className="text-[11pt] font-black text-muted-foreground uppercase tracking-widest mt-1">आयडी: {selectedSupplier.supplierId} | {selectedSupplier.supplierType === 'Center' ? 'संकलन केंद्र' : 'गवळी / सप्लायर'} प्रोफाईल</p>
                 </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-10 w-full mb-6 text-left">
-                <div className="space-y-4">
-                  <h4 className="text-[11px] font-black uppercase text-primary tracking-[0.2em] border-b-2 border-black pb-1 mb-2">३) व्यावसायिक माहिती (BUSINESS)</h4>
-                  <div className="space-y-2 text-[12px] font-bold">
-                    <div className="flex justify-between border-b border-dashed border-black/20 pb-1"><span className="text-muted-foreground uppercase text-[10px]">पेमेंट सायकल</span><span>{selectedSupplier.paymentCycle || "10 Days"}</span></div>
-                    <div className="flex justify-between border-b border-dashed border-black/20 pb-1"><span className="text-muted-foreground uppercase text-[10px]">जागा मालकी</span><span>{selectedSupplier.spaceOwnership === 'Self' ? 'स्वतःची' : 'भाड्याची'}</span></div>
-                    <div className="flex justify-between border-b border-dashed border-black/20 pb-1"><span className="text-muted-foreground uppercase text-[10px]">स्वच्छता ग्रेड</span><span className="font-black text-emerald-600 text-sm">{selectedSupplier.hygieneGrade || "A"} GRADE</span></div>
-                    <div className="flex justify-between border-b border-dashed border-black/20 pb-1"><span className="text-muted-foreground uppercase text-[10px]">बर्फ लाद्या</span><span>{selectedSupplier.iceBlocks || 0} नग</span></div>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <h4 className="text-[11px] font-black uppercase text-blue-600 tracking-[0.2em] border-b-2 border-black pb-1 mb-2">४) दूध संकलन सारांश (MILK)</h4>
-                  <div className="grid grid-cols-1 gap-3">
-                    <div className="p-3 rounded-lg border-2 border-blue-600 flex justify-between items-center bg-blue-50/30">
-                      <span className="text-[10px] font-black uppercase text-blue-600">गाय दूध (COW)</span>
-                      <span className="text-base font-black">{selectedSupplier.cowMilk?.quantity || 0} L <span className="text-[10px] opacity-60 ml-2">(F:{selectedSupplier.cowMilk?.fat}% S:{selectedSupplier.cowMilk?.snf}%)</span></span>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-10 w-full mb-6 text-left">
+                  <div className="space-y-4">
+                    <h4 className="text-[11px] font-black uppercase text-primary tracking-[0.2em] border-b-2 border-black pb-1 mb-2">१) प्राथमिक माहिती (PRIMARY)</h4>
+                    <div className="space-y-2 text-[12px] font-bold">
+                      <div className="flex justify-between border-b border-dashed border-black/20 pb-1"><span className="text-muted-foreground uppercase text-[10px]">ऑपरेटर नाव</span><span>{selectedSupplier.operatorName || "-"}</span></div>
+                      <div className="flex justify-between border-b border-dashed border-black/20 pb-1"><span className="text-muted-foreground uppercase text-[10px]">मोबाईल नंबर</span><span>{selectedSupplier.mobile || "-"}</span></div>
+                      <div className="flex flex-col gap-1"><span className="text-muted-foreground uppercase text-[10px]">पूर्ण पत्ता</span><span className="leading-relaxed">{selectedSupplier.address || "-"}</span></div>
                     </div>
-                    <div className="p-3 rounded-lg border-2 border-amber-600 flex justify-between items-center bg-amber-50/30">
-                      <span className="text-[10px] font-black uppercase text-amber-600">म्हेस दूध (BUF)</span>
-                      <span className="text-base font-black">{selectedSupplier.buffaloMilk?.quantity || 0} L <span className="text-[10px] opacity-60 ml-2">(F:{selectedSupplier.buffaloMilk?.fat}% S:{selectedSupplier.buffaloMilk?.snf}%)</span></span>
+                  </div>
+
+                  <div className="space-y-4">
+                    <h4 className="text-[11px] font-black uppercase text-primary tracking-[0.2em] border-b-2 border-black pb-1 mb-2">२) परवाना व तांत्रिक (TECHNICAL)</h4>
+                    <div className="space-y-2 text-[12px] font-bold">
+                      <div className="flex justify-between border-b border-dashed border-black/20 pb-1"><span className="text-muted-foreground uppercase text-[10px]">FSSAI क्र.</span><span>{selectedSupplier.fssaiNumber || "-"}</span></div>
+                      <div className="flex justify-between border-b border-dashed border-black/20 pb-1"><span className="text-muted-foreground uppercase text-[10px]">काटा ब्रँड नाव</span><span>{selectedSupplier.scaleBrand || "-"}</span></div>
+                      <div className="flex justify-between border-b border-dashed border-black/20 pb-1"><span className="text-muted-foreground uppercase text-[10px]">मशीन ब्रँड</span><span>{selectedSupplier.fatMachineBrand || "-"}</span></div>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="grid grid-cols-3 gap-4 w-full mb-8">
-                <div className="p-3 border-2 border-black text-center rounded-lg bg-slate-50"><p className="text-[8px] font-black uppercase tracking-widest mb-1">POP / COMPUTER</p><p className="text-[12px] font-black">{selectedSupplier.computerAvailable ? 'AVAILABLE' : 'NO'}</p></div>
-                <div className="p-3 border-2 border-black text-center rounded-lg bg-slate-50"><p className="text-[8px] font-black uppercase tracking-widest mb-1">UPS / INVERTER</p><p className="text-[12px] font-black">{selectedSupplier.upsInverterAvailable ? 'AVAILABLE' : 'NO'}</p></div>
-                <div className="p-3 border-2 border-black text-center rounded-lg bg-slate-50"><p className="text-[8px] font-black uppercase tracking-widest mb-1">SOLAR SYSTEM</p><p className="text-[12px] font-black">{selectedSupplier.solarAvailable ? 'AVAILABLE' : 'NO'}</p></div>
-              </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-10 w-full mb-6 text-left">
+                  <div className="space-y-4">
+                    <h4 className="text-[11px] font-black uppercase text-primary tracking-[0.2em] border-b-2 border-black pb-1 mb-2">३) व्यावसायिक माहिती (BUSINESS)</h4>
+                    <div className="space-y-2 text-[12px] font-bold">
+                      <div className="flex justify-between border-b border-dashed border-black/20 pb-1"><span className="text-muted-foreground uppercase text-[10px]">पेमेंट सायकल</span><span>{selectedSupplier.paymentCycle || "10 Days"}</span></div>
+                      <div className="flex justify-between border-b border-dashed border-black/20 pb-1"><span className="text-muted-foreground uppercase text-[10px]">जागा मालकी</span><span>{selectedSupplier.space_ownership === 'Self' ? 'स्वतःची' : 'भाड्याची'}</span></div>
+                      <div className="flex justify-between border-b border-dashed border-black/20 pb-1"><span className="text-muted-foreground uppercase text-[10px]">स्वच्छता ग्रेड</span><span className="font-black text-emerald-600 text-sm">{selectedSupplier.hygiene_grade || "A"} GRADE</span></div>
+                    </div>
+                  </div>
 
-              <div className="space-y-3 w-full text-left">
-                <h4 className="text-[11px] font-black uppercase text-primary tracking-[0.2em] border-b-2 border-black pb-1 mb-2">५) साहित्याची यादी (INVENTORY ASSETS)</h4>
-                <table className="w-full border-collapse border border-black shadow-sm">
-                  <thead>
-                    <tr className="bg-slate-100 h-10">
-                      <th className="p-3 border border-black text-left uppercase text-[10px] font-black w-[50%]">साहित्य नाव (Item)</th>
-                      <th className="p-3 border border-black text-center uppercase text-[10px] font-black w-[15%]">नग</th>
-                      <th className="p-3 border border-black text-right uppercase text-[10px] font-black w-[35%]">मालकी हक्क</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {(selectedSupplier.equipment || []).map((it, idx) => (
-                      <tr key={idx} className="font-bold border-b border-black h-10">
-                        <td className="p-3 border border-black text-[12px] uppercase">{it.name}</td>
-                        <td className="p-3 border border-black text-center text-[12px]">{it.quantity}</td>
-                        <td className="p-3 border border-black text-right uppercase text-[10px]">{it.ownership === 'Self' ? 'स्वतःची' : 'डेअरीची'}</td>
-                      </tr>
-                    ))}
-                    {(!selectedSupplier.equipment || selectedSupplier.equipment.length === 0) && (
-                      <tr className="h-12"><td colSpan={3} className="p-4 text-center italic text-[11px] opacity-50 border border-black">कोणतेही साहित्य नोंदवलेले नाही.</td></tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
+                  <div className="space-y-4">
+                    <h4 className="text-[11px] font-black uppercase text-blue-600 tracking-[0.2em] border-b-2 border-black pb-1 mb-2">४) दूध संकलन सारांश (MILK)</h4>
+                    <div className="grid grid-cols-1 gap-3">
+                      <div className="p-3 rounded-lg border-2 border-blue-600 flex justify-between items-center bg-blue-50/30">
+                        <span className="text-[10px] font-black uppercase text-blue-600">गाय दूध (COW)</span>
+                        <span className="text-base font-black">{selectedSupplier.cowMilk?.quantity || 0} L <span className="text-[10px] opacity-60 ml-2">(F:{selectedSupplier.cowMilk?.fat}% S:{selectedSupplier.cowMilk?.snf}%)</span></span>
+                      </div>
+                      <div className="p-3 rounded-lg border-2 border-amber-600 flex justify-between items-center bg-amber-50/30">
+                        <span className="text-[10px] font-black uppercase text-amber-600">म्हेस दूध (BUF)</span>
+                        <span className="text-base font-black">{selectedSupplier.buffaloMilk?.quantity || 0} L <span className="text-[10px] opacity-60 ml-2">(F:{selectedSupplier.buffaloMilk?.fat}% S:{selectedSupplier.buffaloMilk?.snf}%)</span></span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* NEW REPORT SECTIONS FOR CENTER */}
+                {selectedSupplier.supplierType === 'Center' && selectedSupplier.producer_center?.additional_details && (
+                  <div className="w-full space-y-8">
+                    <div className="grid grid-cols-2 gap-10">
+                      <div className="space-y-4">
+                        <h4 className="text-[11px] font-black uppercase text-primary border-b-2 border-black pb-1 mb-2">५) संकलन वेळ & सारांश</h4>
+                        <div className="space-y-2 text-[12px] font-bold">
+                          <div className="flex justify-between border-b border-dashed border-black/20 pb-1"><span>सकाळ वेळ</span><span>{selectedSupplier.producer_center.additional_details.morning_collection_time}</span></div>
+                          <div className="flex justify-between border-b border-dashed border-black/20 pb-1"><span>सायंकाळ वेळ</span><span>{selectedSupplier.producer_center.additional_details.evening_collection_time}</span></div>
+                          <div className="flex justify-between border-b border-dashed border-black/20 pb-1"><span>एकूण उत्पादक</span><span>{selectedSupplier.producer_center.additional_details.total_producers}</span></div>
+                          <div className="flex justify-between border-b border-dashed border-black/20 pb-1"><span>सक्रिय उत्पादक</span><span>{selectedSupplier.producer_center.additional_details.active_producers}</span></div>
+                        </div>
+                      </div>
+                      <div className="space-y-4">
+                        <h4 className="text-[11px] font-black uppercase text-primary border-b-2 border-black pb-1 mb-2">६) जनावरांची गणना</h4>
+                        <div className="grid grid-cols-2 gap-4">
+                           <div className="p-2 border-2 border-black text-center rounded bg-slate-50"><p className="text-[8px] font-black">COWS</p><p className="text-[14px] font-black">{selectedSupplier.producer_center.additional_details.cows}</p></div>
+                           <div className="p-2 border-2 border-black text-center rounded bg-slate-50"><p className="text-[8px] font-black">BUFFALO</p><p className="text-[14px] font-black">{selectedSupplier.producer_center.additional_details.buffalo}</p></div>
+                           <div className="p-2 border-2 border-black text-center rounded bg-slate-50"><p className="text-[8px] font-black">CALVES</p><p className="text-[14px] font-black">{selectedSupplier.producer_center.additional_details.calves}</p></div>
+                           <div className="p-2 border-2 border-black text-center rounded bg-slate-900 text-white"><p className="text-[8px] font-black">TOTAL</p><p className="text-[14px] font-black">{selectedSupplier.producer_center.additional_details.total_animals}</p></div>
+                        </div>
+                      </div>
+                    </div>
 
-              <div className="w-full mt-auto pt-24 grid grid-cols-2 gap-24 text-center uppercase font-black text-[11pt] tracking-[0.2em]">
-                <div className="border-t-2 border-black pt-3">अधिकृत स्वाक्षरी</div>
-                <div className="border-t-2 border-black pt-3">सुपरवायझर स्वाक्षरी</div>
+                    <div className="space-y-4">
+                       <h4 className="text-[11px] font-black uppercase text-primary border-b-2 border-black pb-1">७) २+ वर्ष जुने उत्पादक</h4>
+                       <table className="w-full border-collapse border-2 border-black text-[10px]">
+                         <thead className="bg-slate-100">
+                           <tr className="font-black border-b-2 border-black">
+                             <th className="p-2 border-r border-black text-left">उत्पादक नाव</th>
+                             <th className="p-2 border-r border-black text-center">जुने दूध</th>
+                             <th className="p-2 border-r border-black text-center">सध्याचे</th>
+                             <th className="p-2 border-r border-black text-center">जुनी जनावरे</th>
+                             <th className="p-2 text-center">सध्याची</th>
+                           </tr>
+                         </thead>
+                         <tbody>
+                           {selectedSupplier.producer_center.additional_details.long_term_producers?.map((p: any, i: number) => (
+                             <tr key={i} className="border-b border-black font-bold">
+                               <td className="p-2 border-r border-black">{p.producer_name}</td>
+                               <td className="p-2 border-r border-black text-center">{p.previous_milk} L</td>
+                               <td className="p-2 border-r border-black text-center">{p.current_milk} L</td>
+                               <td className="p-2 border-r border-black text-center">{p.previous_animals}</td>
+                               <td className="p-2 text-center">{p.current_animals}</td>
+                             </tr>
+                           ))}
+                         </tbody>
+                       </table>
+                    </div>
+
+                    <div className="space-y-4">
+                       <h4 className="text-[11px] font-black uppercase text-rose-700 border-b-2 border-black pb-1">८) दूध घटलेले उत्पादक विश्लेषण</h4>
+                       <table className="w-full border-collapse border-2 border-black text-[10px]">
+                         <thead className="bg-rose-50">
+                           <tr className="font-black border-b-2 border-black text-rose-900">
+                             <th className="p-2 border-r border-black text-left">नाव</th>
+                             <th className="p-2 border-r border-black text-center">दूध (जुने/नवे)</th>
+                             <th className="p-2 border-r border-black text-center">जनावरे (जुनी/नवी)</th>
+                             <th className="p-2 text-left">घटण्याचे कारण</th>
+                           </tr>
+                         </thead>
+                         <tbody>
+                           {selectedSupplier.producer_center.additional_details.decreasing_producers?.map((p: any, i: number) => (
+                             <tr key={i} className="border-b border-black font-bold">
+                               <td className="p-2 border-r border-black">{p.producer_name}</td>
+                               <td className="p-2 border-r border-black text-center">{p.previous_milk} / {p.current_milk} L</td>
+                               <td className="p-2 border-r border-black text-center">{p.previous_animals} / {p.current_animals}</td>
+                               <td className="p-2 text-slate-600">{p.reason}</td>
+                             </tr>
+                           ))}
+                         </tbody>
+                       </table>
+                    </div>
+                  </div>
+                )}
+
+                <div className="w-full mt-auto pt-24 grid grid-cols-2 gap-24 text-center uppercase font-black text-[11pt] tracking-[0.2em]">
+                  <div className="border-t-2 border-black pt-3">अधिकृत स्वाक्षरी</div>
+                  <div className="border-t-2 border-black pt-3">सुपरवायझर स्वाक्षरी</div>
+                </div>
               </div>
-            </div>
+            </ScrollArea>
           ) : (
             <div className="flex flex-col items-center justify-center h-full opacity-20 p-20 text-center">
               <User className="h-16 w-16 mb-4" />
@@ -333,7 +467,7 @@ export default function RouteDetailsPage() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
               <input 
                 placeholder="नाव किंवा कोडने शोधा..." 
-                className="pl-10 h-11 w-full rounded-xl bg-muted/10 border-none font-bold shadow-inner outline-none focus:ring-1 focus:ring-primary"
+                className="pl-10 h-11 w-full rounded-xl bg-muted/10 border border-slate-200 font-bold shadow-inner outline-none focus:ring-1 focus:ring-primary"
                 value={masterSearchQuery}
                 onChange={e => setMasterSearchQuery(e.target.value)}
               />
@@ -365,108 +499,264 @@ export default function RouteDetailsPage() {
       </Dialog>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-[600px] p-0 overflow-hidden rounded-3xl border-none shadow-2xl bg-white text-left">
+        <DialogContent className="max-w-[800px] p-0 overflow-hidden rounded-3xl border-none shadow-2xl bg-white text-left">
           <DialogHeader className="p-4 bg-primary text-white sticky top-0 z-10">
             <DialogTitle className="text-base font-black uppercase tracking-widest">{dialogMode === 'add' ? 'नवीन सप्लायर' : 'माहिती अद्ययावत करा'}</DialogTitle>
             <DialogDescription className="text-[9px] text-white/70 uppercase">सप्लायरचा सविस्तर तपशील भरा.</DialogDescription>
           </DialogHeader>
-          <ScrollArea className="max-h-[80vh] p-6 text-left">
-            <div className="space-y-6 pb-10 text-left">
-              <div className="grid grid-cols-1 gap-6">
+          <ScrollArea className="max-h-[85vh] p-6 text-left">
+            <div className="space-y-6 pb-20 text-left">
+              <div className="grid grid-cols-1 gap-8">
                 <div className="space-y-4">
-                  <h4 className="text-[11px] font-black uppercase text-primary border-b pb-1 flex items-center gap-2"><User className="h-4 w-4" /> १) प्राथमिक माहिती</h4>
-                  <div className="grid grid-cols-2 gap-3 text-left">
-                    <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">सप्लायर प्रकार</Label>
+                  <h4 className="text-[11px] font-black uppercase text-primary border-b-2 border-primary/20 pb-1 flex items-center gap-2"><User className="h-4 w-4" /> १) प्राथमिक माहिती</h4>
+                  <div className="grid grid-cols-2 gap-4 text-left">
+                    <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-slate-500">सप्लायर प्रकार</Label>
                       <Select value={formData.supplierType} onValueChange={(v: any) => setFormData({...formData, supplierType: v})}>
-                        <SelectTrigger className="h-10 text-[12px] bg-muted/20 border-none rounded-xl font-black"><SelectValue /></SelectTrigger>
+                        <SelectTrigger className="h-10 text-[12px] bg-muted/20 border border-slate-300 rounded-xl font-black"><SelectValue /></SelectTrigger>
                         <SelectContent><SelectItem value="Gavali" className="font-bold">गवळी</SelectItem><SelectItem value="Gotha" className="font-bold">गोठा</SelectItem><SelectItem value="Center" className="font-bold">उत्पादक केंद्र</SelectItem></SelectContent>
                       </Select>
                     </div>
-                    <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">नाव *</Label><Input value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl shadow-inner" /></div>
-                    <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">आयडी (ID) *</Label><Input value={formData.supplierId} onChange={e => setFormData({...formData, supplierId: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl shadow-inner" /></div>
-                    <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">ऑपरेटर नाव</Label><Input value={formData.operatorName} onChange={e => setFormData({...formData, operatorName: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl shadow-inner" /></div>
-                    <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">मोबाईल</Label><Input value={formData.mobile} onChange={e => setFormData({...formData, mobile: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl shadow-inner" /></div>
-                    <div className="col-span-2 space-y-1.5"><Label className="text-[10px] font-black uppercase">पत्ता</Label><Input value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl shadow-inner" /></div>
+                    <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-slate-500">नाव *</Label><Input value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="h-10 text-[12px] bg-muted/20 border border-slate-300 font-bold rounded-xl shadow-inner" /></div>
+                    <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-slate-500">आयडी (ID) *</Label><Input value={formData.supplierId} onChange={e => setFormData({...formData, supplierId: e.target.value})} className="h-10 text-[12px] bg-muted/20 border border-slate-300 font-bold rounded-xl shadow-inner" /></div>
+                    <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-slate-500">ऑपरेटर नाव</Label><Input value={formData.operatorName} onChange={e => setFormData({...formData, operatorName: e.target.value})} className="h-10 text-[12px] bg-muted/20 border border-slate-300 font-bold rounded-xl shadow-inner" /></div>
+                    <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-slate-500">मोबाईल</Label><Input value={formData.mobile} onChange={e => setFormData({...formData, mobile: e.target.value})} className="h-10 text-[12px] bg-muted/20 border border-slate-300 font-bold rounded-xl shadow-inner" /></div>
+                    <div className="col-span-2 space-y-1.5"><Label className="text-[10px] font-black uppercase text-slate-500">पत्ता</Label><Input value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} className="h-10 text-[12px] bg-muted/20 border border-slate-300 font-bold rounded-xl shadow-inner" /></div>
+                  </div>
+                </div>
+
+                {/* NEW PRODUCER CENTER DETAILED SECTIONS */}
+                {formData.supplierType === 'Center' && (
+                  <>
+                    <div className="space-y-4 p-4 border-2 border-primary/10 rounded-2xl bg-primary/5">
+                      <h4 className="text-[11px] font-black uppercase text-primary border-b-2 border-primary/20 pb-1 flex items-center gap-2"><Clock className="h-4 w-4" /> २) संकलन वेळ & उत्पादक सारांश</h4>
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">सकाळ वेळ</Label><Input type="time" value={formData.morning_collection_time} onChange={e => setFormData({...formData, morning_collection_time: e.target.value})} className="h-10 border border-slate-300 rounded-xl" /></div>
+                        <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">सायंकाळ वेळ</Label><Input type="time" value={formData.evening_collection_time} onChange={e => setFormData({...formData, evening_collection_time: e.target.value})} className="h-10 border border-slate-300 rounded-xl" /></div>
+                        <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">एकूण उत्पादक</Label><Input type="number" value={formData.total_producers} onChange={e => setFormData({...formData, total_producers: e.target.value})} className="h-10 border border-slate-300 rounded-xl" /></div>
+                        <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">सक्रिय उत्पादक</Label><Input type="number" value={formData.active_producers} onChange={e => setFormData({...formData, active_producers: e.target.value})} className="h-10 border border-slate-300 rounded-xl" /></div>
+                        <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">निष्क्रिय उत्पादक</Label><Input type="number" value={formData.inactive_producers} onChange={e => setFormData({...formData, inactive_producers: e.target.value})} className="h-10 border border-slate-300 rounded-xl" /></div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4 p-4 border-2 border-primary/10 rounded-2xl bg-blue-50/50">
+                      <h4 className="text-[11px] font-black uppercase text-blue-700 border-b-2 border-blue-200 pb-1 flex items-center gap-2"><Milk className="h-4 w-4" /> ३) जनावरांची माहिती</h4>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">एकूण जनावरे</Label><Input type="number" value={formData.total_animals} onChange={e => setFormData({...formData, total_animals: e.target.value})} className="h-10 border border-slate-300 rounded-xl" /></div>
+                        <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">गाई संख्या</Label><Input type="number" value={formData.cows} onChange={e => setFormData({...formData, cows: e.target.value})} className="h-10 border border-slate-300 rounded-xl" /></div>
+                        <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">म्हशी संख्या</Label><Input type="number" value={formData.buffalo} onChange={e => setFormData({...formData, buffalo: e.target.value})} className="h-10 border border-slate-300 rounded-xl" /></div>
+                        <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">वासरे</Label><Input type="number" value={formData.calves} onChange={e => setFormData({...formData, calves: e.target.value})} className="h-10 border border-slate-300 rounded-xl" /></div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between border-b-2 border-primary/20 pb-1">
+                        <h4 className="text-[11px] font-black uppercase text-primary flex items-center gap-2"><Layers className="h-4 w-4" /> ४) २+ वर्ष जुने उत्पादक</h4>
+                        <Button type="button" size="sm" onClick={() => addDynamicRow('longTermProducers', { producer_name: "", previous_milk: 0, current_milk: 0, previous_animals: 0, current_animals: 0 })} className="h-7 text-[9px] font-black uppercase rounded-lg">जोडा</Button>
+                      </div>
+                      <div className="space-y-2">
+                        {formData.longTermProducers.map((p) => (
+                          <div key={p.id} className="grid grid-cols-12 gap-2 p-2 bg-slate-50 border border-slate-200 rounded-xl items-end">
+                            <div className="col-span-4 space-y-1"><Label className="text-[8px] font-black">नाव</Label><Input value={p.producer_name} onChange={e => updateDynamicRow('longTermProducers', p.id, { producer_name: e.target.value })} className="h-8 border border-slate-300 text-[10px]" /></div>
+                            <div className="col-span-2 space-y-1"><Label className="text-[8px] font-black">जुने दूध</Label><Input type="number" value={p.previous_milk} onChange={e => updateDynamicRow('longTermProducers', p.id, { previous_milk: e.target.value })} className="h-8 border border-slate-300 text-[10px]" /></div>
+                            <div className="col-span-2 space-y-1"><Label className="text-[8px] font-black">सध्याचे</Label><Input type="number" value={p.current_milk} onChange={e => updateDynamicRow('longTermProducers', p.id, { current_milk: e.target.value })} className="h-8 border border-slate-300 text-[10px]" /></div>
+                            <div className="col-span-3 space-y-1"><Label className="text-[8px] font-black">जनावरे (जुनी/नवी)</Label><div className="flex gap-1"><Input type="number" value={p.previous_animals} onChange={e => updateDynamicRow('longTermProducers', p.id, { previous_animals: e.target.value })} className="h-8 border border-slate-300 text-[10px] p-1" /><Input type="number" value={p.current_animals} onChange={e => updateDynamicRow('longTermProducers', p.id, { current_animals: e.target.value })} className="h-8 border border-slate-300 text-[10px] p-1" /></div></div>
+                            <div className="col-span-1"><Button variant="ghost" size="icon" onClick={() => removeDynamicRow('longTermProducers', p.id)} className="text-rose-500 h-8 w-8"><X className="h-4 w-4" /></Button></div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between border-b-2 border-rose-200 pb-1">
+                        <h4 className="text-[11px] font-black uppercase text-rose-700 flex items-center gap-2"><TrendingDown className="h-4 w-4" /> ५) दूध कमी झालेले उत्पादक</h4>
+                        <Button type="button" size="sm" onClick={() => addDynamicRow('decreasingProducers', { producer_name: "", previous_milk: 0, current_milk: 0, previous_animals: 0, current_animals: 0, reason: "" })} className="h-7 text-[9px] bg-rose-600 font-black uppercase rounded-lg">जोडा</Button>
+                      </div>
+                      <div className="space-y-2">
+                        {formData.decreasingProducers.map((p) => (
+                          <div key={p.id} className="p-3 bg-rose-50/50 border border-rose-100 rounded-xl space-y-3">
+                            <div className="grid grid-cols-12 gap-2 items-end">
+                              <div className="col-span-4 space-y-1"><Label className="text-[8px] font-black">उत्पादक नाव</Label><Input value={p.producer_name} onChange={e => updateDynamicRow('decreasingProducers', p.id, { producer_name: e.target.value })} className="h-8 border border-slate-300 text-[10px]" /></div>
+                              <div className="col-span-3 space-y-1"><Label className="text-[8px] font-black">दूध (जुने/नवे)</Label><div className="flex gap-1"><Input type="number" value={p.previous_milk} onChange={e => updateDynamicRow('decreasingProducers', p.id, { previous_milk: e.target.value })} className="h-8 border border-slate-300 text-[10px] p-1" /><Input type="number" value={p.current_milk} onChange={e => updateDynamicRow('decreasingProducers', p.id, { current_milk: e.target.value })} className="h-8 border border-slate-300 text-[10px] p-1" /></div></div>
+                              <div className="col-span-4 space-y-1"><Label className="text-[8px] font-black">कमी होण्याचे कारण</Label><Input value={p.reason} onChange={e => updateDynamicRow('decreasingProducers', p.id, { reason: e.target.value })} className="h-8 border border-slate-300 text-[10px]" /></div>
+                              <div className="col-span-1"><Button variant="ghost" size="icon" onClick={() => removeDynamicRow('decreasingProducers', p.id)} className="text-rose-500 h-8 w-8"><X className="h-4 w-4" /></Button></div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                       <div className="space-y-4 p-4 border border-slate-200 rounded-2xl bg-white shadow-sm">
+                          <div className="flex items-center justify-between">
+                            <Label className="text-[10px] font-black uppercase">८-१० गाईंचा गोठा करू शकतील असे?</Label>
+                            <Switch checked={formData.can_expand_8_10_cows} onCheckedChange={(v) => setFormData({...formData, can_expand_8_10_cows: v})} />
+                          </div>
+                          {formData.can_expand_8_10_cows && (
+                            <div className="space-y-2">
+                               <div className="flex items-center justify-between"><Label className="text-[9px] font-black">उत्पादकांची यादी</Label><Button size="sm" variant="outline" className="h-6 text-[8px] uppercase" onClick={() => addDynamicRow('highCapacityProducers', { name: "" })}>जोडा</Button></div>
+                               {formData.highCapacityProducers.map(p => (
+                                 <div key={p.id} className="flex gap-2"><Input value={p.name} onChange={e => updateDynamicRow('highCapacityProducers', p.id, { name: e.target.value })} className="h-8 text-[10px] border border-slate-300" /><Button size="icon" variant="ghost" onClick={() => removeDynamicRow('highCapacityProducers', p.id)} className="h-8 w-8 text-rose-500"><X className="h-3 w-3"/></Button></div>
+                               ))}
+                            </div>
+                          )}
+                       </div>
+                       <div className="space-y-4 p-4 border border-slate-200 rounded-2xl bg-white shadow-sm">
+                          <div className="flex items-center justify-between">
+                            <Label className="text-[10px] font-black uppercase">१००+ लिटर दूध देणारे उत्पादक?</Label>
+                            <Switch checked={formData.has_100_plus_milk} onCheckedChange={(v) => setFormData({...formData, has_100_plus_milk: v})} />
+                          </div>
+                          {formData.has_100_plus_milk && (
+                            <div className="space-y-2">
+                               <div className="flex items-center justify-between"><Label className="text-[9px] font-black">उत्पादकांची यादी</Label><Button size="sm" variant="outline" className="h-6 text-[8px] uppercase" onClick={() => addDynamicRow('highMilkProducers', { name: "" })}>जोडा</Button></div>
+                               {formData.highMilkProducers.map(p => (
+                                 <div key={p.id} className="flex gap-2"><Input value={p.name} onChange={e => updateDynamicRow('highMilkProducers', p.id, { name: e.target.value })} className="h-8 text-[10px] border border-slate-300" /><Button size="icon" variant="ghost" onClick={() => removeDynamicRow('highMilkProducers', p.id)} className="h-8 w-8 text-rose-500"><X className="h-3 w-3"/></Button></div>
+                               ))}
+                            </div>
+                          )}
+                       </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                       <div className="space-y-4">
+                          <div className="flex items-center justify-between border-b-2 border-slate-200 pb-1"><h4 className="text-[10px] font-black uppercase text-primary">LSS माहिती</h4><Button size="sm" variant="outline" className="h-7 text-[9px]" onClick={() => addDynamicRow('lssDetails', { name: "", facilities: "" })}>जोडा</Button></div>
+                          {formData.lssDetails.map(it => (
+                            <div key={it.id} className="grid grid-cols-12 gap-2 bg-slate-50 p-2 rounded-xl border border-slate-200">
+                              <div className="col-span-5"><Input value={it.name} placeholder="LSS नाव" onChange={e => updateDynamicRow('lssDetails', it.id, { name: e.target.value })} className="h-8 text-[10px] border border-slate-300" /></div>
+                              <div className="col-span-6"><Input value={it.facilities} placeholder="सुविधा" onChange={e => updateDynamicRow('lssDetails', it.id, { facilities: e.target.value })} className="h-8 text-[10px] border border-slate-300" /></div>
+                              <div className="col-span-1"><Button variant="ghost" size="icon" onClick={() => removeDynamicRow('lssDetails', it.id)} className="h-8 w-8 text-rose-500"><X className="h-4 w-4"/></Button></div>
+                            </div>
+                          ))}
+                       </div>
+                       <div className="space-y-4">
+                          <div className="flex items-center justify-between border-b-2 border-slate-200 pb-1"><h4 className="text-[10px] font-black uppercase text-amber-600">स्पर्धक डेअरी</h4><Button size="sm" variant="outline" className="h-7 text-[9px]" onClick={() => addDynamicRow('competitorDairies', { name: "", facilities: "" })}>जोडा</Button></div>
+                          {formData.competitorDairies.map(it => (
+                            <div key={it.id} className="grid grid-cols-12 gap-2 bg-amber-50/50 p-2 rounded-xl border border-amber-100">
+                              <div className="col-span-5"><Input value={it.name} placeholder="डेअरी नाव" onChange={e => updateDynamicRow('competitorDairies', it.id, { name: e.target.value })} className="h-8 text-[10px] border border-slate-300" /></div>
+                              <div className="col-span-6"><Input value={it.facilities} placeholder="सुविधा" onChange={e => updateDynamicRow('competitorDairies', it.id, { facilities: e.target.value })} className="h-8 text-[10px] border border-slate-300" /></div>
+                              <div className="col-span-1"><Button variant="ghost" size="icon" onClick={() => removeDynamicRow('competitorDairies', it.id)} className="h-8 w-8 text-rose-500"><X className="h-4 w-4"/></Button></div>
+                            </div>
+                          ))}
+                       </div>
+                    </div>
+
+                    <div className="space-y-4">
+                       <div className="flex items-center justify-between border-b-2 border-slate-200 pb-1"><h4 className="text-[11px] font-black uppercase text-primary">स्थानिक कर्मचारी / गवळी माहिती</h4><div className="flex gap-2"><Button size="sm" onClick={() => addDynamicRow('localEmployees', { name: "", land: "", animals: 0, current_supply_to: "" })} className="h-7 text-[9px] uppercase">कर्मचारी जोडा</Button><Button size="sm" onClick={() => addDynamicRow('localGavali', { name: "", milk_collection: 0, producers_connected: 0, animals: 0 })} className="h-7 text-[9px] uppercase bg-amber-600">गवळी जोडा</Button></div></div>
+                       <div className="grid grid-cols-1 gap-4">
+                          {formData.localEmployees.length > 0 && (
+                            <div className="space-y-2">
+                               <p className="text-[9px] font-black text-muted-foreground uppercase px-1">डेअरी कर्मचारी</p>
+                               {formData.localEmployees.map(it => (
+                                 <div key={it.id} className="grid grid-cols-12 gap-2 bg-slate-50 p-2 rounded-xl border border-slate-200 items-end">
+                                   <div className="col-span-3 space-y-1"><Label className="text-[8px]">नाव</Label><Input value={it.name} onChange={e => updateDynamicRow('localEmployees', it.id, { name: e.target.value })} className="h-8 text-[10px] border border-slate-300" /></div>
+                                   <div className="col-span-2 space-y-1"><Label className="text-[8px]">शेती</Label><Input value={it.land} onChange={e => updateDynamicRow('localEmployees', it.id, { land: e.target.value })} className="h-8 text-[10px] border border-slate-300" /></div>
+                                   <div className="col-span-2 space-y-1"><Label className="text-[8px]">जनावरे</Label><Input type="number" value={it.animals} onChange={e => updateDynamicRow('localEmployees', it.id, { animals: e.target.value })} className="h-8 text-[10px] border border-slate-300" /></div>
+                                   <div className="col-span-4 space-y-1"><Label className="text-[8px]">सध्याचा पुरवठा</Label><Input value={it.current_supply_to} onChange={e => updateDynamicRow('localEmployees', it.id, { current_supply_to: e.target.value })} className="h-8 text-[10px] border border-slate-300" /></div>
+                                   <div className="col-span-1"><Button variant="ghost" size="icon" onClick={() => removeDynamicRow('localEmployees', it.id)} className="h-8 w-8 text-rose-500"><X className="h-4 w-4"/></Button></div>
+                                 </div>
+                               ))}
+                            </div>
+                          )}
+                          {formData.localGavali.length > 0 && (
+                            <div className="space-y-2">
+                               <p className="text-[9px] font-black text-amber-600 uppercase px-1">स्थानिक गवळी</p>
+                               {formData.localGavali.map(it => (
+                                 <div key={it.id} className="grid grid-cols-12 gap-2 bg-amber-50/30 p-2 rounded-xl border border-amber-100 items-end">
+                                   <div className="col-span-3 space-y-1"><Label className="text-[8px]">नाव</Label><Input value={it.name} onChange={e => updateDynamicRow('localGavali', it.id, { name: e.target.value })} className="h-8 text-[10px] border border-slate-300" /></div>
+                                   <div className="col-span-2 space-y-1"><Label className="text-[8px]">दूध (L)</Label><Input type="number" value={it.milk_collection} onChange={e => updateDynamicRow('localGavali', it.id, { milk_collection: e.target.value })} className="h-8 text-[10px] border border-slate-300" /></div>
+                                   <div className="col-span-3 space-y-1"><Label className="text-[8px]">जोडलेले उत्पादक</Label><Input type="number" value={it.producers_connected} onChange={e => updateDynamicRow('localGavali', it.id, { producers_connected: e.target.value })} className="h-8 text-[10px] border border-slate-300" /></div>
+                                   <div className="col-span-3 space-y-1"><Label className="text-[8px]">एकूण जनावरे</Label><Input type="number" value={it.animals} onChange={e => updateDynamicRow('localGavali', it.id, { animals: e.target.value })} className="h-8 text-[10px] border border-slate-300" /></div>
+                                   <div className="col-span-1"><Button variant="ghost" size="icon" onClick={() => removeDynamicRow('localGavali', it.id)} className="h-8 w-8 text-rose-500"><X className="h-4 w-4"/></Button></div>
+                                 </div>
+                               ))}
+                            </div>
+                          )}
+                       </div>
+                    </div>
+
+                    <div className="space-y-4 p-4 border border-slate-200 rounded-2xl bg-white shadow-sm">
+                       <h4 className="text-[11px] font-black uppercase text-primary border-b pb-1">विश्लेषण & उपाययोजना</h4>
+                       <div className="grid grid-cols-1 gap-4">
+                          <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">दूध कमी होण्याची कारणे</Label><Textarea value={formData.milk_decrease_reasons} onChange={e => setFormData({...formData, milk_decrease_reasons: e.target.value})} className="h-16 text-[11px] border border-slate-300 rounded-xl" /></div>
+                          <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">सेंटरने केलेले प्रयत्न</Label><Textarea value={formData.efforts_taken} onChange={e => setFormData({...formData, efforts_taken: e.target.value})} className="h-16 text-[11px] border border-slate-300 rounded-xl" /></div>
+                          <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">दूध वाढवण्यासाठी उपाय</Label><Textarea value={formData.required_actions} onChange={e => setFormData({...formData, required_actions: e.target.value})} className="h-16 text-[11px] border border-slate-300 rounded-xl" /></div>
+                       </div>
+                    </div>
+                  </>
+                )}
+
+                <div className="space-y-4">
+                  <h4 className="text-[11px] font-black uppercase text-primary border-b pb-1 flex items-center gap-2"><ShieldCheck className="h-4 w-4" /> ५) परवाना व तांत्रिक</h4>
+                  <div className="grid grid-cols-2 gap-3 text-left">
+                    <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">FSSAI क्र.</Label><Input value={formData.fssaiNumber} onChange={e => setFormData({...formData, fssaiNumber: e.target.value})} className="h-10 text-[12px] bg-muted/20 border border-slate-300 font-bold rounded-xl shadow-inner" /></div>
+                    <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">मुदत तारीख</Label><Input type="date" value={formData.fssaiExpiry} onChange={e => setFormData({...formData, fssaiExpiry: e.target.value})} className="h-10 text-[12px] bg-muted/20 border border-slate-300 font-bold rounded-xl shadow-inner" /></div>
+                    <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">काटा ब्रँड</Label><Input value={formData.scaleBrand} onChange={e => setFormData({...formData, scaleBrand: e.target.value})} className="h-10 text-[12px] bg-muted/20 border border-slate-300 font-bold rounded-xl shadow-inner" /></div>
+                    <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">मशीन ब्रँड</Label><Input value={formData.fatMachineBrand} onChange={e => setFormData({...formData, fatMachineBrand: e.target.value})} className="h-10 text-[12px] bg-muted/20 border border-slate-300 font-bold rounded-xl shadow-inner" /></div>
                   </div>
                 </div>
 
                 <div className="space-y-4">
-                  <h4 className="text-[11px] font-black uppercase text-primary border-b pb-1 flex items-center gap-2"><ShieldCheck className="h-4 w-4" /> २) परवाना व तांत्रिक</h4>
+                  <h4 className="text-[11px] font-black uppercase text-primary border-b pb-1 flex items-center gap-2"><Wallet className="h-4 w-4" /> ६) व्यावसायिक व दूध तपशील</h4>
                   <div className="grid grid-cols-2 gap-3 text-left">
-                    <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">FSSAI क्र.</Label><Input value={formData.fssaiNumber} onChange={e => setFormData({...formData, fssaiNumber: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl shadow-inner" /></div>
-                    <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">मुदत तारीख</Label><Input type="date" value={formData.fssaiExpiry} onChange={e => setFormData({...formData, fssaiExpiry: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl shadow-inner" /></div>
-                    <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">काटा ब्रँड</Label><Input value={formData.scaleBrand} onChange={e => setFormData({...formData, scaleBrand: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl shadow-inner" /></div>
-                    <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">मशीन ब्रँड</Label><Input value={formData.fatMachineBrand} onChange={e => setFormData({...formData, fatMachineBrand: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl shadow-inner" /></div>
-                    <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">रसायन स्टॉक</Label><Input value={formData.chemicalsStock} onChange={e => setFormData({...formData, chemicalsStock: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl shadow-inner" /></div>
-                    <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">बॅटरी स्थिती</Label><Input value={formData.batteryCondition} onChange={e => setFormData({...formData, batteryCondition: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl shadow-inner" /></div>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <h4 className="text-[11px] font-black uppercase text-primary border-b pb-1 flex items-center gap-2"><Wallet className="h-4 w-4" /> ३) व्यावसायिक व दूध तपशील</h4>
-                  <div className="grid grid-cols-2 gap-3 text-left">
-                    <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">पेमेंट सायकल</Label><Input value={formData.paymentCycle} onChange={e => setFormData({...formData, paymentCycle: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none rounded-xl shadow-inner" /></div>
+                    <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">पेमेंट सायकल</Label><Input value={formData.paymentCycle} onChange={e => setFormData({...formData, paymentCycle: e.target.value})} className="h-10 text-[12px] bg-muted/20 border border-slate-300 rounded-xl shadow-inner" /></div>
                     <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">जागा</Label>
                       <Select value={formData.spaceOwnership} onValueChange={(v: any) => setFormData({...formData, spaceOwnership: v})}>
-                        <SelectTrigger className="h-10 text-[12px] bg-muted/20 border-none rounded-xl font-black"><SelectValue /></SelectTrigger>
+                        <SelectTrigger className="h-10 text-[12px] bg-muted/20 border border-slate-300 rounded-xl font-black"><SelectValue /></SelectTrigger>
                         <SelectContent><SelectItem value="Self" className="font-bold">स्वतःची</SelectItem><SelectItem value="Rented" className="font-bold">भाड्याची</SelectItem></SelectContent>
                       </Select>
                     </div>
                     <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">स्वच्छता ग्रेड</Label>
                       <Select value={formData.hygieneGrade} onValueChange={(v: any) => setFormData({...formData, hygieneGrade: v})}>
-                        <SelectTrigger className="h-10 text-[12px] bg-muted/20 border-none rounded-xl font-black"><SelectValue /></SelectTrigger>
+                        <SelectTrigger className="h-10 text-[12px] bg-muted/20 border border-slate-300 rounded-xl font-black"><SelectValue /></SelectTrigger>
                         <SelectContent><SelectItem value="A" className="font-bold">A Grade</SelectItem><SelectItem value="B" className="font-bold">B Grade</SelectItem><SelectItem value="C" className="font-bold">C Grade</SelectItem></SelectContent>
                       </Select>
                     </div>
-                    <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">बर्फ लाद्या</Label><Input type="number" value={formData.iceBlocks} onChange={e => setFormData({...formData, iceBlocks: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none rounded-xl shadow-inner" /></div>
-                    <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">स्पर्धा</Label><Input value={formData.competition} onChange={e => setFormData({...formData, competition: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl shadow-inner" /></div>
-                    <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">पशुखाद्य</Label><Input value={formData.cattleFeedBrand} onChange={e => setFormData({...formData, cattleFeedBrand: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl shadow-inner" /></div>
+                    <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">बर्फ लाद्या</Label><Input type="number" value={formData.iceBlocks} onChange={e => setFormData({...formData, iceBlocks: e.target.value})} className="h-10 text-[12px] bg-muted/20 border border-slate-300 rounded-xl shadow-inner" /></div>
                   </div>
                   <div className="grid grid-cols-3 gap-2 p-3 bg-blue-50/50 rounded-xl border border-blue-100">
                     <div className="col-span-3 text-[10px] font-black uppercase text-blue-600 mb-1">गाय (Qty/F/S)</div>
-                    <Input type="number" value={formData.cowQty} onChange={e => setFormData({...formData, cowQty: e.target.value})} className="h-8 text-[11px] bg-white border-none font-bold rounded-lg" placeholder="L" />
-                    <Input type="number" value={formData.cowFat} onChange={e => setFormData({...formData, cowFat: e.target.value})} className="h-8 text-[11px] bg-white border-none font-bold rounded-lg" placeholder="F" />
-                    <Input type="number" value={formData.cowSnf} onChange={e => setFormData({...formData, cowSnf: e.target.value})} className="h-8 text-[11px] bg-white border-none font-bold rounded-lg" placeholder="S" />
+                    <Input type="number" value={formData.cowQty} onChange={e => setFormData({...formData, cowQty: e.target.value})} className="h-8 text-[11px] bg-white border border-slate-300 font-bold rounded-lg" placeholder="L" />
+                    <Input type="number" value={formData.cowFat} onChange={e => setFormData({...formData, cowFat: e.target.value})} className="h-8 text-[11px] bg-white border border-slate-300 font-bold rounded-lg" placeholder="F" />
+                    <Input type="number" value={formData.cowSnf} onChange={e => setFormData({...formData, cowSnf: e.target.value})} className="h-8 text-[11px] bg-white border border-slate-300 font-bold rounded-lg" placeholder="S" />
                   </div>
                   <div className="grid grid-cols-3 gap-2 p-3 bg-amber-50/50 rounded-xl border border-amber-100">
                     <div className="col-span-3 text-[10px] font-black uppercase text-amber-600 mb-1">म्हेस (Qty/F/S)</div>
-                    <Input type="number" value={formData.bufQty} onChange={e => setFormData({...formData, bufQty: e.target.value})} className="h-8 text-[11px] bg-white border-none font-bold rounded-lg" placeholder="L" />
-                    <Input type="number" value={formData.bufFat} onChange={e => setFormData({...formData, bufFat: e.target.value})} className="h-8 text-[11px] bg-white border-none font-bold rounded-lg" placeholder="F" />
-                    <Input type="number" value={formData.bufSnf} onChange={e => setFormData({...formData, bufSnf: e.target.value})} className="h-8 text-[11px] bg-white border-none font-bold rounded-lg" placeholder="S" />
+                    <Input type="number" value={formData.bufQty} onChange={e => setFormData({...formData, bufQty: e.target.value})} className="h-8 text-[11px] bg-white border border-slate-300 font-bold rounded-lg" placeholder="L" />
+                    <Input type="number" value={formData.bufFat} onChange={e => setFormData({...formData, bufFat: e.target.value})} className="h-8 text-[11px] bg-white border border-slate-300 font-bold rounded-lg" placeholder="F" />
+                    <Input type="number" value={formData.bufSnf} onChange={e => setFormData({...formData, bufSnf: e.target.value})} className="h-8 text-[11px] bg-white border border-slate-300 font-bold rounded-lg" placeholder="S" />
                   </div>
                 </div>
 
                 <div className="space-y-4">
-                  <h4 className="text-[11px] font-black uppercase text-primary border-b pb-1 flex items-center gap-2"><Box className="h-4 w-4" /> ४) इन्व्हेंटरी व स्टेटस</h4>
+                  <h4 className="text-[11px] font-black uppercase text-primary border-b pb-1 flex items-center gap-2"><Box className="h-4 w-4" /> ७) इन्व्हेंटरी व स्टेटस</h4>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                    <div className="flex flex-col items-center gap-2 p-3 bg-muted/10 rounded-xl cursor-pointer hover:bg-muted/20 transition-all border border-muted-foreground/5" onClick={() => setFormData({...formData, computerAvailable: !formData.computerAvailable})}>
+                    <div className="flex flex-col items-center gap-2 p-3 bg-muted/10 rounded-xl cursor-pointer hover:bg-muted/20 transition-all border border-slate-200" onClick={() => setFormData({...formData, computerAvailable: !formData.computerAvailable})}>
                       <Laptop className={`h-5 w-5 ${formData.computerAvailable ? 'text-primary' : 'text-slate-400'}`} />
                       <Label className="text-[9px] font-black uppercase cursor-pointer">POP: {formData.computerAvailable ? 'हो' : 'नाही'}</Label>
                     </div>
-                    <div className="flex flex-col items-center gap-2 p-3 bg-muted/10 rounded-xl cursor-pointer hover:bg-muted/20 transition-all border border-muted-foreground/5" onClick={() => setFormData({...formData, upsInverterAvailable: !formData.upsInverterAvailable})}>
+                    <div className="flex flex-col items-center gap-2 p-3 bg-muted/10 rounded-xl cursor-pointer hover:bg-muted/20 transition-all border border-slate-200" onClick={() => setFormData({...formData, upsInverterAvailable: !formData.upsInverterAvailable})}>
                       <Zap className={`h-5 w-5 ${formData.upsInverterAvailable ? 'text-amber-500' : 'text-slate-400'}`} />
                       <Label className="text-[9px] font-black uppercase cursor-pointer">UPS: {formData.upsInverterAvailable ? 'हो' : 'नाही'}</Label>
                     </div>
-                    <div className="flex flex-col items-center gap-2 p-3 bg-muted/10 rounded-xl cursor-pointer hover:bg-muted/20 transition-all border border-muted-foreground/5" onClick={() => setFormData({...formData, solarAvailable: !formData.solarAvailable})}>
+                    <div className="flex flex-col items-center gap-2 p-3 bg-muted/10 rounded-xl cursor-pointer hover:bg-muted/20 transition-all border border-slate-200" onClick={() => setFormData({...formData, solarAvailable: !formData.solarAvailable})}>
                       <Sun className={`h-5 w-5 ${formData.solarAvailable ? 'text-emerald-500' : 'text-slate-400'}`} />
                       <Label className="text-[9px] font-black uppercase cursor-pointer">सोलर: {formData.solarAvailable ? 'हो' : 'नाही'}</Label>
                     </div>
-                    <div className="flex flex-col items-center gap-2 p-3 bg-muted/10 rounded-xl border border-muted-foreground/5">
+                    <div className="flex flex-col items-center gap-2 p-3 bg-muted/10 rounded-xl border border-slate-200">
                       <Label className="text-[8px] font-black uppercase opacity-50">Cans</Label>
-                      <Input type="number" value={formData.milkCansCount} onChange={e => setFormData({...formData, milkCansCount: e.target.value})} className="h-6 text-[10px] bg-white border-none rounded text-center" />
+                      <Input type="number" value={formData.milkCansCount} onChange={e => setFormData({...formData, milkCansCount: e.target.value})} className="h-6 text-[10px] bg-white border border-slate-300 rounded text-center" />
                     </div>
                   </div>
-                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">Adulteration Kit (भेसळ तपासणी कीट)</Label><Input value={formData.adulterationKitInfo} onChange={e => setFormData({...formData, adulterationKitInfo: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl shadow-inner" placeholder="उदा. हो, चितळे कीट" /></div>
+                  <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-slate-500">Adulteration Kit (भेसळ तपासणी कीट)</Label><Input value={formData.adulterationKitInfo} onChange={e => setFormData({...formData, adulterationKitInfo: e.target.value})} className="h-10 text-[12px] bg-muted/20 border border-slate-300 font-bold rounded-xl shadow-inner" placeholder="उदा. हो, चितळे कीट" /></div>
                   <div className="space-y-3">
                     <div className="flex items-center justify-between"><h4 className="text-[11px] font-black uppercase tracking-widest">साहित्याची यादी (INVENTORY)</h4><Button variant="outline" type="button" size="sm" onClick={addEquipmentRow} className="h-7 text-[9px] font-black px-3 rounded-xl border-primary/20 text-primary">जोडा</Button></div>
                     <div className="space-y-2">
                       {formData.equipment.map(item => (
-                        <div key={item.id} className="grid grid-cols-12 gap-2 bg-muted/10 p-2 rounded-xl border border-muted-foreground/5 items-center">
-                          <div className="col-span-6"><Input value={item.name} onChange={e => updateEquipmentRow(item.id, {name: e.target.value})} className="h-8 text-[11px] border-none rounded-lg font-bold bg-white" placeholder="साहित्य" /></div>
-                          <div className="col-span-2"><Input type="number" value={item.quantity} onChange={e => updateEquipmentRow(item.id, {quantity: Number(e.target.value)})} className="h-8 text-[11px] text-center border-none rounded-lg font-black bg-white" /></div>
+                        <div key={item.id} className="grid grid-cols-12 gap-2 bg-muted/10 p-2 rounded-xl border border-slate-200 items-center">
+                          <div className="col-span-6"><Input value={item.name} onChange={e => updateEquipmentRow(item.id, {name: e.target.value})} className="h-8 text-[11px] border border-slate-300 rounded-lg font-bold bg-white" placeholder="साहित्य" /></div>
+                          <div className="col-span-2"><Input type="number" value={item.quantity} onChange={e => updateEquipmentRow(item.id, {quantity: Number(e.target.value)})} className="h-8 text-[11px] text-center border border-slate-300 rounded-lg font-black bg-white" /></div>
                           <div className="col-span-3">
                             <Select value={item.ownership} onValueChange={v => updateEquipmentRow(item.id, {ownership: v as any})}>
-                              <SelectTrigger className="h-8 text-[9px] bg-white border-none rounded-lg font-black"><SelectValue /></SelectTrigger>
+                              <SelectTrigger className="h-8 text-[9px] bg-white border border-slate-300 rounded-lg font-black"><SelectValue /></SelectTrigger>
                               <SelectContent><SelectItem value="Self" className="font-bold">स्वतः</SelectItem><SelectItem value="Company" className="font-bold">डेअरी</SelectItem></SelectContent>
                             </Select>
                           </div>
@@ -476,12 +766,12 @@ export default function RouteDetailsPage() {
                     </div>
                   </div>
                 </div>
-                <div className="space-y-1.5 text-left"><Label className="text-[10px] font-black uppercase text-muted-foreground">विशेष शेरा</Label><Textarea value={formData.additionalNotes} onChange={e => setFormData({...formData, additionalNotes: e.target.value})} className="h-20 text-[12px] bg-muted/20 border-none rounded-xl p-4 shadow-inner" /></div>
+                <div className="space-y-1.5 text-left"><Label className="text-[10px] font-black uppercase text-muted-foreground">विशेष शेरा</Label><Textarea value={formData.additionalNotes} onChange={e => setFormData({...formData, additionalNotes: e.target.value})} className="h-20 text-[12px] bg-muted/20 border border-slate-300 rounded-xl p-4 shadow-inner" /></div>
               </div>
             </div>
           </ScrollArea>
           <DialogFooter className="p-4 border-t bg-muted/5">
-            <Button onClick={handleSaveSupplier} className="w-full font-black uppercase text-[11px] h-12 rounded-2xl shadow-xl shadow-primary/20">माहिती जतन करा</Button>
+            <Button onClick={handleSaveSupplier} className="w-full font-black uppercase text-[11px] h-12 rounded-2xl shadow-xl shadow-primary/20 tracking-widest transition-all active:scale-95"><CheckCircle2 className="h-5 w-5 mr-2" /> माहिती जतन करा</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
