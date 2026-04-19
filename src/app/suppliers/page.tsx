@@ -344,33 +344,33 @@ function SuppliersContent() {
                     <div className="space-y-4 p-4 border border-primary/20 rounded-2xl bg-primary/5">
                       <h4 className="text-[10px] font-black uppercase text-primary flex items-center gap-2"><Clock className="h-4 w-4" /> २) संकलन वेळ & उत्पादक</h4>
                       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                        <div className="space-y-1"><Label className="text-[8px] font-black uppercase">सकाळ संकलन वेळ</Label><Input type="time" value={formData.morning_collection_time} onChange={e => setFormData({...formData, morning_collection_time: e.target.value})} className="h-8 text-[10px] border-slate-300" /></div>
-                        <div className="space-y-1"><Label className="text-[8px] font-black uppercase">सायंकाळ संकलन वेळ</Label><Input type="time" value={formData.evening_collection_time} onChange={e => setFormData({...formData, evening_collection_time: e.target.value})} className="h-8 text-[10px] border-slate-300" /></div>
-                        <div className="space-y-1"><Label className="text-[8px] font-black uppercase">एकूण उत्पादक</Label><Input type="number" value={formData.total_producers} onChange={e => setFormData({...formData, total_producers: e.target.value})} className="h-8 text-[10px] border-slate-300" /></div>
-                        <div className="space-y-1"><Label className="text-[8px] font-black uppercase">सक्रिय उत्पादक</Label><Input type="number" value={formData.active_producers} onChange={e => setFormData({...formData, active_producers: e.target.value})} className="h-8 text-[10px] border-slate-300" /></div>
-                        <div className="space-y-1"><Label className="text-[8px] font-black uppercase">निष्क्रिय उत्पादक</Label><Input type="number" value={formData.inactive_producers} onChange={e => setFormData({...formData, inactive_producers: e.target.value})} className="h-8 text-[10px] border-slate-300" /></div>
+                        <div className="space-y-1"><Label className="text-[8px] font-black uppercase">सकाळ संकलन वेळ</Label><Input type="time" value={formData.morning_collection_time} onChange={e => setFormData({...formData, morning_collection_time: e.target.value})} className="h-8 text-[10px] border-slate-400" /></div>
+                        <div className="space-y-1"><Label className="text-[8px] font-black uppercase">सायंकाळ संकलन वेळ</Label><Input type="time" value={formData.evening_collection_time} onChange={e => setFormData({...formData, evening_collection_time: e.target.value})} className="h-8 text-[10px] border-slate-400" /></div>
+                        <div className="space-y-1"><Label className="text-[8px] font-black uppercase">एकूण उत्पादक</Label><Input type="number" value={formData.total_producers} onChange={e => setFormData({...formData, total_producers: e.target.value})} className="h-8 text-[10px] border-slate-400" /></div>
+                        <div className="space-y-1"><Label className="text-[8px] font-black uppercase">सक्रिय उत्पादक</Label><Input type="number" value={formData.active_producers} onChange={e => setFormData({...formData, active_producers: e.target.value})} className="h-8 text-[10px] border-slate-400" /></div>
+                        <div className="space-y-1"><Label className="text-[8px] font-black uppercase">निष्क्रिय उत्पादक</Label><Input type="number" value={formData.inactive_producers} onChange={e => setFormData({...formData, inactive_producers: e.target.value})} className="h-8 text-[10px] border-slate-400" /></div>
                       </div>
                     </div>
 
-                    <div className="space-y-4 p-4 border border-slate-200 rounded-2xl bg-white shadow-sm">
+                    <div className="space-y-4 p-4 border border-slate-300 rounded-2xl bg-white shadow-sm">
                       <h4 className="text-[10px] font-black uppercase text-slate-700 flex items-center gap-2"><Milk className="h-4 w-4" /> ३) जनावरांची माहिती</h4>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                        <div className="space-y-1"><Label className="text-[8px] font-black">एकूण जनावरे</Label><Input type="number" value={formData.total_animals} onChange={e => setFormData({...formData, total_animals: e.target.value})} className="h-8 text-[10px] border-slate-300" /></div>
-                        <div className="space-y-1"><Label className="text-[8px] font-black">गाई संख्या</Label><Input type="number" value={formData.cows} onChange={e => setFormData({...formData, cows: e.target.value})} className="h-8 text-[10px] border-slate-300" /></div>
-                        <div className="space-y-1"><Label className="text-[8px] font-black">म्हशी संख्या</Label><Input type="number" value={formData.buffalo} onChange={e => setFormData({...formData, buffalo: e.target.value})} className="h-8 text-[10px] border-slate-300" /></div>
-                        <div className="space-y-1"><Label className="text-[8px] font-black">वासरे</Label><Input type="number" value={formData.calves} onChange={e => setFormData({...formData, calves: e.target.value})} className="h-8 text-[10px] border-slate-300" /></div>
+                        <div className="space-y-1"><Label className="text-[8px] font-black">एकूण जनावरे</Label><Input type="number" value={formData.total_animals} onChange={e => setFormData({...formData, total_animals: e.target.value})} className="h-8 text-[10px] border-slate-400" /></div>
+                        <div className="space-y-1"><Label className="text-[8px] font-black">गाई संख्या</Label><Input type="number" value={formData.cows} onChange={e => setFormData({...formData, cows: e.target.value})} className="h-8 text-[10px] border-slate-400" /></div>
+                        <div className="space-y-1"><Label className="text-[8px] font-black">म्हशी संख्या</Label><Input type="number" value={formData.buffalo} onChange={e => setFormData({...formData, buffalo: e.target.value})} className="h-8 text-[10px] border-slate-400" /></div>
+                        <div className="space-y-1"><Label className="text-[8px] font-black">वासरे</Label><Input type="number" value={formData.calves} onChange={e => setFormData({...formData, calves: e.target.value})} className="h-8 text-[10px] border-slate-400" /></div>
                       </div>
                     </div>
 
                     <div className="space-y-4">
-                      <div className="flex items-center justify-between border-b pb-1"><h4 className="text-[10px] font-black uppercase text-primary">४) २+ वर्ष जुने उत्पादक</h4><Button size="sm" onClick={() => addDynamicRow('longTermProducers', { producer_name: "", previous_milk: 0, current_milk: 0, previous_animals: 0, current_animals: 0 })} className="h-6 text-[8px] uppercase">जोडा</Button></div>
+                      <div className="flex items-center justify-between border-b-2 border-primary/30 pb-1"><h4 className="text-[10px] font-black uppercase text-primary">४) २+ वर्ष जुने उत्पादक</h4><Button size="sm" onClick={() => addDynamicRow('longTermProducers', { producer_name: "", previous_milk: 0, current_milk: 0, previous_animals: 0, current_animals: 0 })} className="h-6 text-[8px] uppercase">जोडा</Button></div>
                       <div className="space-y-2">
                         {formData.longTermProducers.map(p => (
-                          <div key={p.id} className="grid grid-cols-12 gap-2 p-2 bg-slate-50 border border-slate-200 rounded-xl items-end">
-                            <div className="col-span-4"><Input value={p.producer_name} placeholder="नाव" onChange={e => updateDynamicRow('longTermProducers', p.id, { producer_name: e.target.value })} className="h-7 text-[9px] border-slate-300" /></div>
-                            <div className="col-span-2"><Input type="number" value={p.previous_milk} placeholder="जुने दूध" onChange={e => updateDynamicRow('longTermProducers', p.id, { previous_milk: e.target.value })} className="h-7 text-[9px] border-slate-300" /></div>
-                            <div className="col-span-2"><Input type="number" value={p.current_milk} placeholder="नवे दूध" onChange={e => updateDynamicRow('longTermProducers', p.id, { current_milk: e.target.value })} className="h-7 text-[9px] border-slate-300" /></div>
-                            <div className="col-span-3 flex gap-1"><Input type="number" value={p.previous_animals} placeholder="ज-जुनी" onChange={e => updateDynamicRow('longTermProducers', p.id, { previous_animals: e.target.value })} className="h-7 text-[9px] border-slate-300 p-1" /><Input type="number" value={p.current_animals} placeholder="ज-नवी" onChange={e => updateDynamicRow('longTermProducers', p.id, { current_animals: e.target.value })} className="h-7 text-[9px] border-slate-300 p-1" /></div>
+                          <div key={p.id} className="grid grid-cols-12 gap-2 p-2 bg-slate-50 border border-slate-300 rounded-xl items-end">
+                            <div className="col-span-4"><Input value={p.producer_name} placeholder="नाव" onChange={e => updateDynamicRow('longTermProducers', p.id, { producer_name: e.target.value })} className="h-7 text-[9px] border-slate-400" /></div>
+                            <div className="col-span-2"><Input type="number" value={p.previous_milk} placeholder="जुने दूध" onChange={e => updateDynamicRow('longTermProducers', p.id, { previous_milk: e.target.value })} className="h-7 text-[9px] border-slate-400" /></div>
+                            <div className="col-span-2"><Input type="number" value={p.current_milk} placeholder="नवे दूध" onChange={e => updateDynamicRow('longTermProducers', p.id, { current_milk: e.target.value })} className="h-7 text-[9px] border-slate-400" /></div>
+                            <div className="col-span-3 flex gap-1"><Input type="number" value={p.previous_animals} placeholder="ज-जुनी" onChange={e => updateDynamicRow('longTermProducers', p.id, { previous_animals: e.target.value })} className="h-7 text-[9px] border-slate-400 p-1" /><Input type="number" value={p.current_animals} placeholder="ज-नवी" onChange={e => updateDynamicRow('longTermProducers', p.id, { current_animals: e.target.value })} className="h-7 text-[9px] border-slate-400 p-1" /></div>
                             <div className="col-span-1"><Button variant="ghost" size="icon" onClick={() => removeDynamicRow('longTermProducers', p.id)} className="h-7 w-7 text-rose-500"><X className="h-3.5 w-3.5"/></Button></div>
                           </div>
                         ))}
@@ -378,14 +378,14 @@ function SuppliersContent() {
                     </div>
 
                     <div className="space-y-4">
-                       <div className="flex items-center justify-between border-b pb-1"><h4 className="text-[10px] font-black uppercase text-rose-600">५) दूध कमी झालेले उत्पादक</h4><Button size="sm" onClick={() => addDynamicRow('decreasingProducers', { producer_name: "", previous_milk: 0, current_milk: 0, previous_animals: 0, current_animals: 0, reason: "" })} className="h-6 text-[8px] uppercase bg-rose-600">जोडा</Button></div>
+                       <div className="flex items-center justify-between border-b-2 border-rose-300 pb-1"><h4 className="text-[10px] font-black uppercase text-rose-600">५) दूध कमी झालेले उत्पादक</h4><Button size="sm" onClick={() => addDynamicRow('decreasingProducers', { producer_name: "", previous_milk: 0, current_milk: 0, previous_animals: 0, current_animals: 0, reason: "" })} className="h-6 text-[8px] uppercase bg-rose-600">जोडा</Button></div>
                        <div className="space-y-2">
                         {formData.decreasingProducers.map(p => (
                           <div key={p.id} className="p-2 bg-rose-50/50 border border-rose-100 rounded-xl space-y-2">
                             <div className="grid grid-cols-12 gap-2 items-end">
-                              <div className="col-span-4"><Input value={p.producer_name} placeholder="नाव" onChange={e => updateDynamicRow('decreasingProducers', p.id, { producer_name: e.target.value })} className="h-7 text-[9px] border-slate-300" /></div>
-                              <div className="col-span-3 flex gap-1"><Input type="number" value={p.previous_milk} placeholder="जुने" onChange={e => updateDynamicRow('decreasingProducers', p.id, { previous_milk: e.target.value })} className="h-7 text-[9px] border-slate-300 p-1" /><Input type="number" value={p.current_milk} placeholder="नवे" onChange={e => updateDynamicRow('decreasingProducers', p.id, { current_milk: e.target.value })} className="h-7 text-[9px] border-slate-300 p-1" /></div>
-                              <div className="col-span-4"><Input value={p.reason} placeholder="कारण" onChange={e => updateDynamicRow('decreasingProducers', p.id, { reason: e.target.value })} className="h-7 text-[9px] border-slate-300" /></div>
+                              <div className="col-span-4"><Input value={p.producer_name} placeholder="नाव" onChange={e => updateDynamicRow('decreasingProducers', p.id, { producer_name: e.target.value })} className="h-7 text-[9px] border-slate-400" /></div>
+                              <div className="col-span-3 flex gap-1"><Input type="number" value={p.previous_milk} placeholder="जुने" onChange={e => updateDynamicRow('decreasingProducers', p.id, { previous_milk: e.target.value })} className="h-7 text-[9px] border-slate-400 p-1" /><Input type="number" value={p.current_milk} placeholder="नवे" onChange={e => updateDynamicRow('decreasingProducers', p.id, { current_milk: e.target.value })} className="h-7 text-[9px] border-slate-400 p-1" /></div>
+                              <div className="col-span-4"><Input value={p.reason} placeholder="कारण" onChange={e => updateDynamicRow('decreasingProducers', p.id, { reason: e.target.value })} className="h-7 text-[9px] border-slate-400" /></div>
                               <div className="col-span-1"><Button variant="ghost" size="icon" onClick={() => removeDynamicRow('decreasingProducers', p.id)} className="h-7 w-7 text-rose-500"><X className="h-3.5 w-3.5"/></Button></div>
                             </div>
                           </div>
@@ -394,56 +394,76 @@ function SuppliersContent() {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                       <div className="space-y-4 p-4 border border-slate-200 rounded-2xl bg-white shadow-sm">
+                       <div className="space-y-4 p-4 border border-slate-300 rounded-2xl bg-white shadow-sm">
                           <div className="flex items-center justify-between">
                             <Label className="text-[9px] font-black uppercase">८-१० गाईंचा गोठा सक्षम?</Label>
                             <Switch checked={formData.can_expand_8_10_cows} onCheckedChange={(v) => setFormData({...formData, can_expand_8_10_cows: v})} />
                           </div>
                           {formData.can_expand_8_10_cows && (
                             <div className="space-y-2">
-                               <Button size="sm" variant="outline" className="h-6 text-[8px] uppercase w-full" onClick={() => addDynamicRow('highCapacityProducers', { name: "", current_milk: 0, supply_years: 0, current_animals: 0, land: "", fodder_available: "YES", shed_available: "YES" })}>उत्पादक जोडा</Button>
+                               <Button size="sm" variant="outline" className="h-6 text-[8px] uppercase w-full border-slate-400" onClick={() => addDynamicRow('highCapacityProducers', { name: "", current_milk: 0, supply_years: 0, current_animals: 0, land: "", fodder_available: "YES", shed_available: "YES" })}>उत्पादक जोडा</Button>
                                {formData.highCapacityProducers.map(p => (
-                                 <div key={p.id} className="p-2 border rounded bg-slate-50 space-y-2">
-                                   <Input value={p.name} placeholder="नाव" onChange={e => updateDynamicRow('highCapacityProducers', p.id, { name: e.target.value })} className="h-7 text-[9px]" />
+                                 <div key={p.id} className="p-2 border border-slate-300 rounded bg-slate-50 space-y-2">
+                                   <Input value={p.name} placeholder="नाव" onChange={e => updateDynamicRow('highCapacityProducers', p.id, { name: e.target.value })} className="h-7 text-[9px] border-slate-400" />
                                    <div className="grid grid-cols-2 gap-1">
-                                     <Input type="number" placeholder="दूध" onChange={e => updateDynamicRow('highCapacityProducers', p.id, { current_milk: e.target.value })} className="h-7 text-[9px]" />
-                                     <Input placeholder="शेती" onChange={e => updateDynamicRow('highCapacityProducers', p.id, { land: e.target.value })} className="h-7 text-[9px]" />
+                                     <Input type="number" placeholder="दूध" onChange={e => updateDynamicRow('highCapacityProducers', p.id, { current_milk: e.target.value })} className="h-7 text-[9px] border-slate-400" />
+                                     <Input placeholder="शेती" onChange={e => updateDynamicRow('highCapacityProducers', p.id, { land: e.target.value })} className="h-7 text-[9px] border-slate-400" />
                                    </div>
-                                   <Button variant="ghost" size="sm" onClick={() => removeDynamicRow('highCapacityProducers', p.id)} className="h-7 w-full text-rose-500 text-[8px]">काढा</Button>
+                                   <Button variant="ghost" size="sm" onClick={() => removeDynamicRow('highCapacityProducers', p.id)} className="h-7 w-full text-rose-500 text-[8px] border-rose-200">काढा</Button>
                                  </div>
                                ))}
                             </div>
                           )}
                        </div>
-                       <div className="space-y-4 p-4 border border-slate-200 rounded-2xl bg-white shadow-sm">
+                       <div className="space-y-4 p-4 border border-slate-300 rounded-2xl bg-white shadow-sm">
                           <div className="flex items-center justify-between">
                             <Label className="text-[9px] font-black uppercase">३० ते १००+ लिटर दूध उत्पादक?</Label>
                             <Switch checked={formData.has_100_plus_milk} onCheckedChange={(v) => setFormData({...formData, has_100_plus_milk: v})} />
                           </div>
                           {formData.has_100_plus_milk && (
                             <div className="space-y-2">
-                               <Button size="sm" variant="outline" className="h-6 text-[8px] uppercase w-full" onClick={() => addDynamicRow('highMilkProducers', { name: "" })}>उत्पादक जोडा</Button>
+                               <Button size="sm" variant="outline" className="h-6 text-[8px] uppercase w-full border-slate-400" onClick={() => addDynamicRow('highMilkProducers', { name: "" })}>उत्पादक जोडा</Button>
                                {formData.highMilkProducers.map(p => (
-                                 <div key={p.id} className="flex gap-1"><Input value={p.name} onChange={e => updateDynamicRow('highMilkProducers', p.id, { name: e.target.value })} className="h-7 text-[9px] border-slate-300" /><Button size="icon" variant="ghost" onClick={() => removeDynamicRow('highMilkProducers', p.id)} className="h-7 w-7 text-rose-500"><X className="h-3 w-3"/></Button></div>
+                                 <div key={p.id} className="flex gap-1"><Input value={p.name} onChange={e => updateDynamicRow('highMilkProducers', p.id, { name: e.target.value })} className="h-7 text-[9px] border-slate-400" /><Button size="icon" variant="ghost" onClick={() => removeDynamicRow('highMilkProducers', p.id)} className="h-7 w-7 text-rose-500"><X className="h-3.5 w-3.5"/></Button></div>
                                ))}
                             </div>
                           )}
                        </div>
                     </div>
 
-                    <div className="space-y-4 p-4 border border-slate-200 rounded-2xl bg-slate-50/50">
-                       <h4 className="text-[10px] font-black uppercase text-primary border-b pb-1">विशेष विश्लेषण</h4>
+                    <div className="space-y-4 p-4 border border-slate-300 rounded-2xl bg-slate-50/50">
+                       <h4 className="text-[10px] font-black uppercase text-primary border-b pb-1">विशेष विश्लेषण & उपाययोजना</h4>
                        <div className="space-y-3">
-                          <div className="space-y-1"><Label className="text-[9px] font-black uppercase">दूध कमी होण्याची कारणे</Label><Textarea value={formData.milk_decrease_reasons} onChange={e => setFormData({...formData, milk_decrease_reasons: e.target.value})} className="h-14 text-[10px] border-slate-300" /></div>
-                          <div className="space-y-1"><Label className="text-[9px] font-black uppercase">सेंटरने केलेले प्रयत्न</Label><Textarea value={formData.efforts_taken} onChange={e => setFormData({...formData, efforts_taken: e.target.value})} className="h-14 text-[10px] border-slate-300" /></div>
-                          <div className="space-y-1"><Label className="text-[9px] font-black uppercase">दूध वाढवण्यासाठी उपाय</Label><Textarea value={formData.required_actions} onChange={e => setFormData({...formData, required_actions: e.target.value})} className="h-14 text-[10px] border-slate-300" /></div>
+                          <div className="space-y-1"><Label className="text-[9px] font-black uppercase">दूध कमी होण्याची कारणे</Label><Textarea value={formData.milk_decrease_reasons} onChange={e => setFormData({...formData, milk_decrease_reasons: e.target.value})} className="h-14 text-[10px] border-slate-400" /></div>
+                          <div className="space-y-1"><Label className="text-[9px] font-black uppercase">सेंटरने केलेले प्रयत्न</Label><Textarea value={formData.efforts_taken} onChange={e => setFormData({...formData, efforts_taken: e.target.value})} className="h-14 text-[10px] border-slate-400" /></div>
+                          <div className="space-y-1"><Label className="text-[9px] font-black uppercase">दूध वाढवण्यासाठी उपाय</Label><Textarea value={formData.required_actions} onChange={e => setFormData({...formData, required_actions: e.target.value})} className="h-14 text-[10px] border-slate-400" /></div>
+                       </div>
+                    </div>
+
+                    <div className="space-y-4">
+                       <div className="flex items-center justify-between border-b-2 border-amber-300 pb-1"><h4 className="text-[10px] font-black uppercase text-amber-700">परिसरातील गवळी (आपल्या डेअरीचे)</h4><Button size="sm" onClick={() => addDynamicRow('localGavali', { name: "", code: "", gay_dudh: 0, mhais_dudh: 0, producers: 0, gay_sankya: 0, mhais_sankya: 0 })} className="h-7 text-[8px] uppercase bg-amber-600 hover:bg-amber-700">गवळी जोडा</Button></div>
+                       <div className="space-y-2">
+                        {formData.localGavali.map(it => (
+                          <div key={it.id} className="p-3 bg-amber-50/30 border border-amber-200 rounded-xl space-y-3">
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                              <Input value={it.name} placeholder="नाव" onChange={e => updateDynamicRow('localGavali', it.id, { name: e.target.value })} className="h-8 text-[10px] border-slate-400" />
+                              <Input value={it.code} placeholder="कोड" onChange={e => updateDynamicRow('localGavali', it.id, { code: e.target.value })} className="h-8 text-[10px] border-slate-400" />
+                              <Input type="number" value={it.gay_dudh} placeholder="गाय दूध" onChange={e => updateDynamicRow('localGavali', it.id, { gay_dudh: e.target.value })} className="h-8 text-[10px] border-slate-400" />
+                              <Input type="number" value={it.mhais_dudh} placeholder="म्हेस दूध" onChange={e => updateDynamicRow('localGavali', it.id, { mhais_dudh: e.target.value })} className="h-8 text-[10px] border-slate-400" />
+                              <Input type="number" value={it.producers} placeholder="उत्पादक" onChange={e => updateDynamicRow('localGavali', it.id, { producers: e.target.value })} className="h-8 text-[10px] border-slate-400" />
+                              <Input type="number" value={it.gay_sankya} placeholder="गाय संख्या" onChange={e => updateDynamicRow('localGavali', it.id, { gay_sankya: e.target.value })} className="h-8 text-[10px] border-slate-400" />
+                              <Input type="number" value={it.mhais_sankya} placeholder="म्हेस संख्या" onChange={e => updateDynamicRow('localGavali', it.id, { mhais_sankya: e.target.value })} className="h-8 text-[10px] border-slate-400" />
+                              <Button variant="ghost" size="sm" onClick={() => removeDynamicRow('localGavali', it.id)} className="h-8 text-rose-500"><Trash2 className="h-4 w-4" /></Button>
+                            </div>
+                          </div>
+                        ))}
                        </div>
                     </div>
                   </div>
                 )}
 
                 <div className="space-y-4">
-                  <h4 className="text-[10px] font-black uppercase text-primary border-b pb-1 flex items-center gap-2"><ShieldCheck className="h-4 w-4" /> ५) परवाना व तांत्रिक</h4>
+                  <h4 className="text-[10px] font-black uppercase text-primary border-b-2 border-primary/20 pb-1 flex items-center gap-2"><ShieldCheck className="h-4 w-4" /> ५) परवाना व तांत्रिक</h4>
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1"><Label className="text-[9px] font-black uppercase opacity-60">FSSAI क्र.</Label><Input value={formData.fssaiNumber} onChange={e => setFormData({...formData, fssaiNumber: e.target.value})} className="h-10 text-[11px] bg-muted/20 border border-slate-300 font-bold rounded-xl" /></div>
                     <div className="space-y-1"><Label className="text-[9px] font-black uppercase opacity-60">काटा ब्रँड</Label><Input value={formData.scaleBrand} onChange={e => setFormData({...formData, scaleBrand: e.target.value})} className="h-10 text-[11px] bg-muted/20 border border-slate-300 font-bold rounded-xl" /></div>
@@ -451,7 +471,7 @@ function SuppliersContent() {
                 </div>
 
                 <div className="space-y-4">
-                  <h4 className="text-[10px] font-black uppercase text-primary border-b pb-1 flex items-center gap-2"><Wallet className="h-4 w-4" /> ६) दूध व व्यावसायिक तपशील</h4>
+                  <h4 className="text-[10px] font-black uppercase text-primary border-b-2 border-primary/20 pb-1 flex items-center gap-2"><Wallet className="h-4 w-4" /> ६) दूध व व्यावसायिक तपशील</h4>
                   <div className="grid grid-cols-3 gap-2 p-2.5 bg-blue-50/50 rounded-xl border border-blue-100">
                     <div className="col-span-3 text-[9px] font-black uppercase text-blue-600 mb-0.5">गाय (Qty/F/S)</div>
                     <Input type="number" value={formData.cowQty} onChange={e => setFormData({...formData, cowQty: e.target.value})} className="h-8 text-[10px] bg-white border-slate-300 font-bold" placeholder="L" />
@@ -467,7 +487,7 @@ function SuppliersContent() {
                 </div>
 
                 <div className="space-y-4">
-                  <h4 className="text-[10px] font-black uppercase text-primary border-b pb-1 flex items-center gap-2"><Box className="h-4 w-4" /> ७) इन्व्हेंटरी</h4>
+                  <h4 className="text-[10px] font-black uppercase text-primary border-b-2 border-primary/20 pb-1 flex items-center gap-2"><Box className="h-4 w-4" /> ७) इन्व्हेंटरी</h4>
                   <div className="space-y-3">
                     <div className="flex items-center justify-between"><h4 className="text-[9px] font-black uppercase tracking-widest">साहित्य यादी</h4><Button variant="outline" size="sm" onClick={addEquipmentRow} className="h-7 text-[8px] font-black px-3 rounded-xl border-primary/20 text-primary">जोडा</Button></div>
                     <div className="space-y-2">
@@ -560,19 +580,19 @@ function SuppliersContent() {
                      <div className="space-y-3">
                         <h4 className="text-[10px] font-black uppercase text-primary border-b border-black/20 pb-1 mb-2">३) संकलन वेळ & उत्पादक</h4>
                         <div className="space-y-2 text-[11px] font-bold">
-                          <div className="flex justify-between border-b border-dashed border-black/10 pb-0.5"><span>सकाळ वेळ</span><span>{selectedSupplier.producer_center.additional_details.morning_collection_time}</span></div>
-                          <div className="flex justify-between border-b border-dashed border-black/10 pb-0.5"><span>सायंकाळ वेळ</span><span>{selectedSupplier.producer_center.additional_details.evening_collection_time}</span></div>
-                          <div className="flex justify-between border-b border-dashed border-black/10 pb-0.5"><span>एकूण उत्पादक</span><span>{selectedSupplier.producer_center.additional_details.total_producers}</span></div>
-                          <div className="flex justify-between border-b border-dashed border-black/10 pb-0.5"><span>सक्रिय उत्पादक</span><span className="text-emerald-600">{selectedSupplier.producer_center.additional_details.active_producers}</span></div>
+                          <div className="flex justify-between border-b border-dashed border-black/10 pb-0.5"><span>सकाळ वेळ</span><span>{selectedSupplier.producer_center.additional_details.morning_collection_time || "-"}</span></div>
+                          <div className="flex justify-between border-b border-dashed border-black/10 pb-0.5"><span>सायंकाळ वेळ</span><span>{selectedSupplier.producer_center.additional_details.evening_collection_time || "-"}</span></div>
+                          <div className="flex justify-between border-b border-dashed border-black/10 pb-0.5"><span>एकूण उत्पादक</span><span>{selectedSupplier.producer_center.additional_details.total_producers || 0}</span></div>
+                          <div className="flex justify-between border-b border-dashed border-black/10 pb-0.5"><span>सक्रिय उत्पादक</span><span className="text-emerald-600">{selectedSupplier.producer_center.additional_details.active_producers || 0}</span></div>
                         </div>
                      </div>
                      <div className="space-y-3">
                         <h4 className="text-[10px] font-black uppercase text-primary border-b border-black/20 pb-1 mb-2">४) जनावरांची गणना</h4>
                         <div className="grid grid-cols-2 gap-2 text-center">
-                          <div className="p-1.5 border border-black rounded bg-slate-50"><p className="text-[7px] font-black">गाई</p><p className="text-[11px] font-black">{selectedSupplier.producer_center.additional_details.cows}</p></div>
-                          <div className="p-1.5 border border-black rounded bg-slate-50"><p className="text-[7px] font-black">म्हशी</p><p className="text-[11px] font-black">{selectedSupplier.producer_center.additional_details.buffalo}</p></div>
-                          <div className="p-1.5 border border-black rounded bg-slate-50"><p className="text-[7px] font-black">वासरे</p><p className="text-[11px] font-black">{selectedSupplier.producer_center.additional_details.calves}</p></div>
-                          <div className="p-1.5 border border-black rounded bg-slate-900 text-white"><p className="text-[7px] font-black">एकूण</p><p className="text-[11px] font-black">{selectedSupplier.producer_center.additional_details.total_animals}</p></div>
+                          <div className="p-1.5 border border-black rounded bg-slate-50"><p className="text-[7px] font-black">गाई</p><p className="text-[11px] font-black">{selectedSupplier.producer_center.additional_details.cows || 0}</p></div>
+                          <div className="p-1.5 border border-black rounded bg-slate-50"><p className="text-[7px] font-black">म्हशी</p><p className="text-[11px] font-black">{selectedSupplier.producer_center.additional_details.buffalo || 0}</p></div>
+                          <div className="p-1.5 border border-black rounded bg-slate-50"><p className="text-[7px] font-black">वासरे</p><p className="text-[11px] font-black">{selectedSupplier.producer_center.additional_details.calves || 0}</p></div>
+                          <div className="p-1.5 border border-black rounded bg-slate-900 text-white"><p className="text-[7px] font-black">एकूण</p><p className="text-[11px] font-black">{selectedSupplier.producer_center.additional_details.total_animals || 0}</p></div>
                         </div>
                      </div>
                   </div>
@@ -602,12 +622,13 @@ function SuppliersContent() {
                   </div>
 
                   <div className="space-y-3">
-                    <h4 className="text-[10px] font-black uppercase text-rose-700 border-b border-black/20 pb-1">६) दूध घटलेले उत्पादक</h4>
+                    <h4 className="text-[10px] font-black uppercase text-rose-700 border-b border-black/20 pb-1">६) दूध घटलेले उत्पादक विश्लेषण</h4>
                     <table className="w-full border-collapse border border-black text-[9px]">
                       <thead className="bg-rose-50/50">
                         <tr className="font-black border-b border-black text-rose-900">
                           <th className="p-1.5 border-r border-black text-left">नाव</th>
                           <th className="p-1.5 border-r border-black text-center">दूध (जुने/नवे)</th>
+                          <th className="p-1.5 border-r border-black text-center">जनावरे (जुनी/नवी)</th>
                           <th className="p-1.5 text-left">घटण्याचे कारण</th>
                         </tr>
                       </thead>
@@ -616,18 +637,49 @@ function SuppliersContent() {
                           <tr key={idx} className="border-b border-black font-bold text-rose-800">
                             <td className="p-1.5 border-r border-black">{p.producer_name}</td>
                             <td className="p-1.5 border-r border-black text-center">{p.previous_milk} / {p.current_milk} L</td>
+                            <td className="p-1.5 border-r border-black text-center">{p.previous_animals} / {p.current_animals}</td>
                             <td className="p-1.5">{p.reason}</td>
                           </tr>
                         ))}
                       </tbody>
                     </table>
                   </div>
+
+                  {selectedSupplier.producer_center.additional_details.milkman_gavali_details?.length > 0 && (
+                    <div className="space-y-3">
+                      <h4 className="text-[10px] font-black uppercase text-amber-700 border-b border-black/20 pb-1">७) स्थानिक गवळी माहिती (आपल्या डेअरीचे)</h4>
+                      <table className="w-full border-collapse border border-black text-[8.5px]">
+                        <thead className="bg-slate-50 font-black">
+                          <tr className="border-b border-black text-center">
+                            <th className="p-1 border-r border-black text-left pl-2">नाव / कोड</th>
+                            <th className="p-1 border-r border-black">गाय (L)</th>
+                            <th className="p-1 border-r border-black">म्हेस (L)</th>
+                            <th className="p-1 border-r border-black">एकूण (L)</th>
+                            <th className="p-1 border-r border-black">उत्पादक</th>
+                            <th className="p-1">जनावरे (C+B)</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {selectedSupplier.producer_center.additional_details.milkman_gavali_details.map((g: any, i: number) => (
+                            <tr key={i} className="border-b border-black font-bold text-center last:border-0">
+                              <td className="p-1 border-r border-black text-left pl-2">{g.name} ({g.code})</td>
+                              <td className="p-1 border-r border-black">{g.gay_dudh} L</td>
+                              <td className="p-1 border-r border-black">{g.mhais_dudh} L</td>
+                              <td className="p-1 border-r border-black font-black text-primary">{(Number(g.gay_dudh) + Number(g.mhais_dudh)).toFixed(1)} L</td>
+                              <td className="p-1 border-r border-black">{g.producers}</td>
+                              <td className="p-1">{Number(g.gay_sankya) + Number(g.mhais_sankya)}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
                 </div>
               )}
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-10 w-full mb-6 text-left mt-6">
                 <div className="space-y-3">
-                  <h4 className="text-[10px] font-black uppercase text-primary tracking-[0.2em] border-b border-black/20 pb-1 mb-2">७) व्यावसायिक माहिती (BUSINESS)</h4>
+                  <h4 className="text-[10px] font-black uppercase text-primary tracking-[0.2em] border-b border-black/20 pb-1 mb-2">८) व्यावसायिक माहिती (BUSINESS)</h4>
                   <div className="space-y-2 text-[11px] font-bold">
                     <div className="flex justify-between border-b border-dashed border-black/10 pb-1"><span className="text-muted-foreground uppercase text-[9px]">पेमेंट सायकल</span><span>{selectedSupplier.paymentCycle || "10 Days"}</span></div>
                     <div className="flex justify-between border-b border-dashed border-black/10 pb-1"><span className="text-muted-foreground uppercase text-[9px]">जागा मालकी</span><span>{selectedSupplier.spaceOwnership === 'Self' ? 'स्वतःची' : 'भाड्याची'}</span></div>
@@ -637,7 +689,7 @@ function SuppliersContent() {
                 </div>
 
                 <div className="space-y-3">
-                  <h4 className="text-[10px] font-black uppercase text-blue-600 tracking-[0.2em] border-b border-black/20 pb-1 mb-2">८) दूध संकलन सारांश (MILK)</h4>
+                  <h4 className="text-[10px] font-black uppercase text-blue-600 tracking-[0.2em] border-b border-black/20 pb-1 mb-2">९) दूध संकलन सारांश (MILK)</h4>
                   <div className="grid grid-cols-1 gap-2">
                     <div className="p-2 rounded-lg border-2 border-blue-600 flex justify-between items-center bg-blue-50/30">
                       <span className="text-[9px] font-black uppercase text-blue-600">गाय (COW)</span>
@@ -705,33 +757,33 @@ function SuppliersContent() {
                   <div className="space-y-4 p-4 border border-primary/20 rounded-2xl bg-primary/5">
                     <h4 className="text-[10px] font-black uppercase text-primary flex items-center gap-2"><Clock className="h-4 w-4" /> २) संकलन वेळ & उत्पादक</h4>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                      <div className="space-y-1"><Label className="text-[8px] font-black uppercase">सकाळ संकलन वेळ</Label><Input type="time" value={formData.morning_collection_time} onChange={e => setFormData({...formData, morning_collection_time: e.target.value})} className="h-8 text-[10px] border-slate-300" /></div>
-                      <div className="space-y-1"><Label className="text-[8px] font-black uppercase">सायंकाळ संकलन वेळ</Label><Input type="time" value={formData.evening_collection_time} onChange={e => setFormData({...formData, evening_collection_time: e.target.value})} className="h-8 text-[10px] border-slate-300" /></div>
-                      <div className="space-y-1"><Label className="text-[8px] font-black uppercase">एकूण उत्पादक</Label><Input type="number" value={formData.total_producers} onChange={e => setFormData({...formData, total_producers: e.target.value})} className="h-8 text-[10px] border-slate-300" /></div>
-                      <div className="space-y-1"><Label className="text-[8px] font-black uppercase">सक्रिय उत्पादक</Label><Input type="number" value={formData.active_producers} onChange={e => setFormData({...formData, active_producers: e.target.value})} className="h-8 text-[10px] border-slate-300" /></div>
-                      <div className="space-y-1"><Label className="text-[8px] font-black uppercase">निष्क्रिय उत्पादक</Label><Input type="number" value={formData.inactive_producers} onChange={e => setFormData({...formData, inactive_producers: e.target.value})} className="h-8 text-[10px] border-slate-300" /></div>
+                      <div className="space-y-1"><Label className="text-[8px] font-black uppercase">सकाळ संकलन वेळ</Label><Input type="time" value={formData.morning_collection_time} onChange={e => setFormData({...formData, morning_collection_time: e.target.value})} className="h-8 text-[10px] border-slate-400" /></div>
+                      <div className="space-y-1"><Label className="text-[8px] font-black uppercase">सायंकाळ संकलन वेळ</Label><Input type="time" value={formData.evening_collection_time} onChange={e => setFormData({...formData, evening_collection_time: e.target.value})} className="h-8 text-[10px] border-slate-400" /></div>
+                      <div className="space-y-1"><Label className="text-[8px] font-black uppercase">एकूण उत्पादक</Label><Input type="number" value={formData.total_producers} onChange={e => setFormData({...formData, total_producers: e.target.value})} className="h-8 text-[10px] border-slate-400" /></div>
+                      <div className="space-y-1"><Label className="text-[8px] font-black uppercase">सक्रिय उत्पादक</Label><Input type="number" value={formData.active_producers} onChange={e => setFormData({...formData, active_producers: e.target.value})} className="h-8 text-[10px] border-slate-400" /></div>
+                      <div className="space-y-1"><Label className="text-[8px] font-black uppercase">निष्क्रिय उत्पादक</Label><Input type="number" value={formData.inactive_producers} onChange={e => setFormData({...formData, inactive_producers: e.target.value})} className="h-8 text-[10px] border-slate-400" /></div>
                     </div>
                   </div>
 
-                  <div className="space-y-4 p-4 border border-slate-200 rounded-2xl bg-white shadow-sm">
+                  <div className="space-y-4 p-4 border border-slate-300 rounded-2xl bg-white shadow-sm">
                     <h4 className="text-[10px] font-black uppercase text-slate-700 flex items-center gap-2"><Milk className="h-4 w-4" /> ३) जनावरांची माहिती</h4>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                      <div className="space-y-1"><Label className="text-[8px] font-black">एकूण जनावरे</Label><Input type="number" value={formData.total_animals} onChange={e => setFormData({...formData, total_animals: e.target.value})} className="h-8 text-[10px] border-slate-300" /></div>
-                      <div className="space-y-1"><Label className="text-[8px] font-black">गाई संख्या</Label><Input type="number" value={formData.cows} onChange={e => setFormData({...formData, cows: e.target.value})} className="h-8 text-[10px] border-slate-300" /></div>
-                      <div className="space-y-1"><Label className="text-[8px] font-black">म्हशी संख्या</Label><Input type="number" value={formData.buffalo} onChange={e => setFormData({...formData, buffalo: e.target.value})} className="h-8 text-[10px] border-slate-300" /></div>
-                      <div className="space-y-1"><Label className="text-[8px] font-black">वासरे</Label><Input type="number" value={formData.calves} onChange={e => setFormData({...formData, calves: e.target.value})} className="h-8 text-[10px] border-slate-300" /></div>
+                      <div className="space-y-1"><Label className="text-[8px] font-black">एकूण जनावरे</Label><Input type="number" value={formData.total_animals} onChange={e => setFormData({...formData, total_animals: e.target.value})} className="h-8 text-[10px] border-slate-400" /></div>
+                      <div className="space-y-1"><Label className="text-[8px] font-black">गाई संख्या</Label><Input type="number" value={formData.cows} onChange={e => setFormData({...formData, cows: e.target.value})} className="h-8 text-[10px] border-slate-400" /></div>
+                      <div className="space-y-1"><Label className="text-[8px] font-black">म्हशी संख्या</Label><Input type="number" value={formData.buffalo} onChange={e => setFormData({...formData, buffalo: e.target.value})} className="h-8 text-[10px] border-slate-400" /></div>
+                      <div className="space-y-1"><Label className="text-[8px] font-black">वासरे</Label><Input type="number" value={formData.calves} onChange={e => setFormData({...formData, calves: e.target.value})} className="h-8 text-[10px] border-slate-400" /></div>
                     </div>
                   </div>
 
                   <div className="space-y-4">
-                    <div className="flex items-center justify-between border-b pb-1"><h4 className="text-[10px] font-black uppercase text-primary">४) २+ वर्ष जुने उत्पादक</h4><Button size="sm" onClick={() => addDynamicRow('longTermProducers', { producer_name: "", previous_milk: 0, current_milk: 0, previous_animals: 0, current_animals: 0 })} className="h-6 text-[8px] uppercase">जोडा</Button></div>
+                    <div className="flex items-center justify-between border-b-2 border-primary/30 pb-1"><h4 className="text-[10px] font-black uppercase text-primary">४) २+ वर्ष जुने उत्पादक</h4><Button size="sm" onClick={() => addDynamicRow('longTermProducers', { producer_name: "", previous_milk: 0, current_milk: 0, previous_animals: 0, current_animals: 0 })} className="h-6 text-[8px] uppercase">जोडा</Button></div>
                     <div className="space-y-2">
                       {formData.longTermProducers.map(p => (
-                        <div key={p.id} className="grid grid-cols-12 gap-2 p-2 bg-slate-50 border border-slate-200 rounded-xl items-end">
-                          <div className="col-span-4"><Input value={p.producer_name} placeholder="नाव" onChange={e => updateDynamicRow('longTermProducers', p.id, { producer_name: e.target.value })} className="h-7 text-[9px] border-slate-300" /></div>
-                          <div className="col-span-2"><Input type="number" value={p.previous_milk} placeholder="जुने दूध" onChange={e => updateDynamicRow('longTermProducers', p.id, { previous_milk: e.target.value })} className="h-7 text-[9px] border-slate-300" /></div>
-                          <div className="col-span-2"><Input type="number" value={p.current_milk} placeholder="नवे दूध" onChange={e => updateDynamicRow('longTermProducers', p.id, { current_milk: e.target.value })} className="h-7 text-[9px] border-slate-300" /></div>
-                          <div className="col-span-3 flex gap-1"><Input type="number" value={p.previous_animals} placeholder="ज-जुनी" onChange={e => updateDynamicRow('longTermProducers', p.id, { previous_animals: e.target.value })} className="h-7 text-[9px] border-slate-300 p-1" /><Input type="number" value={p.current_animals} placeholder="ज-नवी" onChange={e => updateDynamicRow('longTermProducers', p.id, { current_animals: e.target.value })} className="h-7 text-[9px] border-slate-300 p-1" /></div>
+                        <div key={p.id} className="grid grid-cols-12 gap-2 p-2 bg-slate-50 border border-slate-300 rounded-xl items-end">
+                          <div className="col-span-4"><Input value={p.producer_name} placeholder="नाव" onChange={e => updateDynamicRow('longTermProducers', p.id, { producer_name: e.target.value })} className="h-7 text-[9px] border-slate-400" /></div>
+                          <div className="col-span-2"><Input type="number" value={p.previous_milk} placeholder="जुने दूध" onChange={e => updateDynamicRow('longTermProducers', p.id, { previous_milk: e.target.value })} className="h-7 text-[9px] border-slate-400" /></div>
+                          <div className="col-span-2"><Input type="number" value={p.current_milk} placeholder="नवे दूध" onChange={e => updateDynamicRow('longTermProducers', p.id, { current_milk: e.target.value })} className="h-7 text-[9px] border-slate-400" /></div>
+                          <div className="col-span-3 flex gap-1"><Input type="number" value={p.previous_animals} placeholder="ज-जुनी" onChange={e => updateDynamicRow('longTermProducers', p.id, { previous_animals: e.target.value })} className="h-7 text-[9px] border-slate-400 p-1" /><Input type="number" value={p.current_animals} placeholder="ज-नवी" onChange={e => updateDynamicRow('longTermProducers', p.id, { current_animals: e.target.value })} className="h-7 text-[9px] border-slate-400 p-1" /></div>
                           <div className="col-span-1"><Button variant="ghost" size="icon" onClick={() => removeDynamicRow('longTermProducers', p.id)} className="h-7 w-7 text-rose-500"><X className="h-3.5 w-3.5"/></Button></div>
                         </div>
                       ))}
@@ -739,15 +791,15 @@ function SuppliersContent() {
                   </div>
 
                   <div className="space-y-4">
-                     <div className="flex items-center justify-between border-b pb-1"><h4 className="text-[10px] font-black uppercase text-rose-600">५) दूध कमी झालेले उत्पादक</h4><Button size="sm" onClick={() => addDynamicRow('decreasingProducers', { producer_name: "", previous_milk: 0, current_milk: 0, previous_animals: 0, current_animals: 0, reason: "" })} className="h-6 text-[8px] uppercase bg-rose-600">जोडा</Button></div>
+                     <div className="flex items-center justify-between border-b-2 border-rose-300 pb-1"><h4 className="text-[10px] font-black uppercase text-rose-600">५) दूध कमी झालेले उत्पादक</h4><Button size="sm" onClick={() => addDynamicRow('decreasingProducers', { producer_name: "", previous_milk: 0, current_milk: 0, previous_animals: 0, current_animals: 0, reason: "" })} className="h-6 text-[8px] uppercase bg-rose-600">जोडा</Button></div>
                      <div className="space-y-2">
                       {formData.decreasingProducers.map(p => (
                         <div key={p.id} className="p-2 bg-rose-50/50 border border-rose-100 rounded-xl space-y-2">
                           <div className="grid grid-cols-12 gap-2 items-end">
-                            <div className="col-span-4"><Input value={p.producer_name} placeholder="नाव" onChange={e => updateDynamicRow('decreasingProducers', p.id, { producer_name: e.target.value })} className="h-7 text-[9px] border-slate-300" /></div>
-                            <div className="col-span-3 flex gap-1"><Input type="number" value={p.previous_milk} placeholder="जुने" onChange={e => updateDynamicRow('decreasingProducers', p.id, { previous_milk: e.target.value })} className="h-7 text-[9px] border-slate-300 p-1" /><Input type="number" value={p.current_milk} placeholder="नवे" onChange={e => updateDynamicRow('decreasingProducers', p.id, { current_milk: e.target.value })} className="h-7 text-[9px] border-slate-300 p-1" /></div>
-                            <div className="col-span-4"><Input value={p.reason} placeholder="कारण" onChange={e => updateDynamicRow('decreasingProducers', p.id, { reason: e.target.value })} className="h-7 text-[9px] border-slate-300" /></div>
-                            <div className="col-span-1"><Button variant="ghost" size="icon" onClick={() => removeDynamicRow('decreasingProducers', p.id)} className="h-7 w-7 text-rose-500"><X className="h-3.5 w-3.5"/></Button></div>
+                            <div className="col-span-4"><Input value={p.producer_name} placeholder="नाव" onChange={e => updateDynamicRow('decreasingProducers', p.id, { producer_name: e.target.value })} className="h-7 text-[9px] border-slate-400" /></div>
+                            <div className="col-span-3 flex gap-1"><Input type="number" value={p.previous_milk} placeholder="जुने" onChange={e => updateDynamicRow('decreasingProducers', p.id, { previous_milk: e.target.value })} className="h-7 text-[9px] border-slate-400 p-1" /><Input type="number" value={p.current_milk} placeholder="नवे" onChange={e => updateDynamicRow('decreasingProducers', p.id, { current_milk: e.target.value })} className="h-7 text-[9px] border-slate-400 p-1" /></div>
+                            <div className="col-span-4"><Input value={p.reason} placeholder="कारण" onChange={e => updateDynamicRow('decreasingProducers', p.id, { reason: e.target.value })} className="h-7 text-[9px] border-slate-400" /></div>
+                            <div className="col-span-1"><Button variant="ghost" size="icon" onClick={() => removeDynamicRow('decreasingProducers', p.id)} className="h-7 w-7 text-rose-400"><X className="h-3.5 w-3.5"/></Button></div>
                           </div>
                         </div>
                       ))}
@@ -755,14 +807,14 @@ function SuppliersContent() {
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                     <div className="space-y-4 p-4 border border-slate-200 rounded-2xl bg-white shadow-sm">
+                     <div className="space-y-4 p-4 border border-slate-300 rounded-2xl bg-white shadow-sm">
                         <div className="flex items-center justify-between">
                           <Label className="text-[9px] font-black uppercase">८-१० गाईंचा गोठा सक्षम?</Label>
                           <Switch checked={formData.can_expand_8_10_cows} onCheckedChange={(v) => setFormData({...formData, can_expand_8_10_cows: v})} />
                         </div>
                         {formData.can_expand_8_10_cows && (
                           <div className="space-y-2">
-                             <Button size="sm" variant="outline" className="h-6 text-[8px] uppercase w-full" onClick={() => addDynamicRow('highCapacityProducers', { name: "", current_milk: 0, supply_years: 0, current_animals: 0, land: "", fodder_available: "YES", shed_available: "YES" })}>उत्पादक जोडा</Button>
+                             <Button size="sm" variant="outline" className="h-6 text-[8px] uppercase w-full border-slate-400" onClick={() => addDynamicRow('highCapacityProducers', { name: "", current_milk: 0, supply_years: 0, current_animals: 0, land: "", fodder_available: "YES", shed_available: "YES" })}>उत्पादक जोडा</Button>
                              {formData.highCapacityProducers.map(p => (
                                <div key={p.id} className="p-2 border rounded bg-slate-50 space-y-2">
                                  <Input value={p.name} placeholder="नाव" onChange={e => updateDynamicRow('highCapacityProducers', p.id, { name: e.target.value })} className="h-7 text-[9px]" />
@@ -776,35 +828,55 @@ function SuppliersContent() {
                           </div>
                         )}
                      </div>
-                     <div className="space-y-4 p-4 border border-slate-200 rounded-2xl bg-white shadow-sm">
+                     <div className="space-y-4 p-4 border border-slate-300 rounded-2xl bg-white shadow-sm">
                         <div className="flex items-center justify-between">
                           <Label className="text-[9px] font-black uppercase">३० ते १००+ लिटर दूध उत्पादक?</Label>
                           <Switch checked={formData.has_100_plus_milk} onCheckedChange={(v) => setFormData({...formData, has_100_plus_milk: v})} />
                         </div>
                         {formData.has_100_plus_milk && (
                           <div className="space-y-2">
-                             <Button size="sm" variant="outline" className="h-6 text-[8px] uppercase w-full" onClick={() => addDynamicRow('highMilkProducers', { name: "" })}>उत्पादक जोडा</Button>
+                             <Button size="sm" variant="outline" className="h-6 text-[8px] uppercase w-full border-slate-400" onClick={() => addDynamicRow('highMilkProducers', { name: "" })}>उत्पादक जोडा</Button>
                              {formData.highMilkProducers.map(p => (
-                               <div key={p.id} className="flex gap-1"><Input value={p.name} onChange={e => updateDynamicRow('highMilkProducers', p.id, { name: e.target.value })} className="h-7 text-[9px] border-slate-300" /><Button size="icon" variant="ghost" onClick={() => removeDynamicRow('highMilkProducers', p.id)} className="h-7 w-7 text-rose-400"><X className="h-3 w-3"/></Button></div>
+                               <div key={p.id} className="flex gap-1"><Input value={p.name} onChange={e => updateDynamicRow('highMilkProducers', p.id, { name: e.target.value })} className="h-7 text-[9px] border-slate-400" /><Button size="icon" variant="ghost" onClick={() => removeDynamicRow('highMilkProducers', p.id)} className="h-7 w-7 text-rose-400"><X className="h-3.5 w-3.5"/></Button></div>
                              ))}
                           </div>
                         )}
                      </div>
                   </div>
 
-                  <div className="space-y-4 p-4 border border-slate-200 rounded-2xl bg-slate-50/50">
+                  <div className="space-y-4 p-4 border border-slate-300 rounded-2xl bg-slate-50/50">
                      <h4 className="text-[10px] font-black uppercase text-primary border-b pb-1">विशेष विश्लेषण</h4>
                      <div className="space-y-3">
-                        <div className="space-y-1"><Label className="text-[9px] font-black uppercase">दूध कमी होण्याची कारणे</Label><Textarea value={formData.milk_decrease_reasons} onChange={e => setFormData({...formData, milk_decrease_reasons: e.target.value})} className="h-14 text-[10px] border-slate-300" /></div>
-                        <div className="space-y-1"><Label className="text-[9px] font-black uppercase">सेंटरने केलेले प्रयत्न</Label><Textarea value={formData.efforts_taken} onChange={e => setFormData({...formData, efforts_taken: e.target.value})} className="h-14 text-[10px] border-slate-300" /></div>
-                        <div className="space-y-1"><Label className="text-[9px] font-black uppercase">दूध वाढवण्यासाठी उपाय</Label><Textarea value={formData.required_actions} onChange={e => setFormData({...formData, required_actions: e.target.value})} className="h-14 text-[10px] border-slate-300" /></div>
+                        <div className="space-y-1"><Label className="text-[9px] font-black uppercase">दूध कमी होण्याची कारणे</Label><Textarea value={formData.milk_decrease_reasons} onChange={e => setFormData({...formData, milk_decrease_reasons: e.target.value})} className="h-14 text-[10px] border-slate-400" /></div>
+                        <div className="space-y-1"><Label className="text-[9px] font-black uppercase">सेंटरने केलेले प्रयत्न</Label><Textarea value={formData.efforts_taken} onChange={e => setFormData({...formData, efforts_taken: e.target.value})} className="h-14 text-[10px] border-slate-400" /></div>
+                        <div className="space-y-1"><Label className="text-[9px] font-black uppercase">दूध वाढवण्यासाठी उपाय</Label><Textarea value={formData.required_actions} onChange={e => setFormData({...formData, required_actions: e.target.value})} className="h-14 text-[10px] border-slate-400" /></div>
                      </div>
                   </div>
+
+                  <div className="space-y-4">
+                     <div className="flex items-center justify-between border-b-2 border-amber-300 pb-1"><h4 className="text-[10px] font-black uppercase text-amber-700">परिसरातील गवळी (आपल्या डेअरीचे)</h4><Button size="sm" onClick={() => addDynamicRow('localGavali', { name: "", code: "", gay_dudh: 0, mhais_dudh: 0, producers: 0, gay_sankya: 0, mhais_sankya: 0 })} className="h-7 text-[8px] uppercase bg-amber-600 hover:bg-amber-700">गवळी जोडा</Button></div>
+                     <div className="space-y-2">
+                        {formData.localGavali.map(it => (
+                          <div key={it.id} className="p-3 bg-amber-50/30 border border-amber-200 rounded-xl space-y-3">
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                              <Input value={it.name} placeholder="नाव" onChange={e => updateDynamicRow('localGavali', it.id, { name: e.target.value })} className="h-8 text-[10px] border-slate-400" />
+                              <Input value={it.code} placeholder="कोड" onChange={e => updateDynamicRow('localGavali', it.id, { code: e.target.value })} className="h-8 text-[10px] border-slate-400" />
+                              <Input type="number" value={it.gay_dudh} placeholder="गाय दूध" onChange={e => updateDynamicRow('localGavali', it.id, { gay_dudh: e.target.value })} className="h-8 text-[10px] border-slate-400" />
+                              <Input type="number" value={it.mhais_dudh} placeholder="म्हेस दूध" onChange={e => updateDynamicRow('localGavali', it.id, { mhais_dudh: e.target.value })} className="h-8 text-[10px] border-slate-400" />
+                              <Input type="number" value={it.producers} placeholder="उत्पादक" onChange={e => updateDynamicRow('localGavali', it.id, { producers: e.target.value })} className="h-8 text-[10px] border-slate-400" />
+                              <Input type="number" value={it.gay_sankya} placeholder="गाय संख्या" onChange={e => updateDynamicRow('localGavali', it.id, { gay_sankya: e.target.value })} className="h-8 text-[10px] border-slate-400" />
+                              <Input type="number" value={it.mhais_sankya} placeholder="म्हेस संख्या" onChange={e => updateDynamicRow('localGavali', it.id, { mhais_sankya: e.target.value })} className="h-8 text-[10px] border-slate-400" />
+                              <Button variant="ghost" size="sm" onClick={() => removeDynamicRow('localGavali', it.id)} className="h-8 text-rose-500"><Trash2 className="h-4 w-4" /></Button>
+                            </div>
+                          </div>
+                        ))}
+                       </div>
+                    </div>
                 </div>
               )}
 
               <div className="space-y-4">
-                <h4 className="text-[10px] font-black uppercase text-primary border-b-2 border-primary/20 pb-1 flex items-center gap-2"><ShieldCheck className="h-4 w-4" /> ६) परवाना व तांत्रिक</h4>
+                <h4 className="text-[10px] font-black uppercase text-primary border-b-2 border-primary/20 pb-1 flex items-center gap-2"><ShieldCheck className="h-4 w-4" /> ५) परवाना व तांत्रिक</h4>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1"><Label className="text-[9px] font-black uppercase opacity-60">FSSAI क्र.</Label><Input value={formData.fssaiNumber} onChange={e => setFormData({...formData, fssaiNumber: e.target.value})} className="h-10 text-[11px] bg-muted/20 border border-slate-300 font-bold rounded-xl" /></div>
                   <div className="space-y-1"><Label className="text-[9px] font-black uppercase opacity-60">काटा ब्रँड</Label><Input value={formData.scaleBrand} onChange={e => setFormData({...formData, scaleBrand: e.target.value})} className="h-10 text-[11px] bg-muted/20 border border-slate-300 font-bold rounded-xl" /></div>
