@@ -25,12 +25,12 @@ export default function DashboardOverview() {
 
   const routesQuery = useMemoFirebase(() => {
     if (!db || !user) return null
-    return collection(db, 'routes')
+    return collection(db, 'users', user.uid, 'routes')
   }, [db, user])
 
   const suppliersQuery = useMemoFirebase(() => {
     if (!db || !user) return null
-    return collection(db, 'suppliers')
+    return collection(db, 'users', user.uid, 'suppliers')
   }, [db, user])
 
   const { data: userData } = useDoc(userDocRef)

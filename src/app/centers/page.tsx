@@ -26,7 +26,7 @@ export default function CentersPage() {
 
   const centersQuery = useMemoFirebase(() => {
     if (!db || !user) return null
-    return query(collection(db, 'suppliers'), where('supplierType', '==', 'Center'))
+    return query(collection(db, 'users', user.uid, 'suppliers'), where('supplierType', '==', 'Center'))
   }, [db, user])
 
   const { data: centers, isLoading } = useCollection<Supplier>(centersQuery)
@@ -121,19 +121,19 @@ export default function CentersPage() {
     }
 
     if (dialogMode === 'add') {
-      addDocumentNonBlocking(collection(db, 'suppliers'), centerData)
+      addDocumentNonBlocking(collection(db, 'users', user.uid, 'suppliers'), centerData)
       toast({ title: "यशस्वी", description: "नवीन केंद्र जोडण्यात आले." })
     } else if (editingId) {
-      updateDocumentNonBlocking(doc(db, 'suppliers', editingId), centerData)
+      updateDocumentNonBlocking(doc(db, 'users', user.uid, 'suppliers', editingId), centerData)
       toast({ title: "यशस्वी", description: "केंद्राची माहिती अपडेट झाली." })
     }
     setIsDialogOpen(false)
   }
 
   const handleDelete = (id: string) => {
-    if (!db) return
+    if (!db || !user) return
     if (confirm("तुम्हाला खात्री आहे की हे केंद्र हटवायचे आहे?")) {
-      deleteDocumentNonBlocking(doc(db, 'suppliers', id))
+      deleteDocumentNonBlocking(doc(db, 'users', user.uid, 'suppliers', id))
       setSelectedCenter(null)
       toast({ title: "यशस्वी", description: "केंद्र हटवण्यात आले." })
     }
@@ -393,7 +393,7 @@ export default function CentersPage() {
                   </div>
                   <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-muted-foreground">Adulteration Kit (भेसळ तपासणी कीट)</Label><Input value={formData.adulterationKitInfo} onChange={e => setFormData({...formData, adulterationKitInfo: e.target.value})} className="h-10 text-[12px] bg-muted/20 border-none font-bold rounded-xl shadow-inner" placeholder="उदा. हो, चितळे कीट" /></div>
                   <div className="space-y-3">
-                    <div className="flex items-center justify-between"><h4 className="text-[11px] font-black uppercase tracking-widest">साहित्याची यादी (INVENTORY)</h4><Button variant="outline" type="button" size="sm" onClick={addEquipmentRow} className="h-7 text-[9px] font-black px-3 rounded-xl border-primary/20 text-primary hover:bg-primary/5">जोडा</Button></div>
+                    <div className="flex items-center justify-between"><h4 className="text-[11px] font-black uppercase tracking-widest">साहित्याची यादी (INVENTORY)</h4><Button variant="outline" type="button" size="sm" onClick={addEquipmentRow} className="h-7 text-[9px] font-black px-3 rounded-xl border-primary/20 text-primary">जोडा</Button></div>
                     <div className="space-y-2">
                       {formData.equipment.map((item) => (
                         <div key={item.id} className="grid grid-cols-12 gap-2 items-center bg-muted/10 p-2 rounded-xl border border-muted-foreground/5">

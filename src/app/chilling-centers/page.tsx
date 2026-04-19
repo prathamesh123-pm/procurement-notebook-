@@ -29,7 +29,7 @@ export default function ChillingCentersPage() {
 
   const centersQuery = useMemoFirebase(() => {
     if (!db || !user) return null
-    return collection(db, 'chillingCenters')
+    return collection(db, 'users', user.uid, 'chillingCenters')
   }, [db, user])
 
   const { data: centers, isLoading } = useCollection<ChillingCenter>(centersQuery)
@@ -122,10 +122,10 @@ export default function ChillingCentersPage() {
     }
 
     if (dialogMode === 'add') {
-      addDocumentNonBlocking(collection(db, 'chillingCenters'), data)
+      addDocumentNonBlocking(collection(db, 'users', user.uid, 'chillingCenters'), data)
       toast({ title: "यशस्वी", description: "चिलिंग सेंटर जोडले गेले." })
     } else if (editingId) {
-      updateDocumentNonBlocking(doc(db, 'chillingCenters', editingId), data)
+      updateDocumentNonBlocking(doc(db, 'users', user.uid, 'chillingCenters', editingId), data)
       toast({ title: "यशस्वी", description: "माहिती अद्ययावत झाली." })
     }
     setIsDialogOpen(false)
@@ -156,9 +156,9 @@ export default function ChillingCentersPage() {
   }
 
   const handleDelete = (id: string) => {
-    if (!db) return
+    if (!db || !user) return
     if (confirm("हे सेंटर हटवायचे आहे का?")) {
-      deleteDocumentNonBlocking(doc(db, 'chillingCenters', id))
+      deleteDocumentNonBlocking(doc(db, 'users', user.uid, 'chillingCenters', id))
       setSelectedCenter(null)
       toast({ title: "यशस्वी", description: "सेंटर हटवण्यात आले." })
     }

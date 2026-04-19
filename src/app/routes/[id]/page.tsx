@@ -31,12 +31,12 @@ export default function RouteDetailsPage() {
 
   const routesQuery = useMemoFirebase(() => {
     if (!db || !user) return null
-    return collection(db, 'routes')
+    return collection(db, 'users', user.uid, 'routes')
   }, [db, user])
 
   const suppliersQuery = useMemoFirebase(() => {
     if (!db || !user) return null
-    return collection(db, 'suppliers')
+    return collection(db, 'users', user.uid, 'suppliers')
   }, [db, user])
 
   const { data: allRoutes } = useCollection<Route>(routesQuery)
@@ -165,7 +165,7 @@ export default function RouteDetailsPage() {
   }
 
   const handleSaveSupplier = () => {
-    if (!formData.name || !formData.supplierId || !db) return;
+    if (!formData.name || !formData.supplierId || !db || !user) return;
     
     const additional_details = {
       morning_collection_time: formData.morning_collection_time,
@@ -206,14 +206,14 @@ export default function RouteDetailsPage() {
       updatedAt: new Date().toISOString()
     }
 
-    if (dialogMode === 'add') addDocumentNonBlocking(collection(db, 'suppliers'), data)
-    else if (editingId) updateDocumentNonBlocking(doc(db, 'suppliers', editingId), data)
+    if (dialogMode === 'add') addDocumentNonBlocking(collection(db, 'users', user.uid, 'suppliers'), data)
+    else if (editingId) updateDocumentNonBlocking(doc(db, 'users', user.uid, 'suppliers', editingId), data)
     setIsDialogOpen(false); toast({ title: "यशस्वी", description: "माहिती जतन झाली." })
   }
 
   const handleAssignFromMaster = (sid: string) => {
-    if (!db) return
-    updateDocumentNonBlocking(doc(db, 'suppliers', sid), { routeId: currentRouteId, updatedAt: new Date().toISOString() })
+    if (!db || !user) return
+    updateDocumentNonBlocking(doc(db, 'users', user.uid, 'suppliers', sid), { routeId: currentRouteId, updatedAt: new Date().toISOString() })
     setIsMasterDialogOpen(false)
     toast({ title: "यशस्वी", description: "सप्लायर या रूटला जोडला गेला." })
   }
@@ -249,9 +249,9 @@ export default function RouteDetailsPage() {
   }
 
   const deleteSupplier = (id: string) => {
-    if (!db) return
+    if (!db || !user) return
     if (confirm("तुम्हाला खात्री आहे की हा सप्लायर हटवायचा आहे?")) {
-      deleteDocumentNonBlocking(doc(db, 'suppliers', id))
+      deleteDocumentNonBlocking(doc(db, 'users', user.uid, 'suppliers', id))
       setSelectedSupplier(null)
       toast({ title: "यशस्वी", description: "सप्लायर हटवला." })
     }
@@ -584,10 +584,10 @@ export default function RouteDetailsPage() {
                       <div className="space-y-2">
                         {formData.longTermProducers.map(p => (
                           <div key={p.id} className="grid grid-cols-12 gap-2 p-2 bg-slate-50 border border-slate-300 rounded-xl items-end">
-                            <div className="col-span-4"><Input value={p.producer_name} placeholder="नाव" onChange={e => updateDynamicRow('longTermProducers', p.id, { producer_name: e.target.value })} className="h-8 text-[10px] border-slate-400" /></div>
-                            <div className="col-span-2"><Input type="number" value={p.previous_milk} placeholder="जुने दूध" onChange={e => updateDynamicRow('longTermProducers', p.id, { previous_milk: e.target.value })} className="h-8 text-[10px] border-slate-400" /></div>
-                            <div className="col-span-2"><Input type="number" value={p.current_milk} placeholder="नवे दूध" onChange={e => updateDynamicRow('longTermProducers', p.id, { current_milk: e.target.value })} className="h-8 text-[10px] border-slate-400" /></div>
-                            <div className="col-span-3 flex gap-1"><Input type="number" value={p.previous_animals} placeholder="ज-जुनी" onChange={e => updateDynamicRow('longTermProducers', p.id, { previous_animals: e.target.value })} className="h-8 text-[10px] border-slate-400 p-1" /><Input type="number" value={p.current_animals} placeholder="ज-नवी" onChange={e => updateDynamicRow('longTermProducers', p.id, { current_animals: e.target.value })} className="h-8 text-[10px] border-slate-400 p-1" /></div>
+                            <div className="col-span-4"><Input value={p.producer_name} placeholder="नाव" onChange={e => updateDynamicRow('longTermProducers', p.id, { producer_name: e.target.value })} className="h-7 text-[9px] border-slate-400" /></div>
+                            <div className="col-span-2"><Input type="number" value={p.previous_milk} placeholder="जुने दूध" onChange={e => updateDynamicRow('longTermProducers', p.id, { previous_milk: e.target.value })} className="h-7 text-[9px] border-slate-400" /></div>
+                            <div className="col-span-2"><Input type="number" value={p.current_milk} placeholder="नवे दूध" onChange={e => updateDynamicRow('longTermProducers', p.id, { current_milk: e.target.value })} className="h-7 text-[9px] border-slate-400" /></div>
+                            <div className="col-span-3 flex gap-1"><Input type="number" value={p.previous_animals} placeholder="ज-जुनी" onChange={e => updateDynamicRow('longTermProducers', p.id, { previous_animals: e.target.value })} className="h-7 text-[9px] border-slate-400 p-1" /><Input type="number" value={p.current_animals} placeholder="ज-नवी" onChange={e => updateDynamicRow('longTermProducers', p.id, { current_animals: e.target.value })} className="h-7 text-[9px] border-slate-400 p-1" /></div>
                             <div className="col-span-1"><Button variant="ghost" size="icon" onClick={() => removeDynamicRow('longTermProducers', p.id)} className="h-7 w-7 text-rose-500"><X className="h-3.5 w-3.5"/></Button></div>
                           </div>
                         ))}

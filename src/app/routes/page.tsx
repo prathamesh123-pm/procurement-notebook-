@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
@@ -22,12 +21,12 @@ export default function RoutesPage() {
 
   const routesQuery = useMemoFirebase(() => {
     if (!db || !user) return null
-    return collection(db, 'routes')
+    return collection(db, 'users', user.uid, 'routes')
   }, [db, user])
 
   const suppliersQuery = useMemoFirebase(() => {
     if (!db || !user) return null
-    return collection(db, 'suppliers')
+    return collection(db, 'users', user.uid, 'suppliers')
   }, [db, user])
 
   const { data: routes, isLoading } = useCollection(routesQuery)
@@ -69,7 +68,7 @@ export default function RoutesPage() {
   }
 
   const handleSaveRoute = () => {
-    if (!formData.name || !formData.distanceKm || !formData.vehicle || !db) {
+    if (!formData.name || !formData.distanceKm || !formData.vehicle || !db || !user) {
       toast({ title: "त्रुटी", description: "कृपया आवश्यक माहिती भरा.", variant: "destructive" })
       return
     }
@@ -84,11 +83,11 @@ export default function RoutesPage() {
     }
 
     if (isEditing && currentRouteId) {
-      const docRef = doc(db, 'routes', currentRouteId)
+      const docRef = doc(db, 'users', user.uid, 'routes', currentRouteId)
       updateDocumentNonBlocking(docRef, routeData)
       toast({ title: "यशस्वी", description: "रूटची माहिती अद्ययावत केली." })
     } else {
-      const colRef = collection(db, 'routes')
+      const colRef = collection(db, 'users', user.uid, 'routes')
       addDocumentNonBlocking(colRef, routeData)
       toast({ title: "यशस्वी", description: "नवीन रूट जोडला गेला." })
     }
@@ -99,9 +98,9 @@ export default function RoutesPage() {
   const handleDeleteRoute = (id: string, e: React.MouseEvent) => {
     e.stopPropagation()
     e.preventDefault()
-    if (!db) return
+    if (!db || !user) return
     if (confirm("तुम्हाला खात्री आहे की हा रूट हटवायचा आहे? या रूटमधील सर्व सप्लायर्स अन-असाईन होतील.")) {
-      const docRef = doc(db, 'routes', id)
+      const docRef = doc(db, 'users', user.uid, 'routes', id)
       deleteDocumentNonBlocking(docRef)
       toast({ title: "यशस्वी", description: "रूट हटवण्यात आला." })
     }
