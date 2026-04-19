@@ -62,9 +62,9 @@ h1, h2, h3, h4 {
   @apply font-headline font-black tracking-tight uppercase;
 }
 
-/* Force visible borders for all inputs */
+/* Force visible borders for all inputs - Requested */
 input, textarea, select, .shadcn-input-like {
-  border: 1px solid #94a3b8 !important; /* slate-400 */
+  border: 1.5px solid #64748b !important; /* slate-500 for better visibility */
 }
 
 /* Custom Scrollbar */

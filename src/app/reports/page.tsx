@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card"
 import { 
   Archive, Search, X, Printer, Trash2, FileEdit, Truck, 
   ShieldAlert, ClipboardCheck, Plus, MapPin, FileText,
-  Briefcase, FileSignature, CheckCircle2, Microscope, Layers, Calendar, ChevronRight, AlertCircle, AlertTriangle, Info, BookOpen, Lightbulb, FileCheck, Clock, Milk, User, IndianRupee, Hash
+  Briefcase, FileSignature, CheckCircle2, Microscope, Layers, Calendar, ChevronRight, AlertCircle, AlertTriangle, Info, BookOpen, Lightbulb, FileCheck, Clock, Milk, User, IndianRupee, Hash, Box
 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
@@ -107,6 +107,112 @@ const ProfessionalParagraph = ({ label, content, icon: Icon }: { label: string, 
   )
 }
 
+const ProducerCenterLayout = ({ report, profileName, profileId }: { report: any, profileName: string, profileId: string }) => {
+  const d = report.fullData || {};
+  const details = d.producer_center?.additional_details || {};
+
+  return (
+    <div className="bg-white font-sans text-slate-900 w-full p-4 sm:p-10 printable-report flex flex-col items-center min-h-screen">
+      <ReportHeader title={d.reportHeading || "उत्पादक सेंटर सविस्तर अहवाल"} date={report.date} subName={d.name || profileName} subId={d.idNumber || profileId} shift={d.shift} />
+
+      <SectionTitle icon={Info} title="१) प्राथमिक माहिती & संकलन वेळ" />
+      <div className="w-full border-2 border-black mb-6">
+        <table className="w-full text-[9pt]">
+          <tbody>
+            <tr><td className="p-2 bg-slate-50 font-black border-r border-black w-1/3">सेंटर नाव</td><td className="p-2 font-bold">{d.name} (ID: {d.supplierId})</td></tr>
+            <tr><td className="p-2 bg-slate-50 font-black border-r border-black">सकाळ / सायंकाळ वेळ</td><td className="p-2 font-bold">{details.morning_collection_time} / {details.evening_collection_time}</td></tr>
+            <tr><td className="p-2 bg-slate-50 font-black border-r border-black">उत्पादक (एकूण/सक्रिय/निष्क्रिय)</td><td className="p-2 font-bold">{details.total_producers} / {details.active_producers} / {details.inactive_producers}</td></tr>
+            <tr><td className="p-2 bg-slate-50 font-black border-r border-black">जनावरे (गाय/म्हैस/वासरे)</td><td className="p-2 font-bold">{details.cows} गायी | {details.buffalo} म्हशी | {details.calves} वासरे</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      {details.long_term_producers?.length > 0 && (
+        <>
+          <SectionTitle icon={Layers} title="२) २+ वर्ष जुने उत्पादक" />
+          <table className="w-full border-2 border-black text-[8pt] mb-6">
+            <thead className="bg-slate-100">
+              <tr className="font-black uppercase text-center border-b border-black">
+                <th className="p-1 border-r border-black">उत्पादक नाव</th><th className="p-1 border-r border-black">जुने दूध</th><th className="p-1 border-r border-black">सध्याचे दूध</th><th className="p-1">जनावरे (जुनी/नवी)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {details.long_term_producers.map((p: any, i: number) => (
+                <tr key={i} className="border-b border-black last:border-0 text-center font-bold">
+                  <td className="p-1 border-r border-black text-left pl-2">{p.producer_name}</td><td className="p-1 border-r border-black">{p.previous_milk} L</td><td className="p-1 border-r border-black">{p.current_milk} L</td><td className="p-1">{p.previous_animals} / {p.current_animals}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </>
+      )}
+
+      {details.decreasing_producers?.length > 0 && (
+        <>
+          <SectionTitle icon={TrendingDown} title="३) दूध घटलेले उत्पादक विश्लेषण" color="text-rose-700" />
+          <table className="w-full border-2 border-black text-[8pt] mb-6">
+            <thead className="bg-rose-50">
+              <tr className="font-black uppercase text-center border-b border-black text-rose-900">
+                <th className="p-1 border-r border-black">नाव</th><th className="p-1 border-r border-black">दूध (जुने/नवे)</th><th className="p-1 border-r border-black">जनावरे (जुनी/नवी)</th><th className="p-1">कारण</th>
+              </tr>
+            </thead>
+            <tbody>
+              {details.decreasing_producers.map((p: any, i: number) => (
+                <tr key={i} className="border-b border-black last:border-0 text-center font-bold text-rose-800">
+                  <td className="p-1 border-r border-black text-left pl-2">{p.producer_name}</td><td className="p-1 border-r border-black">{p.previous_milk} / {p.current_milk} L</td><td className="p-1 border-r border-black">{p.previous_animals} / {p.current_animals}</td><td className="p-1 text-left pl-2">{p.reason}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </>
+      )}
+
+      <div className="grid grid-cols-2 gap-4 w-full mb-6">
+        <div className="border-2 border-black p-3 rounded">
+           <h4 className="text-[8pt] font-black uppercase mb-1">८-१० गाईंचा गोठा सक्षम?</h4>
+           <p className="text-[10pt] font-bold">{details.can_expand_8_10_cows ? 'YES - ' + (details.high_capacity_producer_list?.length || 0) + ' Producers' : 'NO'}</p>
+        </div>
+        <div className="border-2 border-black p-3 rounded">
+           <h4 className="text-[8pt] font-black uppercase mb-1">३० ते १००+ लिटर उत्पादक?</h4>
+           <p className="text-[10pt] font-bold">{details.has_100_plus_milk ? 'YES - ' + (details.high_milk_producer_list?.length || 0) + ' Producers' : 'NO'}</p>
+        </div>
+      </div>
+
+      {details.milkman_gavali_details?.length > 0 && (
+        <>
+          <SectionTitle icon={User} title="४) स्थानिक गवळी माहिती (आपल्या डेअरीचे)" />
+          <table className="w-full border-2 border-black text-[8pt] mb-6">
+            <thead className="bg-slate-100 font-black">
+              <tr className="border-b border-black">
+                <th className="p-1 border-r border-black">नाव</th><th className="p-1 border-r border-black">दूध (L)</th><th className="p-1 border-r border-black">उत्पादक</th><th className="p-1">जनावरे (C+B)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {details.milkman_gavali_details.map((g: any, i: number) => (
+                <tr key={i} className="border-b border-black last:border-0 font-bold text-center">
+                  <td className="p-1 border-r border-black text-left pl-2">{g.name} (Code: {g.code})</td><td className="p-1 border-r border-black">{Number(g.gay_dudh) + Number(g.mhais_dudh)} L</td><td className="p-1 border-r border-black">{g.producers}</td><td className="p-1">{Number(g.gay_sankya) + Number(g.mhais_sankya)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </>
+      )}
+
+      <SectionTitle icon={Lightbulb} title="५) विश्लेषण & उपाययोजना" />
+      <div className="w-full text-left space-y-4">
+        <ProfessionalParagraph label="दूध कमी होण्याची कारणे" content={details.milk_decrease_reasons} />
+        <ProfessionalParagraph label="सेंटरने केलेले प्रयत्न" content={details.efforts_taken} />
+        <ProfessionalParagraph label="दूध वाढवण्यासाठी उपाय" content={details.required_actions} />
+      </div>
+
+      <div className="w-full mt-auto pt-16 grid grid-cols-2 gap-20 text-center uppercase font-black text-[10pt] tracking-widest">
+        <div className="border-t-2 border-black pt-3">अधिकारी स्वाक्षरी</div>
+        <div className="border-t-2 border-black pt-3">सुपरवायझर स्वाक्षरी</div>
+      </div>
+    </div>
+  )
+}
+
 const RouteAllocationLayout = ({ report, profileName, profileId }: { report: any, profileName: string, profileId: string }) => {
   const d = report.fullData || {};
   
@@ -202,7 +308,7 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
     );
   }
 
-  const excludeFields = ["reportHeading", "name", "repName", "shift", "idNumber", "repId", "routeVisitLogs", "centerLosses", "morningRoutes", "eveningRoutes", "tankerRoutes", "extCanRoutes", "extTankerRoutes", "points", "remarkPoints", "dailyProblems", "equipment", "cowMilk", "buffaloMilk", "cowQty", "cowFat", "cowSnf", "bufQty", "bufFat", "bufSnf", "summary", "achievements", "problems", "actionsTaken", "actionTaken", "isWordDoc", "content", "title", "type", "visitDiscussion", "officeTaskDetails", "remark", "supplierName", "supplierId"];
+  const excludeFields = ["reportHeading", "name", "repName", "shift", "idNumber", "repId", "routeVisitLogs", "centerLosses", "morningRoutes", "eveningRoutes", "tankerRoutes", "extCanRoutes", "extTankerRoutes", "points", "remarkPoints", "dailyProblems", "equipment", "cowMilk", "buffaloMilk", "cowQty", "cowFat", "cowSnf", "bufQty", "bufFat", "bufSnf", "summary", "achievements", "problems", "actionsTaken", "actionTaken", "isWordDoc", "content", "title", "type", "visitDiscussion", "officeTaskDetails", "remark", "supplierName", "supplierId", "producer_center"];
 
   const orderedEntries = Object.keys(d)
     .filter(key => d[key] && labelMap[key] && !excludeFields.includes(key))
@@ -314,7 +420,7 @@ const GenericLayout = ({ report, profileName, profileId }: { report: any, profil
               </tr>
             )}
             {orderedEntries.map(([k, v]: any) => (
-              <tr key={k} className="text-[9pt] sm:text-[10pt] font-bold border-b border-black last:border-0 hover:bg-slate-50">
+              <tr key={k} className="text-[9pt] sm:text-[10pt] font-bold border-b border-black last:0 hover:bg-slate-50">
                 <td className="p-2.5 bg-slate-100 uppercase font-black border-r border-black w-1/3 text-[8pt] sm:text-[9pt] text-slate-700 pl-3">{labelMap[k]}</td>
                 <td className="p-2.5 pl-3 whitespace-pre-wrap">{String(v)}</td>
               </tr>
@@ -571,6 +677,8 @@ export default function ReportsPage() {
                 )}>
                   {selectedReport.type === 'Route Allocation Report' ? 
                     <RouteAllocationLayout report={selectedReport} profileName={profileName} profileId={profileId} /> :
+                    selectedReport.type === 'Milk Procurement Survey' || selectedReport.fullData?.producer_center ?
+                    <ProducerCenterLayout report={selectedReport} profileName={profileName} profileId={profileId} /> :
                     <GenericLayout report={selectedReport} profileName={profileName} profileId={profileId} />
                   }
                 </div>
