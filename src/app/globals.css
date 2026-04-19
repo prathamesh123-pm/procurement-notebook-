@@ -62,9 +62,9 @@ h1, h2, h3, h4 {
   @apply font-headline font-black tracking-tight uppercase;
 }
 
-/* Force visible borders for all inputs - Requested */
-input, textarea, select, .shadcn-input-like {
-  border: 1.5px solid #64748b !important; /* slate-500 for better visibility */
+/* Updated Borders for all inputs - Black & Bold as requested */
+input, textarea, select, .shadcn-input-like, button[role="combobox"] {
+  border: 1.5px solid #000 !important;
 }
 
 /* Custom Scrollbar */
@@ -73,19 +73,16 @@ input, textarea, select, .shadcn-input-like {
 ::-webkit-scrollbar-thumb { @apply bg-slate-200 rounded-full; }
 
 @media print {
-  /* ULTIMATE HIDE: Hide everything at the root */
   body > *:not(div[data-radix-portal]) {
     display: none !important;
   }
 
-  /* Show only the portal containing the dialog */
   div[data-radix-portal] {
     display: block !important;
     position: static !important;
     visibility: visible !important;
   }
 
-  /* Reset Dialog Content for Full Page Visibility */
   div[role="dialog"] {
     position: absolute !important;
     left: 0 !important;
@@ -103,20 +100,12 @@ input, textarea, select, .shadcn-input-like {
     visibility: visible !important;
   }
 
-  /* Hide Overlay, Close Button, and Sidebar */
-  div[data-state="open"]::before,
-  .bg-black\/80,
-  button[aria-label="Close"],
-  .no-print,
-  .no-print-dialog,
-  [data-sidebar-wrapper],
-  header {
+  .no-print, .no-print-dialog, [data-sidebar-wrapper], header {
     display: none !important;
     visibility: hidden !important;
     opacity: 0 !important;
   }
 
-  /* Force White Background and Black Text */
   html, body {
     background: white !important;
     color: black !important;
@@ -143,19 +132,15 @@ input, textarea, select, .shadcn-input-like {
     box-shadow: none !important;
   }
 
-  /* Professional Table Borders */
   table {
     border-collapse: collapse !important;
     border: 1.5px solid black !important;
+    width: 100% !important;
   }
 
   th, td {
     border: 1px solid black !important;
     padding: 4pt !important;
-  }
-
-  .section-title {
-    border-bottom: 2px solid black !important;
   }
 
   @page {
