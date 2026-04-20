@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
@@ -117,9 +118,9 @@ const ProducerCenterLayout = ({ supplier }: { supplier: Supplier }) => {
                   <td className="p-1 border-r border-black text-left pl-2">{g.name} ({g.code})</td>
                   <td className="p-1 border-r border-black">{g.gay_dudh} L</td>
                   <td className="p-1 border-r border-black">{g.mhais_dudh} L</td>
-                  <td className="p-1 border-r border-black font-black text-primary">{g.total_milk} L</td>
+                  <td className="p-1 border-r border-black font-black text-primary">{(Number(g.gay_dudh) + Number(g.mhais_dudh)).toFixed(1)} L</td>
                   <td className="p-1 border-r border-black">{g.producers}</td>
-                  <td className="p-1">{g.total_animals}</td>
+                  <td className="p-1">{Number(g.gay_sankya) + Number(g.mhais_sankya)}</td>
                 </tr>
               ))}
             </tbody>
@@ -518,12 +519,12 @@ export default function RouteDetailsPage() {
       </Dialog>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-[850px] p-0 overflow-hidden rounded-3xl border-none shadow-2xl bg-white text-left">
+        <DialogContent className="max-w-[90vw] md:max-w-[850px] p-0 overflow-hidden rounded-3xl border-none shadow-2xl bg-white text-left">
           <DialogHeader className="p-4 bg-primary text-white sticky top-0 z-10">
             <DialogTitle className="text-base font-black uppercase tracking-widest">{dialogMode === 'add' ? 'नवीन सप्लायर' : 'माहिती अद्ययावत करा'}</DialogTitle>
             <DialogDescription className="text-[9px] text-white/70 uppercase">सप्लायरचा सविस्तर तपशील भरा.</DialogDescription>
           </DialogHeader>
-          <ScrollArea className="max-h-[85vh] p-6 text-left">
+          <ScrollArea className="max-h-[85vh] p-4 md:p-6 text-left">
             <div className="space-y-6 pb-20 text-left">
               <div className="grid grid-cols-1 gap-8">
                 <div className="space-y-4">
@@ -569,74 +570,133 @@ export default function RouteDetailsPage() {
 
                     <div className="space-y-4">
                       <div className="flex items-center justify-between border-b-2 border-primary/30 pb-1"><h4 className="text-[10px] font-black uppercase text-primary">४) २+ वर्ष जुने उत्पादक</h4><Button size="sm" onClick={() => addDynamicRow('longTermProducers', { producer_name: "", previous_milk: 0, current_milk: 0, previous_animals: 0, current_animals: 0 })} className="h-7 text-[8px] uppercase">जोडा</Button></div>
-                      <div className="space-y-2">
-                        {formData.longTermProducers.map(p => (
-                          <div key={p.id} className="grid grid-cols-12 gap-2 p-2 bg-slate-50 border border-black rounded-xl items-end">
-                            <div className="col-span-4"><Input value={p.producer_name} placeholder="नाव" onChange={e => updateDynamicRow('longTermProducers', p.id, { producer_name: e.target.value })} className="h-7 text-[9px] border-black" /></div>
-                            <div className="col-span-2"><Input type="number" value={p.previous_milk} placeholder="जुने दूध" onChange={e => updateDynamicRow('longTermProducers', p.id, { previous_milk: e.target.value })} className="h-7 text-[9px] border-black" /></div>
-                            <div className="col-span-2"><Input type="number" value={p.current_milk} placeholder="नवे दूध" onChange={e => updateDynamicRow('longTermProducers', p.id, { current_milk: e.target.value })} className="h-7 text-[9px] border-black" /></div>
-                            <div className="col-span-3 flex gap-1"><Input type="number" value={p.previous_animals} placeholder="ज-जुनी" onChange={e => updateDynamicRow('longTermProducers', p.id, { previous_animals: e.target.value })} className="h-7 text-[9px] border-black p-1" /><Input type="number" value={p.current_animals} placeholder="ज-नवी" onChange={e => updateDynamicRow('longTermProducers', p.id, { current_animals: e.target.value })} className="h-7 text-[9px] border-black p-1" /></div>
-                            <div className="col-span-1"><Button variant="ghost" size="icon" onClick={() => removeDynamicRow('longTermProducers', p.id)} className="h-7 w-7 text-rose-500"><X className="h-3.5 w-3.5"/></Button></div>
-                          </div>
-                        ))}
+                      <div className="overflow-x-auto border border-black rounded-xl">
+                        <table className="w-full text-left border-collapse">
+                          <thead className="bg-slate-100 text-[9px] font-black uppercase border-b border-black">
+                            <tr>
+                              <th className="p-2 border-r border-black">नाव</th>
+                              <th className="p-2 border-r border-black text-center">जुने दूध</th>
+                              <th className="p-2 border-r border-black text-center">नवे दूध</th>
+                              <th className="p-2 border-r border-black text-center">ज-जुनी</th>
+                              <th className="p-2 border-r border-black text-center">ज-नवी</th>
+                              <th className="p-2 text-center">क्रिया</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {formData.longTermProducers.map(p => (
+                              <tr key={p.id} className="border-b border-black last:border-0 bg-white">
+                                <td className="p-1 border-r border-black"><Input value={p.producer_name} onChange={e => updateDynamicRow('longTermProducers', p.id, { producer_name: e.target.value })} className="h-7 text-[10px] border-none bg-transparent" /></td>
+                                <td className="p-1 border-r border-black"><Input type="number" value={p.previous_milk} onChange={e => updateDynamicRow('longTermProducers', p.id, { previous_milk: e.target.value })} className="h-7 text-[10px] border-none text-center bg-transparent" /></td>
+                                <td className="p-1 border-r border-black"><Input type="number" value={p.current_milk} onChange={e => updateDynamicRow('longTermProducers', p.id, { current_milk: e.target.value })} className="h-7 text-[10px] border-none text-center bg-transparent" /></td>
+                                <td className="p-1 border-r border-black"><Input type="number" value={p.previous_animals} onChange={e => updateDynamicRow('longTermProducers', p.id, { previous_animals: e.target.value })} className="h-7 text-[10px] border-none text-center bg-transparent" /></td>
+                                <td className="p-1 border-r border-black"><Input type="number" value={p.current_animals} onChange={e => updateDynamicRow('longTermProducers', p.id, { current_animals: e.target.value })} className="h-7 text-[10px] border-none text-center bg-transparent" /></td>
+                                <td className="p-1 text-center"><Button variant="ghost" size="icon" onClick={() => removeDynamicRow('longTermProducers', p.id)} className="h-7 w-7 text-rose-500"><Trash2 className="h-4 w-4"/></Button></td>
+                              </tr>
+                            ))}
+                            {formData.longTermProducers.length === 0 && <tr><td colSpan={6} className="p-4 text-center text-[10px] italic opacity-50">माहिती उपलब्ध नाही. 'जोडा' बटण वापरा.</td></tr>}
+                          </tbody>
+                        </table>
                       </div>
                     </div>
 
                     <div className="space-y-4">
                        <div className="flex items-center justify-between border-b-2 border-rose-300 pb-1"><h4 className="text-[10px] font-black uppercase text-rose-600">५) दूध कमी झालेले उत्पादक</h4><Button size="sm" onClick={() => addDynamicRow('decreasingProducers', { producer_name: "", previous_milk: 0, current_milk: 0, previous_animals: 0, current_animals: 0, reason: "" })} className="h-6 text-[8px] uppercase bg-rose-600">जोडा</Button></div>
-                       <div className="space-y-2">
-                        {formData.decreasingProducers.map(p => (
-                          <div key={p.id} className="p-2 bg-rose-50/50 border border-black rounded-xl space-y-2">
-                            <div className="grid grid-cols-12 gap-2 items-end">
-                              <div className="col-span-4"><Input value={p.producer_name} placeholder="नाव" onChange={e => updateDynamicRow('decreasingProducers', p.id, { producer_name: e.target.value })} className="h-8 text-[10px] border-black" /></div>
-                              <div className="col-span-3 flex gap-1"><Input type="number" value={p.previous_milk} placeholder="जुने" onChange={e => updateDynamicRow('decreasingProducers', p.id, { previous_milk: e.target.value })} className="h-8 text-[10px] border-black p-1" /><Input type="number" value={p.current_milk} placeholder="नवे" onChange={e => updateDynamicRow('decreasingProducers', p.id, { current_milk: e.target.value })} className="h-8 text-[10px] border-black p-1" /></div>
-                              <div className="col-span-4"><Input value={p.reason} placeholder="कारण" onChange={e => updateDynamicRow('decreasingProducers', p.id, { reason: e.target.value })} className="h-8 text-[10px] border-black" /></div>
-                              <div className="col-span-1"><Button variant="ghost" size="icon" onClick={() => removeDynamicRow('decreasingProducers', p.id)} className="h-7 w-7 text-rose-500"><X className="h-3.5 w-3.5"/></Button></div>
-                            </div>
-                          </div>
-                        ))}
+                       <div className="overflow-x-auto border border-black rounded-xl">
+                        <table className="w-full text-left border-collapse">
+                          <thead className="bg-rose-50 text-[9px] font-black uppercase border-b border-black text-rose-900">
+                            <tr>
+                              <th className="p-2 border-r border-black">नाव</th>
+                              <th className="p-2 border-r border-black text-center">जुने दूध</th>
+                              <th className="p-2 border-r border-black text-center">नवे दूध</th>
+                              <th className="p-2 border-r border-black text-center">ज-जुनी</th>
+                              <th className="p-2 border-r border-black text-center">ज-नवी</th>
+                              <th className="p-2 border-r border-black">कारण</th>
+                              <th className="p-2 text-center">क्रिया</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {formData.decreasingProducers.map(p => (
+                              <tr key={p.id} className="border-b border-black last:border-0 bg-white">
+                                <td className="p-1 border-r border-black"><Input value={p.producer_name} onChange={e => updateDynamicRow('decreasingProducers', p.id, { producer_name: e.target.value })} className="h-7 text-[10px] border-none bg-transparent" /></td>
+                                <td className="p-1 border-r border-black"><Input type="number" value={p.previous_milk} onChange={e => updateDynamicRow('decreasingProducers', p.id, { previous_milk: e.target.value })} className="h-7 text-[10px] border-none text-center bg-transparent" /></td>
+                                <td className="p-1 border-r border-black"><Input type="number" value={p.current_milk} onChange={e => updateDynamicRow('decreasingProducers', p.id, { current_milk: e.target.value })} className="h-7 text-[10px] border-none text-center bg-transparent" /></td>
+                                <td className="p-1 border-r border-black"><Input type="number" value={p.previous_animals} onChange={e => updateDynamicRow('decreasingProducers', p.id, { previous_animals: e.target.value })} className="h-7 text-[10px] border-none text-center bg-transparent" /></td>
+                                <td className="p-1 border-r border-black"><Input type="number" value={p.current_animals} onChange={e => updateDynamicRow('decreasingProducers', p.id, { current_animals: e.target.value })} className="h-7 text-[10px] border-none text-center bg-transparent" /></td>
+                                <td className="p-1 border-r border-black"><Input value={p.reason} onChange={e => updateDynamicRow('decreasingProducers', p.id, { reason: e.target.value })} className="h-7 text-[10px] border-none bg-transparent" /></td>
+                                <td className="p-1 text-center"><Button variant="ghost" size="icon" onClick={() => removeDynamicRow('decreasingProducers', p.id)} className="h-7 w-7 text-rose-500"><Trash2 className="h-4 w-4"/></Button></td>
+                              </tr>
+                            ))}
+                            {formData.decreasingProducers.length === 0 && <tr><td colSpan={7} className="p-4 text-center text-[10px] italic opacity-50">माहिती उपलब्ध नाही.</td></tr>}
+                          </tbody>
+                        </table>
                        </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 gap-6">
                        <div className="space-y-4 p-4 border border-black rounded-2xl bg-white shadow-sm">
-                          <div className="flex items-center justify-between">
-                            <Label className="text-[9px] font-black uppercase">८-१० गाईंचा गोठा सक्षम?</Label>
+                          <div className="flex items-center justify-between border-b pb-2">
+                            <Label className="text-[10px] font-black uppercase">८-१० गाईंचा गोठा करू शकतील असे?</Label>
                             <Switch checked={formData.can_expand_8_10_cows} onCheckedChange={(v) => setFormData({...formData, can_expand_8_10_cows: v})} />
                           </div>
                           {formData.can_expand_8_10_cows && (
                             <div className="space-y-2">
-                               <Button size="sm" variant="outline" className="h-6 text-[8px] uppercase w-full border-black" onClick={() => addDynamicRow('highCapacityProducers', { name: "", current_milk: 0, puravtha_varsh: "", current_animals: 0, land: "", fodder_available: "YES", shed_available: "YES" })}>उत्पादक जोडा</Button>
-                               {formData.highCapacityProducers.map(p => (
-                                 <div key={p.id} className="p-2 border border-black rounded bg-slate-50 space-y-2">
-                                   <Input value={p.name} placeholder="नाव" onChange={e => updateDynamicRow('highCapacityProducers', p.id, { name: e.target.value })} className="h-7 text-[9px] border-black" />
-                                   <div className="grid grid-cols-2 gap-1">
-                                     <Input type="number" placeholder="दूध" onChange={e => updateDynamicRow('highCapacityProducers', p.id, { current_milk: e.target.value })} className="h-7 text-[9px] border-black" />
-                                     <Input placeholder="पुरवठा वर्ष" onChange={e => updateDynamicRow('highCapacityProducers', p.id, { puravtha_varsh: e.target.value })} className="h-7 text-[9px] border-black" />
-                                     <Input type="number" placeholder="जनावरे" onChange={e => updateDynamicRow('highCapacityProducers', p.id, { current_animals: e.target.value })} className="h-7 text-[9px] border-black" />
-                                     <Input placeholder="शेती" onChange={e => updateDynamicRow('highCapacityProducers', p.id, { land: e.target.value })} className="h-7 text-[9px] border-black" />
-                                   </div>
-                                   <div className="flex gap-2">
-                                     <div className="flex items-center gap-1"><span className="text-[7px] font-black">चारा:</span><select onChange={e => updateDynamicRow('highCapacityProducers', p.id, { fodder_available: e.target.value })} className="text-[7px] border border-black"><option value="YES">YES</option><option value="NO">NO</option></select></div>
-                                     <div className="flex items-center gap-1"><span className="text-[7px] font-black">शेड:</span><select onChange={e => updateDynamicRow('highCapacityProducers', p.id, { shed_available: e.target.value })} className="text-[7px] border border-black"><option value="YES">YES</option><option value="NO">NO</option></select></div>
-                                   </div>
-                                   <Button variant="ghost" size="sm" onClick={() => removeDynamicRow('highCapacityProducers', p.id)} className="h-6 w-full text-rose-500 text-[8px] uppercase font-black">काढा</Button>
-                                 </div>
-                               ))}
+                               <div className="flex justify-end"><Button size="sm" variant="outline" className="h-7 text-[8px] uppercase border-black" onClick={() => addDynamicRow('highCapacityProducers', { name: "", current_milk: 0, puravtha_varsh: "", current_animals: 0, land: "", fodder_available: "YES", shed_available: "YES" })}>उत्पादक जोडा</Button></div>
+                               <div className="overflow-x-auto border border-black rounded-xl">
+                                <table className="w-full text-left border-collapse">
+                                  <thead className="bg-slate-50 text-[8px] font-black uppercase border-b border-black">
+                                    <tr>
+                                      <th className="p-2 border-r border-black">नाव</th>
+                                      <th className="p-2 border-r border-black text-center">दूध</th>
+                                      <th className="p-2 border-r border-black text-center">वर्षे</th>
+                                      <th className="p-2 border-r border-black text-center">जनावरे</th>
+                                      <th className="p-2 border-r border-black text-center">शेती</th>
+                                      <th className="p-2 border-r border-black text-center">चारा</th>
+                                      <th className="p-2 border-r border-black text-center">शेड</th>
+                                      <th className="p-2 text-center">क्रिया</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {formData.highCapacityProducers.map(p => (
+                                      <tr key={p.id} className="border-b border-black last:border-0 bg-white">
+                                        <td className="p-1 border-r border-black"><Input value={p.name} onChange={e => updateDynamicRow('highCapacityProducers', p.id, { name: e.target.value })} className="h-7 text-[10px] border-none bg-transparent" /></td>
+                                        <td className="p-1 border-r border-black"><Input type="number" value={p.current_milk} onChange={e => updateDynamicRow('highCapacityProducers', p.id, { current_milk: e.target.value })} className="h-7 text-[10px] border-none text-center bg-transparent" /></td>
+                                        <td className="p-1 border-r border-black"><Input value={p.puravtha_varsh} onChange={e => updateDynamicRow('highCapacityProducers', p.id, { puravtha_varsh: e.target.value })} className="h-7 text-[10px] border-none text-center bg-transparent" /></td>
+                                        <td className="p-1 border-r border-black"><Input type="number" value={p.current_animals} onChange={e => updateDynamicRow('highCapacityProducers', p.id, { current_animals: e.target.value })} className="h-7 text-[10px] border-none text-center bg-transparent" /></td>
+                                        <td className="p-1 border-r border-black"><Input value={p.land} onChange={e => updateDynamicRow('highCapacityProducers', p.id, { land: e.target.value })} className="h-7 text-[10px] border-none text-center bg-transparent" /></td>
+                                        <td className="p-1 border-r border-black"><select value={p.fodder_available} onChange={e => updateDynamicRow('highCapacityProducers', p.id, { fodder_available: e.target.value })} className="text-[10px] bg-transparent border-none outline-none w-full"><option value="YES">YES</option><option value="NO">NO</option></select></td>
+                                        <td className="p-1 border-r border-black"><select value={p.shed_available} onChange={e => updateDynamicRow('highCapacityProducers', p.id, { shed_available: e.target.value })} className="text-[10px] bg-transparent border-none outline-none w-full"><option value="YES">YES</option><option value="NO">NO</option></select></td>
+                                        <td className="p-1 text-center"><Button variant="ghost" size="icon" onClick={() => removeDynamicRow('highCapacityProducers', p.id)} className="h-7 w-7 text-rose-500"><Trash2 className="h-4 w-4"/></Button></td>
+                                      </tr>
+                                    ))}
+                                  </tbody>
+                                </table>
+                               </div>
                             </div>
                           )}
                        </div>
                        <div className="space-y-4 p-4 border border-black rounded-2xl bg-white shadow-sm">
-                          <div className="flex items-center justify-between">
-                            <Label className="text-[9px] font-black uppercase">३० ते १००+ लिटर दूध उत्पादक?</Label>
+                          <div className="flex items-center justify-between border-b pb-2">
+                            <Label className="text-[10px] font-black uppercase">३० ते १००+ लिटर दूध उत्पादक?</Label>
                             <Switch checked={formData.has_100_plus_milk} onCheckedChange={(v) => setFormData({...formData, has_100_plus_milk: v})} />
                           </div>
                           {formData.has_100_plus_milk && (
                             <div className="space-y-2">
-                               <Button size="sm" variant="outline" className="h-6 text-[8px] uppercase w-full border-black" onClick={() => addDynamicRow('highMilkProducers', { name: "" })}>उत्पादक जोडा</Button>
-                               {formData.highMilkProducers.map(p => (
-                                 <div key={p.id} className="flex gap-1"><Input value={p.name} placeholder="नाव" onChange={e => updateDynamicRow('highMilkProducers', p.id, { name: e.target.value })} className="h-7 text-[9px] border-black" /><Button size="icon" variant="ghost" onClick={() => removeDynamicRow('highMilkProducers', p.id)} className="h-7 w-7 text-rose-500"><X className="h-3.5 w-3.5"/></Button></div>
-                               ))}
+                               <div className="flex justify-end"><Button size="sm" variant="outline" className="h-7 text-[8px] uppercase border-black" onClick={() => addDynamicRow('highMilkProducers', { name: "" })}>उत्पादक जोडा</Button></div>
+                               <div className="overflow-x-auto border border-black rounded-xl">
+                                  <table className="w-full text-left border-collapse">
+                                    <thead className="bg-slate-50 text-[9px] font-black uppercase border-b border-black">
+                                      <tr><th className="p-2 border-r border-black">उत्पादक नाव</th><th className="p-2 text-center w-20">क्रिया</th></tr>
+                                    </thead>
+                                    <tbody>
+                                      {formData.highMilkProducers.map(p => (
+                                        <tr key={p.id} className="border-b border-black last:border-0 bg-white">
+                                          <td className="p-1 border-r border-black"><Input value={p.name} onChange={e => updateDynamicRow('highMilkProducers', p.id, { name: e.target.value })} className="h-7 text-[10px] border-none bg-transparent" /></td>
+                                          <td className="p-1 text-center"><Button size="icon" variant="ghost" onClick={() => removeDynamicRow('highMilkProducers', p.id)} className="h-7 w-7 text-rose-500"><Trash2 className="h-4 w-4"/></Button></td>
+                                        </tr>
+                                      ))}
+                                    </tbody>
+                                  </table>
+                               </div>
                             </div>
                           )}
                        </div>
@@ -646,28 +706,43 @@ export default function RouteDetailsPage() {
                        <h4 className="text-[10px] font-black uppercase text-primary border-b pb-1">विशेष विश्लेषण & उपाययोजना</h4>
                        <div className="space-y-3">
                           <div className="space-y-1"><Label className="text-[9px] font-black uppercase">दूध कमी होण्याची कारणे</Label><Textarea value={formData.milk_decrease_reasons} onChange={e => setFormData({...formData, milk_decrease_reasons: e.target.value})} className="h-14 text-[10px] border-black" /></div>
-                          <div className="space-y-1"><Label className="text-[9px] font-black uppercase">चालकाने केलेले प्रयत्न</Label><Textarea value={formData.efforts_taken} onChange={e => setFormData({...formData, efforts_taken: e.target.value})} className="h-14 text-[10px] border-black" /></div>
+                          <div className="space-y-1"><Label className="text-[9px] font-black uppercase">सेंटरने केलेले प्रयत्न</Label><Textarea value={formData.efforts_taken} onChange={e => setFormData({...formData, efforts_taken: e.target.value})} className="h-14 text-[10px] border-black" /></div>
                           <div className="space-y-1"><Label className="text-[9px] font-black uppercase">दूध वाढवण्यासाठी उपाय</Label><Textarea value={formData.required_actions} onChange={e => setFormData({...formData, required_actions: e.target.value})} className="h-14 text-[10px] border-black" /></div>
                        </div>
                     </div>
 
                     <div className="space-y-4">
                        <div className="flex items-center justify-between border-b-2 border-amber-300 pb-1"><h4 className="text-[10px] font-black uppercase text-amber-700">परिसरातील गवळी (आपल्या डेअरीचे)</h4><Button size="sm" onClick={() => addDynamicRow('localGavali', { name: "", code: "", gay_dudh: 0, mhais_dudh: 0, total_milk: 0, producers: 0, total_animals: 0 })} className="h-7 text-[8px] uppercase bg-amber-600">गवळी जोडा</Button></div>
-                       <div className="space-y-2">
-                        {formData.localGavali.map(it => (
-                          <div key={it.id} className="p-3 bg-amber-50/30 border border-black rounded-xl space-y-3">
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                              <Input value={it.name} placeholder="नाव" onChange={e => updateDynamicRow('localGavali', it.id, { name: e.target.value })} className="h-8 text-[10px] border-black" />
-                              <Input value={it.code} placeholder="कोड" onChange={e => updateDynamicRow('localGavali', it.id, { code: e.target.value })} className="h-8 text-[10px] border-black" />
-                              <Input type="number" value={it.gay_dudh} placeholder="गाय" onChange={e => updateDynamicRow('localGavali', it.id, { gay_dudh: e.target.value, total_milk: Number(e.target.value) + Number(it.mhais_dudh) })} className="h-8 text-[10px] border-black" />
-                              <Input type="number" value={it.mhais_dudh} placeholder="म्हेस" onChange={e => updateDynamicRow('localGavali', it.id, { mhais_dudh: e.target.value, total_milk: Number(e.target.value) + Number(it.gay_dudh) })} className="h-8 text-[10px] border-black" />
-                              <Input type="number" value={it.total_milk} placeholder="एकूण" readOnly className="h-8 text-[10px] border-black bg-white" />
-                              <Input type="number" value={it.producers} placeholder="उत्पादक" onChange={e => updateDynamicRow('localGavali', it.id, { producers: e.target.value })} className="h-8 text-[10px] border-black" />
-                              <Input type="number" value={it.total_animals} placeholder="जनावरे" onChange={e => updateDynamicRow('localGavali', it.id, { total_animals: e.target.value })} className="h-8 text-[10px] border-black" />
-                              <Button variant="ghost" size="sm" onClick={() => removeDynamicRow('localGavali', it.id)} className="h-8 text-rose-500"><Trash2 className="h-4 w-4" /></Button>
-                            </div>
-                          </div>
-                        ))}
+                       <div className="overflow-x-auto border border-black rounded-xl">
+                        <table className="w-full text-left border-collapse">
+                          <thead className="bg-amber-50/50 text-[8px] font-black uppercase border-b border-black text-amber-900 text-center">
+                            <tr>
+                              <th className="p-2 border-r border-black text-left">नाव</th>
+                              <th className="p-2 border-r border-black">कोड</th>
+                              <th className="p-2 border-r border-black">गाय</th>
+                              <th className="p-2 border-r border-black">म्हैस</th>
+                              <th className="p-2 border-r border-black">एकूण</th>
+                              <th className="p-2 border-r border-black">उत्पादक</th>
+                              <th className="p-2 border-r border-black">जनावरे</th>
+                              <th className="p-2">क्रिया</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {formData.localGavali.map(it => (
+                              <tr key={it.id} className="border-b border-black last:border-0 bg-white text-center">
+                                <td className="p-1 border-r border-black"><Input value={it.name} onChange={e => updateDynamicRow('localGavali', it.id, { name: e.target.value })} className="h-7 text-[10px] border-none bg-transparent" /></td>
+                                <td className="p-1 border-r border-black"><Input value={it.code} onChange={e => updateDynamicRow('localGavali', it.id, { code: e.target.value })} className="h-7 text-[10px] border-none bg-transparent text-center" /></td>
+                                <td className="p-1 border-r border-black"><Input type="number" value={it.gay_dudh} onChange={e => updateDynamicRow('localGavali', it.id, { gay_dudh: e.target.value, total_milk: Number(e.target.value) + Number(it.mhais_dudh) })} className="h-7 text-[10px] border-none bg-transparent text-center" /></td>
+                                <td className="p-1 border-r border-black"><Input type="number" value={it.mhais_dudh} onChange={e => updateDynamicRow('localGavali', it.id, { mhais_dudh: e.target.value, total_milk: Number(e.target.value) + Number(it.gay_dudh) })} className="h-7 text-[10px] border-none bg-transparent text-center" /></td>
+                                <td className="p-1 border-r border-black font-black text-primary text-[10px]">{it.total_milk}</td>
+                                <td className="p-1 border-r border-black"><Input type="number" value={it.producers} onChange={e => updateDynamicRow('localGavali', it.id, { producers: e.target.value })} className="h-7 text-[10px] border-none bg-transparent text-center" /></td>
+                                <td className="p-1 border-r border-black"><Input type="number" value={it.total_animals} onChange={e => updateDynamicRow('localGavali', it.id, { total_animals: e.target.value })} className="h-7 text-[10px] border-none bg-transparent text-center" /></td>
+                                <td className="p-1"><Button variant="ghost" size="icon" onClick={() => removeDynamicRow('localGavali', it.id)} className="h-7 w-7 text-rose-500"><Trash2 className="h-4 w-4" /></Button></td>
+                              </tr>
+                            ))}
+                            {formData.localGavali.length === 0 && <tr><td colSpan={8} className="p-4 text-center text-[10px] italic opacity-50">माहिती उपलब्ध नाही.</td></tr>}
+                          </tbody>
+                        </table>
                        </div>
                     </div>
                   </div>
@@ -737,19 +812,19 @@ export default function RouteDetailsPage() {
                   </div>
                   <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase opacity-60">Adulteration Kit (भेसळ तपासणी कीट)</Label><Input value={formData.adulterationKitInfo} onChange={e => setFormData({...formData, adulterationKitInfo: e.target.value})} className="h-10 text-[12px] border-black" placeholder="उदा. हो, चितळे कीट" /></div>
                   <div className="space-y-3">
-                    <div className="flex items-center justify-between"><h4 className="text-[10px] font-black uppercase tracking-widest opacity-60">साहित्याची यादी (INVENTORY)</h4><Button variant="outline" type="button" size="sm" onClick={addEquipmentRow} className="h-7 text-[8px] font-black px-3 rounded-xl border-primary/20 text-primary">जोडा</Button></div>
+                    <div className="flex items-center justify-between"><h4 className="text-[10px] font-black uppercase tracking-widest opacity-60">साहित्याची यादी (INVENTORY)</h4><Button variant="outline" type="button" size="sm" onClick={() => addDynamicRow('equipment', { name: "", quantity: 1, ownership: 'Company' })} className="h-7 text-[8px] font-black px-3 rounded-xl border-primary/20 text-primary">जोडा</Button></div>
                     <div className="space-y-2">
                       {formData.equipment.map(item => (
                         <div key={item.id} className="grid grid-cols-12 gap-1.5 bg-muted/10 p-2 rounded-xl border border-black items-center">
-                          <div className="col-span-6"><Input value={item.name} onChange={e => updateEquipmentRow(item.id, {name: e.target.value})} className="h-8 text-[10px] border border-black rounded-lg font-bold bg-white w-full" /></div>
-                          <div className="col-span-2"><Input type="number" value={item.quantity} onChange={e => updateEquipmentRow(item.id, {quantity: Number(e.target.value)})} className="h-8 text-[10px] text-center border border-black rounded-lg font-black bg-white w-full" /></div>
+                          <div className="col-span-6"><Input value={item.name} onChange={e => updateDynamicRow('equipment', item.id, { name: e.target.value })} className="h-8 text-[10px] border border-black rounded-lg font-bold bg-white w-full" /></div>
+                          <div className="col-span-2"><Input type="number" value={item.quantity} onChange={e => updateDynamicRow('equipment', item.id, { quantity: Number(e.target.value) })} className="h-8 text-[10px] text-center border border-black rounded-lg font-black bg-white w-full" /></div>
                           <div className="col-span-3">
-                            <Select value={item.ownership} onValueChange={v => updateEquipmentRow(item.id, {ownership: v as any})}>
+                            <Select value={item.ownership} onValueChange={v => updateDynamicRow('equipment', item.id, { ownership: v as any })}>
                               <SelectTrigger className="h-8 text-[8px] bg-white border-black rounded-lg font-black"><SelectValue /></SelectTrigger>
                               <SelectContent><SelectItem value="Self" className="font-bold">स्वतः</SelectItem><SelectItem value="Company" className="font-bold">डेअरी</SelectItem></SelectContent>
                             </Select>
                           </div>
-                          <div className="col-span-1 flex justify-end"><Button variant="ghost" size="icon" onClick={() => removeEquipmentRow(item.id)} className="h-7 w-7 text-rose-400 p-0"><X className="h-3.5 w-3.5" /></Button></div>
+                          <div className="col-span-1 flex justify-end"><Button variant="ghost" size="icon" onClick={() => removeDynamicRow('equipment', item.id)} className="h-7 w-7 text-rose-400 p-0"><X className="h-3.5 w-3.5" /></Button></div>
                         </div>
                       ))}
                     </div>
