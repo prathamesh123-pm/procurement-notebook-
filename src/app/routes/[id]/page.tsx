@@ -98,9 +98,35 @@ const ProducerCenterLayout = ({ supplier }: { supplier: Supplier }) => {
          </table>
       </div>
 
+      {details.local_employees?.length > 0 && (
+        <div className="space-y-4">
+          <h4 className="text-[11px] font-black uppercase text-indigo-700 border-b-2 border-black pb-1">७) परिसरातील डेअरी कर्मचारी माहिती</h4>
+          <table className="w-full border-collapse border-2 border-black text-[9px]">
+            <thead className="bg-slate-50 font-black">
+              <tr className="border-b-2 border-black text-center">
+                <th className="p-1 border-r border-black text-left pl-2">कर्मचारी नाव</th>
+                <th className="p-1 border-r border-black">शेती</th>
+                <th className="p-1 border-r border-black">जनावरे</th>
+                <th className="p-1">सध्याचा पुरवठा</th>
+              </tr>
+            </thead>
+            <tbody>
+              {details.local_employees.map((e: any, i: number) => (
+                <tr key={i} className="border-b border-black font-bold text-center last:border-0">
+                  <td className="p-1 border-r border-black text-left pl-2">{e.name}</td>
+                  <td className="p-1 border-r border-black">{e.land}</td>
+                  <td className="p-1 border-r border-black">{e.animals}</td>
+                  <td className="p-1">{e.current_supply_to}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
       {details.milkman_gavali_details?.length > 0 && (
         <div className="space-y-4">
-          <h4 className="text-[11px] font-black uppercase text-amber-700 border-b-2 border-black pb-1">७) परिसरातील गवळी (आपल्या डेअरीचे)</h4>
+          <h4 className="text-[11px] font-black uppercase text-amber-700 border-b-2 border-black pb-1">८) स्थानिक गवळी माहिती (आपल्या डेअरीचे)</h4>
           <table className="w-full border-collapse border-2 border-black text-[9px]">
             <thead className="bg-slate-50 font-black">
               <tr className="border-b-2 border-black text-center">
@@ -108,8 +134,7 @@ const ProducerCenterLayout = ({ supplier }: { supplier: Supplier }) => {
                 <th className="p-1 border-r border-black">गाय (L)</th>
                 <th className="p-1 border-r border-black">म्हेस (L)</th>
                 <th className="p-1 border-r border-black">एकूण (L)</th>
-                <th className="p-1 border-r border-black">उत्पादक</th>
-                <th className="p-1">जनावरे</th>
+                <th className="p-1">उत्पादक</th>
               </tr>
             </thead>
             <tbody>
@@ -119,8 +144,7 @@ const ProducerCenterLayout = ({ supplier }: { supplier: Supplier }) => {
                   <td className="p-1 border-r border-black">{g.gay_dudh} L</td>
                   <td className="p-1 border-r border-black">{g.mhais_dudh} L</td>
                   <td className="p-1 border-r border-black font-black text-primary">{(Number(g.gay_dudh) + Number(g.mhais_dudh)).toFixed(1)} L</td>
-                  <td className="p-1 border-r border-black">{g.producers}</td>
-                  <td className="p-1">{Number(g.gay_sankya) + Number(g.mhais_sankya)}</td>
+                  <td className="p-1">{g.producers}</td>
                 </tr>
               ))}
             </tbody>
@@ -129,7 +153,7 @@ const ProducerCenterLayout = ({ supplier }: { supplier: Supplier }) => {
       )}
 
       <div className="w-full space-y-4">
-         <h4 className="text-[11px] font-black uppercase text-primary border-b-2 border-black pb-1">८) विश्लेषण & उपाययोजना</h4>
+         <h4 className="text-[10px] font-black uppercase text-primary border-b-2 border-black pb-1">९) विश्लेषण & उपाययोजना</h4>
          <div className="grid grid-cols-1 gap-4">
            {details.milk_decrease_reasons && (
              <div className="p-3 bg-slate-50 border-l-4 border-rose-400 rounded-r-lg">
@@ -208,6 +232,7 @@ export default function RouteDetailsPage() {
     highCapacityProducers: [] as any[],
     has_100_plus_milk: false,
     highMilkProducers: [] as any[],
+    localEmployees: [] as any[],
     localGavali: [] as any[],
     milk_decrease_reasons: "",
     efforts_taken: "",
@@ -232,7 +257,7 @@ export default function RouteDetailsPage() {
       total_animals: "0", cows: "0", buffalo: "0", calves: "0",
       longTermProducers: [], decreasingProducers: [], can_expand_8_10_cows: false,
       highCapacityProducers: [], has_100_plus_milk: false, highMilkProducers: [],
-      localGavali: [], milk_decrease_reasons: "",
+      localEmployees: [], localGavali: [], milk_decrease_reasons: "",
       efforts_taken: "", required_actions: ""
     })
   }
@@ -279,6 +304,7 @@ export default function RouteDetailsPage() {
       highCapacityProducers: details.high_capacity_producer_list || [],
       has_100_plus_milk: details.has_100_plus_milk || false,
       highMilkProducers: (details.high_milk_producer_list || []).map((name: string) => ({ id: crypto.randomUUID(), name })),
+      localEmployees: details.local_employees || [],
       localGavali: details.milkman_gavali_details || [],
       milk_decrease_reasons: details.milk_decrease_reasons || "",
       efforts_taken: details.efforts_taken || "",
@@ -307,6 +333,7 @@ export default function RouteDetailsPage() {
       high_capacity_producer_list: formData.highCapacityProducers,
       has_100_plus_milk: formData.has_100_plus_milk,
       high_milk_producer_list: formData.highMilkProducers.map((p: any) => p.name),
+      local_employees: formData.localEmployees,
       milkman_gavali_details: formData.localGavali,
       milk_decrease_reasons: formData.milk_decrease_reasons,
       efforts_taken: formData.efforts_taken,
@@ -712,7 +739,36 @@ export default function RouteDetailsPage() {
                     </div>
 
                     <div className="space-y-4">
-                       <div className="flex items-center justify-between border-b-2 border-amber-300 pb-1"><h4 className="text-[10px] font-black uppercase text-amber-700">परिसरातील गवळी (आपल्या डेअरीचे)</h4><Button size="sm" onClick={() => addDynamicRow('localGavali', { name: "", code: "", gay_dudh: 0, mhais_dudh: 0, total_milk: 0, producers: 0, total_animals: 0 })} className="h-7 text-[8px] uppercase bg-amber-600">गवळी जोडा</Button></div>
+                       <div className="flex items-center justify-between border-b-2 border-indigo-300 pb-1"><h4 className="text-[10px] font-black uppercase text-indigo-700">परिसरातील डेअरी कर्मचारी माहिती</h4><Button size="sm" onClick={() => addDynamicRow('localEmployees', { name: "", land: "", animals: 0, current_supply_to: "" })} className="h-7 text-[8px] uppercase bg-indigo-600">कर्मचारी जोडा</Button></div>
+                       <div className="overflow-x-auto border border-black rounded-xl">
+                        <table className="w-full text-left border-collapse">
+                          <thead className="bg-indigo-50/50 text-[8px] font-black uppercase border-b border-black text-indigo-900 text-center">
+                            <tr>
+                              <th className="p-2 border-r border-black text-left">नाव</th>
+                              <th className="p-2 border-r border-black">शेती</th>
+                              <th className="p-2 border-r border-black">जनावरे</th>
+                              <th className="p-2 border-r border-black">पुरवठा</th>
+                              <th className="p-2">क्रिया</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {formData.localEmployees.map(it => (
+                              <tr key={it.id} className="border-b border-black last:border-0 bg-white text-center">
+                                <td className="p-1 border-r border-black"><Input value={it.name} onChange={e => updateDynamicRow('localEmployees', it.id, { name: e.target.value })} className="h-7 text-[10px] border-none bg-transparent" /></td>
+                                <td className="p-1 border-r border-black"><Input value={it.land} onChange={e => updateDynamicRow('localEmployees', it.id, { land: e.target.value })} className="h-7 text-[10px] border-none bg-transparent text-center" /></td>
+                                <td className="p-1 border-r border-black"><Input type="number" value={it.animals} onChange={e => updateDynamicRow('localEmployees', it.id, { animals: e.target.value })} className="h-7 text-[10px] border-none bg-transparent text-center" /></td>
+                                <td className="p-1 border-r border-black"><Input value={it.current_supply_to} onChange={e => updateDynamicRow('localEmployees', it.id, { current_supply_to: e.target.value })} className="h-7 text-[10px] border-none bg-transparent" /></td>
+                                <td className="p-1"><Button variant="ghost" size="icon" onClick={() => removeDynamicRow('localEmployees', it.id)} className="h-7 w-7 text-rose-500"><Trash2 className="h-4 w-4" /></Button></td>
+                              </tr>
+                            ))}
+                            {formData.localEmployees.length === 0 && <tr><td colSpan={5} className="p-4 text-center text-[10px] italic opacity-50">माहिती उपलब्ध नाही.</td></tr>}
+                          </tbody>
+                        </table>
+                       </div>
+                    </div>
+
+                    <div className="space-y-4">
+                       <div className="flex items-center justify-between border-b-2 border-amber-300 pb-1"><h4 className="text-[10px] font-black uppercase text-amber-700">परिसरातील गवळी (आपल्या डेअरीचे)</h4><Button size="sm" onClick={() => addDynamicRow('localGavali', { name: "", code: "", gay_dudh: 0, mhais_dudh: 0, total_milk: 0, producers: 0 })} className="h-7 text-[8px] uppercase bg-amber-600">गवळी जोडा</Button></div>
                        <div className="overflow-x-auto border border-black rounded-xl">
                         <table className="w-full text-left border-collapse">
                           <thead className="bg-amber-50/50 text-[8px] font-black uppercase border-b border-black text-amber-900 text-center">
@@ -720,10 +776,9 @@ export default function RouteDetailsPage() {
                               <th className="p-2 border-r border-black text-left">नाव</th>
                               <th className="p-2 border-r border-black">कोड</th>
                               <th className="p-2 border-r border-black">गाय</th>
-                              <th className="p-2 border-r border-black">म्हैस</th>
+                              <th className="p-2 border-r border-black">म्हेस</th>
                               <th className="p-2 border-r border-black">एकूण</th>
                               <th className="p-2 border-r border-black">उत्पादक</th>
-                              <th className="p-2 border-r border-black">जनावरे</th>
                               <th className="p-2">क्रिया</th>
                             </tr>
                           </thead>
@@ -736,11 +791,10 @@ export default function RouteDetailsPage() {
                                 <td className="p-1 border-r border-black"><Input type="number" value={it.mhais_dudh} onChange={e => updateDynamicRow('localGavali', it.id, { mhais_dudh: e.target.value, total_milk: Number(e.target.value) + Number(it.gay_dudh) })} className="h-7 text-[10px] border-none bg-transparent text-center" /></td>
                                 <td className="p-1 border-r border-black font-black text-primary text-[10px]">{it.total_milk}</td>
                                 <td className="p-1 border-r border-black"><Input type="number" value={it.producers} onChange={e => updateDynamicRow('localGavali', it.id, { producers: e.target.value })} className="h-7 text-[10px] border-none bg-transparent text-center" /></td>
-                                <td className="p-1 border-r border-black"><Input type="number" value={it.total_animals} onChange={e => updateDynamicRow('localGavali', it.id, { total_animals: e.target.value })} className="h-7 text-[10px] border-none bg-transparent text-center" /></td>
                                 <td className="p-1"><Button variant="ghost" size="icon" onClick={() => removeDynamicRow('localGavali', it.id)} className="h-7 w-7 text-rose-500"><Trash2 className="h-4 w-4" /></Button></td>
                               </tr>
                             ))}
-                            {formData.localGavali.length === 0 && <tr><td colSpan={8} className="p-4 text-center text-[10px] italic opacity-50">माहिती उपलब्ध नाही.</td></tr>}
+                            {formData.localGavali.length === 0 && <tr><td colSpan={7} className="p-4 text-center text-[10px] italic opacity-50">माहिती उपलब्ध नाही.</td></tr>}
                           </tbody>
                         </table>
                        </div>
@@ -820,7 +874,7 @@ export default function RouteDetailsPage() {
                           <div className="col-span-2"><Input type="number" value={item.quantity} onChange={e => updateDynamicRow('equipment', item.id, { quantity: Number(e.target.value) })} className="h-8 text-[10px] text-center border border-black rounded-lg font-black bg-white w-full" /></div>
                           <div className="col-span-3">
                             <Select value={item.ownership} onValueChange={v => updateDynamicRow('equipment', item.id, { ownership: v as any })}>
-                              <SelectTrigger className="h-8 text-[8px] bg-white border-black rounded-lg font-black"><SelectValue /></SelectTrigger>
+                              <SelectTrigger className="h-8 text-[8px] bg-white border border-black rounded-lg font-black"><SelectValue /></SelectTrigger>
                               <SelectContent><SelectItem value="Self" className="font-bold">स्वतः</SelectItem><SelectItem value="Company" className="font-bold">डेअरी</SelectItem></SelectContent>
                             </Select>
                           </div>

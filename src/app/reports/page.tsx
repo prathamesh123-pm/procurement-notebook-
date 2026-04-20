@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
@@ -6,7 +7,7 @@ import { Card } from "@/components/ui/card"
 import { 
   Archive, Search, X, Printer, Trash2, FileEdit, Truck, 
   ShieldAlert, ClipboardCheck, Plus, MapPin, FileText,
-  Briefcase, FileSignature, CheckCircle2, Microscope, Layers, Calendar, ChevronRight, AlertCircle, AlertTriangle, Info, BookOpen, Lightbulb, FileCheck, Clock, Milk, User, IndianRupee, Hash, Box
+  Briefcase, FileSignature, CheckCircle2, Microscope, Layers, Calendar, ChevronRight, AlertCircle, AlertTriangle, Info, BookOpen, Lightbulb, FileCheck, Clock, Milk, User, IndianRupee, Hash, Box, TrendingDown
 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
@@ -122,7 +123,7 @@ const ProducerCenterLayout = ({ report, profileName, profileId }: { report: any,
             <tr><td className="p-2 bg-slate-50 font-black border-r border-black w-1/3">सेंटर नाव</td><td className="p-2 font-bold">{d.name} (ID: {d.supplierId})</td></tr>
             <tr><td className="p-2 bg-slate-50 font-black border-r border-black">सकाळ / सायंकाळ वेळ</td><td className="p-2 font-bold">{details.morning_collection_time} / {details.evening_collection_time}</td></tr>
             <tr><td className="p-2 bg-slate-50 font-black border-r border-black">उत्पादक (एकूण/सक्रिय/निष्क्रिय)</td><td className="p-2 font-bold">{details.total_producers} / {details.active_producers} / {details.inactive_producers}</td></tr>
-            <tr><td className="p-2 bg-slate-50 font-black border-r border-black">जनावरे (गाय/म्हैस/वासरे)</td><td className="p-2 font-bold">{details.cows} गायी | {details.buffalo} म्हशी | {details.calves} वासरे</td></tr>
+            <tr><td className="p-2 bg-slate-50 font-black border-r border-black">जनावरे (गाय/म्हेस/वासरे)</td><td className="p-2 font-bold">{details.cows} गायी | {details.buffalo} म्हशी | {details.calves} वासरे</td></tr>
           </tbody>
         </table>
       </div>
@@ -167,30 +168,19 @@ const ProducerCenterLayout = ({ report, profileName, profileId }: { report: any,
         </>
       )}
 
-      <div className="grid grid-cols-2 gap-4 w-full mb-6">
-        <div className="border-2 border-black p-3 rounded">
-           <h4 className="text-[8pt] font-black uppercase mb-1">८-१० गाईंचा गोठा सक्षम?</h4>
-           <p className="text-[10pt] font-bold">{details.can_expand_8_10_cows ? 'YES - ' + (details.high_capacity_producer_list?.length || 0) + ' Producers' : 'NO'}</p>
-        </div>
-        <div className="border-2 border-black p-3 rounded">
-           <h4 className="text-[8pt] font-black uppercase mb-1">३० ते १००+ लिटर उत्पादक?</h4>
-           <p className="text-[10pt] font-bold">{details.has_100_plus_milk ? 'YES - ' + (details.high_milk_producer_list?.length || 0) + ' Producers' : 'NO'}</p>
-        </div>
-      </div>
-
-      {details.milkman_gavali_details?.length > 0 && (
+      {details.local_employees?.length > 0 && (
         <>
-          <SectionTitle icon={User} title="४) स्थानिक गवळी माहिती (आपल्या डेअरीचे)" />
+          <SectionTitle icon={Briefcase} title="४) परिसरातील डेअरी कर्मचारी माहिती" />
           <table className="w-full border-2 border-black text-[8pt] mb-6">
             <thead className="bg-slate-100 font-black">
               <tr className="border-b border-black">
-                <th className="p-1 border-r border-black">नाव</th><th className="p-1 border-r border-black">दूध (L)</th><th className="p-1 border-r border-black">उत्पादक</th><th className="p-1">जनावरे (C+B)</th>
+                <th className="p-1 border-r border-black">कर्मचारी नाव</th><th className="p-1 border-r border-black">शेती</th><th className="p-1 border-r border-black">जनावरे</th><th className="p-1">सध्याचा पुरवठा</th>
               </tr>
             </thead>
             <tbody>
-              {details.milkman_gavali_details.map((g: any, i: number) => (
-                <tr key={i} className="border-b border-black last:border-0 font-bold text-center">
-                  <td className="p-1 border-r border-black text-left pl-2">{g.name} (Code: {g.code})</td><td className="p-1 border-r border-black">{Number(g.gay_dudh) + Number(g.mhais_dudh)} L</td><td className="p-1 border-r border-black">{g.producers}</td><td className="p-1">{Number(g.gay_sankya) + Number(g.mhais_sankya)}</td>
+              {details.local_employees.map((e: any, i: number) => (
+                <tr key={i} className="border-b border-black last:border-0 text-center font-bold">
+                  <td className="p-1 border-r border-black text-left pl-2">{e.name}</td><td className="p-1 border-r border-black">{e.land}</td><td className="p-1 border-r border-black">{e.animals}</td><td className="p-1 text-left pl-2">{e.current_supply_to}</td>
                 </tr>
               ))}
             </tbody>
@@ -198,7 +188,27 @@ const ProducerCenterLayout = ({ report, profileName, profileId }: { report: any,
         </>
       )}
 
-      <SectionTitle icon={Lightbulb} title="५) विश्लेषण & उपाययोजना" />
+      {details.milkman_gavali_details?.length > 0 && (
+        <>
+          <SectionTitle icon={User} title="५) स्थानिक गवळी माहिती (आपल्या डेअरीचे)" />
+          <table className="w-full border-2 border-black text-[8pt] mb-6">
+            <thead className="bg-slate-100 font-black">
+              <tr className="border-b border-black">
+                <th className="p-1 border-r border-black">नाव</th><th className="p-1 border-r border-black">गाय (L)</th><th className="p-1 border-r border-black">म्हेस (L)</th><th className="p-1 border-r border-black">एकूण (L)</th><th className="p-1">उत्पादक</th>
+              </tr>
+            </thead>
+            <tbody>
+              {details.milkman_gavali_details.map((g: any, i: number) => (
+                <tr key={i} className="border-b border-black last:border-0 font-bold text-center">
+                  <td className="p-1 border-r border-black text-left pl-2">{g.name} (Code: {g.code})</td><td className="p-1 border-r border-black">{g.gay_dudh} L</td><td className="p-1 border-r border-black">{g.mhais_dudh} L</td><td className="p-1 border-r border-black">{(Number(g.gay_dudh) + Number(g.mhais_dudh)).toFixed(1)} L</td><td className="p-1">{g.producers}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </>
+      )}
+
+      <SectionTitle icon={Lightbulb} title="६) विश्लेषण & उपाययोजना" />
       <div className="w-full text-left space-y-4">
         <ProfessionalParagraph label="दूध कमी होण्याची कारणे" content={details.milk_decrease_reasons} />
         <ProfessionalParagraph label="सेंटरने केलेले प्रयत्न" content={details.efforts_taken} />
