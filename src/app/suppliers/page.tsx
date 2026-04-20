@@ -38,6 +38,7 @@ const ProducerCenterLayout = ({ supplier }: { supplier: Supplier }) => {
             <div className="flex justify-between border-b border-dashed border-black/20 pb-1"><span>सायंकाळ वेळ</span><span>{details.evening_collection_time || "-"}</span></div>
             <div className="flex justify-between border-b border-dashed border-black/20 pb-1"><span>एकूण उत्पादक</span><span>{details.total_producers || 0}</span></div>
             <div className="flex justify-between border-b border-dashed border-black/20 pb-1"><span>सक्रिय उत्पादक</span><span className="text-emerald-600">{details.active_producers || 0}</span></div>
+            <div className="flex justify-between border-b border-dashed border-black/20 pb-1"><span>स्थापना वर्ष</span><span>{details.start_year || "-"}</span></div>
           </div>
         </div>
         <div className="space-y-4">
@@ -56,10 +57,11 @@ const ProducerCenterLayout = ({ supplier }: { supplier: Supplier }) => {
          <table className="w-full border-collapse border-2 border-black text-[9px]">
            <thead className="bg-slate-100 font-black">
              <tr className="border-b-2 border-black text-center">
-               <th className="p-2 border-r border-black text-left">उत्पादक नाव</th>
+               <th className="p-2 border-r border-black text-left">नाव</th>
                <th className="p-2 border-r border-black">जुने दूध</th>
-               <th className="p-2 border-r border-black">सध्याचे</th>
-               <th className="p-2">जनावरे (जुनी/नवी)</th>
+               <th className="p-2 border-r border-black">सध्याचे दूध</th>
+               <th className="p-2 border-r border-black">जुनी जनावरे</th>
+               <th className="p-2">सध्याची जनावरे</th>
              </tr>
            </thead>
            <tbody>
@@ -68,7 +70,8 @@ const ProducerCenterLayout = ({ supplier }: { supplier: Supplier }) => {
                  <td className="p-2 border-r border-black text-left">{p.producer_name}</td>
                  <td className="p-2 border-r border-black">{p.previous_milk} L</td>
                  <td className="p-2 border-r border-black">{p.current_milk} L</td>
-                 <td className="p-2">{p.previous_animals} / {p.current_animals}</td>
+                 <td className="p-2 border-r border-black">{p.previous_animals}</td>
+                 <td className="p-2">{p.current_animals}</td>
                </tr>
              ))}
            </tbody>
@@ -81,8 +84,10 @@ const ProducerCenterLayout = ({ supplier }: { supplier: Supplier }) => {
            <thead className="bg-rose-50 font-black text-rose-900">
              <tr className="border-b-2 border-black text-center">
                <th className="p-2 border-r border-black text-left">नाव</th>
-               <th className="p-2 border-r border-black">दूध (जुने/नवे)</th>
-               <th className="p-2 border-r border-black">जनावरे (जुनी/नवी)</th>
+               <th className="p-2 border-r border-black">जुने दूध</th>
+               <th className="p-2 border-r border-black">नवे दूध</th>
+               <th className="p-2 border-r border-black">जुनी जनावरे</th>
+               <th className="p-2 border-r border-black">सध्याची जनावरे</th>
                <th className="p-2 text-left">कारण</th>
              </tr>
            </thead>
@@ -90,8 +95,10 @@ const ProducerCenterLayout = ({ supplier }: { supplier: Supplier }) => {
              {(details.decreasing_producers || []).map((p: any, i: number) => (
                <tr key={i} className="border-b border-black font-bold text-center">
                  <td className="p-2 border-r border-black text-left">{p.producer_name}</td>
-                 <td className="p-2 border-r border-black">{p.previous_milk} / {p.current_milk} L</td>
-                 <td className="p-2 border-r border-black">{p.previous_animals} / {p.current_animals}</td>
+                 <td className="p-2 border-r border-black">{p.previous_milk} L</td>
+                 <td className="p-2 border-r border-black">{p.current_milk} L</td>
+                 <td className="p-2 border-r border-black">{p.previous_animals}</td>
+                 <td className="p-2 border-r border-black">{p.current_animals}</td>
                  <td className="p-2 text-left text-rose-600">{p.reason}</td>
                </tr>
              ))}
@@ -99,62 +106,116 @@ const ProducerCenterLayout = ({ supplier }: { supplier: Supplier }) => {
          </table>
       </div>
 
-      {details.local_employees?.length > 0 && (
-        <div className="space-y-4">
-          <h4 className="text-[10px] font-black uppercase text-indigo-700 border-b-2 border-black pb-1">७) परिसरातील डेअरी कर्मचारी माहिती</h4>
-          <table className="w-full border-collapse border-2 border-black text-[9px]">
-            <thead className="bg-slate-50 font-black">
-              <tr className="border-b-2 border-black text-center">
-                <th className="p-1 border-r border-black text-left pl-2">कर्मचारी नाव</th>
-                <th className="p-1 border-r border-black">शेती</th>
-                <th className="p-1 border-r border-black">जनावरे</th>
-                <th className="p-1">सध्याचा पुरवठा</th>
-              </tr>
-            </thead>
-            <tbody>
-              {details.local_employees.map((e: any, i: number) => (
-                <tr key={i} className="border-b border-black font-bold text-center last:border-0">
-                  <td className="p-1 border-r border-black text-left pl-2">{e.name}</td>
-                  <td className="p-1 border-r border-black">{e.land}</td>
-                  <td className="p-1 border-r border-black">{e.animals}</td>
-                  <td className="p-1">{e.current_supply_to}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+      <div className="space-y-4">
+        <h4 className="text-[10px] font-black uppercase text-indigo-700 border-b-2 border-black pb-1">७) ८-१० गाईंचा गोठा सक्षम उत्पादक</h4>
+        <table className="w-full border-collapse border-2 border-black text-[9px]">
+           <thead className="bg-slate-50 font-black">
+             <tr className="border-b-2 border-black text-center">
+               <th className="p-1 border-r border-black text-left pl-2">नाव</th>
+               <th className="p-1 border-r border-black">दूध</th>
+               <th className="p-1 border-r border-black">वर्षे</th>
+               <th className="p-1 border-r border-black">जनावरे संख्या</th>
+               <th className="p-1 border-r border-black">शेती क्षेत्र</th>
+               <th className="p-1 border-r border-black">चारा उपलब्धता</th>
+               <th className="p-1">शेड उपलब्धता</th>
+             </tr>
+           </thead>
+           <tbody>
+             {(details.high_capacity_producer_list || []).map((p: any, i: number) => (
+               <tr key={i} className="border-b border-black font-bold text-center last:border-0">
+                 <td className="p-1 border-r border-black text-left pl-2">{p.name}</td>
+                 <td className="p-1 border-r border-black">{p.current_milk} L</td>
+                 <td className="p-1 border-r border-black">{p.puravtha_varsh}</td>
+                 <td className="p-1 border-r border-black">{p.current_animals}</td>
+                 <td className="p-1 border-r border-black">{p.land}</td>
+                 <td className="p-1 border-r border-black">{p.fodder_available}</td>
+                 <td className="p-1">{p.shed_available}</td>
+               </tr>
+             ))}
+           </tbody>
+        </table>
+      </div>
 
-      {details.milkman_gavali_details?.length > 0 && (
-        <div className="space-y-4">
-          <h4 className="text-[10px] font-black uppercase text-amber-700 border-b-2 border-black pb-1">८) स्थानिक गवळी माहिती (आपल्या डेअरीचे)</h4>
-          <table className="w-full border-collapse border-2 border-black text-[9px]">
-            <thead className="bg-slate-50 font-black">
-              <tr className="border-b-2 border-black text-center">
-                <th className="p-1 border-r border-black text-left pl-2">नाव / कोड</th>
-                <th className="p-1 border-r border-black">गाय (L)</th>
-                <th className="p-1 border-r border-black">म्हेस (L)</th>
-                <th className="p-1 border-r border-black">एकूण (L)</th>
-                <th className="p-1">उत्पादक</th>
+      <div className="space-y-4">
+        <h4 className="text-[11px] font-black uppercase text-blue-700 border-b-2 border-black pb-1">८) ३० ते १००+ लिटर दूध उत्पादक</h4>
+        <table className="w-full border-collapse border-2 border-black text-[9px]">
+           <thead className="bg-blue-50/50 font-black text-blue-900">
+             <tr className="border-b-2 border-black text-center">
+               <th className="p-1 border-r border-black text-left pl-2">उत्पादक नाव</th>
+               <th className="p-1 border-r border-black">गाईंची संख्या</th>
+               <th className="p-1 border-r border-black">म्हशींची संख्या</th>
+               <th className="p-1">सध्याचे दूध</th>
+             </tr>
+           </thead>
+           <tbody>
+             {(details.high_milk_producer_list || []).map((p: any, i: number) => (
+               <tr key={i} className="border-b border-black font-bold text-center last:border-0">
+                 <td className="p-1 border-r border-black text-left pl-2">{p.name}</td>
+                 <td className="p-1 border-r border-black">{p.cows_count || 0}</td>
+                 <td className="p-1 border-r border-black">{p.buffalo_count || 0}</td>
+                 <td className="p-1">{p.current_milk || 0} L</td>
+               </tr>
+             ))}
+           </tbody>
+        </table>
+      </div>
+
+      <div className="space-y-4">
+        <h4 className="text-[10px] font-black uppercase text-indigo-700 border-b-2 border-black pb-1">९) परिसरातील डेअरी कर्मचारी माहिती</h4>
+        <table className="w-full border-collapse border-2 border-black text-[9px]">
+          <thead className="bg-slate-50 font-black">
+            <tr className="border-b-2 border-black text-center">
+              <th className="p-1 border-r border-black text-left pl-2">नाव</th>
+              <th className="p-1 border-r border-black">शेती</th>
+              <th className="p-1 border-r border-black">गाईंची संख्या</th>
+              <th className="p-1 border-r border-black">म्हशींची संख्या</th>
+              <th className="p-1">एकूण दूध पुरवठा</th>
+            </tr>
+          </thead>
+          <tbody>
+            {details.local_employees?.map((e: any, i: number) => (
+              <tr key={i} className="border-b border-black font-bold text-center last:border-0">
+                <td className="p-1 border-r border-black text-left pl-2">{e.name}</td>
+                <td className="p-1 border-r border-black">{e.land}</td>
+                <td className="p-1 border-r border-black">{e.cows_count || 0}</td>
+                <td className="p-1 border-r border-black">{e.buffalo_count || 0}</td>
+                <td className="p-1">{e.total_supply || "-"}</td>
               </tr>
-            </thead>
-            <tbody>
-              {details.milkman_gavali_details.map((g: any, i: number) => (
-                <tr key={i} className="border-b border-black font-bold text-center last:border-0">
-                  <td className="p-1 border-r border-black text-left pl-2">{g.name} ({g.code})</td>
-                  <td className="p-1 border-r border-black">{g.gay_dudh} L</td>
-                  <td className="p-1 border-r border-black">{g.mhais_dudh} L</td>
-                  <td className="p-1 border-r border-black font-black text-primary">{(Number(g.gay_dudh) + Number(g.mhais_dudh)).toFixed(1)} L</td>
-                  <td className="p-1 border-r border-black">{g.producers}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="space-y-4">
+        <h4 className="text-[10px] font-black uppercase text-amber-700 border-b-2 border-black pb-1">१०) स्थानिक गवळी माहिती (आपल्या डेअरीचे)</h4>
+        <table className="w-full border-collapse border-2 border-black text-[9px]">
+          <thead className="bg-slate-50 font-black">
+            <tr className="border-b-2 border-black text-center">
+              <th className="p-1 border-r border-black text-left pl-2">नाव</th>
+              <th className="p-1 border-r border-black">कोड</th>
+              <th className="p-1 border-r border-black">गाय दूध</th>
+              <th className="p-1 border-r border-black">म्हेस दूध</th>
+              <th className="p-1 border-r border-black">एकूण दूध</th>
+              <th className="p-1">उत्पादक संख्या</th>
+            </tr>
+          </thead>
+          <tbody>
+            {details.milkman_gavali_details?.map((g: any, i: number) => (
+              <tr key={i} className="border-b border-black font-bold text-center last:border-0">
+                <td className="p-1 border-r border-black text-left pl-2">{g.name}</td>
+                <td className="p-1 border-r border-black">{g.code}</td>
+                <td className="p-1 border-r border-black">{g.gay_dudh} L</td>
+                <td className="p-1 border-r border-black">{g.mhais_dudh} L</td>
+                <td className="p-1 border-r border-black font-black text-primary">{(Number(g.gay_dudh) + Number(g.mhais_dudh)).toFixed(1)} L</td>
+                <td className="p-1">{g.producers}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       <div className="w-full space-y-4">
-         <h4 className="text-[10px] font-black uppercase text-primary border-b-2 border-black pb-1">९) विश्लेषण & उपाययोजना</h4>
+         <h4 className="text-[10px] font-black uppercase text-primary border-b-2 border-black pb-1">११) विश्लेषण & उपाययोजना</h4>
          <div className="grid grid-cols-1 gap-4">
            {details.milk_decrease_reasons && (
              <div className="p-3 bg-slate-50 border-l-4 border-rose-400 rounded-r-lg">
@@ -223,6 +284,7 @@ function SuppliersContent() {
     chemicalsStock: "",
     batteryCondition: "",
     morning_collection_time: "", evening_collection_time: "",
+    start_year: "",
     total_producers: "0", active_producers: "0", inactive_producers: "0",
     total_animals: "0", cows: "0", buffalo: "0", calves: "0",
     longTermProducers: [] as any[],
@@ -257,6 +319,7 @@ function SuppliersContent() {
       chemicalsStock: "",
       batteryCondition: "",
       morning_collection_time: "", evening_collection_time: "",
+      start_year: "",
       total_producers: "0", active_producers: "0", inactive_producers: "0",
       total_animals: "0", cows: "0", buffalo: "0", calves: "0",
       longTermProducers: [], decreasingProducers: [], can_expand_8_10_cows: false,
@@ -275,6 +338,7 @@ function SuppliersContent() {
     const additional_details = {
       morning_collection_time: formData.morning_collection_time,
       evening_collection_time: formData.evening_collection_time,
+      start_year: formData.start_year,
       total_producers: Number(formData.total_producers),
       active_producers: Number(formData.active_producers),
       inactive_producers: Number(formData.inactive_producers),
@@ -287,7 +351,7 @@ function SuppliersContent() {
       can_expand_8_10_cows: formData.can_expand_8_10_cows,
       high_capacity_producer_list: formData.highCapacityProducers,
       has_100_plus_milk: formData.has_100_plus_milk,
-      high_milk_producer_list: formData.highMilkProducers.map((p: any) => p.name),
+      high_milk_producer_list: formData.highMilkProducers,
       local_employees: formData.localEmployees,
       milkman_gavali_details: formData.localGavali,
       milk_decrease_reasons: formData.milk_decrease_reasons,
@@ -317,6 +381,7 @@ function SuppliersContent() {
     const additional_details = {
       morning_collection_time: formData.morning_collection_time,
       evening_collection_time: formData.evening_collection_time,
+      start_year: formData.start_year,
       total_producers: Number(formData.total_producers),
       active_producers: Number(formData.active_producers),
       inactive_producers: Number(formData.inactive_producers),
@@ -329,7 +394,7 @@ function SuppliersContent() {
       can_expand_8_10_cows: formData.can_expand_8_10_cows,
       high_capacity_producer_list: formData.highCapacityProducers,
       has_100_plus_milk: formData.has_100_plus_milk,
-      high_milk_producer_list: formData.highMilkProducers.map((p: any) => p.name),
+      high_milk_producer_list: formData.highMilkProducers,
       local_employees: formData.localEmployees,
       milkman_gavali_details: formData.localGavali,
       milk_decrease_reasons: formData.milk_decrease_reasons,
@@ -408,6 +473,7 @@ function SuppliersContent() {
       batteryCondition: supp.batteryCondition || "",
       morning_collection_time: details.morning_collection_time || "",
       evening_collection_time: details.evening_collection_time || "",
+      start_year: details.start_year || "",
       total_producers: String(details.total_producers || 0),
       active_producers: String(details.active_producers || 0),
       inactive_producers: String(details.inactive_producers || 0),
@@ -420,7 +486,7 @@ function SuppliersContent() {
       can_expand_8_10_cows: details.can_expand_8_10_cows || false,
       highCapacityProducers: details.high_capacity_producer_list || [],
       has_100_plus_milk: details.has_100_plus_milk || false,
-      highMilkProducers: (details.high_milk_producer_list || []).map((name: string) => ({ id: crypto.randomUUID(), name })),
+      highMilkProducers: (details.high_milk_producer_list || []).map((p: any) => ({ ...p, id: p.id || crypto.randomUUID() })),
       localEmployees: details.local_employees || [],
       localGavali: details.milkman_gavali_details || [],
       milk_decrease_reasons: details.milk_decrease_reasons || "",
@@ -493,6 +559,7 @@ function SuppliersContent() {
                         <div className="space-y-1"><Label className="text-[8px] font-black uppercase">एकूण उत्पादक</Label><Input type="number" value={formData.total_producers} onChange={e => setFormData({...formData, total_producers: e.target.value})} className="h-8 text-[10px] border-black" /></div>
                         <div className="space-y-1"><Label className="text-[8px] font-black uppercase">सक्रिय उत्पादक</Label><Input type="number" value={formData.active_producers} onChange={e => setFormData({...formData, active_producers: e.target.value})} className="h-8 text-[10px] border-black" /></div>
                         <div className="space-y-1"><Label className="text-[8px] font-black uppercase">निष्क्रिय उत्पादक</Label><Input type="number" value={formData.inactive_producers} onChange={e => setFormData({...formData, inactive_producers: e.target.value})} className="h-8 text-[10px] border-black" /></div>
+                        <div className="space-y-1"><Label className="text-[8px] font-black uppercase">स्थापना वर्ष</Label><Input value={formData.start_year} placeholder="YYYY" onChange={e => setFormData({...formData, start_year: e.target.value})} className="h-8 text-[10px] border-black" /></div>
                       </div>
                     </div>
 
@@ -508,32 +575,63 @@ function SuppliersContent() {
 
                     <div className="space-y-4">
                       <div className="flex items-center justify-between border-b-2 border-primary/30 pb-1"><h4 className="text-[10px] font-black uppercase text-primary">४) २+ वर्ष जुने उत्पादक</h4><Button size="sm" onClick={() => addDynamicRow('longTermProducers', { producer_name: "", previous_milk: 0, current_milk: 0, previous_animals: 0, current_animals: 0 })} className="h-6 text-[8px] uppercase">जोडा</Button></div>
-                      <div className="space-y-2">
-                        {formData.longTermProducers.map(p => (
-                          <div key={p.id} className="grid grid-cols-12 gap-2 p-2 bg-slate-50 border border-black rounded-xl items-end">
-                            <div className="col-span-4"><Input value={p.producer_name} placeholder="नाव" onChange={e => updateDynamicRow('longTermProducers', p.id, { producer_name: e.target.value })} className="h-7 text-[9px] border-black" /></div>
-                            <div className="col-span-2"><Input type="number" value={p.previous_milk} placeholder="जुने दूध" onChange={e => updateDynamicRow('longTermProducers', p.id, { previous_milk: e.target.value })} className="h-7 text-[9px] border-black" /></div>
-                            <div className="col-span-2"><Input type="number" value={p.current_milk} placeholder="नवे दूध" onChange={e => updateDynamicRow('longTermProducers', p.id, { current_milk: e.target.value })} className="h-7 text-[9px] border-black" /></div>
-                            <div className="col-span-3 flex gap-1"><Input type="number" value={p.previous_animals} placeholder="ज-जुनी" onChange={e => updateDynamicRow('longTermProducers', p.id, { previous_animals: e.target.value })} className="h-7 text-[9px] border-black p-1" /><Input type="number" value={p.current_animals} placeholder="ज-नवी" onChange={e => updateDynamicRow('longTermProducers', p.id, { current_animals: e.target.value })} className="h-7 text-[9px] border-black p-1" /></div>
-                            <div className="col-span-1"><Button variant="ghost" size="icon" onClick={() => removeDynamicRow('longTermProducers', p.id)} className="h-7 w-7 text-rose-500"><X className="h-3.5 w-3.5"/></Button></div>
-                          </div>
-                        ))}
+                      <div className="overflow-x-auto border border-black rounded-xl">
+                        <table className="w-full text-left border-collapse">
+                          <thead className="bg-slate-100 text-[9px] font-black uppercase border-b border-black text-center">
+                            <tr>
+                              <th className="p-2 border-r border-black text-left">नाव</th>
+                              <th className="p-2 border-r border-black">जुने दूध</th>
+                              <th className="p-2 border-r border-black">सध्याचे दूध</th>
+                              <th className="p-2 border-r border-black">जुनी जनावरे</th>
+                              <th className="p-2 border-r border-black">सध्याची जनावरे</th>
+                              <th className="p-2">क्रिया</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {formData.longTermProducers.map(p => (
+                              <tr key={p.id} className="border-b border-black last:border-0 bg-white">
+                                <td className="p-1 border-r border-black"><Input value={p.producer_name} onChange={e => updateDynamicRow('longTermProducers', p.id, { producer_name: e.target.value })} className="h-7 text-[10px] border-none bg-transparent" /></td>
+                                <td className="p-1 border-r border-black"><Input type="number" value={p.previous_milk} onChange={e => updateDynamicRow('longTermProducers', p.id, { previous_milk: e.target.value })} className="h-7 text-[10px] border-none text-center bg-transparent" /></td>
+                                <td className="p-1 border-r border-black"><Input type="number" value={p.current_milk} onChange={e => updateDynamicRow('longTermProducers', p.id, { current_milk: e.target.value })} className="h-7 text-[10px] border-none text-center bg-transparent" /></td>
+                                <td className="p-1 border-r border-black"><Input type="number" value={p.previous_animals} onChange={e => updateDynamicRow('longTermProducers', p.id, { previous_animals: e.target.value })} className="h-7 text-[10px] border-none text-center bg-transparent" /></td>
+                                <td className="p-1 border-r border-black"><Input type="number" value={p.current_animals} onChange={e => updateDynamicRow('longTermProducers', p.id, { current_animals: e.target.value })} className="h-7 text-[10px] border-none text-center bg-transparent" /></td>
+                                <td className="p-1 text-center"><Button variant="ghost" size="icon" onClick={() => removeDynamicRow('longTermProducers', p.id)} className="h-7 w-7 text-rose-500"><Trash2 className="h-4 w-4"/></Button></td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
                       </div>
                     </div>
 
                     <div className="space-y-4">
                        <div className="flex items-center justify-between border-b-2 border-rose-300 pb-1"><h4 className="text-[10px] font-black uppercase text-rose-600">५) दूध कमी झालेले उत्पादक</h4><Button size="sm" onClick={() => addDynamicRow('decreasingProducers', { producer_name: "", previous_milk: 0, current_milk: 0, previous_animals: 0, current_animals: 0, reason: "" })} className="h-6 text-[8px] uppercase bg-rose-600">जोडा</Button></div>
-                       <div className="space-y-2">
-                        {formData.decreasingProducers.map(p => (
-                          <div key={p.id} className="p-2 bg-rose-50/50 border border-black rounded-xl space-y-2">
-                            <div className="grid grid-cols-12 gap-2 items-end">
-                              <div className="col-span-4"><Input value={p.producer_name} placeholder="नाव" onChange={e => updateDynamicRow('decreasingProducers', p.id, { producer_name: e.target.value })} className="h-7 text-[9px] border-black" /></div>
-                              <div className="col-span-3 flex gap-1"><Input type="number" value={p.previous_milk} placeholder="जुने" onChange={e => updateDynamicRow('decreasingProducers', p.id, { previous_milk: e.target.value })} className="h-7 text-[9px] border-black p-1" /><Input type="number" value={p.current_milk} placeholder="नवे" onChange={e => updateDynamicRow('decreasingProducers', p.id, { current_milk: e.target.value })} className="h-7 text-[9px] border-black p-1" /></div>
-                              <div className="col-span-4"><Input value={p.reason} placeholder="कारण" onChange={e => updateDynamicRow('decreasingProducers', p.id, { reason: e.target.value })} className="h-7 text-[9px] border-black" /></div>
-                              <div className="col-span-1"><Button variant="ghost" size="icon" onClick={() => removeDynamicRow('decreasingProducers', p.id)} className="h-7 w-7 text-rose-400"><X className="h-3.5 w-3.5"/></Button></div>
-                            </div>
-                          </div>
-                        ))}
+                       <div className="overflow-x-auto border border-black rounded-xl">
+                        <table className="w-full text-left border-collapse">
+                          <thead className="bg-rose-50 text-[9px] font-black uppercase border-b border-black text-rose-900 text-center">
+                            <tr>
+                              <th className="p-2 border-r border-black text-left">नाव</th>
+                              <th className="p-2 border-r border-black">जुने दूध</th>
+                              <th className="p-2 border-r border-black">नवे दूध</th>
+                              <th className="p-2 border-r border-black">जुनी जनावरे</th>
+                              <th className="p-2 border-r border-black">सध्याची जनावरे</th>
+                              <th className="p-2 border-r border-black">कारण</th>
+                              <th className="p-2">क्रिया</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {formData.decreasingProducers.map(p => (
+                              <tr key={p.id} className="border-b border-black last:border-0 bg-white">
+                                <td className="p-1 border-r border-black"><Input value={p.producer_name} onChange={e => updateDynamicRow('decreasingProducers', p.id, { producer_name: e.target.value })} className="h-7 text-[10px] border-none bg-transparent" /></td>
+                                <td className="p-1 border-r border-black"><Input type="number" value={p.previous_milk} onChange={e => updateDynamicRow('decreasingProducers', p.id, { previous_milk: e.target.value })} className="h-7 text-[10px] border-none text-center bg-transparent" /></td>
+                                <td className="p-1 border-r border-black"><Input type="number" value={p.current_milk} onChange={e => updateDynamicRow('decreasingProducers', p.id, { current_milk: e.target.value })} className="h-7 text-[10px] border-none text-center bg-transparent" /></td>
+                                <td className="p-1 border-r border-black"><Input type="number" value={p.previous_animals} onChange={e => updateDynamicRow('decreasingProducers', p.id, { previous_animals: e.target.value })} className="h-7 text-[10px] border-none text-center bg-transparent" /></td>
+                                <td className="p-1 border-r border-black"><Input type="number" value={p.current_animals} onChange={e => updateDynamicRow('decreasingProducers', p.id, { current_animals: e.target.value })} className="h-7 text-[10px] border-none text-center bg-transparent" /></td>
+                                <td className="p-1 border-r border-black"><Input value={p.reason} onChange={e => updateDynamicRow('decreasingProducers', p.id, { reason: e.target.value })} className="h-7 text-[10px] border-none bg-transparent" /></td>
+                                <td className="p-1 text-center"><Button variant="ghost" size="icon" onClick={() => removeDynamicRow('decreasingProducers', p.id)} className="h-7 w-7 text-rose-500"><Trash2 className="h-4 w-4"/></Button></td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
                        </div>
                     </div>
 
@@ -545,17 +643,28 @@ function SuppliersContent() {
                           </div>
                           {formData.can_expand_8_10_cows && (
                             <div className="space-y-2">
-                               <Button size="sm" variant="outline" className="h-6 text-[8px] uppercase w-full border-black" onClick={() => addDynamicRow('highCapacityProducers', { name: "", current_milk: 0, supply_years: 0, current_animals: 0, land: "", fodder_available: "YES", shed_available: "YES" })}>उत्पादक जोडा</Button>
-                               {formData.highCapacityProducers.map(p => (
-                                 <div key={p.id} className="p-2 border rounded bg-slate-50 space-y-2">
-                                   <Input value={p.name} placeholder="नाव" onChange={e => updateDynamicRow('highCapacityProducers', p.id, { name: e.target.value })} className="h-7 text-[9px] border-black" />
-                                   <div className="grid grid-cols-2 gap-1">
-                                     <Input type="number" placeholder="दूध" onChange={e => updateDynamicRow('highCapacityProducers', p.id, { current_milk: e.target.value })} className="h-7 text-[9px] border-black" />
-                                     <Input placeholder="शेती" onChange={e => updateDynamicRow('highCapacityProducers', p.id, { land: e.target.value })} className="h-7 text-[9px] border-black" />
-                                   </div>
-                                   <Button variant="ghost" size="sm" onClick={() => removeDynamicRow('highCapacityProducers', p.id)} className="h-7 w-full text-rose-500 text-[8px]">काढा</Button>
-                                 </div>
-                               ))}
+                               <Button size="sm" variant="outline" className="h-6 text-[8px] uppercase w-full border-black" onClick={() => addDynamicRow('highCapacityProducers', { name: "", current_milk: 0, puravtha_varsh: "", current_animals: 0, land: "", fodder_available: "होय (YES)", shed_available: "होय (YES)" })}>उत्पादक जोडा</Button>
+                               <div className="overflow-x-auto border border-black rounded-xl mt-2">
+                                <table className="w-full text-left border-collapse text-[8px]">
+                                  <thead className="bg-slate-50 font-black uppercase border-b border-black text-center">
+                                    <tr><th>नाव</th><th>दूध</th><th>वर्षे</th><th>जनावरे</th><th>शेती</th><th>चारा</th><th>शेड</th><th>X</th></tr>
+                                  </thead>
+                                  <tbody>
+                                    {formData.highCapacityProducers.map(p => (
+                                      <tr key={p.id} className="border-b border-black last:border-0 bg-white text-center">
+                                        <td><Input value={p.name} onChange={e => updateDynamicRow('highCapacityProducers', p.id, { name: e.target.value })} className="h-6 text-[8px] border-none" /></td>
+                                        <td><Input type="number" value={p.current_milk} onChange={e => updateDynamicRow('highCapacityProducers', p.id, { current_milk: e.target.value })} className="h-6 text-[8px] border-none p-0 text-center" /></td>
+                                        <td><Input value={p.puravtha_varsh} onChange={e => updateDynamicRow('highCapacityProducers', p.id, { puravtha_varsh: e.target.value })} className="h-6 text-[8px] border-none p-0 text-center" /></td>
+                                        <td><Input type="number" value={p.current_animals} onChange={e => updateDynamicRow('highCapacityProducers', p.id, { current_animals: e.target.value })} className="h-6 text-[8px] border-none p-0 text-center" /></td>
+                                        <td><Input value={p.land} onChange={e => updateDynamicRow('highCapacityProducers', p.id, { land: e.target.value })} className="h-6 text-[8px] border-none p-0 text-center" /></td>
+                                        <td><select value={p.fodder_available} onChange={e => updateDynamicRow('highCapacityProducers', p.id, { fodder_available: e.target.value })} className="text-[7px]"><option value="होय (YES)">YES</option><option value="नाही (NO)">NO</option></select></td>
+                                        <td><select value={p.shed_available} onChange={e => updateDynamicRow('highCapacityProducers', p.id, { shed_available: e.target.value })} className="text-[7px]"><option value="होय (YES)">YES</option><option value="नाही (NO)">NO</option></select></td>
+                                        <td><Button variant="ghost" size="icon" onClick={() => removeDynamicRow('highCapacityProducers', p.id)} className="h-5 w-5 text-rose-500"><X className="h-3 w-3"/></Button></td>
+                                      </tr>
+                                    ))}
+                                  </tbody>
+                                </table>
+                               </div>
                             </div>
                           )}
                        </div>
@@ -566,10 +675,25 @@ function SuppliersContent() {
                           </div>
                           {formData.has_100_plus_milk && (
                             <div className="space-y-2">
-                               <Button size="sm" variant="outline" className="h-6 text-[8px] uppercase w-full border-black" onClick={() => addDynamicRow('highMilkProducers', { name: "" })}>उत्पादक जोडा</Button>
-                               {formData.highMilkProducers.map(p => (
-                                 <div key={p.id} className="flex gap-1"><Input value={p.name} onChange={e => updateDynamicRow('highMilkProducers', p.id, { name: e.target.value })} className="h-7 text-[9px] border-black" /><Button size="icon" variant="ghost" onClick={() => removeDynamicRow('highMilkProducers', p.id)} className="h-7 w-7 text-rose-400"><X className="h-3.5 w-3.5"/></Button></div>
-                               ))}
+                               <Button size="sm" variant="outline" className="h-6 text-[8px] uppercase w-full border-black" onClick={() => addDynamicRow('highMilkProducers', { name: "", cows_count: 0, buffalo_count: 0, current_milk: 0 })}>उत्पादक जोडा</Button>
+                               <div className="overflow-x-auto border border-black rounded-xl mt-2">
+                                  <table className="w-full text-left border-collapse text-[8px]">
+                                    <thead className="bg-slate-50 font-black uppercase border-b border-black text-center">
+                                      <tr><th>नाव</th><th>गाई</th><th>म्हशी</th><th>दूध</th><th>X</th></tr>
+                                    </thead>
+                                    <tbody>
+                                      {formData.highMilkProducers.map(p => (
+                                        <tr key={p.id} className="border-b border-black last:border-0 bg-white text-center">
+                                          <td className="text-left pl-1"><Input value={p.name} onChange={e => updateDynamicRow('highMilkProducers', p.id, { name: e.target.value })} className="h-6 text-[8px] border-none" /></td>
+                                          <td><Input type="number" value={p.cows_count} onChange={e => updateDynamicRow('highMilkProducers', p.id, { cows_count: e.target.value })} className="h-6 text-[8px] border-none text-center" /></td>
+                                          <td><Input type="number" value={p.buffalo_count} onChange={e => updateDynamicRow('highMilkProducers', p.id, { buffalo_count: e.target.value })} className="h-6 text-[8px] border-none text-center" /></td>
+                                          <td><Input type="number" value={p.current_milk} onChange={e => updateDynamicRow('highMilkProducers', p.id, { current_milk: e.target.value })} className="h-6 text-[8px] border-none text-center" /></td>
+                                          <td><Button size="icon" variant="ghost" onClick={() => removeDynamicRow('highMilkProducers', p.id)} className="h-5 w-5 text-rose-400"><X className="h-3 w-3"/></Button></td>
+                                        </tr>
+                                      ))}
+                                    </tbody>
+                                  </table>
+                               </div>
                             </div>
                           )}
                        </div>
@@ -585,37 +709,49 @@ function SuppliersContent() {
                     </div>
 
                     <div className="space-y-4">
-                       <div className="flex items-center justify-between border-b-2 border-indigo-300 pb-1"><h4 className="text-[10px] font-black uppercase text-indigo-700">परिसरातील डेअरी कर्मचारी माहिती</h4><Button size="sm" onClick={() => addDynamicRow('localEmployees', { name: "", land: "", animals: 0, current_supply_to: "" })} className="h-7 text-[8px] uppercase bg-indigo-600 hover:bg-indigo-700">कर्मचारी जोडा</Button></div>
-                       <div className="space-y-2">
-                        {formData.localEmployees.map(it => (
-                          <div key={it.id} className="p-3 bg-indigo-50/30 border border-black rounded-xl space-y-3">
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                              <Input value={it.name} placeholder="कर्मचारी नाव" onChange={e => updateDynamicRow('localEmployees', it.id, { name: e.target.value })} className="h-8 text-[10px] border-black" />
-                              <Input value={it.land} placeholder="शेती" onChange={e => updateDynamicRow('localEmployees', it.id, { land: e.target.value })} className="h-8 text-[10px] border-black text-center" />
-                              <Input type="number" value={it.animals} placeholder="जनावरे" onChange={e => updateDynamicRow('localEmployees', it.id, { animals: e.target.value })} className="h-8 text-[10px] border-black text-center" />
-                              <Input value={it.current_supply_to} placeholder="पुरवठा" onChange={e => updateDynamicRow('localEmployees', it.id, { current_supply_to: e.target.value })} className="h-8 text-[10px] border-black" />
-                              <Button variant="ghost" size="sm" onClick={() => removeDynamicRow('localEmployees', it.id)} className="h-8 text-rose-500"><Trash2 className="h-4 w-4" /></Button>
-                            </div>
-                          </div>
-                        ))}
+                       <div className="flex items-center justify-between border-b-2 border-indigo-300 pb-1"><h4 className="text-[10px] font-black uppercase text-indigo-700">परिसरातील डेअरी कर्मचारी माहिती</h4><Button size="sm" onClick={() => addDynamicRow('localEmployees', { name: "", land: "", cows_count: 0, buffalo_count: 0, total_supply: "" })} className="h-7 text-[8px] uppercase bg-indigo-600 hover:bg-indigo-700">कर्मचारी जोडा</Button></div>
+                       <div className="overflow-x-auto border border-black rounded-xl">
+                        <table className="w-full text-left border-collapse text-[8px]">
+                          <thead className="bg-indigo-50/50 font-black uppercase border-b border-black text-indigo-900 text-center">
+                            <tr><th>नाव</th><th>शेती</th><th>गाई</th><th>म्हशी</th><th>पुरवठा</th><th>X</th></tr>
+                          </thead>
+                          <tbody>
+                            {formData.localEmployees.map(it => (
+                              <tr key={it.id} className="border-b border-black last:border-0 bg-white text-center">
+                                <td className="text-left pl-1"><Input value={it.name} onChange={e => updateDynamicRow('localEmployees', it.id, { name: e.target.value })} className="h-7 text-[8px] border-none" /></td>
+                                <td><Input value={it.land} onChange={e => updateDynamicRow('localEmployees', it.id, { land: e.target.value })} className="h-7 text-[8px] border-none text-center" /></td>
+                                <td><Input type="number" value={it.cows_count} onChange={e => updateDynamicRow('localEmployees', it.id, { cows_count: e.target.value })} className="h-7 text-[8px] border-none text-center" /></td>
+                                <td><Input type="number" value={it.buffalo_count} onChange={e => updateDynamicRow('localEmployees', it.id, { buffalo_count: e.target.value })} className="h-7 text-[8px] border-none text-center" /></td>
+                                <td><Input value={it.total_supply} onChange={e => updateDynamicRow('localEmployees', it.id, { total_supply: e.target.value })} className="h-7 text-[8px] border-none text-center" /></td>
+                                <td><Button variant="ghost" size="icon" onClick={() => removeDynamicRow('localEmployees', it.id)} className="h-5 w-5 text-rose-500"><X className="h-3 w-3" /></Button></td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
                        </div>
                     </div>
 
                     <div className="space-y-4">
                        <div className="flex items-center justify-between border-b-2 border-amber-300 pb-1"><h4 className="text-[10px] font-black uppercase text-amber-700">परिसरातील गवळी (आपल्या डेअरीचे)</h4><Button size="sm" onClick={() => addDynamicRow('localGavali', { name: "", code: "", gay_dudh: 0, mhais_dudh: 0, producers: 0 })} className="h-7 text-[8px] uppercase bg-amber-600 hover:bg-amber-700">गवळी जोडा</Button></div>
-                       <div className="space-y-2">
-                        {formData.localGavali.map(it => (
-                          <div key={it.id} className="p-3 bg-amber-50/30 border border-black rounded-xl space-y-3">
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                              <Input value={it.name} placeholder="नाव" onChange={e => updateDynamicRow('localGavali', it.id, { name: e.target.value })} className="h-8 text-[10px] border-black" />
-                              <Input value={it.code} placeholder="कोड" onChange={e => updateDynamicRow('localGavali', it.id, { code: e.target.value })} className="h-8 text-[10px] border-black" />
-                              <Input type="number" value={it.gay_dudh} placeholder="गाय दूध" onChange={e => updateDynamicRow('localGavali', it.id, { gay_dudh: e.target.value, total_milk: Number(e.target.value) + Number(it.mhais_dudh) })} className="h-8 text-[10px] border-black text-center" />
-                              <Input type="number" value={it.mhais_dudh} placeholder="म्हेस दूध" onChange={e => updateDynamicRow('localGavali', it.id, { mhais_dudh: e.target.value, total_milk: Number(e.target.value) + Number(it.gay_dudh) })} className="h-8 text-[10px] border-black text-center" />
-                              <Input type="number" value={it.producers} placeholder="उत्पादक" onChange={e => updateDynamicRow('localGavali', it.id, { producers: e.target.value })} className="h-8 text-[10px] border-black text-center" />
-                              <Button variant="ghost" size="sm" onClick={() => removeDynamicRow('localGavali', it.id)} className="h-8 text-rose-500"><Trash2 className="h-4 w-4" /></Button>
-                            </div>
-                          </div>
-                        ))}
+                       <div className="overflow-x-auto border border-black rounded-xl">
+                        <table className="w-full text-left border-collapse text-[8px]">
+                          <thead className="bg-amber-50/50 font-black uppercase border-b border-black text-amber-900 text-center">
+                            <tr><th>नाव</th><th>कोड</th><th>गाय दूध</th><th>म्हेस दूध</th><th>एकूण</th><th>उत्पादक</th><th>X</th></tr>
+                          </thead>
+                          <tbody>
+                            {formData.localGavali.map(it => (
+                              <tr key={it.id} className="border-b border-black last:border-0 bg-white text-center">
+                                <td className="text-left pl-1"><Input value={it.name} onChange={e => updateDynamicRow('localGavali', it.id, { name: e.target.value })} className="h-7 text-[8px] border-none" /></td>
+                                <td><Input value={it.code} onChange={e => updateDynamicRow('localGavali', it.id, { code: e.target.value })} className="h-7 text-[8px] border-none text-center" /></td>
+                                <td><Input type="number" value={it.gay_dudh} onChange={e => updateDynamicRow('localGavali', it.id, { gay_dudh: e.target.value })} className="h-7 text-[8px] border-none text-center" /></td>
+                                <td><Input type="number" value={it.mhais_dudh} onChange={e => updateDynamicRow('localGavali', it.id, { mhais_dudh: e.target.value })} className="h-7 text-[8px] border-none text-center" /></td>
+                                <td className="font-black text-primary">{(Number(it.gay_dudh) + Number(it.mhais_dudh)).toFixed(1)}</td>
+                                <td><Input type="number" value={it.producers} onChange={e => updateDynamicRow('localGavali', it.id, { producers: e.target.value })} className="h-7 text-[8px] border-none text-center" /></td>
+                                <td><Button variant="ghost" size="sm" onClick={() => removeDynamicRow('localGavali', it.id)} className="h-5 w-5 text-rose-500"><X className="h-3 w-3" /></Button></td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
                        </div>
                     </div>
                 </div>
@@ -889,32 +1025,48 @@ function SuppliersContent() {
 
                     <div className="space-y-4">
                       <div className="flex items-center justify-between border-b-2 border-primary/30 pb-1"><h4 className="text-[10px] font-black uppercase text-primary">४) २+ वर्ष जुने उत्पादक</h4><Button size="sm" onClick={() => addDynamicRow('longTermProducers', { producer_name: "", previous_milk: 0, current_milk: 0, previous_animals: 0, current_animals: 0 })} className="h-6 text-[8px] uppercase">जोडा</Button></div>
-                      <div className="space-y-2">
-                        {formData.longTermProducers.map(p => (
-                          <div key={p.id} className="grid grid-cols-12 gap-2 p-2 bg-slate-50 border border-black rounded-xl items-end">
-                            <div className="col-span-4"><Input value={p.producer_name} placeholder="नाव" onChange={e => updateDynamicRow('longTermProducers', p.id, { producer_name: e.target.value })} className="h-7 text-[9px] border-black" /></div>
-                            <div className="col-span-2"><Input type="number" value={p.previous_milk} placeholder="जुने दूध" onChange={e => updateDynamicRow('longTermProducers', p.id, { previous_milk: e.target.value })} className="h-7 text-[9px] border-black" /></div>
-                            <div className="col-span-2"><Input type="number" value={p.current_milk} placeholder="नवे दूध" onChange={e => updateDynamicRow('longTermProducers', p.id, { current_milk: e.target.value })} className="h-7 text-[9px] border-black" /></div>
-                            <div className="col-span-3 flex gap-1"><Input type="number" value={p.previous_animals} placeholder="ज-जुनी" onChange={e => updateDynamicRow('longTermProducers', p.id, { previous_animals: e.target.value })} className="h-7 text-[9px] border-black p-1" /><Input type="number" value={p.current_animals} placeholder="ज-नवी" onChange={e => updateDynamicRow('longTermProducers', p.id, { current_animals: e.target.value })} className="h-7 text-[9px] border-black p-1" /></div>
-                            <div className="col-span-1"><Button variant="ghost" size="icon" onClick={() => removeDynamicRow('longTermProducers', p.id)} className="h-7 w-7 text-rose-500"><X className="h-3.5 w-3.5"/></Button></div>
-                          </div>
-                        ))}
+                      <div className="overflow-x-auto border border-black rounded-xl">
+                        <table className="w-full text-left border-collapse text-[8px]">
+                          <thead className="bg-slate-100 font-black uppercase border-b border-black text-center">
+                            <tr><th>नाव</th><th>जुने दूध</th><th>सध्याचे दूध</th><th>जुनी जनावरे</th><th>सध्याची जनावरे</th><th>X</th></tr>
+                          </thead>
+                          <tbody>
+                            {formData.longTermProducers.map(p => (
+                              <tr key={p.id} className="border-b border-black last:border-0 bg-white text-center">
+                                <td className="text-left pl-1"><Input value={p.producer_name} onChange={e => updateDynamicRow('longTermProducers', p.id, { producer_name: e.target.value })} className="h-6 text-[8px] border-none" /></td>
+                                <td><Input type="number" value={p.previous_milk} onChange={e => updateDynamicRow('longTermProducers', p.id, { previous_milk: e.target.value })} className="h-6 text-[8px] border-none text-center" /></td>
+                                <td><Input type="number" value={p.current_milk} onChange={e => updateDynamicRow('longTermProducers', p.id, { current_milk: e.target.value })} className="h-6 text-[8px] border-none text-center" /></td>
+                                <td><Input type="number" value={p.previous_animals} onChange={e => updateDynamicRow('longTermProducers', p.id, { previous_animals: e.target.value })} className="h-6 text-[8px] border-none text-center" /></td>
+                                <td><Input type="number" value={p.current_animals} onChange={e => updateDynamicRow('longTermProducers', p.id, { current_animals: e.target.value })} className="h-6 text-[8px] border-none text-center" /></td>
+                                <td><Button variant="ghost" size="icon" onClick={() => removeDynamicRow('longTermProducers', p.id)} className="h-5 w-5 text-rose-500"><X className="h-3 w-3"/></Button></td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
                       </div>
                     </div>
 
                     <div className="space-y-4">
                        <div className="flex items-center justify-between border-b-2 border-rose-300 pb-1"><h4 className="text-[10px] font-black uppercase text-rose-600">५) दूध कमी झालेले उत्पादक</h4><Button size="sm" onClick={() => addDynamicRow('decreasingProducers', { producer_name: "", previous_milk: 0, current_milk: 0, previous_animals: 0, current_animals: 0, reason: "" })} className="h-6 text-[8px] uppercase bg-rose-600">जोडा</Button></div>
-                       <div className="space-y-2">
-                        {formData.decreasingProducers.map(p => (
-                          <div key={p.id} className="p-2 bg-rose-50/50 border border-black rounded-xl space-y-2">
-                            <div className="grid grid-cols-12 gap-2 items-end">
-                              <div className="col-span-4"><Input value={p.producer_name} placeholder="नाव" onChange={e => updateDynamicRow('decreasingProducers', p.id, { producer_name: e.target.value })} className="h-7 text-[9px] border-black" /></div>
-                              <div className="col-span-3 flex gap-1"><Input type="number" value={p.previous_milk} placeholder="जुने" onChange={e => updateDynamicRow('decreasingProducers', p.id, { previous_milk: e.target.value })} className="h-7 text-[9px] border-black p-1" /><Input type="number" value={p.current_milk} placeholder="नवे" onChange={e => updateDynamicRow('decreasingProducers', p.id, { current_milk: e.target.value })} className="h-7 text-[9px] border-black p-1" /></div>
-                              <div className="col-span-4"><Input value={p.reason} placeholder="कारण" onChange={e => updateDynamicRow('decreasingProducers', p.id, { reason: e.target.value })} className="h-7 text-[9px] border-black" /></div>
-                              <div className="col-span-1"><Button variant="ghost" size="icon" onClick={() => removeDynamicRow('decreasingProducers', p.id)} className="h-7 w-7 text-rose-400"><X className="h-3.5 w-3.5"/></Button></div>
-                            </div>
-                          </div>
-                        ))}
+                       <div className="overflow-x-auto border border-black rounded-xl">
+                        <table className="w-full text-left border-collapse text-[8px]">
+                          <thead className="bg-rose-50 font-black uppercase border-b border-black text-rose-900 text-center">
+                            <tr><th>नाव</th><th>जुने दूध</th><th>नवे दूध</th><th>जुनी जनावरे</th><th>सध्याची जनावरे</th><th>कारण</th><th>X</th></tr>
+                          </thead>
+                          <tbody>
+                            {formData.decreasingProducers.map(p => (
+                              <tr key={p.id} className="border-b border-black last:border-0 bg-white text-center">
+                                <td className="text-left pl-1"><Input value={p.producer_name} onChange={e => updateDynamicRow('decreasingProducers', p.id, { producer_name: e.target.value })} className="h-6 text-[8px] border-none" /></td>
+                                <td><Input type="number" value={p.previous_milk} onChange={e => updateDynamicRow('decreasingProducers', p.id, { previous_milk: e.target.value })} className="h-6 text-[8px] border-none text-center" /></td>
+                                <td><Input type="number" value={p.current_milk} onChange={e => updateDynamicRow('decreasingProducers', p.id, { current_milk: e.target.value })} className="h-6 text-[8px] border-none text-center" /></td>
+                                <td><Input type="number" value={p.previous_animals} onChange={e => updateDynamicRow('decreasingProducers', p.id, { previous_animals: e.target.value })} className="h-6 text-[8px] border-none text-center" /></td>
+                                <td><Input type="number" value={p.current_animals} onChange={e => updateDynamicRow('decreasingProducers', p.id, { current_animals: e.target.value })} className="h-6 text-[8px] border-none text-center" /></td>
+                                <td><Input value={p.reason} onChange={e => updateDynamicRow('decreasingProducers', p.id, { reason: e.target.value })} className="h-6 text-[8px] border-none" /></td>
+                                <td><Button variant="ghost" size="icon" onClick={() => removeDynamicRow('decreasingProducers', p.id)} className="h-5 w-5 text-rose-500"><X className="h-3 w-3"/></Button></td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
                        </div>
                     </div>
 
@@ -926,15 +1078,15 @@ function SuppliersContent() {
                           </div>
                           {formData.can_expand_8_10_cows && (
                             <div className="space-y-2">
-                               <Button size="sm" variant="outline" className="h-6 text-[8px] uppercase w-full border-black" onClick={() => addDynamicRow('highCapacityProducers', { name: "", current_milk: 0, supply_years: 0, current_animals: 0, land: "", fodder_available: "YES", shed_available: "YES" })}>उत्पादक जोडा</Button>
+                               <Button size="sm" variant="outline" className="h-6 text-[8px] uppercase w-full border-black" onClick={() => addDynamicRow('highCapacityProducers', { name: "", current_milk: 0, puravtha_varsh: "", current_animals: 0, land: "", fodder_available: "होय (YES)", shed_available: "होय (YES)" })}>उत्पादक जोडा</Button>
                                {formData.highCapacityProducers.map(p => (
-                                 <div key={p.id} className="p-2 border rounded bg-slate-50 space-y-2">
-                                   <Input value={p.name} placeholder="नाव" onChange={e => updateDynamicRow('highCapacityProducers', p.id, { name: e.target.value })} className="h-7 text-[9px] border-black" />
+                                 <div key={p.id} className="p-2 border rounded bg-slate-50 space-y-1">
+                                   <Input value={p.name} placeholder="नाव" onChange={e => updateDynamicRow('highCapacityProducers', p.id, { name: e.target.value })} className="h-6 text-[8px] border-black" />
                                    <div className="grid grid-cols-2 gap-1">
-                                     <Input type="number" placeholder="दूध" onChange={e => updateDynamicRow('highCapacityProducers', p.id, { current_milk: e.target.value })} className="h-7 text-[9px] border-black" />
-                                     <Input placeholder="शेती" onChange={e => updateDynamicRow('highCapacityProducers', p.id, { land: e.target.value })} className="h-7 text-[9px] border-black" />
+                                      <Input type="number" placeholder="दूध" onChange={e => updateDynamicRow('highCapacityProducers', p.id, { current_milk: e.target.value })} className="h-6 text-[8px] border-black" />
+                                      <Input placeholder="वर्षे" onChange={e => updateDynamicRow('highCapacityProducers', p.id, { puravtha_varsh: e.target.value })} className="h-6 text-[8px] border-black" />
                                    </div>
-                                   <Button variant="ghost" size="sm" onClick={() => removeDynamicRow('highCapacityProducers', p.id)} className="h-7 w-full text-rose-500 text-[8px]">काढा</Button>
+                                   <Button variant="ghost" size="sm" onClick={() => removeDynamicRow('highCapacityProducers', p.id)} className="h-5 w-full text-rose-500 text-[7px]">X</Button>
                                  </div>
                                ))}
                             </div>
@@ -947,9 +1099,12 @@ function SuppliersContent() {
                           </div>
                           {formData.has_100_plus_milk && (
                             <div className="space-y-2">
-                               <Button size="sm" variant="outline" className="h-6 text-[8px] uppercase w-full border-black" onClick={() => addDynamicRow('highMilkProducers', { name: "" })}>उत्पादक जोडा</Button>
+                               <Button size="sm" variant="outline" className="h-6 text-[8px] uppercase w-full border-black" onClick={() => addDynamicRow('highMilkProducers', { name: "", cows_count: 0, buffalo_count: 0, current_milk: 0 })}>उत्पादक जोडा</Button>
                                {formData.highMilkProducers.map(p => (
-                                 <div key={p.id} className="flex gap-1"><Input value={p.name} onChange={e => updateDynamicRow('highMilkProducers', p.id, { name: e.target.value })} className="h-7 text-[9px] border-black" /><Button size="icon" variant="ghost" onClick={() => removeDynamicRow('highMilkProducers', p.id)} className="h-7 w-7 text-rose-400"><X className="h-3.5 w-3.5"/></Button></div>
+                                 <div key={p.id} className="p-2 border rounded bg-slate-50 space-y-1">
+                                   <Input value={p.name} placeholder="नाव" onChange={e => updateDynamicRow('highMilkProducers', p.id, { name: e.target.value })} className="h-6 text-[8px] border-black" />
+                                   <Button variant="ghost" size="sm" onClick={() => removeDynamicRow('highMilkProducers', p.id)} className="h-5 w-full text-rose-500 text-[7px]">X</Button>
+                                 </div>
                                ))}
                             </div>
                           )}
@@ -966,37 +1121,49 @@ function SuppliersContent() {
                     </div>
 
                     <div className="space-y-4">
-                       <div className="flex items-center justify-between border-b-2 border-indigo-300 pb-1"><h4 className="text-[10px] font-black uppercase text-indigo-700">परिसरातील डेअरी कर्मचारी माहिती</h4><Button size="sm" onClick={() => addDynamicRow('localEmployees', { name: "", land: "", animals: 0, current_supply_to: "" })} className="h-7 text-[8px] uppercase bg-indigo-600 hover:bg-indigo-700">कर्मचारी जोडा</Button></div>
-                       <div className="space-y-2">
-                        {formData.localEmployees.map(it => (
-                          <div key={it.id} className="p-3 bg-indigo-50/30 border border-black rounded-xl space-y-3">
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                              <Input value={it.name} placeholder="कर्मचारी नाव" onChange={e => updateDynamicRow('localEmployees', it.id, { name: e.target.value })} className="h-8 text-[10px] border-black" />
-                              <Input value={it.land} placeholder="शेती" onChange={e => updateDynamicRow('localEmployees', it.id, { land: e.target.value })} className="h-8 text-[10px] border-black text-center" />
-                              <Input type="number" value={it.animals} placeholder="जनावरे" onChange={e => updateDynamicRow('localEmployees', it.id, { animals: e.target.value })} className="h-8 text-[10px] border-black text-center" />
-                              <Input value={it.current_supply_to} placeholder="पुरवठा" onChange={e => updateDynamicRow('localEmployees', it.id, { current_supply_to: e.target.value })} className="h-8 text-[10px] border-black" />
-                              <Button variant="ghost" size="sm" onClick={() => removeDynamicRow('localEmployees', it.id)} className="h-8 text-rose-500"><Trash2 className="h-4 w-4" /></Button>
-                            </div>
-                          </div>
-                        ))}
+                       <div className="flex items-center justify-between border-b-2 border-indigo-300 pb-1"><h4 className="text-[10px] font-black uppercase text-indigo-700">परिसरातील डेअरी कर्मचारी माहिती</h4><Button size="sm" onClick={() => addDynamicRow('localEmployees', { name: "", land: "", cows_count: 0, buffalo_count: 0, total_supply: "" })} className="h-7 text-[8px] uppercase bg-indigo-600 hover:bg-indigo-700">कर्मचारी जोडा</Button></div>
+                       <div className="overflow-x-auto border border-black rounded-xl">
+                        <table className="w-full text-left border-collapse text-[8px]">
+                          <thead className="bg-indigo-50/50 font-black uppercase border-b border-black text-indigo-900 text-center">
+                            <tr><th>नाव</th><th>शेती</th><th>गाई</th><th>म्हशी</th><th>पुरवठा</th><th>X</th></tr>
+                          </thead>
+                          <tbody>
+                            {formData.localEmployees.map(it => (
+                              <tr key={it.id} className="border-b border-black last:border-0 bg-white text-center">
+                                <td className="text-left pl-1"><Input value={it.name} onChange={e => updateDynamicRow('localEmployees', it.id, { name: e.target.value })} className="h-7 text-[8px] border-none" /></td>
+                                <td><Input value={it.land} onChange={e => updateDynamicRow('localEmployees', it.id, { land: e.target.value })} className="h-7 text-[8px] border-none text-center" /></td>
+                                <td><Input type="number" value={it.cows_count} onChange={e => updateDynamicRow('localEmployees', it.id, { cows_count: e.target.value })} className="h-7 text-[8px] border-none text-center" /></td>
+                                <td><Input type="number" value={it.buffalo_count} onChange={e => updateDynamicRow('localEmployees', it.id, { buffalo_count: e.target.value })} className="h-7 text-[8px] border-none text-center" /></td>
+                                <td><Input value={it.total_supply} onChange={e => updateDynamicRow('localEmployees', it.id, { total_supply: e.target.value })} className="h-7 text-[8px] border-none text-center" /></td>
+                                <td><Button variant="ghost" size="sm" onClick={() => removeDynamicRow('localEmployees', it.id)} className="h-6 text-rose-500 text-[8px]">X</Button></td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
                        </div>
                     </div>
 
                     <div className="space-y-4">
                        <div className="flex items-center justify-between border-b-2 border-amber-300 pb-1"><h4 className="text-[10px] font-black uppercase text-amber-700">परिसरातील गवळी (आपल्या डेअरीचे)</h4><Button size="sm" onClick={() => addDynamicRow('localGavali', { name: "", code: "", gay_dudh: 0, mhais_dudh: 0, producers: 0 })} className="h-7 text-[8px] uppercase bg-amber-600 hover:bg-amber-700">गवळी जोडा</Button></div>
-                       <div className="space-y-2">
-                        {formData.localGavali.map(it => (
-                          <div key={it.id} className="p-3 bg-amber-50/30 border border-black rounded-xl space-y-3">
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                              <Input value={it.name} placeholder="नाव" onChange={e => updateDynamicRow('localGavali', it.id, { name: e.target.value })} className="h-8 text-[10px] border-black" />
-                              <Input value={it.code} placeholder="कोड" onChange={e => updateDynamicRow('localGavali', it.id, { code: e.target.value })} className="h-8 text-[10px] border-black" />
-                              <Input type="number" value={it.gay_dudh} placeholder="गाय दूध" onChange={e => updateDynamicRow('localGavali', it.id, { gay_dudh: e.target.value, total_milk: Number(e.target.value) + Number(it.mhais_dudh) })} className="h-8 text-[10px] border-black text-center" />
-                              <Input type="number" value={it.mhais_dudh} placeholder="म्हेस दूध" onChange={e => updateDynamicRow('localGavali', it.id, { mhais_dudh: e.target.value, total_milk: Number(e.target.value) + Number(it.gay_dudh) })} className="h-8 text-[10px] border-black text-center" />
-                              <Input type="number" value={it.producers} placeholder="उत्पादक" onChange={e => updateDynamicRow('localGavali', it.id, { producers: e.target.value })} className="h-8 text-[10px] border-black text-center" />
-                              <Button variant="ghost" size="sm" onClick={() => removeDynamicRow('localGavali', it.id)} className="h-8 text-rose-500"><Trash2 className="h-4 w-4" /></Button>
-                            </div>
-                          </div>
-                        ))}
+                       <div className="overflow-x-auto border border-black rounded-xl">
+                        <table className="w-full text-left border-collapse text-[8px]">
+                          <thead className="bg-amber-50/50 font-black uppercase border-b border-black text-amber-900 text-center">
+                            <tr><th>नाव</th><th>कोड</th><th>गाय दूध</th><th>म्हेस दूध</th><th>एकूण</th><th>उत्पादक</th><th>X</th></tr>
+                          </thead>
+                          <tbody>
+                            {formData.localGavali.map(it => (
+                              <tr key={it.id} className="border-b border-black last:border-0 bg-white text-center">
+                                <td className="text-left pl-1"><Input value={it.name} onChange={e => updateDynamicRow('localGavali', it.id, { name: e.target.value })} className="h-7 text-[8px] border-none" /></td>
+                                <td><Input value={it.code} onChange={e => updateDynamicRow('localGavali', it.id, { code: e.target.value })} className="h-7 text-[8px] border-none text-center" /></td>
+                                <td><Input type="number" value={it.gay_dudh} onChange={e => updateDynamicRow('localGavali', it.id, { gay_dudh: e.target.value })} className="h-7 text-[8px] border-none text-center" /></td>
+                                <td><Input type="number" value={it.mhais_dudh} onChange={e => updateDynamicRow('localGavali', it.id, { mhais_dudh: e.target.value })} className="h-7 text-[8px] border-none text-center" /></td>
+                                <td className="font-black">{(Number(it.gay_dudh) + Number(it.mhais_dudh)).toFixed(1)}</td>
+                                <td><Input type="number" value={it.producers} onChange={e => updateDynamicRow('localGavali', it.id, { producers: e.target.value })} className="h-7 text-[8px] border-none text-center" /></td>
+                                <td><Button variant="ghost" size="sm" onClick={() => removeDynamicRow('localGavali', it.id)} className="h-6 text-rose-500 text-[8px]">X</Button></td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
                        </div>
                     </div>
                 </div>
@@ -1051,14 +1218,11 @@ function SuppliersContent() {
             </div>
           </ScrollArea>
           <DialogFooter className="p-4 border-t bg-muted/5 flex flex-row gap-2">
-            <Button onClick={handleAddSupplier} className="w-full font-black uppercase text-[10px] h-11 rounded-xl shadow-2xl shadow-primary/20 tracking-widest transition-all active:scale-95"><CheckCircle2 className="h-4 w-4 mr-1.5" /> प्रोफाइल जतन करा</Button>
+            <Button variant="outline" onClick={() => setIsEditing(false)} className="flex-1 h-10 rounded-xl font-black uppercase text-[10px] border-primary/20">रद्द</Button>
+            <Button onClick={handleUpdateSupplier} className="flex-[2] h-10 rounded-xl shadow-xl shadow-primary/20 font-black uppercase text-[10px] tracking-widest transition-all active:scale-95"><CheckCircle2 className="h-4 w-4 mr-1.5" /> बदल जतन करा</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
   )
-}
-
-export default function SuppliersPage() {
-  return <Suspense fallback={<div className="p-10 text-center font-black uppercase text-[10px] opacity-50">लोड होत आहे...</div>}><SuppliersContent /></Suspense>
 }
