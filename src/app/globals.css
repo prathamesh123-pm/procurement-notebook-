@@ -63,7 +63,7 @@ h1, h2, h3, h4 {
 }
 
 /* Updated Borders for all inputs - Black & Bold as requested */
-input, textarea, select, .shadcn-input-like, button[role="combobox"] {
+input, textarea, select, .shadcn-input-like, button[role="combobox"], .border-black {
   border: 1.5px solid #000 !important;
 }
 

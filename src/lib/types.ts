@@ -47,6 +47,9 @@ export type SupplierType = 'Gavali' | 'Gotha' | 'Center';
 export interface ProducerCenterAdditionalDetails {
   morning_collection_time?: string;
   evening_collection_time?: string;
+  start_year?: string;
+  start_milk?: number;
+  current_total_milk?: number;
   total_producers?: number;
   active_producers?: number;
   inactive_producers?: number;
@@ -72,7 +75,7 @@ export interface ProducerCenterAdditionalDetails {
 
 export interface Supplier {
   id: string;
-  supplierId: string; // Manual Business ID
+  supplierId: string;
   name: string;
   address: string;
   mobile: string;
@@ -83,7 +86,6 @@ export interface Supplier {
   cowMilk?: MilkMetrics;
   buffaloMilk?: MilkMetrics;
   adulterationKitInfo?: string;
-  // Procurement specific fields
   iceBlocks?: number;
   scaleBrand?: string;
   fatMachineBrand?: string;
@@ -91,14 +93,12 @@ export interface Supplier {
   cattleFeedBrand?: string;
   fssaiNumber?: string;
   fssaiExpiry?: string;
-  // Center specific fields (Unified)
   operatorName?: string;
   village?: string;
   paymentCycle?: string;
   spaceOwnership?: 'Self' | 'Rented';
   hygieneGrade?: string;
   additionalNotes?: string;
-  // Material tracking
   milkCansCount?: number;
   computerAvailable?: boolean;
   upsInverterAvailable?: boolean;
@@ -106,7 +106,6 @@ export interface Supplier {
   chemicalsStock?: string;
   batteryCondition?: string;
   equipment?: EquipmentItem[];
-  // NEW ADDITIONS
   producer_center?: {
     additional_details?: ProducerCenterAdditionalDetails;
   };
@@ -142,7 +141,6 @@ export interface ChillingCenter {
   waterSource?: string;
   powerBackup?: string;
   hygieneGrade?: string;
-  // Audit points
   hasTransportLicenses: boolean;
   pestControlDone: boolean;
   staffHealthCheckDone: boolean;
