@@ -1,7 +1,6 @@
-
 "use client"
 
-import { useState, useEffect, useMemo } from "react"
+import { useState, useEffect, useMemo, Suspense } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -11,8 +10,8 @@ import { Supplier, EquipmentItem, SupplierType, Route } from "@/lib/types"
 import { 
   Plus, Search, User, 
   Truck, Edit, ChevronRight, ArrowLeft, X, Laptop, Zap, Sun, Trash2, Milk, Box, Wallet, 
-  ShieldCheck, Printer, CheckCircle2, ListPlus, Clock, Layers, Users, TrendingDown, 
-  IndianRupee, History, Briefcase, Hash, Info, FileText, MapPin, Lightbulb, PlusCircle
+  ShieldCheck, Printer, CheckCircle2, Clock, Layers, Users, TrendingDown, 
+  IndianRupee, History, Briefcase, Info, FileText, MapPin, Lightbulb
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
@@ -31,9 +30,8 @@ const SectionTitle = ({ icon: Icon, title, color = "text-primary" }: any) => (
   </div>
 )
 
-const ProducerCenterLayout = ({ supplier }: { supplier: Supplier }) => {
-  const d = supplier;
-  const details = d.producer_center?.additional_details || {};
+const ProducerCenterReportView = ({ supplier }: { supplier: Supplier }) => {
+  const details = supplier.producer_center?.additional_details || {};
 
   return (
     <div className="w-full space-y-8 animate-in fade-in duration-500">
@@ -61,113 +59,113 @@ const ProducerCenterLayout = ({ supplier }: { supplier: Supplier }) => {
 
       <div className="space-y-4 text-left">
          <h4 className="text-[11px] font-black uppercase text-primary border-b-2 border-black pb-1">५) २+ वर्ष जुने उत्पादक</h4>
-         <div className="overflow-x-auto border-2 border-black">
-         <table className="w-full border-collapse text-[10px]">
-           <thead className="bg-slate-100 font-black">
-             <tr className="border-b-2 border-black text-center">
-               <th className="p-2 border-r border-black text-left">नाव</th>
-               <th className="p-2 border-r border-black">जुने दूध</th>
-               <th className="p-2 border-r border-black">सध्याचे दूध</th>
-               <th className="p-2 border-r border-black">जुनी जनावरे</th>
-               <th className="p-2">सध्याची जनावरे</th>
-             </tr>
-           </thead>
-           <tbody>
-             {(details.long_term_producers || []).map((p: any, i: number) => (
-               <tr key={i} className="border-b border-black font-bold text-center">
-                 <td className="p-2 border-r border-black text-left">{p.producer_name}</td>
-                 <td className="p-2 border-r border-black">{p.previous_milk} L</td>
-                 <td className="p-2 border-r border-black">{p.current_milk} L</td>
-                 <td className="p-2 border-r border-black">{p.previous_animals}</td>
-                 <td className="p-2">{p.current_animals}</td>
+         <div className="overflow-x-auto border-2 border-black rounded-lg">
+           <table className="w-full border-collapse text-[10px] min-w-[500px]">
+             <thead className="bg-slate-100 font-black">
+               <tr className="border-b-2 border-black text-center">
+                 <th className="p-2 border-r border-black text-left">नाव</th>
+                 <th className="p-2 border-r border-black">जुने दूध</th>
+                 <th className="p-2 border-r border-black">सध्याचे दूध</th>
+                 <th className="p-2 border-r border-black">जुनी जनावरे</th>
+                 <th className="p-2">सध्याची जनावरे</th>
                </tr>
-             ))}
-           </tbody>
-         </table>
+             </thead>
+             <tbody>
+               {(details.long_term_producers || []).map((p: any, i: number) => (
+                 <tr key={i} className="border-b border-black font-bold text-center">
+                   <td className="p-2 border-r border-black text-left">{p.producer_name}</td>
+                   <td className="p-2 border-r border-black">{p.previous_milk} L</td>
+                   <td className="p-2 border-r border-black">{p.current_milk} L</td>
+                   <td className="p-2 border-r border-black">{p.previous_animals}</td>
+                   <td className="p-2">{p.current_animals}</td>
+                 </tr>
+               ))}
+             </tbody>
+           </table>
          </div>
       </div>
 
       <div className="space-y-4 text-left">
          <h4 className="text-[11px] font-black uppercase text-rose-700 border-b-2 border-black pb-1">६) दूध घटलेले उत्पादक विश्लेषण</h4>
-         <div className="overflow-x-auto border-2 border-black">
-         <table className="w-full border-collapse text-[10px]">
-           <thead className="bg-rose-50 font-black text-rose-900">
-             <tr className="border-b-2 border-black text-center">
-               <th className="p-2 border-r border-black text-left">नाव</th>
-               <th className="p-2 border-r border-black">जुने दूध</th>
-               <th className="p-2 border-r border-black">नवे दूध</th>
-               <th className="p-2 border-r border-black">जुनी जनावरे</th>
-               <th className="p-2 border-r border-black">सध्याची जनावरे</th>
-               <th className="p-2 text-left">कारण</th>
-             </tr>
-           </thead>
-           <tbody>
-             {(details.decreasing_producers || []).map((p: any, i: number) => (
-               <tr key={i} className="border-b border-black font-bold text-center">
-                 <td className="p-2 border-r border-black text-left">{p.producer_name}</td>
-                 <td className="p-2 border-r border-black">{p.previous_milk} L</td>
-                 <td className="p-2 border-r border-black">{p.current_milk} L</td>
-                 <td className="p-2 border-r border-black">{p.previous_animals}</td>
-                 <td className="p-2 border-r border-black">{p.current_animals}</td>
-                 <td className="p-2 text-left text-rose-600">{p.reason}</td>
+         <div className="overflow-x-auto border-2 border-black rounded-lg">
+           <table className="w-full border-collapse text-[10px] min-w-[600px]">
+             <thead className="bg-rose-50 font-black text-rose-900">
+               <tr className="border-b-2 border-black text-center">
+                 <th className="p-2 border-r border-black text-left">नाव</th>
+                 <th className="p-2 border-r border-black">जुने दूध</th>
+                 <th className="p-2 border-r border-black">नवे दूध</th>
+                 <th className="p-2 border-r border-black">जुनी जनावरे</th>
+                 <th className="p-2 border-r border-black">सध्याची जनावरे</th>
+                 <th className="p-2 text-left">कारण</th>
                </tr>
-             ))}
-           </tbody>
-         </table>
+             </thead>
+             <tbody>
+               {(details.decreasing_producers || []).map((p: any, i: number) => (
+                 <tr key={i} className="border-b border-black font-bold text-center">
+                   <td className="p-2 border-r border-black text-left">{p.producer_name}</td>
+                   <td className="p-2 border-r border-black">{p.previous_milk} L</td>
+                   <td className="p-2 border-r border-black">{p.current_milk} L</td>
+                   <td className="p-2 border-r border-black">{p.previous_animals}</td>
+                   <td className="p-2 border-r border-black">{p.current_animals}</td>
+                   <td className="p-2 text-left text-rose-600">{p.reason}</td>
+                 </tr>
+               ))}
+             </tbody>
+           </table>
          </div>
       </div>
 
       <div className="space-y-4 text-left">
         <SectionTitle icon={ShieldCheck} title="११) LSS सुविधा माहिती" />
-        <div className="overflow-x-auto border-2 border-black">
-        <table className="w-full border-collapse text-[9px]">
-          <thead className="bg-slate-50 font-black">
-            <tr className="border-b-2 border-black text-center">
-              <th className="p-1 border-r border-black text-left pl-2">सुविधा नाव</th>
-              <th className="p-1 border-r border-black text-center">स्थिती</th>
-              <th className="p-1 text-left pl-2">शेरा</th>
-            </tr>
-          </thead>
-          <tbody>
-            {(details.lss_details || []).map((l: any, i: number) => (
-              <tr key={i} className="border-b border-black font-bold last:border-0">
-                <td className="p-1 border-r border-black text-left pl-2 uppercase">{l.item}</td>
-                <td className="p-1 border-r border-black text-center">{l.status}</td>
-                <td className="p-1 text-left pl-2">{l.remarks}</td>
+        <div className="overflow-x-auto border-2 border-black rounded-lg">
+          <table className="w-full border-collapse text-[9px] min-w-[400px]">
+            <thead className="bg-slate-50 font-black">
+              <tr className="border-b-2 border-black text-center">
+                <th className="p-1 border-r border-black text-left pl-2">सुविधा नाव</th>
+                <th className="p-1 border-r border-black text-center">स्थिती</th>
+                <th className="p-1 text-left pl-2">शेरा</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {(details.lss_details || []).map((l: any, i: number) => (
+                <tr key={i} className="border-b border-black font-bold last:border-0">
+                  <td className="p-1 border-r border-black text-left pl-2 uppercase">{l.item}</td>
+                  <td className="p-1 border-r border-black text-center">{l.status}</td>
+                  <td className="p-1 text-left pl-2">{l.remarks}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
 
       <div className="space-y-4 text-left">
         <SectionTitle icon={Truck} title="१२) अंतर्गत रूट माहिती (SUB-ROUTES)" color="text-emerald-700" />
-        <div className="overflow-x-auto border-2 border-black">
-        <table className="w-full border-collapse text-[9px]">
-          <thead className="bg-emerald-50 font-black uppercase">
-            <tr className="border-b-2 border-black text-center">
-              <th className="p-1 border-r border-black">गाडी</th>
-              <th className="p-1 border-r border-black">किमी</th>
-              <th className="p-1 border-r border-black">परिसर</th>
-              <th className="p-1 border-r border-black">उत्पादक</th>
-              <th className="p-1 border-r border-black">जनावरे</th>
-              <th className="p-1">दूध (L)</th>
-            </tr>
-          </thead>
-          <tbody>
-            {(details.sub_routes || []).map((r: any, i: number) => (
-              <tr key={i} className="border-b border-black font-bold text-center last:border-0">
-                <td className="p-1 border-r border-black uppercase">{r.vehicleType}</td>
-                <td className="p-1 border-r border-black">{r.km}</td>
-                <td className="p-1 border-r border-black uppercase">{r.area}</td>
-                <td className="p-1 border-r border-black">{r.producerCount}</td>
-                <td className="p-1 border-r border-black">{r.animalCount}</td>
-                <td className="p-1">{r.milkQty}</td>
+        <div className="overflow-x-auto border-2 border-black rounded-lg">
+          <table className="w-full border-collapse text-[9px] min-w-[500px]">
+            <thead className="bg-emerald-50 font-black uppercase">
+              <tr className="border-b-2 border-black text-center">
+                <th className="p-1 border-r border-black">गाडी</th>
+                <th className="p-1 border-r border-black">किमी</th>
+                <th className="p-1 border-r border-black">परिसर</th>
+                <th className="p-1 border-r border-black">उत्पादक</th>
+                <th className="p-1 border-r border-black">जनावरे</th>
+                <th className="p-1">दूध (L)</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {(details.sub_routes || []).map((r: any, i: number) => (
+                <tr key={i} className="border-b border-black font-bold text-center last:border-0">
+                  <td className="p-1 border-r border-black uppercase">{r.vehicleType}</td>
+                  <td className="p-1 border-r border-black">{r.km}</td>
+                  <td className="p-1 border-r border-black uppercase">{r.area}</td>
+                  <td className="p-1 border-r border-black">{r.producerCount}</td>
+                  <td className="p-1 border-r border-black">{r.animalCount}</td>
+                  <td className="p-1">{r.milkQty}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
 
@@ -179,7 +177,7 @@ const ProducerCenterLayout = ({ supplier }: { supplier: Supplier }) => {
   );
 };
 
-export default function RouteDetailsPage() {
+function RouteDetailsContent() {
   const params = useParams()
   const router = useRouter()
   const currentRouteId = params.id as string
@@ -392,7 +390,7 @@ export default function RouteDetailsPage() {
           <Button variant="ghost" size="icon" onClick={() => router.push('/routes')} className="rounded-full shrink-0"><ArrowLeft className="h-5 w-5" /></Button>
           <div className="min-w-0">
             <h2 className="text-lg font-black uppercase truncate">{route?.name || "रूट माहिती"}</h2>
-            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Management</p>
+            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Route Management</p>
           </div>
         </div>
         <Button onClick={openAddDialog} className="h-10 font-black rounded-xl text-[10px] uppercase tracking-widest px-6 shadow-lg shadow-primary/20">
@@ -418,7 +416,7 @@ export default function RouteDetailsPage() {
                   </div>
                   <div className="flex items-center gap-2 mt-1">
                     <Badge variant="outline" className="h-4 px-1.5 text-[7px] font-black bg-primary/5 text-primary border-none">ID: {s.supplierId}</Badge>
-                    <span className="text-[9px] text-muted-foreground font-bold">{s.address}</span>
+                    <span className="text-[9px] text-muted-foreground font-bold truncate">{s.address}</span>
                   </div>
                 </div>
               ))}
@@ -464,7 +462,7 @@ export default function RouteDetailsPage() {
                   </div>
                 </div>
 
-                {selectedSupplier.supplierType === 'Center' && <ProducerCenterLayout supplier={selectedSupplier} />}
+                {selectedSupplier.supplierType === 'Center' && <ProducerCenterReportView supplier={selectedSupplier} />}
 
                 <div className="w-full mt-auto pt-24 grid grid-cols-2 gap-24 text-center uppercase font-black text-[11pt] tracking-[0.2em]">
                   <div className="border-t-2 border-black pt-3">अधिकृत स्वाक्षरी</div>
@@ -489,7 +487,7 @@ export default function RouteDetailsPage() {
             <DialogTitle className="text-base font-black uppercase tracking-widest">{dialogMode === 'add' ? 'नवीन सप्लायर' : 'माहिती अद्ययावत करा'}</DialogTitle>
             <DialogDescription className="text-[9px] text-white/70 uppercase">सप्लायरचा सविस्तर तपशील भरा.</DialogDescription>
           </DialogHeader>
-          <ScrollArea className="max-h-[85vh] p-4 md:p-8 text-left">
+          <ScrollArea className="max-h-[80vh] p-4 md:p-8 text-left">
             <div className="space-y-10 pb-20">
               <div className="space-y-4">
                 <SectionTitle icon={User} title="१) प्राथमिक माहिती" />
@@ -712,7 +710,7 @@ export default function RouteDetailsPage() {
             </div>
           </ScrollArea>
           <DialogFooter className="p-4 border-t bg-muted/5 flex flex-row gap-2">
-            <Button onClick={handleAddSupplier} className="w-full font-black uppercase text-[10px] h-12 rounded-2xl shadow-xl shadow-primary/20 tracking-widest transition-all active:scale-95"><CheckCircle2 className="h-5 w-5 mr-1.5" /> प्रोफाइल जतन करा</Button>
+            <Button onClick={handleSaveSupplier} className="w-full font-black uppercase text-[10px] h-12 rounded-2xl shadow-xl shadow-primary/20 tracking-widest transition-all active:scale-95"><CheckCircle2 className="h-4 w-4 mr-1.5" /> प्रोफाइल जतन करा</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -720,6 +718,10 @@ export default function RouteDetailsPage() {
   )
 }
 
-export default function SuppliersPage() {
-  return <Suspense fallback={<div className="p-10 text-center font-black uppercase text-[10px] opacity-50">लोड होत आहे...</div>}><SuppliersContent /></Suspense>
+export default function RouteDetailsPage() {
+  return (
+    <Suspense fallback={<div className="p-10 text-center font-black uppercase text-[10px] opacity-50">लोड होत आहे...</div>}>
+      <RouteDetailsContent />
+    </Suspense>
+  )
 }

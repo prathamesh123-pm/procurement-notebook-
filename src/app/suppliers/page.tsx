@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect, useMemo, Suspense } from "react"
@@ -32,9 +31,8 @@ const SectionTitle = ({ icon: Icon, title, color = "text-primary" }: any) => (
   </div>
 )
 
-const ProducerCenterLayout = ({ supplier }: { supplier: Supplier }) => {
-  const d = supplier;
-  const details = d.producer_center?.additional_details || {};
+const ProducerCenterReportView = ({ supplier }: { supplier: Supplier }) => {
+  const details = supplier.producer_center?.additional_details || {};
 
   return (
     <div className="w-full space-y-8 animate-in fade-in duration-500">
@@ -62,113 +60,113 @@ const ProducerCenterLayout = ({ supplier }: { supplier: Supplier }) => {
 
       <div className="space-y-4 text-left">
          <h4 className="text-[11px] font-black uppercase text-primary border-b-2 border-black pb-1">५) २+ वर्ष जुने उत्पादक</h4>
-         <div className="overflow-x-auto border-2 border-black">
-         <table className="w-full border-collapse text-[10px]">
-           <thead className="bg-slate-100 font-black">
-             <tr className="border-b-2 border-black text-center">
-               <th className="p-2 border-r border-black text-left">नाव</th>
-               <th className="p-2 border-r border-black">जुने दूध</th>
-               <th className="p-2 border-r border-black">सध्याचे दूध</th>
-               <th className="p-2 border-r border-black">जुनी जनावरे</th>
-               <th className="p-2">सध्याची जनावरे</th>
-             </tr>
-           </thead>
-           <tbody>
-             {(details.long_term_producers || []).map((p: any, i: number) => (
-               <tr key={i} className="border-b border-black font-bold text-center">
-                 <td className="p-2 border-r border-black text-left">{p.producer_name}</td>
-                 <td className="p-2 border-r border-black">{p.previous_milk} L</td>
-                 <td className="p-2 border-r border-black">{p.current_milk} L</td>
-                 <td className="p-2 border-r border-black">{p.previous_animals}</td>
-                 <td className="p-2">{p.current_animals}</td>
+         <div className="overflow-x-auto border-2 border-black rounded-lg">
+           <table className="w-full border-collapse text-[10px] min-w-[500px]">
+             <thead className="bg-slate-100 font-black">
+               <tr className="border-b-2 border-black text-center">
+                 <th className="p-2 border-r border-black text-left">नाव</th>
+                 <th className="p-2 border-r border-black">जुने दूध</th>
+                 <th className="p-2 border-r border-black">सध्याचे दूध</th>
+                 <th className="p-2 border-r border-black">जुनी जनावरे</th>
+                 <th className="p-2">सध्याची जनावरे</th>
                </tr>
-             ))}
-           </tbody>
-         </table>
+             </thead>
+             <tbody>
+               {(details.long_term_producers || []).map((p: any, i: number) => (
+                 <tr key={i} className="border-b border-black font-bold text-center">
+                   <td className="p-2 border-r border-black text-left">{p.producer_name}</td>
+                   <td className="p-2 border-r border-black">{p.previous_milk} L</td>
+                   <td className="p-2 border-r border-black">{p.current_milk} L</td>
+                   <td className="p-2 border-r border-black">{p.previous_animals}</td>
+                   <td className="p-2">{p.current_animals}</td>
+                 </tr>
+               ))}
+             </tbody>
+           </table>
          </div>
       </div>
 
       <div className="space-y-4 text-left">
          <h4 className="text-[11px] font-black uppercase text-rose-700 border-b-2 border-black pb-1">६) दूध घटलेले उत्पादक विश्लेषण</h4>
-         <div className="overflow-x-auto border-2 border-black">
-         <table className="w-full border-collapse text-[10px]">
-           <thead className="bg-rose-50 font-black text-rose-900">
-             <tr className="border-b-2 border-black text-center">
-               <th className="p-2 border-r border-black text-left">नाव</th>
-               <th className="p-2 border-r border-black">जुने दूध</th>
-               <th className="p-2 border-r border-black">नवे दूध</th>
-               <th className="p-2 border-r border-black">जुनी जनावरे</th>
-               <th className="p-2 border-r border-black">सध्याची जनावरे</th>
-               <th className="p-2 text-left">कारण</th>
-             </tr>
-           </thead>
-           <tbody>
-             {(details.decreasing_producers || []).map((p: any, i: number) => (
-               <tr key={i} className="border-b border-black font-bold text-center">
-                 <td className="p-2 border-r border-black text-left">{p.producer_name}</td>
-                 <td className="p-2 border-r border-black">{p.previous_milk} L</td>
-                 <td className="p-2 border-r border-black">{p.current_milk} L</td>
-                 <td className="p-2 border-r border-black">{p.previous_animals}</td>
-                 <td className="p-2 border-r border-black">{p.current_animals}</td>
-                 <td className="p-2 text-left text-rose-600">{p.reason}</td>
+         <div className="overflow-x-auto border-2 border-black rounded-lg">
+           <table className="w-full border-collapse text-[10px] min-w-[600px]">
+             <thead className="bg-rose-50 font-black text-rose-900">
+               <tr className="border-b-2 border-black text-center">
+                 <th className="p-2 border-r border-black text-left">नाव</th>
+                 <th className="p-2 border-r border-black">जुने दूध</th>
+                 <th className="p-2 border-r border-black">नवे दूध</th>
+                 <th className="p-2 border-r border-black">जुनी जनावरे</th>
+                 <th className="p-2 border-r border-black">सध्याची जनावरे</th>
+                 <th className="p-2 text-left">कारण</th>
                </tr>
-             ))}
-           </tbody>
-         </table>
+             </thead>
+             <tbody>
+               {(details.decreasing_producers || []).map((p: any, i: number) => (
+                 <tr key={i} className="border-b border-black font-bold text-center">
+                   <td className="p-2 border-r border-black text-left">{p.producer_name}</td>
+                   <td className="p-2 border-r border-black">{p.previous_milk} L</td>
+                   <td className="p-2 border-r border-black">{p.current_milk} L</td>
+                   <td className="p-2 border-r border-black">{p.previous_animals}</td>
+                   <td className="p-2 border-r border-black">{p.current_animals}</td>
+                   <td className="p-2 text-left text-rose-600">{p.reason}</td>
+                 </tr>
+               ))}
+             </tbody>
+           </table>
          </div>
       </div>
 
       <div className="space-y-4 text-left">
         <SectionTitle icon={ShieldCheck} title="११) LSS सुविधा माहिती" />
-        <div className="overflow-x-auto border-2 border-black">
-        <table className="w-full border-collapse text-[9px]">
-          <thead className="bg-slate-50 font-black">
-            <tr className="border-b-2 border-black text-center">
-              <th className="p-1 border-r border-black text-left pl-2">सुविधा नाव</th>
-              <th className="p-1 border-r border-black text-center">स्थिती</th>
-              <th className="p-1 text-left pl-2">शेरा</th>
-            </tr>
-          </thead>
-          <tbody>
-            {(details.lss_details || []).map((l: any, i: number) => (
-              <tr key={i} className="border-b border-black font-bold last:border-0">
-                <td className="p-1 border-r border-black text-left pl-2 uppercase">{l.item}</td>
-                <td className="p-1 border-r border-black text-center">{l.status}</td>
-                <td className="p-1 text-left pl-2">{l.remarks}</td>
+        <div className="overflow-x-auto border-2 border-black rounded-lg">
+          <table className="w-full border-collapse text-[9px] min-w-[400px]">
+            <thead className="bg-slate-50 font-black">
+              <tr className="border-b-2 border-black text-center">
+                <th className="p-1 border-r border-black text-left pl-2">सुविधा नाव</th>
+                <th className="p-1 border-r border-black text-center">स्थिती</th>
+                <th className="p-1 text-left pl-2">शेरा</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {(details.lss_details || []).map((l: any, i: number) => (
+                <tr key={i} className="border-b border-black font-bold last:border-0">
+                  <td className="p-1 border-r border-black text-left pl-2 uppercase">{l.item}</td>
+                  <td className="p-1 border-r border-black text-center">{l.status}</td>
+                  <td className="p-1 text-left pl-2">{l.remarks}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
 
       <div className="space-y-4 text-left">
         <SectionTitle icon={Truck} title="१२) अंतर्गत रूट माहिती (SUB-ROUTES)" color="text-emerald-700" />
-        <div className="overflow-x-auto border-2 border-black">
-        <table className="w-full border-collapse text-[9px]">
-          <thead className="bg-emerald-50 font-black uppercase">
-            <tr className="border-b-2 border-black text-center">
-              <th className="p-1 border-r border-black">गाडी</th>
-              <th className="p-1 border-r border-black">किमी</th>
-              <th className="p-1 border-r border-black">परिसर</th>
-              <th className="p-1 border-r border-black">उत्पादक</th>
-              <th className="p-1 border-r border-black">जनावरे</th>
-              <th className="p-1">दूध (L)</th>
-            </tr>
-          </thead>
-          <tbody>
-            {(details.sub_routes || []).map((r: any, i: number) => (
-              <tr key={i} className="border-b border-black font-bold text-center last:border-0">
-                <td className="p-1 border-r border-black uppercase">{r.vehicleType}</td>
-                <td className="p-1 border-r border-black">{r.km}</td>
-                <td className="p-1 border-r border-black uppercase">{r.area}</td>
-                <td className="p-1 border-r border-black">{r.producerCount}</td>
-                <td className="p-1 border-r border-black">{r.animalCount}</td>
-                <td className="p-1">{r.milkQty}</td>
+        <div className="overflow-x-auto border-2 border-black rounded-lg">
+          <table className="w-full border-collapse text-[9px] min-w-[500px]">
+            <thead className="bg-emerald-50 font-black uppercase">
+              <tr className="border-b-2 border-black text-center">
+                <th className="p-1 border-r border-black">गाडी</th>
+                <th className="p-1 border-r border-black">किमी</th>
+                <th className="p-1 border-r border-black">परिसर</th>
+                <th className="p-1 border-r border-black">उत्पादक</th>
+                <th className="p-1 border-r border-black">जनावरे</th>
+                <th className="p-1">दूध (L)</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {(details.sub_routes || []).map((r: any, i: number) => (
+                <tr key={i} className="border-b border-black font-bold text-center last:border-0">
+                  <td className="p-1 border-r border-black uppercase">{r.vehicleType}</td>
+                  <td className="p-1 border-r border-black">{r.km}</td>
+                  <td className="p-1 border-r border-black uppercase">{r.area}</td>
+                  <td className="p-1 border-r border-black">{r.producerCount}</td>
+                  <td className="p-1 border-r border-black">{r.animalCount}</td>
+                  <td className="p-1">{r.milkQty}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
 
@@ -543,20 +541,20 @@ function SuppliersContent() {
                     <div className="space-y-4">
                        <div className="flex items-center justify-between"><SectionTitle icon={TrendingDown} title="५) दूध घटलेले उत्पादक" color="text-rose-600" /><Button size="sm" onClick={() => addDynamicRow('decreasingProducers', { producer_name: "", previous_milk: 0, current_milk: 0, previous_animals: 0, current_animals: 0, reason: "" })} className="h-6 text-[8px] uppercase bg-rose-600">जोडा</Button></div>
                        <ScrollArea className="w-full border-2 border-black rounded-xl">
-                        <table className="w-full text-left border-collapse min-w-[600px]">
-                          <thead className="bg-rose-50 text-[9px] font-black uppercase border-b-2 border-black text-rose-900">
+                        <table className="w-full text-left border-collapse text-[8px]">
+                          <thead className="bg-rose-50 font-black uppercase border-b-2 border-black text-rose-900">
                             <tr><th>नाव</th><th>जुने दूध</th><th>नवे दूध</th><th>जुनी जनावरे</th><th>नवी जनावरे</th><th>कारण</th><th>X</th></tr>
                           </thead>
                           <tbody>
                             {formData.decreasingProducers.map(p => (
-                              <tr key={p.id} className="border-b-2 border-black last:border-0">
-                                <td><Input value={p.producer_name} onChange={e => updateDynamicRow('decreasingProducers', p.id, { producer_name: e.target.value })} className="h-7 border-none text-[10px]" /></td>
-                                <td><Input type="number" value={p.previous_milk} onChange={e => updateDynamicRow('decreasingProducers', p.id, { previous_milk: e.target.value })} className="h-7 border-none text-center" /></td>
-                                <td><Input type="number" value={p.current_milk} onChange={e => updateDynamicRow('decreasingProducers', p.id, { current_milk: e.target.value })} className="h-7 border-none text-center font-black" /></td>
-                                <td><Input type="number" value={p.previous_animals} onChange={e => updateDynamicRow('decreasingProducers', p.id, { previous_animals: e.target.value })} className="h-7 border-none text-center" /></td>
-                                <td><Input type="number" value={p.current_animals} onChange={e => updateDynamicRow('decreasingProducers', p.id, { current_animals: e.target.value })} className="h-7 border-none text-center font-black" /></td>
-                                <td><Input value={p.reason} onChange={e => updateDynamicRow('decreasingProducers', p.id, { reason: e.target.value })} className="h-7 border-none" /></td>
-                                <td className="text-center"><Button variant="ghost" size="icon" onClick={() => removeDynamicRow('decreasingProducers', p.id)} className="h-6 w-6 text-rose-500"><X className="h-3 w-3"/></Button></td>
+                              <tr key={p.id} className="border-b border-black last:border-0 bg-white text-center">
+                                <td className="text-left pl-1"><Input value={p.producer_name} onChange={e => updateDynamicRow('decreasingProducers', p.id, { producer_name: e.target.value })} className="h-7 text-[10px] border-none" /></td>
+                                <td><Input type="number" value={p.previous_milk} onChange={e => updateDynamicRow('decreasingProducers', p.id, { previous_milk: e.target.value })} className="h-6 text-[8px] border-none text-center" /></td>
+                                <td><Input type="number" value={p.current_milk} onChange={e => updateDynamicRow('decreasingProducers', p.id, { current_milk: e.target.value })} className="h-6 text-[8px] border-none text-center font-black" /></td>
+                                <td><Input type="number" value={p.previous_animals} onChange={e => updateDynamicRow('decreasingProducers', p.id, { previous_animals: e.target.value })} className="h-6 text-[8px] border-none text-center" /></td>
+                                <td><Input type="number" value={p.current_animals} onChange={e => updateDynamicRow('decreasingProducers', p.id, { current_animals: e.target.value })} className="h-6 text-[8px] border-none text-center font-black" /></td>
+                                <td><Input value={p.reason} onChange={e => updateDynamicRow('decreasingProducers', p.id, { reason: e.target.value })} className="h-6 text-[8px] border-none" /></td>
+                                <td><Button variant="ghost" size="icon" onClick={() => removeDynamicRow('decreasingProducers', p.id)} className="h-6 w-6 text-rose-500"><X className="h-3 w-3"/></Button></td>
                               </tr>
                             ))}
                           </tbody>
@@ -729,7 +727,7 @@ function SuppliersContent() {
                 </div>
               </div>
 
-              {selectedSupplier.supplierType === 'Center' && <ProducerCenterLayout supplier={selectedSupplier} />}
+              {selectedSupplier.supplierType === 'Center' && <ProducerCenterReportView supplier={selectedSupplier} />}
 
               <div className="w-full mt-12 pt-12 grid grid-cols-2 gap-10 text-center uppercase font-black text-[9pt] tracking-[0.2em]">
                 <div className="border-t border-black pt-2">अधिकृत स्वाक्षरी</div>
@@ -981,7 +979,7 @@ function SuppliersContent() {
                               <SelectContent><SelectItem value="Self" className="font-bold">स्वतः</SelectItem><SelectItem value="Company" className="font-bold">डेअरी</SelectItem></SelectContent>
                             </Select>
                           </div>
-                          <div className="col-span-1 flex justify-end"><Button variant="ghost" size="icon" onClick={() => removeEquipmentRow(item.id)} className="h-7 w-7 text-rose-400 p-0"><X className="h-3.5 w-3.5" /></Button></div>
+                          <div className="col-span-1 flex justify-end"><Button variant="ghost" size="icon" onClick={() => removeDynamicRow('equipment', item.id)} className="h-7 w-7 text-rose-400 p-0"><X className="h-3.5 w-3.5" /></Button></div>
                         </div>
                       ))}
                     </div>
@@ -991,7 +989,7 @@ function SuppliersContent() {
               </div>
             </ScrollArea>
             <DialogFooter className="p-4 border-t bg-muted/5 flex flex-row gap-2">
-              <Button onClick={handleAddSupplier} className="w-full font-black uppercase text-[10px] h-11 rounded-xl shadow-2xl shadow-primary/20 tracking-widest transition-all active:scale-95"><CheckCircle2 className="h-4 w-4 mr-1.5" /> प्रोफाइल जतन करा</Button>
+              <Button onClick={handleUpdateSupplier} className="w-full font-black uppercase text-[10px] h-11 rounded-xl shadow-2xl shadow-primary/20 tracking-widest transition-all active:scale-95"><CheckCircle2 className="h-4 w-4 mr-1.5" /> बदल जतन करा</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
