@@ -9,13 +9,15 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Supplier, Route, EquipmentItem, SupplierType } from "@/lib/types"
 import { 
-  Plus, Search, Filter, Phone, MapPin, Trash2, Milk, X, Laptop, Zap, Sun, ShieldAlert, History, Edit, CheckCircle2, Box, UserCheck, Wallet, User, Printer, Truck, ShieldCheck, Clock, Layers, TrendingDown, IndianRupee, Hash, ListPlus, Lightbulb, Info, FileText, PlusCircle, Briefcase
+  Plus, Search, Filter, Phone, MapPin, Trash2, Milk, X, Laptop, Zap, Sun, ShieldAlert, 
+  History, Edit, CheckCircle2, Box, UserCheck, Wallet, User, Printer, Truck, 
+  ShieldCheck, Clock, Layers, TrendingDown, IndianRupee, Hash, ListPlus, 
+  Lightbulb, Info, FileText, PlusCircle, Briefcase
 } from "lucide-react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogDescription } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
-import { Checkbox } from "@/components/ui/checkbox"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking } from "@/firebase"
 import { collection, doc } from "firebase/firestore"
@@ -141,7 +143,7 @@ const ProducerCenterLayout = ({ supplier }: { supplier: Supplier }) => {
       </div>
 
       <div className="space-y-4 text-left">
-        <SectionTitle icon={Emerald700Icon} title="१२) अंतर्गत रूट माहिती (SUB-ROUTES)" />
+        <SectionTitle icon={Truck} title="१२) अंतर्गत रूट माहिती (SUB-ROUTES)" color="text-emerald-700" />
         <div className="overflow-x-auto border-2 border-black">
         <table className="w-full border-collapse text-[9px]">
           <thead className="bg-emerald-50 font-black uppercase">
@@ -177,8 +179,6 @@ const ProducerCenterLayout = ({ supplier }: { supplier: Supplier }) => {
     </div>
   );
 };
-
-const Emerald700Icon = (props: any) => <Truck {...props} className={cn(props.className, "text-emerald-700")} />;
 
 function SuppliersContent() {
   const { user } = useUser()
@@ -423,6 +423,15 @@ function SuppliersContent() {
     setIsEditing(true)
   }
 
+  const deleteSupplier = (id: string) => {
+    if (!db || !user) return
+    if (confirm("तुम्हाला खात्री आहे की हा सप्लायर हटवायचा आहे?")) {
+      deleteDocumentNonBlocking(doc(db, 'users', user.uid, 'suppliers', id))
+      setSelectedSupplier(null)
+      toast({ title: "यशस्वी", description: "सप्लायर हटवला." })
+    }
+  }
+
   const filteredSuppliers = useMemo(() => {
     return (suppliers || []).filter(s => {
       const q = searchQuery.toLowerCase();
@@ -431,6 +440,11 @@ function SuppliersContent() {
       return matchesSearch && matchesRoute;
     })
   }, [suppliers, searchQuery, routeFilter])
+
+  const getRouteName = (rid: string) => {
+    if (!rid || rid === "none") return "Unassigned";
+    return routes?.find(r => r.id === rid)?.name || "Unknown Route"
+  }
 
   if (!mounted) return <div className="p-10 text-center font-black uppercase text-[10px] opacity-50">लोड होत आहे...</div>
 
@@ -470,7 +484,10 @@ function SuppliersContent() {
                       <Label className="text-[9px] font-black uppercase opacity-60">रूट निवडा</Label>
                       <Select value={formData.routeId} onValueChange={val => setFormData({...formData, routeId: val})}>
                         <SelectTrigger className="h-10 border-2 border-black rounded-xl font-bold"><SelectValue placeholder="रूट निवडा" /></SelectTrigger>
-                        <SelectContent>{(routes || []).map(r => <SelectItem key={r.id} value={r.id} className="font-bold">{r.name}</SelectItem>)}</SelectContent>
+                        <SelectContent>
+                          <SelectItem value="none" className="font-bold">रूट नाही</SelectItem>
+                          {(routes || []).map(r => <SelectItem key={r.id} value={r.id} className="font-bold">{r.name}</SelectItem>)}
+                        </SelectContent>
                       </Select>
                     </div>
                     <div className="sm:col-span-2 space-y-1"><Label className="text-[9px] font-black uppercase opacity-60">पत्ता</Label><Input value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} className="h-10 border-2 border-black font-bold rounded-xl" /></div>
@@ -524,7 +541,7 @@ function SuppliersContent() {
                     </div>
 
                     <div className="space-y-4">
-                       <div className="flex items-center justify-between"><SectionTitle icon={TrendingDown} title="५) दूध घटलेले उत्पादक" color="text-rose-600" /><Button size="sm" onClick={() => addDynamicRow('decreasingProducers', { producer_name: "", previous_milk: 0, current_milk: 0, previous_animals: 0, current_animals: 0, reason: "" })} className="h-7 text-[8px] uppercase bg-rose-600">जोडा</Button></div>
+                       <div className="flex items-center justify-between"><SectionTitle icon={TrendingDown} title="५) दूध घटलेले उत्पादक" color="text-rose-600" /><Button size="sm" onClick={() => addDynamicRow('decreasingProducers', { producer_name: "", previous_milk: 0, current_milk: 0, previous_animals: 0, current_animals: 0, reason: "" })} className="h-6 text-[8px] uppercase bg-rose-600">जोडा</Button></div>
                        <ScrollArea className="w-full border-2 border-black rounded-xl">
                         <table className="w-full text-left border-collapse min-w-[600px]">
                           <thead className="bg-rose-50 text-[9px] font-black uppercase border-b-2 border-black text-rose-900">
@@ -908,33 +925,33 @@ function SuppliersContent() {
                                 <td><Input type="number" value={r.animalCount} onChange={e => updateDynamicRow('subRoutes', r.id, { animalCount: e.target.value })} className="h-7 border-none" /></td>
                                 <td><Input type="number" value={r.milkQty} onChange={e => updateDynamicRow('subRoutes', r.id, { milkQty: e.target.value })} className="h-7 border-none font-black" /></td>
                                 <td className="text-center"><Button variant="ghost" size="icon" onClick={() => removeDynamicRow('subRoutes', r.id)} className="h-5 w-5 text-rose-500"><X className="h-3 w-3" /></Button></td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table><ScrollBar orientation="horizontal" /></ScrollArea>
-                    </div>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table><ScrollBar orientation="horizontal" /></ScrollArea>
+                  </div>
 
-                    <div className="space-y-4">
-                       <SectionTitle icon={Lightbulb} title="११) विशेष विश्लेषण & उपाययोजना" />
-                       <div className="space-y-4">
-                          <div className="space-y-1"><Label className="text-[10px] font-black uppercase">दूध कमी होण्याची कारणे</Label><Textarea value={formData.milk_decrease_reasons} onChange={e => setFormData({...formData, milk_decrease_reasons: e.target.value})} className="min-h-[80px] border-2 border-black" /></div>
-                          <div className="space-y-1"><Label className="text-[10px] font-black uppercase">सेंटरने केलेले प्रयत्न</Label><Textarea value={formData.efforts_taken} onChange={e => setFormData({...formData, efforts_taken: e.target.value})} className="min-h-[80px] border-2 border-black" /></div>
-                          <div className="space-y-1"><Label className="text-[10px] font-black uppercase">दूध वाढवण्यासाठी उपाय</Label><Textarea value={formData.required_actions} onChange={e => setFormData({...formData, required_actions: e.target.value})} className="min-h-[80px] border-2 border-black" /></div>
-                       </div>
-                    </div>
+                  <div className="space-y-4">
+                     <SectionTitle icon={Lightbulb} title="११) विशेष विश्लेषण & उपाययोजना" />
+                     <div className="space-y-4">
+                        <div className="space-y-1"><Label className="text-[10px] font-black uppercase">दूध कमी होण्याची कारणे</Label><Textarea value={formData.milk_decrease_reasons} onChange={e => setFormData({...formData, milk_decrease_reasons: e.target.value})} className="min-h-[80px] border-2 border-black" /></div>
+                        <div className="space-y-1"><Label className="text-[10px] font-black uppercase">सेंटरने केलेले प्रयत्न</Label><Textarea value={formData.efforts_taken} onChange={e => setFormData({...formData, efforts_taken: e.target.value})} className="min-h-[80px] border-2 border-black" /></div>
+                        <div className="space-y-1"><Label className="text-[10px] font-black uppercase">दूध वाढवण्यासाठी उपाय</Label><Textarea value={formData.required_actions} onChange={e => setFormData({...formData, required_actions: e.target.value})} className="min-h-[80px] border-2 border-black" /></div>
+                     </div>
+                  </div>
                 </div>
               )}
 
                 <div className="space-y-4">
                   <SectionTitle icon={ShieldCheck} title={formData.supplierType === 'Center' ? "१२) परवाना व तांत्रिक" : "२) परवाना व तांत्रिक"} />
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     <div className="space-y-1"><Label className="text-[9px] font-black uppercase opacity-60">FSSAI क्र.</Label><Input value={formData.fssaiNumber} onChange={e => setFormData({...formData, fssaiNumber: e.target.value})} className="h-10 border-2 border-black font-bold rounded-xl" /></div>
                     <div className="space-y-1"><Label className="text-[9px] font-black uppercase opacity-60">काटा ब्रँड</Label><Input value={formData.scaleBrand} onChange={e => setFormData({...formData, scaleBrand: e.target.value})} className="h-10 border-2 border-black font-bold rounded-xl" /></div>
                   </div>
                 </div>
 
                 <div className="space-y-4">
-                  <h4 className="text-[10px] font-black uppercase text-primary border-b-2 border-primary/20 pb-1 flex items-center gap-2"><Wallet className="h-4 w-4" /> ३) दूध व व्यावसायिक तपशील</h4>
+                  <SectionTitle icon={Wallet} title={formData.supplierType === 'Center' ? "१३) व्यावसायिक व दूध तपशील" : "३) व्यावसायिक व दूध तपशील"} />
                   <div className="grid grid-cols-3 gap-2 p-2.5 bg-blue-50/50 rounded-xl border border-blue-100">
                     <div className="col-span-3 text-[9px] font-black uppercase text-blue-600 mb-0.5">गाय (Qty/F/S)</div>
                     <Input type="number" value={formData.cowQty} onChange={e => setFormData({...formData, cowQty: e.target.value})} className="h-8 text-[10px] bg-white border-2 border-black font-bold" placeholder="L" />
@@ -950,16 +967,16 @@ function SuppliersContent() {
                 </div>
 
                 <div className="space-y-4">
-                  <h4 className="text-[10px] font-black uppercase text-primary border-b-2 border-primary/20 pb-1 flex items-center gap-2"><Box className="h-4 w-4" /> ९) इन्व्हेंटरी</h4>
+                  <SectionTitle icon={Box} title={formData.supplierType === 'Center' ? "१४) इन्व्हेंटरी" : "४) इन्व्हेंटरी"} />
                   <div className="space-y-3">
-                    <div className="flex items-center justify-between"><h4 className="text-[9px] font-black uppercase tracking-widest">साहित्य यादी</h4><Button variant="outline" size="sm" onClick={addEquipmentRow} className="h-7 text-[8px] font-black px-3 rounded-xl border-primary/20 text-primary">जोडा</Button></div>
+                    <div className="flex items-center justify-between"><h4 className="text-[9px] font-black uppercase tracking-widest">साहित्य यादी</h4><Button variant="outline" size="sm" onClick={() => addDynamicRow('equipment', { name: "", quantity: 1, ownership: 'Company' })} className="h-7 text-[8px] font-black px-3 rounded-xl border-primary/20 text-primary">जोडा</Button></div>
                     <div className="space-y-2">
                       {formData.equipment.map(item => (
                         <div key={item.id} className="grid grid-cols-12 gap-1.5 bg-muted/10 p-2 rounded-xl border-2 border-black items-center">
-                          <div className="col-span-6"><Input value={item.name} onChange={e => updateEquipmentRow(item.id, {name: e.target.value})} className="h-8 text-[10px] border-none rounded-lg font-bold bg-white w-full" /></div>
-                          <div className="col-span-2"><Input type="number" value={item.quantity} onChange={e => updateEquipmentRow(item.id, {quantity: Number(e.target.value)})} className="h-8 text-[10px] text-center border-none rounded-lg font-black bg-white w-full" /></div>
+                          <div className="col-span-6"><Input value={item.name} onChange={e => updateDynamicRow('equipment', item.id, {name: e.target.value})} className="h-8 text-[10px] border-none rounded-lg font-bold bg-white w-full" /></div>
+                          <div className="col-span-2"><Input type="number" value={item.quantity} onChange={e => updateDynamicRow('equipment', item.id, {quantity: Number(e.target.value)})} className="h-8 text-[10px] text-center border-none rounded-lg font-black bg-white w-full" /></div>
                           <div className="col-span-3">
-                            <Select value={item.ownership} onValueChange={v => updateEquipmentRow(item.id, {ownership: v as any})}>
+                            <Select value={item.ownership} onValueChange={v => updateDynamicRow('equipment', item.id, {ownership: v as any})}>
                               <SelectTrigger className="h-8 text-[8px] bg-white border-none rounded-lg font-black"><SelectValue /></SelectTrigger>
                               <SelectContent><SelectItem value="Self" className="font-bold">स्वतः</SelectItem><SelectItem value="Company" className="font-bold">डेअरी</SelectItem></SelectContent>
                             </Select>
@@ -974,7 +991,7 @@ function SuppliersContent() {
               </div>
             </ScrollArea>
             <DialogFooter className="p-4 border-t bg-muted/5 flex flex-row gap-2">
-              <Button onClick={handleUpdateSupplier} className="w-full font-black uppercase text-[10px] h-11 rounded-xl shadow-2xl shadow-primary/20 tracking-widest transition-all active:scale-95"><CheckCircle2 className="h-4 w-4 mr-1.5" /> बदल जतन करा</Button>
+              <Button onClick={handleAddSupplier} className="w-full font-black uppercase text-[10px] h-11 rounded-xl shadow-2xl shadow-primary/20 tracking-widest transition-all active:scale-95"><CheckCircle2 className="h-4 w-4 mr-1.5" /> प्रोफाइल जतन करा</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
