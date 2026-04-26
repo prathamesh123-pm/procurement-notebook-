@@ -634,7 +634,7 @@ function RouteDetailsContent() {
                                   <td className="p-1 border-r border-black"><Input type="number" value={r.cowCount} onChange={e => updateDynamicRow('subRoutes', r.id, { cowCount: e.target.value })} className="h-7 border-none text-center" /></td>
                                   <td className="p-1 border-r border-black"><Input type="number" value={r.buffaloCount} onChange={e => updateDynamicRow('subRoutes', r.id, { buffaloCount: e.target.value })} className="h-7 border-none text-center" /></td>
                                   <td className="p-1 border-r border-black"><Input type="number" value={r.milkQty} onChange={e => updateDynamicRow('subRoutes', r.id, { milkQty: e.target.value })} className="h-7 border-none text-center font-black" /></td>
-                                  <td className="p-1 text-center"><Button variant="ghost" size="icon" onClick={() => removeDynamicRow('subRoutes', r.id)} className="text-rose-500"><X className="h-3 w-3" /></Button></td>
+                                  <td className="p-1 text-center"><Button variant="ghost" size="icon" onClick={() => removeDynamicRow('subRoutes', r.id)} className="text-rose-500"><X className="h-3.5 w-3.5" /></Button></td>
                                 </tr>
                               ))}
                             </tbody>
