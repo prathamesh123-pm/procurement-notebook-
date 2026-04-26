@@ -1,6 +1,7 @@
+
 "use client"
 
-import { useState, useEffect, useMemo, Suspense } from "react"
+import { useState, useEffect, useMemo, Suspense, useCallback } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -49,10 +50,10 @@ const ProducerCenterReportView = ({ supplier }: { supplier: Supplier }) => {
         <div className="space-y-4 text-left">
           <h4 className="text-[11px] font-black uppercase text-primary border-b-2 border-black pb-1 mb-2">४) जनावरांची गणना</h4>
           <div className="grid grid-cols-2 gap-3 text-center">
-             <div className="p-2 border border-black rounded bg-slate-50"><p className="text-[8px] font-black">COWS</p><p className="text-[12px] font-black">{details.cows || 0}</p></div>
-             <div className="p-2 border border-black rounded bg-slate-50"><p className="text-[8px] font-black">BUFFALO</p><p className="text-[12px] font-black">{details.buffalo || 0}</p></div>
-             <div className="p-2 border border-black rounded bg-slate-50"><p className="text-[8px] font-black">CALVES</p><p className="text-[12px] font-black">{details.calves || 0}</p></div>
-             <div className="p-2 border border-black rounded bg-slate-900 text-white"><p className="text-[8px] font-black">TOTAL</p><p className="text-[12px] font-black">{details.total_animals || 0}</p></div>
+             <div className="p-2 border border-black rounded bg-slate-50"><p className="text-[8px] font-black uppercase">COWS</p><p className="text-[12px] font-black">{details.cows || 0}</p></div>
+             <div className="p-2 border border-black rounded bg-slate-50"><p className="text-[8px] font-black uppercase">BUFFALO</p><p className="text-[12px] font-black">{details.buffalo || 0}</p></div>
+             <div className="p-2 border border-black rounded bg-slate-50"><p className="text-[8px] font-black uppercase">CALVES</p><p className="text-[12px] font-black">{details.calves || 0}</p></div>
+             <div className="p-2 border border-black rounded bg-slate-900 text-white"><p className="text-[8px] font-black uppercase">TOTAL</p><p className="text-[12px] font-black">{details.total_animals || 0}</p></div>
           </div>
         </div>
       </div>
@@ -361,9 +362,8 @@ function RouteDetailsContent() {
 
                 <div className="w-full border-b-4 border-black pb-3 mb-6 text-center">
                   <h3 className="text-[20pt] font-black uppercase text-primary tracking-[0.1em]">{selectedSupplier.name}</h3>
-                  <p className="text-[11pt] font-black text-muted-foreground uppercase tracking-widest mt-1">आयडी: {selectedSupplier.supplierId} | {selectedSupplier.supplierType === 'Center' ? 'संकलन केंद्र' : 'गवळी / सप्लायर'} प्रोफाईल</p>
+                  <p className="text-[11pt] font-black text-muted-foreground uppercase tracking-widest mt-1">आयडी: {selectedSupplier.supplierId} | {selectedSupplier.supplierType === 'Center' ? 'संकलन केंद्र' : 'गवळी / सप्लायर'} अहवाल</p>
                 </div>
-                
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-10 w-full mb-6 text-left">
                   <div className="space-y-4">
                     <SectionTitle icon={Info} title="१) प्राथमिक माहिती" />
@@ -373,7 +373,6 @@ function RouteDetailsContent() {
                       <div className="flex flex-col gap-1"><span className="text-muted-foreground uppercase text-[10px]">पत्ता</span><span className="leading-relaxed">{selectedSupplier.address || "-"}</span></div>
                     </div>
                   </div>
-
                   <div className="space-y-4">
                     <SectionTitle icon={ShieldCheck} title="२) परवाना व तांत्रिक" />
                     <div className="space-y-2 text-[12px] font-bold">
@@ -383,25 +382,13 @@ function RouteDetailsContent() {
                     </div>
                   </div>
                 </div>
-
                 {selectedSupplier.supplierType === 'Center' && <ProducerCenterReportView supplier={selectedSupplier} />}
-
-                <div className="w-full mt-auto pt-24 grid grid-cols-2 gap-24 text-center uppercase font-black text-[11pt] tracking-[0.2em]">
-                  <div className="border-t-2 border-black pt-3">अधिकृत स्वाक्षरी</div>
-                  <div className="border-t-2 border-black pt-3">सुपरवायझर स्वाक्षरी</div>
-                </div>
               </div>
-              <ScrollBar orientation="horizontal" />
-            </ScrollArea>
-          ) : (
-            <div className="flex flex-col items-center justify-center h-full opacity-20 p-20 text-center">
-              <User className="h-16 w-16 mb-4" />
-              <h4 className="font-black uppercase tracking-[0.3em] text-sm">निवड करा</h4>
-              <p className="text-[10px] font-bold uppercase mt-2">Select a supplier to view report</p>
-            </div>
-          )}
-        </Card>
-      </div>
+            )}
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-[95vw] sm:max-w-[950px] p-0 overflow-hidden rounded-3xl border-none shadow-2xl bg-white text-left">

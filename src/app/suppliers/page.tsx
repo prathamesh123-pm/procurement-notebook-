@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect, useMemo, Suspense } from "react"
@@ -83,62 +84,6 @@ const ProducerCenterReportView = ({ supplier }: { supplier: Supplier }) => {
              </tbody>
            </table>
          </div>
-      </div>
-
-      <div className="space-y-4 text-left">
-         <h4 className="text-[11px] font-black uppercase text-rose-700 border-b-2 border-black pb-1">६) दूध घटलेले उत्पादक विश्लेषण</h4>
-         <div className="overflow-x-auto border-2 border-black rounded-lg">
-           <table className="w-full border-collapse text-[10px] min-w-[600px]">
-             <thead className="bg-rose-50 font-black text-rose-900">
-               <tr className="border-b-2 border-black text-center">
-                 <th className="p-2 border-r border-black text-left">नाव</th>
-                 <th className="p-2 border-r border-black">जुने दूध</th>
-                 <th className="p-2 border-r border-black">नवे दूध</th>
-                 <th className="p-2 border-r border-black">जुनी जनावरे</th>
-                 <th className="p-2 border-r border-black">नवी जनावरे</th>
-                 <th className="p-2 text-left">कारण</th>
-               </tr>
-             </thead>
-             <tbody>
-               {(details.decreasing_producers || []).map((p: any, i: number) => (
-                 <tr key={i} className="border-b border-black font-bold text-center">
-                   <td className="p-2 border-r border-black text-left">{p.producer_name}</td>
-                   <td className="p-2 border-r border-black">{p.previous_milk} L</td>
-                   <td className="p-2 border-r border-black">{p.current_milk} L</td>
-                   <td className="p-2 border-r border-black">{p.previous_animals}</td>
-                   <td className="p-2 border-r border-black">{p.current_animals}</td>
-                   <td className="p-2 text-left text-rose-600">{p.reason}</td>
-                 </tr>
-               ))}
-             </tbody>
-           </table>
-         </div>
-      </div>
-
-      <SectionTitle icon={Briefcase} title="८) परिसरातील डेअरी कर्मचारी माहिती" />
-      <div className="overflow-x-auto border-2 border-black rounded-lg mb-6">
-        <table className="w-full border-collapse text-[9px] min-w-[500px]">
-          <thead className="bg-slate-50 font-black uppercase">
-            <tr className="border-b-2 border-black text-center">
-              <th className="p-1 border-r border-black text-left pl-2">नाव</th>
-              <th className="p-1 border-r border-black">शेती</th>
-              <th className="p-1 border-r border-black">गायी</th>
-              <th className="p-1 border-r border-black">म्हशी</th>
-              <th className="p-1">दूध पुरवठा (L)</th>
-            </tr>
-          </thead>
-          <tbody>
-            {(details.local_employees || []).map((e: any, i: number) => (
-              <tr key={i} className="border-b border-black font-bold text-center last:border-0">
-                <td className="p-1 border-r border-black text-left pl-2">{e.name}</td>
-                <td className="p-1 border-r border-black">{e.land}</td>
-                <td className="p-1 border-r border-black">{e.cows_count}</td>
-                <td className="p-1 border-r border-black">{e.buffalo_count}</td>
-                <td className="p-1">{e.total_supply} L</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
       </div>
 
       <div className="w-full mt-12 pt-12 grid grid-cols-2 gap-10 text-center uppercase font-black text-[9pt] tracking-[0.2em]">
@@ -633,7 +578,7 @@ function SuppliersListPage() {
                     </div>
                   </div>
                   <div className="p-3 bg-amber-50/50 rounded-xl border-2 border-amber-200">
-                    <Label className="text-[10px] font-black uppercase text-amber-600 mb-2 block">म्हस दूध (Qty/F/S)</Label>
+                    <Label className="text-[10px] font-black uppercase text-amber-600 mb-2 block">म्हशी दूध (Qty/F/S)</Label>
                     <div className="grid grid-cols-3 gap-2">
                       <Input type="number" value={formData.bufQty} onChange={e => setFormData({...formData, bufQty: e.target.value})} className="h-8 border-2 border-black text-center" placeholder="Qty" />
                       <Input type="number" value={formData.bufFat} onChange={e => setFormData({...formData, bufFat: e.target.value})} className="h-8 border-2 border-black text-center" placeholder="Fat" />
