@@ -1,74 +1,24 @@
 
 "use client"
 
-import { useState, useMemo, useEffect } from "react"
+import { useState, useMemo, useEffect, Suspense } from "react"
 import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { 
   Archive, Search, X, Printer, Trash2, FileEdit, Truck, 
   ShieldAlert, ClipboardCheck, Plus, MapPin, FileText,
-  Briefcase, FileSignature, CheckCircle2, Microscope, Layers, Calendar, ChevronRight, AlertCircle, AlertTriangle, Info, BookOpen, Lightbulb, FileCheck, Clock, Milk, User, IndianRupee, Hash, Box, TrendingDown
+  Briefcase, FileSignature, CheckCircle2, Microscope, Layers, Calendar, ChevronRight, AlertCircle, AlertTriangle, Info, BookOpen, Lightbulb, FileCheck, Clock, Milk, User, IndianRupee, Hash, Box, TrendingDown, Sun, Zap, Laptop, ArrowRight
 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
-import { useUser, useFirestore, useCollection, useDoc, useMemoFirebase, deleteDocumentNonBlocking } from "@/firebase"
-import { collection, doc } from "firebase/firestore"
+import { useUser, useFirestore, useCollection, useMemoFirebase, deleteDocumentNonBlocking } from "@/firebase"
+import { collection, doc, query, orderBy } from "firebase/firestore"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
-
-const labelMap: Record<string, string> = {
-  reportHeading: "अहवाल शीर्षक",
-  date: "तारीख",
-  reportDate: "तारीख",
-  shift: "शिफ्ट",
-  idNumber: "अधिकारी ID",
-  repId: "कर्मचारी ID",
-  centerName: "केंद्राचे नाव",
-  centerCode: "केंद्र कोड",
-  supplierName: "पुरवठादार नाव",
-  supplierId: "पुरवठादार ID",
-  mobile: "मोबाईल",
-  address: "पत्ता",
-  routeName: "रूट नाव",
-  vehicleNo: "गाडी नंबर",
-  vehicleNumber: "वाहन क्र.",
-  driverName: "ड्रायव्हर",
-  breakdownTime: "बिघाड वेळ",
-  location: "ठिकाण",
-  reason: "कारण",
-  severity: "स्वरूप",
-  detailedReason: "सविस्तर वर्णन",
-  estimatedRepairCost: "अंदाजे खर्च (₹)",
-  morningQty: "सकाळ दूध (L)",
-  eveningQty: "संध्याकाळ दूध (L)",
-  fat: "फॅट (%)",
-  snf: "SNF (%)",
-  result: "निकाल",
-  totalLossAmount: "एकूण आर्थिक नुकसान (₹)",
-  dailyProblems: "प्रॉब्लेम्स / निरीक्षणे",
-  slipNo: "SLIP No.",
-  visitPerson: "भेट दिलेली व्यक्ती",
-  visitPurpose: "भेटीचा उद्देश",
-  officeTaskSubject: "कामाचा विषय",
-  fineAmount: "दंडाची रक्कम (₹)",
-  seizureQty: "जप्त दूध (L)",
-  actionTaken: "केलेली कार्यवाही",
-  totalMilk: "एकूण दूध (L)",
-  paymentCycle: "पेमेंट सायकल",
-  otherInfo: "इतर माहिती",
-  estimatedRepairTime: "दुरुस्ती वेळ",
-  recoveryVehicleNo: "पर्यायी गाडी",
-  recoveryArrivalTime: "पर्यायी गाडी वेळ",
-  milkHot: "दूध गरम झाले का",
-  milkSour: "दूध खराब झाले का",
-  title: "कामाचे नाव",
-  description: "कामाचा तपशील",
-  remark: "पूर्ण केलेल्या कामाचा शेरा"
-};
 
 const ReportHeader = ({ title, date, subName, subId, shift }: any) => (
   <div className="w-full border-b-[3px] border-black pb-4 mb-6 text-center">
@@ -117,7 +67,7 @@ const ProducerCenterLayout = ({ report, profileName, profileId }: { report: any,
       <ReportHeader title={d.reportHeading || "उत्पादक सेंटर सविस्तर अहवाल"} date={report.date} subName={d.name || profileName} subId={d.idNumber || profileId} shift={d.shift} />
 
       <SectionTitle icon={Info} title="१) प्राथमिक माहिती & संकलन वेळ" />
-      <div className="w-full border-2 border-black mb-6">
+      <div className="w-full border-2 border-black mb-6 overflow-hidden">
         <table className="w-full text-[9pt]">
           <tbody>
             <tr><td className="p-2 bg-slate-50 font-black border-r border-black w-1/3">सेंटर नाव</td><td className="p-2 font-bold">{d.name} (ID: {d.supplierId})</td></tr>
@@ -128,161 +78,102 @@ const ProducerCenterLayout = ({ report, profileName, profileId }: { report: any,
         </table>
       </div>
 
-      {details.long_term_producers?.length > 0 && (
-        <>
-          <SectionTitle icon={Layers} title="२) २+ वर्ष जुने उत्पादक" />
-          <table className="w-full border-2 border-black text-[8pt] mb-6">
-            <thead className="bg-slate-100">
-              <tr className="font-black uppercase text-center border-b border-black">
-                <th className="p-1 border-r border-black">नाव</th>
-                <th className="p-1 border-r border-black">जुने दूध</th>
-                <th className="p-1 border-r border-black">सध्याचे दूध</th>
-                <th className="p-1 border-r border-black">जुनी जनावरे</th>
-                <th className="p-1">सध्याची जनावरे</th>
+      <SectionTitle icon={Layers} title="२) २+ वर्ष जुने उत्पादक" />
+      <div className="w-full overflow-x-auto mb-6">
+        <table className="w-full border-2 border-black text-[8pt]">
+          <thead className="bg-slate-100">
+            <tr className="font-black border-b border-black">
+              <th className="p-1 border-r border-black">नाव</th><th className="p-1 border-r border-black">जुने दूध</th><th className="p-1 border-r border-black">सध्याचे दूध</th><th className="p-1 border-r border-black">जुनी जनावरे</th><th className="p-1">सध्याची जनावरे</th>
+            </tr>
+          </thead>
+          <tbody>
+            {(details.long_term_producers || []).map((p: any, i: number) => (
+              <tr key={i} className="border-b border-black text-center font-bold">
+                <td className="p-1 border-r border-black text-left pl-2">{p.producer_name}</td><td>{p.previous_milk}L</td><td>{p.current_milk}L</td><td>{p.previous_animals}</td><td>{p.current_animals}</td>
               </tr>
-            </thead>
-            <tbody>
-              {details.long_term_producers.map((p: any, i: number) => (
-                <tr key={i} className="border-b border-black last:border-0 text-center font-bold">
-                  <td className="p-1 border-r border-black text-left pl-2">{p.producer_name}</td>
-                  <td className="p-1 border-r border-black">{p.previous_milk} L</td>
-                  <td className="p-1 border-r border-black">{p.current_milk} L</td>
-                  <td className="p-1 border-r border-black">{p.previous_animals}</td>
-                  <td className="p-1">{p.current_animals}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </>
-      )}
+            ))}
+          </tbody>
+        </table>
+      </div>
 
-      {details.decreasing_producers?.length > 0 && (
-        <>
-          <SectionTitle icon={TrendingDown} title="३) दूध घटलेले उत्पादक विश्लेषण" color="text-rose-700" />
-          <table className="w-full border-2 border-black text-[8pt] mb-6">
-            <thead className="bg-rose-50">
-              <tr className="font-black uppercase text-center border-b border-black text-rose-900">
-                <th className="p-1 border-r border-black">नाव</th>
-                <th className="p-1 border-r border-black">जुने दूध</th>
-                <th className="p-1 border-r border-black">नवे दूध</th>
-                <th className="p-1 border-r border-black">जुनी जनावरे</th>
-                <th className="p-1 border-r border-black">सध्याची जनावरे</th>
-                <th className="p-1">कारण</th>
+      <SectionTitle icon={TrendingDown} title="३) दूध घटलेले उत्पादक विश्लेषण" color="text-rose-700" />
+      <div className="w-full overflow-x-auto mb-6">
+        <table className="w-full border-2 border-black text-[8pt]">
+          <thead className="bg-rose-50 text-rose-900 font-black">
+            <tr className="border-b border-black">
+              <th className="p-1 border-r border-black">नाव</th><th>जुने</th><th>नवे</th><th>जुनी जनावरे</th><th>नवी जनावरे</th><th>कारण</th>
+            </tr>
+          </thead>
+          <tbody>
+            {(details.decreasing_producers || []).map((p: any, i: number) => (
+              <tr key={i} className="border-b border-black text-center font-bold text-rose-800">
+                <td className="p-1 border-r border-black text-left pl-2">{p.producer_name}</td><td>{p.previous_milk}</td><td>{p.current_milk}</td><td>{p.previous_animals}</td><td>{p.current_animals}</td><td>{p.reason}</td>
               </tr>
-            </thead>
-            <tbody>
-              {details.decreasing_producers.map((p: any, i: number) => (
-                <tr key={i} className="border-b border-black last:border-0 text-center font-bold text-rose-800">
-                  <td className="p-1 border-r border-black text-left pl-2">{p.producer_name}</td>
-                  <td className="p-1 border-r border-black">{p.previous_milk} L</td>
-                  <td className="p-1 border-r border-black">{p.current_milk} L</td>
-                  <td className="p-1 border-r border-black">{p.previous_animals}</td>
-                  <td className="p-1 border-r border-black">{p.current_animals}</td>
-                  <td className="p-1 text-left pl-2">{p.reason}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </>
-      )}
+            ))}
+          </tbody>
+        </table>
+      </div>
 
-      {details.high_capacity_producer_list?.length > 0 && (
-        <>
-          <SectionTitle icon={Layers} title="४) ८-१० गाईंचा गोठा सक्षम उत्पादक" />
-          <table className="w-full border-2 border-black text-[7pt] mb-6">
-            <thead className="bg-slate-100 font-black">
-              <tr className="border-b border-black text-center">
-                <th>नाव</th><th>दूध</th><th>वर्षे</th><th>जनावरे</th><th>शेती</th><th>चारा</th><th>शेड</th>
+      <SectionTitle icon={Briefcase} title="४) परिसरातील डेअरी कर्मचारी माहिती" />
+      <div className="w-full overflow-x-auto mb-6">
+        <table className="w-full border-2 border-black text-[8pt]">
+          <thead className="bg-slate-50 font-black uppercase">
+            <tr className="border-b-2 border-black text-center">
+              <th className="p-1 border-r border-black text-left pl-2">नाव</th><th>शेती</th><th>गाई</th><th>म्हशी</th><th>दूध पुरवठा (L)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {(details.local_employees || []).map((e: any, i: number) => (
+              <tr key={i} className="border-b border-black font-bold text-center last:border-0">
+                <td className="p-1 border-r border-black text-left pl-2">{e.name}</td><td>{e.land}</td><td>{e.cows_count}</td><td>{e.buffalo_count}</td><td>{e.total_supply}L</td>
               </tr>
-            </thead>
-            <tbody>
-              {details.high_capacity_producer_list.map((p: any, i: number) => (
-                <tr key={i} className="border-b border-black font-bold text-center last:border-0">
-                  <td className="text-left pl-1">{p.name}</td><td>{p.current_milk}</td><td>{p.puravtha_varsh}</td><td>{p.current_animals}</td><td>{p.land}</td><td>{p.fodder_available}</td><td>{p.shed_available}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </>
-      )}
+            ))}
+          </tbody>
+        </table>
+      </div>
 
-      {details.high_milk_producer_list?.length > 0 && (
-        <>
-          <SectionTitle icon={Milk} title="५) ३० ते १००+ लिटर दूध उत्पादक" />
-          <table className="w-full border-2 border-black text-[8pt] mb-6">
-            <thead className="bg-blue-50/50 font-black text-blue-900">
-              <tr className="border-b border-black text-center">
-                <th className="text-left pl-2">उत्पादक नाव</th><th>गाई संख्या</th><th>म्हशी संख्या</th><th>सध्याचे दूध</th>
-              </tr>
-            </thead>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-10 w-full mb-6">
+        <div className="space-y-4">
+          <SectionTitle icon={ShieldCheck} title="५) LSS सुविधा माहिती" />
+          <table className="w-full border-2 border-black text-[8pt]">
+            <thead className="bg-slate-50 font-black"><tr><th>सुविधा</th><th>स्थिती</th><th>शेरा</th></tr></thead>
             <tbody>
-              {details.high_milk_producer_list.map((p: any, i: number) => (
-                <tr key={i} className="border-b border-black font-bold text-center last:border-0">
-                  <td className="text-left pl-2">{p.name}</td><td>{p.cows_count}</td><td>{p.buffalo_count}</td><td>{p.current_milk} L</td>
-                </tr>
+              {(details.lss_details || []).map((l: any, i: number) => (
+                <tr key={i} className="border-b border-black font-bold"><td>{l.item}</td><td className="text-center">{l.status}</td><td>{l.remarks}</td></tr>
               ))}
             </tbody>
           </table>
-        </>
-      )}
+        </div>
+        <div className="space-y-4">
+          <SectionTitle icon={Zap} title="६) इतर डेअरी सुविधा" />
+          <table className="w-full border-2 border-black text-[8pt]">
+            <thead className="bg-amber-50 font-black"><tr><th>सुविधा</th><th>स्थिती</th><th>शेरा</th></tr></thead>
+            <tbody>
+              {(details.competitor_dairies || []).map((c: any, i: number) => (
+                <tr key={i} className="border-b border-black font-bold"><td>{c.item}</td><td className="text-center">{c.status}</td><td>{c.remarks}</td></tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
 
-      {details.local_employees?.length > 0 && (
-        <>
-          <SectionTitle icon={Briefcase} title="६) परिसरातील डेअरी कर्मचारी माहिती" />
-          <table className="w-full border-2 border-black text-[8pt] mb-6">
-            <thead className="bg-slate-100 font-black">
-              <tr className="border-b border-black">
-                <th className="p-1 border-r border-black text-left">कर्मचारी नाव</th>
-                <th className="p-1 border-r border-black">शेती</th>
-                <th className="p-1 border-r border-black">गाई संख्या</th>
-                <th className="p-1 border-r border-black">म्हशी संख्या</th>
-                <th className="p-1">एकूण दूध पुरवठा</th>
+      <SectionTitle icon={Truck} title="७) अंतर्गत रूट माहिती (SUB-ROUTES)" color="text-emerald-700" />
+      <div className="w-full overflow-x-auto mb-6">
+        <table className="w-full border-2 border-black text-[8pt]">
+          <thead className="bg-emerald-50 font-black uppercase">
+            <tr className="border-b-2 border-black text-center">
+              <th>गाडी</th><th>किमी</th><th>परिसर</th><th>उत्पादक</th><th>गाई</th><th>म्हशी</th><th>दूध (L)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {(details.sub_routes || []).map((r: any, i: number) => (
+              <tr key={i} className="border-b border-black font-bold text-center last:border-0">
+                <td>{r.vehicleType}</td><td>{r.km}</td><td>{r.area}</td><td>{r.producerCount}</td><td>{r.cowCount}</td><td>{r.buffaloCount}</td><td>{r.milkQty}L</td>
               </tr>
-            </thead>
-            <tbody>
-              {details.local_employees.map((e: any, i: number) => (
-                <tr key={i} className="border-b border-black last:border-0 text-center font-bold">
-                  <td className="p-1 border-r border-black text-left pl-2">{e.name}</td>
-                  <td className="p-1 border-r border-black">{e.land}</td>
-                  <td className="p-1 border-r border-black">{e.cows_count}</td>
-                  <td className="p-1 border-r border-black">{e.buffalo_count}</td>
-                  <td className="p-1 text-center">{e.total_supply}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </>
-      )}
-
-      {details.milkman_gavali_details?.length > 0 && (
-        <>
-          <SectionTitle icon={User} title="७) स्थानिक गवळी माहिती (आपल्या डेअरीचे)" />
-          <table className="w-full border-2 border-black text-[8pt] mb-6">
-            <thead className="bg-slate-100 font-black">
-              <tr className="border-b border-black">
-                <th className="p-1 border-r border-black">नाव</th>
-                <th className="p-1 border-r border-black">कोड</th>
-                <th className="p-1 border-r border-black">गाय दूध</th>
-                <th className="p-1 border-r border-black">म्हेस दूध</th>
-                <th className="p-1 border-r border-black">एकूण दूध</th>
-                <th className="p-1">उत्पादक संख्या</th>
-              </tr>
-            </thead>
-            <tbody>
-              {details.milkman_gavali_details.map((g: any, i: number) => (
-                <tr key={i} className="border-b border-black last:border-0 font-bold text-center">
-                  <td className="p-1 border-r border-black text-left pl-2">{g.name}</td>
-                  <td className="p-1 border-r border-black">{g.code}</td>
-                  <td className="p-1 border-r border-black">{g.gay_dudh} L</td>
-                  <td className="p-1 border-r border-black">{g.mhais_dudh} L</td>
-                  <td className="p-1 border-r border-black">{(Number(g.gay_dudh) + Number(g.mhais_dudh)).toFixed(1)} L</td>
-                  <td className="p-1">{g.producers}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </>
-      )}
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       <SectionTitle icon={Lightbulb} title="८) विश्लेषण & उपाययोजना" />
       <div className="w-full text-left space-y-4">
@@ -296,5 +187,191 @@ const ProducerCenterLayout = ({ report, profileName, profileId }: { report: any,
         <div className="border-t-2 border-black pt-3">सुपरवायझर स्वाक्षरी</div>
       </div>
     </div>
+  )
+}
+
+function ReportsContent() {
+  const { user } = useUser()
+  const db = useFirestore()
+  const router = useRouter()
+  const { toast } = useToast()
+  
+  const reportsQuery = useMemoFirebase(() => {
+    if (!db || !user) return null
+    return query(collection(db, 'users', user.uid, 'dailyWorkReports'), orderBy('createdAt', 'desc'))
+  }, [db, user])
+
+  const { data: reports, isLoading } = useCollection(reportsQuery)
+  
+  const profileRef = useMemoFirebase(() => {
+    if (!db || !user) return null
+    return doc(db, 'users', user.uid)
+  }, [db, user])
+  
+  const { data: profile } = useDoc(profileRef)
+
+  const [searchQuery, setSearchQuery] = useState("")
+  const [mounted, setMounted] = useState(false)
+  const [selectedReport, setSelectedReport] = useState<any>(null)
+
+  useEffect(() => setMounted(true), [])
+
+  const filteredReports = useMemo(() => {
+    const list = reports || []
+    return list.filter(r => 
+      r.type?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      r.summary?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      r.fullData?.name?.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+  }, [reports, searchQuery])
+
+  const handleDelete = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (!db || !user) return
+    if (confirm("हा अहवाल कायमचा हटवायचा आहे का?")) {
+      deleteDocumentNonBlocking(doc(db, 'users', user.uid, 'dailyWorkReports', id))
+      toast({ title: "यशस्वी", description: "अहवाल हटवण्यात आला." })
+    }
+  }
+
+  if (!mounted || isLoading) return <div className="p-20 text-center font-black uppercase text-[10px] opacity-50 animate-pulse">लोड होत आहे...</div>
+
+  return (
+    <div className="space-y-6 max-w-5xl mx-auto w-full pb-20 px-2 animate-in fade-in duration-500 text-left">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b pb-4 px-1">
+        <div>
+          <h2 className="text-xl sm:text-2xl font-black text-foreground uppercase tracking-tight flex items-center gap-2">
+            <Archive className="h-6 w-6 text-primary" /> अहवाल संग्रहालय (ARCHIVE)
+          </h2>
+          <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Historical operational data and logs</p>
+        </div>
+        <div className="flex items-center gap-2 bg-primary/5 px-4 py-2 rounded-xl text-primary font-black text-[10px] border border-primary/10 uppercase">
+          <FileText className="h-4 w-4" /> एकूण अहवाल: {reports?.length || 0}
+        </div>
+      </div>
+
+      <div className="relative px-1">
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
+        <input 
+          placeholder="अहवाल प्रकार, नाव किंवा मजकूर शोधा..." 
+          className="w-full pl-11 h-12 bg-white border-2 border-black rounded-2xl font-black text-xs outline-none focus:ring-2 focus:ring-primary shadow-sm uppercase tracking-tight"
+          value={searchQuery}
+          onChange={e => setSearchQuery(e.target.value)}
+        />
+      </div>
+
+      <div className="space-y-3 px-1">
+        {filteredReports.map((report) => (
+          <Card key={report.id} className="border-2 border-black shadow-none hover:shadow-xl transition-all rounded-2xl overflow-hidden group cursor-pointer" onClick={() => setSelectedReport(report)}>
+            <CardContent className="p-5">
+              <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+                <div className="flex-1 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className={cn("p-2.5 rounded-xl text-white shadow-lg", report.type === 'Collection Center Audit' ? 'bg-indigo-600' : report.type === 'Seizure & Penalty' ? 'bg-rose-600' : 'bg-primary')}>
+                        {report.type === 'Collection Center Audit' ? <Microscope className="h-5 w-5" /> : report.type === 'Seizure & Penalty' ? <ShieldAlert className="h-5 w-5" /> : <ClipboardCheck className="h-5 w-5" />}
+                      </div>
+                      <div>
+                        <h4 className="font-black text-[13px] uppercase tracking-tight text-slate-900">{report.type}</h4>
+                        <p className="text-[10px] text-muted-foreground flex items-center gap-1 font-bold">
+                          <Calendar className="h-3 w-3" /> {report.date} | <User className="h-3 w-3" /> {report.fullData?.name || "N/A"}
+                        </p>
+                      </div>
+                    </div>
+                    <Badge variant="outline" className="text-[8px] font-black uppercase border-black/20">ID: {report.id.slice(0, 8)}</Badge>
+                  </div>
+                  <p className="text-[11px] text-slate-600 font-bold leading-relaxed line-clamp-2 italic uppercase">
+                    {report.summary || "No summary available."}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 w-full md:w-auto">
+                  <Button variant="outline" size="sm" className="flex-1 md:flex-none gap-2 font-black uppercase text-[9px] border-black rounded-xl h-9" onClick={(e) => handleDelete(report.id, e)}>
+                    <Trash2 className="h-3.5 w-3.5" /> हटवा
+                  </Button>
+                  <Button size="sm" className="flex-1 md:flex-none gap-2 font-black uppercase text-[9px] rounded-xl h-9 bg-primary shadow-md">
+                    उघडा <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+
+        {filteredReports.length === 0 && (
+          <div className="p-20 text-center bg-muted/5 rounded-3xl border-2 border-dashed border-black/20 flex flex-col items-center gap-3 opacity-30">
+            <Archive className="h-12 w-12" />
+            <p className="text-[10px] font-black uppercase tracking-[0.2em]">अहवाल सापडले नाहीत</p>
+          </div>
+        )}
+      </div>
+
+      <Dialog open={!!selectedReport} onOpenChange={(open) => !open && setSelectedReport(null)}>
+        <DialogContent className="max-w-[95vw] md:max-w-[210mm] p-0 overflow-hidden rounded-3xl border-none shadow-2xl bg-slate-100">
+          <DialogHeader className="p-4 bg-primary text-white sticky top-0 z-20 flex flex-row items-center justify-between no-print">
+            <div>
+              <DialogTitle className="text-sm font-black uppercase tracking-widest">अहवाल सविस्तर दर्शन</DialogTitle>
+              <DialogDescription className="text-[8px] text-white/70 uppercase">Detailed Professional Report View</DialogDescription>
+            </div>
+            <div className="flex gap-2">
+              <Button size="sm" variant="secondary" className="h-8 rounded-xl font-black uppercase text-[9px]" onClick={() => window.print()}><Printer className="h-3.5 w-3.5 mr-1" /> प्रिंट (PRINT)</Button>
+              <Button size="sm" variant="ghost" className="h-8 w-8 rounded-full text-white" onClick={() => setSelectedReport(null)}><X className="h-5 w-5" /></Button>
+            </div>
+          </DialogHeader>
+          <ScrollArea className="max-h-[85vh] bg-white">
+            {selectedReport && selectedReport.type === 'Milk Procurement Survey' ? (
+               <ProducerCenterLayout report={selectedReport} profileName={profile?.displayName || ""} profileId={profile?.employeeId || ""} />
+            ) : selectedReport ? (
+              <div className="bg-white p-8 printable-report flex flex-col items-center">
+                 <ReportHeader title={selectedReport.fullData?.reportHeading || selectedReport.type} date={selectedReport.date} subName={selectedReport.fullData?.name || profile?.displayName} subId={selectedReport.fullData?.idNumber || profile?.employeeId} shift={selectedReport.fullData?.shift} />
+                 
+                 <SectionTitle icon={FileText} title="अहवाल माहिती & तपशील" />
+                 <div className="w-full border-2 border-black mb-6">
+                    <table className="w-full text-[10px] border-collapse">
+                      <tbody>
+                        {Object.entries(selectedReport.fullData || {}).map(([key, val]: any) => {
+                          if (typeof val === 'object' || Array.isArray(val) || key === 'reportHeading' || key === 'name' || key === 'idNumber') return null;
+                          return (
+                            <tr key={key} className="border-b border-black last:border-0">
+                              <td className="p-2 bg-slate-50 font-black border-r border-black uppercase w-1/3 text-[8px]">{key}</td>
+                              <td className="p-2 font-bold uppercase">{String(val)}</td>
+                            </tr>
+                          )
+                        })}
+                      </tbody>
+                    </table>
+                 </div>
+
+                 {selectedReport.fullData?.summary && <ProfessionalParagraph label="कामाचा सविस्तर गोषवारा" content={selectedReport.fullData.summary} icon={ClipboardCheck} />}
+                 {selectedReport.fullData?.problems && <ProfessionalParagraph label="समस्या व अडचणी" content={selectedReport.fullData.problems} icon={AlertTriangle} />}
+                 {selectedReport.fullData?.actionTaken && <ProfessionalParagraph label="केलेली कार्यवाही" content={selectedReport.fullData.actionTaken} icon={CheckCircle2} />}
+
+                 <div className="w-full mt-auto pt-16 grid grid-cols-2 gap-20 text-center uppercase font-black text-[10pt] tracking-widest">
+                    <div className="border-t-2 border-black pt-3">अधिकारी स्वाक्षरी</div>
+                    <div className="border-t-2 border-black pt-3">सुपरवायझर स्वाक्षरी</div>
+                 </div>
+              </div>
+            ) : null}
+            <ScrollBar orientation="vertical" />
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
+
+      <style jsx global>{`
+        @media print {
+          .no-print, header, nav, .sidebar { display: none !important; }
+          .printable-report { width: 100% !important; max-width: none !important; margin: 0 !important; padding: 10mm !important; }
+          body { background: white !important; }
+          [role="dialog"] { position: absolute !important; left: 0 !important; top: 0 !important; width: 100% !important; }
+        }
+      `}</style>
+    </div>
+  )
+}
+
+export default function ReportsPage() {
+  return (
+    <Suspense fallback={<div className="p-20 text-center font-black uppercase text-[10px] opacity-50 animate-pulse">लोड होत आहे...</div>}>
+      <ReportsContent />
+    </Suspense>
   )
 }

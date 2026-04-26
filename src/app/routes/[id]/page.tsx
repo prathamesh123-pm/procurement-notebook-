@@ -44,7 +44,6 @@ const ProducerCenterReportView = ({ supplier }: { supplier: Supplier }) => {
             <div className="flex justify-between border-b border-dashed border-black/20 pb-1"><span>सायंकाळ वेळ</span><span>{details.evening_collection_time || "-"}</span></div>
             <div className="flex justify-between border-b border-dashed border-black/20 pb-1"><span>एकूण उत्पादक</span><span>{details.total_producers || 0}</span></div>
             <div className="flex justify-between border-b border-dashed border-black/20 pb-1"><span>सक्रिय उत्पादक</span><span className="text-emerald-600">{details.active_producers || 0}</span></div>
-            <div className="flex justify-between border-b border-dashed border-black/20 pb-1"><span>स्थापना वर्ष</span><span>{details.start_year || "-"}</span></div>
           </div>
         </div>
         <div className="space-y-4 text-left">
@@ -68,7 +67,7 @@ const ProducerCenterReportView = ({ supplier }: { supplier: Supplier }) => {
                  <th className="p-2 border-r border-black">जुने दूध</th>
                  <th className="p-2 border-r border-black">सध्याचे दूध</th>
                  <th className="p-2 border-r border-black">जुनी जनावरे</th>
-                 <th className="p-2">सध्याची जनावरे</th>
+                 <th className="p-2">नवी जनावरे</th>
                </tr>
              </thead>
              <tbody>
@@ -96,7 +95,7 @@ const ProducerCenterReportView = ({ supplier }: { supplier: Supplier }) => {
                  <th className="p-2 border-r border-black">जुने दूध</th>
                  <th className="p-2 border-r border-black">नवे दूध</th>
                  <th className="p-2 border-r border-black">जुनी जनावरे</th>
-                 <th className="p-2 border-r border-black">सध्याची जनावरे</th>
+                 <th className="p-2 border-r border-black">नवी जनावरे</th>
                  <th className="p-2 text-left">कारण</th>
                </tr>
              </thead>
@@ -116,88 +115,77 @@ const ProducerCenterReportView = ({ supplier }: { supplier: Supplier }) => {
          </div>
       </div>
 
-      <div className="space-y-4 text-left">
-        <SectionTitle icon={Briefcase} title="८) परिसरातील डेअरी कर्मचारी माहिती" />
-        <div className="overflow-x-auto border-2 border-black rounded-lg">
-          <table className="w-full border-collapse text-[9px] min-w-[500px]">
-            <thead className="bg-slate-50 font-black uppercase">
-              <tr className="border-b-2 border-black text-center">
-                <th className="p-1 border-r border-black text-left pl-2">नाव</th>
-                <th className="p-1 border-r border-black">शेती</th>
-                <th className="p-1 border-r border-black">गाई</th>
-                <th className="p-1 border-r border-black">म्हशी</th>
-                <th className="p-1">दूध पुरवठा (L)</th>
+      <SectionTitle icon={Briefcase} title="८) परिसरातील डेअरी कर्मचारी माहिती" />
+      <div className="overflow-x-auto border-2 border-black rounded-lg mb-6">
+        <table className="w-full border-collapse text-[9px] min-w-[500px]">
+          <thead className="bg-slate-50 font-black uppercase">
+            <tr className="border-b-2 border-black text-center">
+              <th className="p-1 border-r border-black text-left pl-2">नाव</th>
+              <th className="p-1 border-r border-black">शेती</th>
+              <th className="p-1 border-r border-black">गाई</th>
+              <th className="p-1 border-r border-black">म्हशी</th>
+              <th className="p-1">दूध पुरवठा (L)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {(details.local_employees || []).map((e: any, i: number) => (
+              <tr key={i} className="border-b border-black font-bold text-center last:border-0">
+                <td className="p-1 border-r border-black text-left pl-2">{e.name}</td>
+                <td className="p-1 border-r border-black">{e.land}</td>
+                <td className="p-1 border-r border-black">{e.cows_count}</td>
+                <td className="p-1 border-r border-black">{e.buffalo_count}</td>
+                <td className="p-1">{e.total_supply} L</td>
               </tr>
-            </thead>
-            <tbody>
-              {(details.local_employees || []).map((e: any, i: number) => (
-                <tr key={i} className="border-b border-black font-bold text-center last:border-0">
-                  <td className="p-1 border-r border-black text-left pl-2">{e.name}</td>
-                  <td className="p-1 border-r border-black">{e.land}</td>
-                  <td className="p-1 border-r border-black">{e.cows_count}</td>
-                  <td className="p-1 border-r border-black">{e.buffalo_count}</td>
-                  <td className="p-1">{e.total_supply} L</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
+        <div className="space-y-4">
+          <SectionTitle icon={ShieldCheck} title="१०) LSS सुविधा माहिती" />
+          <div className="border-2 border-black rounded-lg overflow-hidden">
+            <table className="w-full text-[9px]">
+              <thead className="bg-slate-50 font-black"><tr><th>सुविधा</th><th>स्थिती</th><th>शेरा</th></tr></thead>
+              <tbody>
+                {(details.lss_details || []).map((l: any, i: number) => (
+                  <tr key={i} className="border-b border-black font-bold last:border-0"><td className="p-1 uppercase">{l.item}</td><td className="text-center">{l.status}</td><td className="p-1">{l.remarks}</td></tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div className="space-y-4">
+          <SectionTitle icon={Zap} title="११) डेअरी मार्फत मिळणाऱ्या सुविधा" />
+          <div className="border-2 border-black rounded-lg overflow-hidden">
+            <table className="w-full text-[9px]">
+              <thead className="bg-amber-50 font-black"><tr><th>सुविधा</th><th>स्थिती</th><th>शेरा</th></tr></thead>
+              <tbody>
+                {(details.competitor_dairies || []).map((c: any, i: number) => (
+                  <tr key={i} className="border-b border-black font-bold last:border-0"><td className="p-1 uppercase">{c.item}</td><td className="text-center">{c.status}</td><td className="p-1">{c.remarks}</td></tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
-      <div className="space-y-4 text-left">
-        <SectionTitle icon={ShieldCheck} title="१०) LSS & डेअरी सुविधा माहिती" />
-        <div className="overflow-x-auto border-2 border-black rounded-lg">
-          <table className="w-full border-collapse text-[9px] min-w-[400px]">
-            <thead className="bg-slate-50 font-black">
-              <tr className="border-b-2 border-black text-center">
-                <th className="p-1 border-r border-black text-left pl-2">सुविधा नाव</th>
-                <th className="p-1 border-r border-black text-center">स्थिती</th>
-                <th className="p-1 text-left pl-2">शेरा</th>
+      <SectionTitle icon={Truck} title="१२) अंतर्गत रूट माहिती (SUB-ROUTES)" color="text-emerald-700" />
+      <div className="overflow-x-auto border-2 border-black rounded-lg">
+        <table className="w-full border-collapse text-[9px] min-w-[600px]">
+          <thead className="bg-emerald-50 font-black uppercase">
+            <tr className="border-b-2 border-black text-center">
+              <th>गाडी</th><th>किमी</th><th>परिसर</th><th>उत्पादक</th><th>गाई</th><th>म्हशी</th><th>दूध (L)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {(details.sub_routes || []).map((r: any, i: number) => (
+              <tr key={i} className="border-b border-black font-bold text-center last:border-0">
+                <td>{r.vehicleType}</td><td>{r.km}</td><td>{r.area}</td><td>{r.producerCount}</td><td>{r.cowCount}</td><td>{r.buffaloCount}</td><td>{r.milkQty}L</td>
               </tr>
-            </thead>
-            <tbody>
-              {(details.lss_details || []).map((l: any, i: number) => (
-                <tr key={i} className="border-b border-black font-bold last:border-0">
-                  <td className="p-1 border-r border-black text-left pl-2 uppercase">{l.item}</td>
-                  <td className="p-1 border-r border-black text-center">{l.status}</td>
-                  <td className="p-1 text-left pl-2">{l.remarks}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div className="space-y-4 text-left">
-        <SectionTitle icon={Truck} title="१२) अंतर्गत रूट माहिती (SUB-ROUTES)" color="text-emerald-700" />
-        <div className="overflow-x-auto border-2 border-black rounded-lg">
-          <table className="w-full border-collapse text-[9px] min-w-[600px]">
-            <thead className="bg-emerald-50 font-black uppercase">
-              <tr className="border-b-2 border-black text-center">
-                <th className="p-1 border-r border-black">गाडी</th>
-                <th className="p-1 border-r border-black">किमी</th>
-                <th className="p-1 border-r border-black">परिसर</th>
-                <th className="p-1 border-r border-black">उत्पादक</th>
-                <th className="p-1 border-r border-black">गाई</th>
-                <th className="p-1 border-r border-black">म्हशी</th>
-                <th className="p-1">दूध (L)</th>
-              </tr>
-            </thead>
-            <tbody>
-              {(details.sub_routes || []).map((r: any, i: number) => (
-                <tr key={i} className="border-b border-black font-bold text-center last:border-0">
-                  <td className="p-1 border-r border-black uppercase">{r.vehicleType}</td>
-                  <td className="p-1 border-r border-black">{r.km}</td>
-                  <td className="p-1 border-r border-black uppercase">{r.area}</td>
-                  <td className="p-1 border-r border-black">{r.producerCount}</td>
-                  <td className="p-1 border-r border-black">{r.cowCount}</td>
-                  <td className="p-1 border-r border-black">{r.buffaloCount}</td>
-                  <td className="p-1">{r.milkQty}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            ))}
+          </tbody>
+        </table>
       </div>
 
       <div className="w-full mt-auto pt-24 grid grid-cols-2 gap-24 text-center uppercase font-black text-[11pt] tracking-[0.2em]">
@@ -630,7 +618,7 @@ export default function RouteDetailsPage() {
                   </div>
 
                   <div className="space-y-4">
-                    <div className="flex items-center justify-between"><SectionTitle icon={ShieldCheck} title="१०) LSS & डेअरी सुविधा माहिती" /><Button size="sm" onClick={() => addDynamicRow('lssFacilities', { item: "", status: "YES", remarks: "" })} className="h-7 text-[8px] uppercase bg-primary">जोडा</Button></div>
+                    <div className="flex items-center justify-between"><SectionTitle icon={ShieldCheck} title="१०) LSS सुविधा माहिती" /><Button size="sm" onClick={() => addDynamicRow('lssFacilities', { item: "", status: "YES", remarks: "" })} className="h-7 text-[8px] uppercase bg-primary">जोडा</Button></div>
                     <ScrollArea className="w-full border-2 border-black rounded-xl">
                       <table className="w-full text-left border-collapse min-w-[500px]">
                         <thead className="bg-slate-50 text-[9px] font-black uppercase border-b-2 border-black">
