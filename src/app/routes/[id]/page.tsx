@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect, useMemo, Suspense } from "react"
@@ -585,10 +586,10 @@ function RouteDetailsContent() {
                         <tbody>
                           {formData.lssFacilities.map(l => (
                             <tr key={l.id} className="border-b-2 border-black last:border-0">
-                              <td><Input value={l.item} onChange={val => updateDynamicRow('lssFacilities', l.id, { item: val.target.value })} className="h-7 border-none text-[10px] uppercase font-black" /></td>
-                              <td className="text-center"><select value={l.status} onChange={val => updateDynamicRow('lssFacilities', l.id, { status: val.target.value })} className="text-[10px] font-bold outline-none bg-transparent"><option value="YES">हो</option><option value="NO">नाही</option></select></td>
-                              <td><Input value={l.remarks} onChange={val => updateDynamicRow('lssFacilities', l.id, { remarks: val.target.value })} className="h-7 border-none text-[10px]" /></td>
-                              <td className="text-center"><Button variant="ghost" size="icon" onClick={() => removeDynamicRow('lssFacilities', l.id)} className="h-6 w-6 text-rose-500"><X className="h-3 w-3"/></Button></td>
+                              <td className="p-1 border-r-2 border-black"><Input value={l.item} onChange={val => updateDynamicRow('lssFacilities', l.id, { item: val.target.value })} className="h-7 border-none text-[10px] uppercase font-black" /></td>
+                              <td className="p-1 border-r-2 border-black text-center"><select value={l.status} onChange={val => updateDynamicRow('lssFacilities', l.id, { status: val.target.value })} className="text-[10px] font-bold outline-none bg-transparent"><option value="YES">हो</option><option value="NO">नाही</option></select></td>
+                              <td className="p-1 border-r-2 border-black"><Input value={l.remarks} onChange={val => updateDynamicRow('lssFacilities', l.id, { remarks: val.target.value })} className="h-7 border-none text-[10px]" /></td>
+                              <td className="p-1 text-center"><Button variant="ghost" size="icon" onClick={() => removeDynamicRow('lssFacilities', l.id)} className="h-6 w-6 text-rose-500"><X className="h-3 w-3"/></Button></td>
                             </tr>
                           ))}
                         </tbody>
@@ -600,18 +601,18 @@ function RouteDetailsContent() {
                      <ScrollArea className="w-full border-2 border-black rounded-xl">
                       <table className="w-full text-left border-collapse min-w-[700px] text-[10px]">
                         <thead className="bg-emerald-50 font-black uppercase border-b-2 border-black">
-                          <tr><th>गाडी</th><th>किमी</th><th>परिसर</th><th>उत्पादक</th><th>जनावरे</th><th>दूध (L)</th><th>X</th></tr>
+                          <tr><th className="p-1 border-r-2 border-black">गाडी</th><th className="p-1 border-r-2 border-black">किमी</th><th className="p-1 border-r-2 border-black">परिसर</th><th className="p-1 border-r-2 border-black">उत्पादक</th><th className="p-1 border-r-2 border-black">जनावरे</th><th className="p-1 border-r-2 border-black">दूध (L)</th><th className="p-1 text-center">X</th></tr>
                         </thead>
                         <tbody>
                           {formData.subRoutes.map(r => (
                             <tr key={r.id} className="border-b border-black last:border-0 text-center">
-                              <td><Input value={r.vehicleType} onChange={e => updateDynamicRow('subRoutes', r.id, { vehicleType: e.target.value })} className="h-7 border-none text-center" /></td>
-                              <td><Input value={r.km} onChange={e => updateDynamicRow('subRoutes', r.id, { km: e.target.value })} className="h-7 border-none text-center" /></td>
-                              <td><Input value={r.area} onChange={e => updateDynamicRow('subRoutes', r.id, { area: e.target.value })} className="h-7 border-none text-center" /></td>
-                              <td><Input type="number" value={r.producerCount} onChange={e => updateDynamicRow('subRoutes', r.id, { producerCount: e.target.value })} className="h-7 border-none text-center" /></td>
-                              <td><Input type="number" value={r.animalCount} onChange={e => updateDynamicRow('subRoutes', r.id, { animalCount: e.target.value })} className="h-7 border-none text-center" /></td>
-                              <td><Input type="number" value={r.milkQty} onChange={e => updateDynamicRow('subRoutes', r.id, { milkQty: e.target.value })} className="h-7 border-none text-center font-black" /></td>
-                              <td className="text-center"><Button variant="ghost" size="icon" onClick={() => removeDynamicRow('subRoutes', r.id)} className="text-rose-500"><X className="h-3 w-3" /></Button></td>
+                              <td className="p-1 border-r-2 border-black"><Input value={r.vehicleType} onChange={e => updateDynamicRow('subRoutes', r.id, { vehicleType: e.target.value })} className="h-7 border-none text-center" /></td>
+                              <td className="p-1 border-r-2 border-black"><Input value={r.km} onChange={e => updateDynamicRow('subRoutes', r.id, { km: e.target.value })} className="h-7 border-none text-center" /></td>
+                              <td className="p-1 border-r-2 border-black"><Input value={r.area} onChange={e => updateDynamicRow('subRoutes', r.id, { area: e.target.value })} className="h-7 border-none text-center" /></td>
+                              <td className="p-1 border-r-2 border-black"><Input type="number" value={r.producerCount} onChange={e => updateDynamicRow('subRoutes', r.id, { producerCount: e.target.value })} className="h-7 border-none text-center" /></td>
+                              <td className="p-1 border-r-2 border-black"><Input type="number" value={r.animalCount} onChange={e => updateDynamicRow('subRoutes', r.id, { animalCount: e.target.value })} className="h-7 border-none text-center" /></td>
+                              <td className="p-1 border-r-2 border-black"><Input type="number" value={r.milkQty} onChange={e => updateDynamicRow('subRoutes', r.id, { milkQty: e.target.value })} className="h-7 border-none text-center font-black" /></td>
+                              <td className="p-1 text-center"><Button variant="ghost" size="icon" onClick={() => removeDynamicRow('subRoutes', r.id)} className="text-rose-500"><X className="h-3 w-3" /></Button></td>
                             </tr>
                           ))}
                         </tbody>
