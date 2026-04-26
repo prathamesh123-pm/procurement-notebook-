@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo, useEffect, Suspense } from "react"
@@ -13,9 +12,8 @@ import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
-import { useUser, useFirestore, useCollection, useMemoFirebase, deleteDocumentNonBlocking } from "@/firebase"
+import { useUser, useFirestore, useCollection, useMemoFirebase, deleteDocumentNonBlocking, useDoc } from "@/firebase"
 import { collection, doc, query, orderBy } from "firebase/firestore"
-import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
@@ -71,9 +69,9 @@ const ProducerCenterLayout = ({ report, profileName, profileId }: { report: any,
         <table className="w-full text-[9pt]">
           <tbody>
             <tr><td className="p-2 bg-slate-50 font-black border-r border-black w-1/3">सेंटर नाव</td><td className="p-2 font-bold">{d.name} (ID: {d.supplierId})</td></tr>
-            <tr><td className="p-2 bg-slate-50 font-black border-r border-black">सकाळ / सायंकाळ वेळ</td><td className="p-2 font-bold">{details.morning_collection_time} / {details.evening_collection_time}</td></tr>
-            <tr><td className="p-2 bg-slate-50 font-black border-r border-black">उत्पादक (एकूण/सक्रिय/निष्क्रिय)</td><td className="p-2 font-bold">{details.total_producers} / {details.active_producers} / {details.inactive_producers}</td></tr>
-            <tr><td className="p-2 bg-slate-50 font-black border-r border-black">जनावरे (गाय/म्हेस/वासरे)</td><td className="p-2 font-bold">{details.cows} गायी | {details.buffalo} म्हशी | {details.calves} वासरे</td></tr>
+            <tr><td className="p-2 bg-slate-50 font-black border-r border-black">सकाळ / सायंकाळ वेळ</td><td className="p-2 font-bold">{details.morning_collection_time || "-"} / {details.evening_collection_time || "-"}</td></tr>
+            <tr><td className="p-2 bg-slate-50 font-black border-r border-black">उत्पादक (एकूण/सक्रिय/निष्क्रिय)</td><td className="p-2 font-bold">{details.total_producers || 0} / {details.active_producers || 0} / {details.inactive_producers || 0}</td></tr>
+            <tr><td className="p-2 bg-slate-50 font-black border-r border-black">जनावरे (गाय/म्हेस/वासरे)</td><td className="p-2 font-bold">{details.cows || 0} गायी | {details.buffalo || 0} म्हशी | {details.calves || 0} वासरे</td></tr>
           </tbody>
         </table>
       </div>
@@ -82,14 +80,22 @@ const ProducerCenterLayout = ({ report, profileName, profileId }: { report: any,
       <div className="w-full overflow-x-auto mb-6">
         <table className="w-full border-2 border-black text-[8pt]">
           <thead className="bg-slate-100">
-            <tr className="font-black border-b border-black">
-              <th className="p-1 border-r border-black">नाव</th><th className="p-1 border-r border-black">जुने दूध</th><th className="p-1 border-r border-black">सध्याचे दूध</th><th className="p-1 border-r border-black">जुनी जनावरे</th><th className="p-1">सध्याची जनावरे</th>
+            <tr className="font-black border-b border-black text-center">
+              <th className="p-1 border-r border-black">नाव</th>
+              <th className="p-1 border-r border-black">जुने दूध</th>
+              <th className="p-1 border-r border-black">सध्याचे दूध</th>
+              <th className="p-1 border-r border-black">जुनी जनावरे</th>
+              <th className="p-1">सध्याची जनावरे</th>
             </tr>
           </thead>
           <tbody>
             {(details.long_term_producers || []).map((p: any, i: number) => (
               <tr key={i} className="border-b border-black text-center font-bold">
-                <td className="p-1 border-r border-black text-left pl-2">{p.producer_name}</td><td>{p.previous_milk}L</td><td>{p.current_milk}L</td><td>{p.previous_animals}</td><td>{p.current_animals}</td>
+                <td className="p-1 border-r border-black text-left pl-2">{p.producer_name}</td>
+                <td>{p.previous_milk}L</td>
+                <td>{p.current_milk}L</td>
+                <td>{p.previous_animals}</td>
+                <td>{p.current_animals}</td>
               </tr>
             ))}
           </tbody>
@@ -100,14 +106,24 @@ const ProducerCenterLayout = ({ report, profileName, profileId }: { report: any,
       <div className="w-full overflow-x-auto mb-6">
         <table className="w-full border-2 border-black text-[8pt]">
           <thead className="bg-rose-50 text-rose-900 font-black">
-            <tr className="border-b border-black">
-              <th className="p-1 border-r border-black">नाव</th><th>जुने</th><th>नवे</th><th>जुनी जनावरे</th><th>नवी जनावरे</th><th>कारण</th>
+            <tr className="border-b border-black text-center">
+              <th className="p-1 border-r border-black">नाव</th>
+              <th className="p-1 border-r border-black">जुने</th>
+              <th className="p-1 border-r border-black">नवे</th>
+              <th className="p-1 border-r border-black">जुनी जनावरे</th>
+              <th className="p-1 border-r border-black">नवी जनावरे</th>
+              <th className="p-1">कारण</th>
             </tr>
           </thead>
           <tbody>
             {(details.decreasing_producers || []).map((p: any, i: number) => (
               <tr key={i} className="border-b border-black text-center font-bold text-rose-800">
-                <td className="p-1 border-r border-black text-left pl-2">{p.producer_name}</td><td>{p.previous_milk}</td><td>{p.current_milk}</td><td>{p.previous_animals}</td><td>{p.current_animals}</td><td>{p.reason}</td>
+                <td className="p-1 border-r border-black text-left pl-2">{p.producer_name}</td>
+                <td>{p.previous_milk}</td>
+                <td>{p.current_milk}</td>
+                <td>{p.previous_animals}</td>
+                <td>{p.current_animals}</td>
+                <td className="text-left pl-2">{p.reason}</td>
               </tr>
             ))}
           </tbody>
@@ -119,13 +135,21 @@ const ProducerCenterLayout = ({ report, profileName, profileId }: { report: any,
         <table className="w-full border-2 border-black text-[8pt]">
           <thead className="bg-slate-50 font-black uppercase">
             <tr className="border-b-2 border-black text-center">
-              <th className="p-1 border-r border-black text-left pl-2">नाव</th><th>शेती</th><th>गाई</th><th>म्हशी</th><th>दूध पुरवठा (L)</th>
+              <th className="p-1 border-r border-black text-left pl-2">नाव</th>
+              <th>शेती</th>
+              <th>गाई</th>
+              <th>म्हशी</th>
+              <th>दूध पुरवठा (L)</th>
             </tr>
           </thead>
           <tbody>
             {(details.local_employees || []).map((e: any, i: number) => (
               <tr key={i} className="border-b border-black font-bold text-center last:border-0">
-                <td className="p-1 border-r border-black text-left pl-2">{e.name}</td><td>{e.land}</td><td>{e.cows_count}</td><td>{e.buffalo_count}</td><td>{e.total_supply}L</td>
+                <td className="p-1 border-r border-black text-left pl-2">{e.name}</td>
+                <td>{e.land}</td>
+                <td>{e.cows_count}</td>
+                <td>{e.buffalo_count}</td>
+                <td>{e.total_supply}L</td>
               </tr>
             ))}
           </tbody>
@@ -139,7 +163,7 @@ const ProducerCenterLayout = ({ report, profileName, profileId }: { report: any,
             <thead className="bg-slate-50 font-black"><tr><th>सुविधा</th><th>स्थिती</th><th>शेरा</th></tr></thead>
             <tbody>
               {(details.lss_details || []).map((l: any, i: number) => (
-                <tr key={i} className="border-b border-black font-bold"><td>{l.item}</td><td className="text-center">{l.status}</td><td>{l.remarks}</td></tr>
+                <tr key={i} className="border-b border-black font-bold text-center"><td className="text-left pl-2">{l.item}</td><td>{l.status}</td><td>{l.remarks}</td></tr>
               ))}
             </tbody>
           </table>
@@ -150,7 +174,7 @@ const ProducerCenterLayout = ({ report, profileName, profileId }: { report: any,
             <thead className="bg-amber-50 font-black"><tr><th>सुविधा</th><th>स्थिती</th><th>शेरा</th></tr></thead>
             <tbody>
               {(details.competitor_dairies || []).map((c: any, i: number) => (
-                <tr key={i} className="border-b border-black font-bold"><td>{c.item}</td><td className="text-center">{c.status}</td><td>{c.remarks}</td></tr>
+                <tr key={i} className="border-b border-black font-bold text-center"><td className="text-left pl-2">{c.item}</td><td>{c.status}</td><td>{c.remarks}</td></tr>
               ))}
             </tbody>
           </table>
@@ -168,7 +192,7 @@ const ProducerCenterLayout = ({ report, profileName, profileId }: { report: any,
           <tbody>
             {(details.sub_routes || []).map((r: any, i: number) => (
               <tr key={i} className="border-b border-black font-bold text-center last:border-0">
-                <td>{r.vehicleType}</td><td>{r.km}</td><td>{r.area}</td><td>{r.producerCount}</td><td>{r.cowCount}</td><td>{r.buffaloCount}</td><td>{r.milkQty}L</td>
+                <td className="uppercase">{r.vehicleType}</td><td>{r.km}</td><td className="uppercase">{r.area}</td><td>{r.producerCount}</td><td>{r.cowCount}</td><td>{r.buffaloCount}</td><td>{r.milkQty}L</td>
               </tr>
             ))}
           </tbody>
@@ -190,7 +214,7 @@ const ProducerCenterLayout = ({ report, profileName, profileId }: { report: any,
   )
 }
 
-function ReportsContent() {
+function ReportsPage() {
   const { user } = useUser()
   const db = useFirestore()
   const router = useRouter()
@@ -318,7 +342,7 @@ function ReportsContent() {
             </div>
           </DialogHeader>
           <ScrollArea className="max-h-[85vh] bg-white">
-            {selectedReport && selectedReport.type === 'Milk Procurement Survey' ? (
+            {selectedReport && (selectedReport.type === 'Milk Procurement Survey' || selectedReport.fullData?.supplierType === 'Center') ? (
                <ProducerCenterLayout report={selectedReport} profileName={profile?.displayName || ""} profileId={profile?.employeeId || ""} />
             ) : selectedReport ? (
               <div className="bg-white p-8 printable-report flex flex-col items-center">
@@ -355,23 +379,14 @@ function ReportsContent() {
           </ScrollArea>
         </DialogContent>
       </Dialog>
-
-      <style jsx global>{`
-        @media print {
-          .no-print, header, nav, .sidebar { display: none !important; }
-          .printable-report { width: 100% !important; max-width: none !important; margin: 0 !important; padding: 10mm !important; }
-          body { background: white !important; }
-          [role="dialog"] { position: absolute !important; left: 0 !important; top: 0 !important; width: 100% !important; }
-        }
-      `}</style>
     </div>
   )
 }
 
-export default function ReportsPage() {
+export default function Page() {
   return (
     <Suspense fallback={<div className="p-20 text-center font-black uppercase text-[10px] opacity-50 animate-pulse">लोड होत आहे...</div>}>
-      <ReportsContent />
+      <ReportsPage />
     </Suspense>
   )
 }

@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect, useMemo, Suspense } from "react"
@@ -143,26 +142,13 @@ const ProducerCenterReportView = ({ supplier }: { supplier: Supplier }) => {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
         <div className="space-y-4">
-          <SectionTitle icon={ShieldCheck} title="१०) LSS सुविधा माहिती" />
+          <SectionTitle icon={ShieldCheck} title="१०) LSS & ११) डेअरी सुविधा माहिती" />
           <div className="border-2 border-black rounded-lg overflow-hidden">
             <table className="w-full text-[9px]">
-              <thead className="bg-slate-50 font-black"><tr><th>सुविधा</th><th>स्थिती</th><th>शेरा</th></tr></thead>
+              <thead className="bg-slate-50 font-black"><tr><th>सुविधा नाव</th><th>स्थिती</th><th>शेरा</th></tr></thead>
               <tbody>
                 {(details.lss_details || []).map((l: any, i: number) => (
                   <tr key={i} className="border-b border-black font-bold last:border-0"><td className="p-1 uppercase">{l.item}</td><td className="text-center">{l.status}</td><td className="p-1">{l.remarks}</td></tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-        <div className="space-y-4">
-          <SectionTitle icon={Zap} title="११) डेअरी मार्फत मिळणाऱ्या सुविधा" />
-          <div className="border-2 border-black rounded-lg overflow-hidden">
-            <table className="w-full text-[9px]">
-              <thead className="bg-amber-50 font-black"><tr><th>सुविधा</th><th>स्थिती</th><th>शेरा</th></tr></thead>
-              <tbody>
-                {(details.competitor_dairies || []).map((c: any, i: number) => (
-                  <tr key={i} className="border-b border-black font-bold last:border-0"><td className="p-1 uppercase">{c.item}</td><td className="text-center">{c.status}</td><td className="p-1">{c.remarks}</td></tr>
                 ))}
               </tbody>
             </table>
@@ -196,7 +182,7 @@ const ProducerCenterReportView = ({ supplier }: { supplier: Supplier }) => {
   );
 };
 
-export default function RouteDetailsPage() {
+function RouteDetailsContent() {
   const params = useParams()
   const router = useRouter()
   const currentRouteId = params.id as string
@@ -233,7 +219,7 @@ export default function RouteDetailsPage() {
     supplierType: "Gavali" as SupplierType, fssaiNumber: "", fssaiExpiry: "",
     scaleBrand: "", fatMachineBrand: "", chemicalsStock: "", batteryCondition: "",
     paymentCycle: "10 Days", spaceOwnership: "Self" as 'Self' | 'Rented', hygieneGrade: "A",
-    competition: "", cattleFeedBrand: "", iceBlocks: "0",
+    competition: "", cattleFeedBrand: "None", iceBlocks: "0",
     cowQty: "0", cowFat: "0", cowSnf: "0", bufQty: "0", bufFat: "0", bufSnf: "0",
     milkCansCount: "0", computerAvailable: false, upsInverterAvailable: false, solarAvailable: false,
     adulterationKitInfo: "", additionalNotes: "", equipment: [] as EquipmentItem[],
@@ -243,14 +229,8 @@ export default function RouteDetailsPage() {
     total_animals: "0", cows: "0", buffalo: "0", calves: "0",
     longTermProducers: [] as any[],
     decreasingProducers: [] as any[],
-    can_expand_8_10_cows: false,
-    highCapacityProducers: [] as any[],
-    has_100_plus_milk: false,
-    highMilkProducers: [] as any[],
     localEmployees: [] as any[],
-    localGavali: [] as any[],
     lssFacilities: [] as any[],
-    competitorFacilities: [] as any[],
     subRoutes: [] as any[],
     milk_decrease_reasons: "",
     efforts_taken: "",
@@ -273,9 +253,8 @@ export default function RouteDetailsPage() {
       start_year: "",
       total_producers: "0", active_producers: "0", inactive_producers: "0",
       total_animals: "0", cows: "0", buffalo: "0", calves: "0",
-      longTermProducers: [], decreasingProducers: [], can_expand_8_10_cows: false,
-      highCapacityProducers: [], has_100_plus_milk: false, highMilkProducers: [],
-      localEmployees: [], localGavali: [], lssFacilities: [], competitorFacilities: [], subRoutes: [],
+      longTermProducers: [], decreasingProducers: [],
+      localEmployees: [], lssFacilities: [], subRoutes: [],
       milk_decrease_reasons: "",
       efforts_taken: "", required_actions: ""
     })
@@ -299,7 +278,7 @@ export default function RouteDetailsPage() {
       fatMachineBrand: s.fatMachineBrand || "", chemicalsStock: s.chemicalsStock || "",
       batteryCondition: s.batteryCondition || "", paymentCycle: s.paymentCycle || "10 Days",
       spaceOwnership: s.spaceOwnership || "Self", hygieneGrade: s.hygieneGrade || "A",
-      competition: s.competition || "", cattleFeedBrand: s.cattleFeedBrand || "",
+      competition: s.competition || "", cattleFeedBrand: s.cattleFeedBrand || "None",
       iceBlocks: String(s.iceBlocks || 0),
       cowQty: String(s.cowMilk?.quantity || 0), cowFat: String(s.cowMilk?.fat || 0), cowSnf: String(s.cowMilk?.snf || 0),
       bufQty: String(s.buffaloMilk?.quantity || 0), bufFat: String(s.buffaloMilk?.fat || 0), bufSnf: String(s.buffaloMilk?.snf || 0),
@@ -319,14 +298,8 @@ export default function RouteDetailsPage() {
       calves: String(details.calves || 0),
       longTermProducers: details.long_term_producers || [],
       decreasingProducers: details.decreasing_producers || [],
-      can_expand_8_10_cows: details.can_expand_8_10_cows || false,
-      highCapacityProducers: details.high_capacity_producer_list || [],
-      has_100_plus_milk: details.has_100_plus_milk || false,
-      highMilkProducers: details.high_milk_producer_list || [],
       localEmployees: details.local_employees || [],
-      localGavali: details.milkman_gavali_details || [],
       lssFacilities: details.lss_details || [],
-      competitorFacilities: details.competitor_dairies || [],
       subRoutes: details.sub_routes || [],
       milk_decrease_reasons: details.milk_decrease_reasons || "",
       efforts_taken: details.efforts_taken || "",
@@ -351,14 +324,8 @@ export default function RouteDetailsPage() {
       calves: Number(formData.calves),
       long_term_producers: formData.longTermProducers,
       decreasing_producers: formData.decreasingProducers,
-      can_expand_8_10_cows: formData.can_expand_8_10_cows,
-      high_capacity_producer_list: formData.highCapacityProducers,
-      has_100_plus_milk: formData.has_100_plus_milk,
-      high_milk_producer_list: formData.highMilkProducers,
       local_employees: formData.localEmployees,
-      milkman_gavali_details: formData.localGavali,
       lss_details: formData.lssFacilities,
-      competitor_dairies: formData.competitorFacilities,
       sub_routes: formData.subRoutes,
       milk_decrease_reasons: formData.milk_decrease_reasons,
       efforts_taken: formData.efforts_taken,
@@ -532,11 +499,12 @@ export default function RouteDetailsPage() {
                 <div className="space-y-10 border-l-4 border-primary/20 pl-4 md:pl-8">
                   <div className="space-y-4">
                     <SectionTitle icon={Clock} title="२) संकलन वेळ & उत्पादक सारांश" />
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                       <div className="space-y-1"><Label className="text-[9px] font-black uppercase">सकाळ संकलन वेळ</Label><Input type="time" value={formData.morning_collection_time} onChange={e => setFormData({...formData, morning_collection_time: e.target.value})} className="h-10 border-2 border-black" /></div>
                       <div className="space-y-1"><Label className="text-[9px] font-black uppercase">सायंकाळ संकलन वेळ</Label><Input type="time" value={formData.evening_collection_time} onChange={e => setFormData({...formData, evening_collection_time: e.target.value})} className="h-10 border-2 border-black" /></div>
                       <div className="space-y-1"><Label className="text-[9px] font-black uppercase">एकूण उत्पादक</Label><Input type="number" value={formData.total_producers} onChange={e => setFormData({...formData, total_producers: e.target.value})} className="h-10 border-2 border-black" /></div>
                       <div className="space-y-1"><Label className="text-[9px] font-black uppercase">सक्रिय उत्पादक</Label><Input type="number" value={formData.active_producers} onChange={e => setFormData({...formData, active_producers: e.target.value})} className="h-10 border-2 border-black" /></div>
+                      <div className="space-y-1"><Label className="text-[9px] font-black uppercase">स्थापना वर्ष</Label><Input value={formData.start_year} placeholder="YYYY" onChange={e => setFormData({...formData, start_year: e.target.value})} className="h-10 border-2 border-black" /></div>
                     </div>
                   </div>
 
@@ -604,7 +572,7 @@ export default function RouteDetailsPage() {
                         </thead>
                         <tbody>
                           {formData.localEmployees.map(e => (
-                            <tr key={e.id} className="border-b border-black last:border-0">
+                            <tr key={e.id} className="border-b border-black last:border-0 text-center">
                               <td className="p-1 border-r border-black"><Input value={e.name} onChange={val => updateDynamicRow('localEmployees', e.id, { name: val.target.value })} className="h-7 border-none" /></td>
                               <td className="p-1 border-r border-black"><Input value={e.land} onChange={val => updateDynamicRow('localEmployees', e.id, { land: val.target.value })} className="h-7 border-none text-center" /></td>
                               <td className="p-1 border-r border-black"><Input type="number" value={e.cows_count} onChange={val => updateDynamicRow('localEmployees', e.id, { cows_count: val.target.value })} className="h-7 border-none text-center" /></td>
@@ -618,7 +586,7 @@ export default function RouteDetailsPage() {
                   </div>
 
                   <div className="space-y-4">
-                    <div className="flex items-center justify-between"><SectionTitle icon={ShieldCheck} title="१०) LSS सुविधा माहिती" /><Button size="sm" onClick={() => addDynamicRow('lssFacilities', { item: "", status: "YES", remarks: "" })} className="h-7 text-[8px] uppercase bg-primary">जोडा</Button></div>
+                    <div className="flex items-center justify-between"><SectionTitle icon={ShieldCheck} title="१०) LSS & डेअरी सुविधा माहिती" /><Button size="sm" onClick={() => addDynamicRow('lssFacilities', { item: "", status: "YES", remarks: "" })} className="h-7 text-[8px] uppercase bg-primary">जोडा</Button></div>
                     <ScrollArea className="w-full border-2 border-black rounded-xl">
                       <table className="w-full text-left border-collapse min-w-[500px]">
                         <thead className="bg-slate-50 text-[9px] font-black uppercase border-b-2 border-black">
@@ -758,5 +726,13 @@ export default function RouteDetailsPage() {
         </DialogContent>
       </Dialog>
     </div>
+  )
+}
+
+export default function RouteDetailsPage() {
+  return (
+    <Suspense fallback={<div className="p-10 text-center font-black uppercase text-[10px] opacity-50">लोड होत आहे...</div>}>
+      <RouteDetailsContent />
+    </Suspense>
   )
 }

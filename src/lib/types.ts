@@ -68,6 +68,7 @@ export interface ProducerCenterAdditionalDetails {
   competitor_dairies?: any[];
   local_employees?: any[];
   milkman_gavali_details?: any[];
+  sub_routes?: any[];
   milk_decrease_reasons?: string;
   efforts_taken?: string;
   required_actions?: string;
