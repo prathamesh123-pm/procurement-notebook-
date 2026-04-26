@@ -12,7 +12,7 @@ import {
   Plus, Search, User, 
   Truck, Edit, ChevronRight, ArrowLeft, X, Laptop, Zap, Sun, Trash2, Milk, Box, Wallet, 
   ShieldCheck, Printer, CheckCircle2, Clock, Layers, Users, TrendingDown, 
-  IndianRupee, History, Briefcase, Info, FileText, MapPin, Lightbulb
+  IndianRupee, History, Briefcase, Info, FileText, MapPin, Lightbulb, PlusCircle
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
@@ -117,7 +117,35 @@ const ProducerCenterReportView = ({ supplier }: { supplier: Supplier }) => {
       </div>
 
       <div className="space-y-4 text-left">
-        <SectionTitle icon={ShieldCheck} title="११) LSS सुविधा माहिती" />
+        <SectionTitle icon={Briefcase} title="८) परिसरातील डेअरी कर्मचारी माहिती" />
+        <div className="overflow-x-auto border-2 border-black rounded-lg">
+          <table className="w-full border-collapse text-[9px] min-w-[500px]">
+            <thead className="bg-slate-50 font-black uppercase">
+              <tr className="border-b-2 border-black text-center">
+                <th className="p-1 border-r border-black text-left pl-2">नाव</th>
+                <th className="p-1 border-r border-black">शेती</th>
+                <th className="p-1 border-r border-black">गाई</th>
+                <th className="p-1 border-r border-black">म्हशी</th>
+                <th className="p-1">दूध पुरवठा (L)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {(details.local_employees || []).map((e: any, i: number) => (
+                <tr key={i} className="border-b border-black font-bold text-center last:border-0">
+                  <td className="p-1 border-r border-black text-left pl-2">{e.name}</td>
+                  <td className="p-1 border-r border-black">{e.land}</td>
+                  <td className="p-1 border-r border-black">{e.cows_count}</td>
+                  <td className="p-1 border-r border-black">{e.buffalo_count}</td>
+                  <td className="p-1">{e.total_supply} L</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div className="space-y-4 text-left">
+        <SectionTitle icon={ShieldCheck} title="१०) LSS & डेअरी सुविधा माहिती" />
         <div className="overflow-x-auto border-2 border-black rounded-lg">
           <table className="w-full border-collapse text-[9px] min-w-[400px]">
             <thead className="bg-slate-50 font-black">
@@ -143,14 +171,15 @@ const ProducerCenterReportView = ({ supplier }: { supplier: Supplier }) => {
       <div className="space-y-4 text-left">
         <SectionTitle icon={Truck} title="१२) अंतर्गत रूट माहिती (SUB-ROUTES)" color="text-emerald-700" />
         <div className="overflow-x-auto border-2 border-black rounded-lg">
-          <table className="w-full border-collapse text-[9px] min-w-[500px]">
+          <table className="w-full border-collapse text-[9px] min-w-[600px]">
             <thead className="bg-emerald-50 font-black uppercase">
               <tr className="border-b-2 border-black text-center">
                 <th className="p-1 border-r border-black">गाडी</th>
                 <th className="p-1 border-r border-black">किमी</th>
                 <th className="p-1 border-r border-black">परिसर</th>
                 <th className="p-1 border-r border-black">उत्पादक</th>
-                <th className="p-1 border-r border-black">जनावरे</th>
+                <th className="p-1 border-r border-black">गाई</th>
+                <th className="p-1 border-r border-black">म्हशी</th>
                 <th className="p-1">दूध (L)</th>
               </tr>
             </thead>
@@ -161,7 +190,8 @@ const ProducerCenterReportView = ({ supplier }: { supplier: Supplier }) => {
                   <td className="p-1 border-r border-black">{r.km}</td>
                   <td className="p-1 border-r border-black uppercase">{r.area}</td>
                   <td className="p-1 border-r border-black">{r.producerCount}</td>
-                  <td className="p-1 border-r border-black">{r.animalCount}</td>
+                  <td className="p-1 border-r border-black">{r.cowCount}</td>
+                  <td className="p-1 border-r border-black">{r.buffaloCount}</td>
                   <td className="p-1">{r.milkQty}</td>
                 </tr>
               ))}
@@ -178,7 +208,7 @@ const ProducerCenterReportView = ({ supplier }: { supplier: Supplier }) => {
   );
 };
 
-function RouteDetailsContent() {
+export default function RouteDetailsPage() {
   const params = useParams()
   const router = useRouter()
   const currentRouteId = params.id as string
@@ -247,7 +277,7 @@ function RouteDetailsContent() {
       routeId: currentRouteId,
       supplierType: "Gavali", fssaiNumber: "", fssaiExpiry: "", scaleBrand: "", fatMachineBrand: "",
       chemicalsStock: "", batteryCondition: "", paymentCycle: "10 Days", spaceOwnership: "Self",
-      hygieneGrade: "A", competition: "", cattleFeedBrand: "", iceBlocks: "0",
+      hygieneGrade: "A", competition: "", cattleFeedBrand: "None", iceBlocks: "0",
       cowQty: "0", cowFat: "0", cowSnf: "0", bufQty: "0", bufFat: "0", bufSnf: "0",
       milkCansCount: "0", computerAvailable: false, upsInverterAvailable: false, solarAvailable: false,
       adulterationKitInfo: "", additionalNotes: "", equipment: [],
@@ -486,7 +516,7 @@ function RouteDetailsContent() {
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-[95vw] sm:max-w-[900px] p-0 overflow-hidden rounded-3xl border-none shadow-2xl bg-white text-left">
+        <DialogContent className="max-w-[95vw] sm:max-w-[950px] p-0 overflow-hidden rounded-3xl border-none shadow-2xl bg-white text-left">
           <DialogHeader className="p-4 bg-primary text-white sticky top-0 z-10">
             <DialogTitle className="text-base font-black uppercase tracking-widest">{dialogMode === 'add' ? 'नवीन सप्लायर' : 'माहिती अद्ययावत करा'}</DialogTitle>
             <DialogDescription className="text-[9px] text-white/70 uppercase">सप्लायरचा सविस्तर तपशील भरा.</DialogDescription>
@@ -519,8 +549,6 @@ function RouteDetailsContent() {
                       <div className="space-y-1"><Label className="text-[9px] font-black uppercase">सायंकाळ संकलन वेळ</Label><Input type="time" value={formData.evening_collection_time} onChange={e => setFormData({...formData, evening_collection_time: e.target.value})} className="h-10 border-2 border-black" /></div>
                       <div className="space-y-1"><Label className="text-[9px] font-black uppercase">एकूण उत्पादक</Label><Input type="number" value={formData.total_producers} onChange={e => setFormData({...formData, total_producers: e.target.value})} className="h-10 border-2 border-black" /></div>
                       <div className="space-y-1"><Label className="text-[9px] font-black uppercase">सक्रिय उत्पादक</Label><Input type="number" value={formData.active_producers} onChange={e => setFormData({...formData, active_producers: e.target.value})} className="h-10 border-2 border-black" /></div>
-                      <div className="space-y-1"><Label className="text-[9px] font-black uppercase">निष्क्रिय उत्पादक</Label><Input type="number" value={formData.inactive_producers} onChange={e => setFormData({...formData, inactive_producers: e.target.value})} className="h-10 border-2 border-black" /></div>
-                      <div className="space-y-1"><Label className="text-[9px] font-black uppercase">स्थापना वर्ष</Label><Input value={formData.start_year} placeholder="YYYY" onChange={e => setFormData({...formData, start_year: e.target.value})} className="h-10 border-2 border-black" /></div>
                     </div>
                   </div>
 
@@ -580,56 +608,11 @@ function RouteDetailsContent() {
                   </div>
 
                   <div className="space-y-4">
-                     <div className="flex items-center justify-between"><SectionTitle icon={Layers} title="६) ८-१० जनावरांचा गोठा सक्षम उत्पादक" /><Button size="sm" onClick={() => addDynamicRow('highCapacityProducers', { name: "", current_milk: 0, puravtha_varsh: "", current_animals: 0, land: "", fodder_available: "YES", shed_available: "YES" })} className="h-7 text-[8px] uppercase">जोडा</Button></div>
-                     <ScrollArea className="w-full border-2 border-black rounded-xl">
-                      <table className="w-full text-left border-collapse min-w-[700px] text-[10px]">
-                        <thead className="bg-slate-100 font-black uppercase border-b-2 border-black">
-                          <tr><th className="p-1 border-r border-black">नाव</th><th className="p-1 border-r border-black">दूध</th><th className="p-1 border-r border-black">वर्षे</th><th className="p-1 border-r border-black">जनावरे</th><th className="p-1 border-r border-black">शेती</th><th className="p-1 border-r border-black">चारा</th><th className="p-1 border-r border-black">शेड</th><th className="p-1">X</th></tr>
-                        </thead>
-                        <tbody>
-                          {formData.highCapacityProducers.map(p => (
-                            <tr key={p.id} className="border-b border-black last:border-0">
-                              <td className="p-1 border-r border-black"><Input value={p.name} onChange={e => updateDynamicRow('highCapacityProducers', p.id, { name: e.target.value })} className="h-7 border-none" /></td>
-                              <td className="p-1 border-r border-black"><Input type="number" value={p.current_milk} onChange={e => updateDynamicRow('highCapacityProducers', p.id, { current_milk: e.target.value })} className="h-7 border-none text-center" /></td>
-                              <td className="p-1 border-r border-black"><Input value={p.puravtha_varsh} onChange={e => updateDynamicRow('highCapacityProducers', p.id, { puravtha_varsh: e.target.value })} className="h-7 border-none text-center" /></td>
-                              <td className="p-1 border-r border-black"><Input type="number" value={p.current_animals} onChange={e => updateDynamicRow('highCapacityProducers', p.id, { current_animals: e.target.value })} className="h-7 border-none text-center" /></td>
-                              <td className="p-1 border-r border-black"><Input value={p.land} onChange={e => updateDynamicRow('highCapacityProducers', p.id, { land: e.target.value })} className="h-7 border-none text-center" /></td>
-                              <td className="p-1 border-r border-black"><select value={p.fodder_available} onChange={e => updateDynamicRow('highCapacityProducers', p.id, { fodder_available: e.target.value })} className="h-7 outline-none"><option value="YES">YES</option><option value="NO">NO</option></select></td>
-                              <td className="p-1 border-r border-black"><select value={p.shed_available} onChange={e => updateDynamicRow('highCapacityProducers', p.id, { shed_available: e.target.value })} className="h-7 outline-none"><option value="YES">YES</option><option value="NO">NO</option></select></td>
-                              <td className="p-1 text-center"><Button variant="ghost" size="icon" onClick={() => removeDynamicRow('highCapacityProducers', p.id)} className="h-5 w-5 text-rose-500"><X className="h-3 w-3"/></Button></td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table><ScrollBar orientation="horizontal" /></ScrollArea>
-                  </div>
-
-                  <div className="space-y-4">
-                     <div className="flex items-center justify-between"><SectionTitle icon={Milk} title="७) ३० ते १००+ लिटर दूध उत्पादक" /><Button size="sm" onClick={() => addDynamicRow('highMilkProducers', { name: "", cows_count: 0, buffalo_count: 0, current_milk: 0 })} className="h-7 text-[8px] uppercase">जोडा</Button></div>
-                     <ScrollArea className="w-full border-2 border-black rounded-xl">
-                      <table className="w-full text-left border-collapse min-w-[500px] text-[10px]">
-                        <thead className="bg-blue-50 font-black uppercase border-b-2 border-black text-blue-900">
-                          <tr><th className="p-1 border-r border-black">नाव</th><th className="p-1 border-r border-black">गाई</th><th className="p-1 border-r border-black">म्हशी</th><th className="p-1 border-r border-black">दूध (L)</th><th className="p-1">X</th></tr>
-                        </thead>
-                        <tbody>
-                          {formData.highMilkProducers.map(p => (
-                            <tr key={p.id} className="border-b border-black last:border-0">
-                              <td className="p-1 border-r border-black"><Input value={p.name} onChange={e => updateDynamicRow('highMilkProducers', p.id, { name: e.target.value })} className="h-7 border-none" /></td>
-                              <td className="p-1 border-r border-black"><Input type="number" value={p.cows_count} onChange={e => updateDynamicRow('highMilkProducers', p.id, { cows_count: e.target.value })} className="h-7 border-none text-center" /></td>
-                              <td className="p-1 border-r border-black"><Input type="number" value={p.buffalo_count} onChange={e => updateDynamicRow('highMilkProducers', p.id, { buffalo_count: e.target.value })} className="h-7 border-none text-center" /></td>
-                              <td className="p-1 border-r border-black"><Input type="number" value={p.current_milk} onChange={e => updateDynamicRow('highMilkProducers', p.id, { current_milk: e.target.value })} className="h-7 border-none text-center font-black" /></td>
-                              <td className="p-1 text-center"><Button variant="ghost" size="icon" onClick={() => removeDynamicRow('highMilkProducers', p.id)} className="h-5 w-5 text-rose-500"><X className="h-3 w-3"/></Button></td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table><ScrollBar orientation="horizontal" /></ScrollArea>
-                  </div>
-
-                  <div className="space-y-4">
                      <div className="flex items-center justify-between"><SectionTitle icon={Briefcase} title="८) परिसरातील डेअरी कर्मचारी माहिती" /><Button size="sm" onClick={() => addDynamicRow('localEmployees', { name: "", land: "", cows_count: 0, buffalo_count: 0, total_supply: 0 })} className="h-7 text-[8px] uppercase">जोडा</Button></div>
                      <ScrollArea className="w-full border-2 border-black rounded-xl">
                       <table className="w-full text-left border-collapse min-w-[600px] text-[10px]">
                         <thead className="bg-slate-50 font-black uppercase border-b-2 border-black">
-                          <tr><th className="p-1 border-r border-black">नाव</th><th className="p-1 border-r border-black">शेती</th><th className="p-1 border-r border-black">गाई</th><th className="p-1 border-r border-black">म्हशी</th><th className="p-1 border-r border-black">दूध</th><th className="p-1">X</th></tr>
+                          <tr><th className="p-1 border-r border-black">नाव</th><th className="p-1 border-r border-black">शेती</th><th className="p-1 border-r border-black">गाई</th><th className="p-1 border-r border-black">म्हशी</th><th className="p-1 border-r border-black">दूध पुरवठा (L)</th><th className="p-1">X</th></tr>
                         </thead>
                         <tbody>
                           {formData.localEmployees.map(e => (
@@ -638,7 +621,7 @@ function RouteDetailsContent() {
                               <td className="p-1 border-r border-black"><Input value={e.land} onChange={val => updateDynamicRow('localEmployees', e.id, { land: val.target.value })} className="h-7 border-none text-center" /></td>
                               <td className="p-1 border-r border-black"><Input type="number" value={e.cows_count} onChange={val => updateDynamicRow('localEmployees', e.id, { cows_count: val.target.value })} className="h-7 border-none text-center" /></td>
                               <td className="p-1 border-r border-black"><Input type="number" value={e.buffalo_count} onChange={val => updateDynamicRow('localEmployees', e.id, { buffalo_count: val.target.value })} className="h-7 border-none text-center" /></td>
-                              <td className="p-1 border-r border-black"><Input type="number" value={e.total_supply} onChange={val => updateDynamicRow('localEmployees', e.id, { total_supply: val.target.value })} className="h-7 border-none text-center" /></td>
+                              <td className="p-1 border-r border-black"><Input type="number" value={e.total_supply} onChange={val => updateDynamicRow('localEmployees', e.id, { total_supply: val.target.value })} className="h-7 border-none text-center font-black" /></td>
                               <td className="p-1 text-center"><Button variant="ghost" size="icon" onClick={() => removeDynamicRow('localEmployees', e.id)} className="h-5 w-5 text-rose-500"><X className="h-3 w-3"/></Button></td>
                             </tr>
                           ))}
@@ -647,29 +630,7 @@ function RouteDetailsContent() {
                   </div>
 
                   <div className="space-y-4">
-                     <div className="flex items-center justify-between"><SectionTitle icon={User} title="९) स्थानिक गवळी माहिती (आपल्या डेअरीचे)" /><Button size="sm" onClick={() => addDynamicRow('localGavali', { name: "", code: "", gay_dudh: 0, mhais_dudh: 0, producers: 0 })} className="h-7 text-[8px] uppercase">जोडा</Button></div>
-                     <ScrollArea className="w-full border-2 border-black rounded-xl">
-                      <table className="w-full text-left border-collapse min-w-[600px] text-[10px]">
-                        <thead className="bg-slate-50 font-black uppercase border-b-2 border-black">
-                          <tr><th className="p-1 border-r border-black">नाव</th><th className="p-1 border-r border-black">कोड</th><th className="p-1 border-r border-black">गाय दूध</th><th className="p-1 border-r border-black">म्हेस दूध</th><th className="p-1 border-r border-black">उत्पादक</th><th className="p-1">X</th></tr>
-                        </thead>
-                        <tbody>
-                          {formData.localGavali.map(g => (
-                            <tr key={g.id} className="border-b border-black last:border-0">
-                              <td className="p-1 border-r border-black"><Input value={g.name} onChange={val => updateDynamicRow('localGavali', g.id, { name: val.target.value })} className="h-7 border-none" /></td>
-                              <td className="p-1 border-r border-black"><Input value={g.code} onChange={val => updateDynamicRow('localGavali', g.id, { code: val.target.value })} className="h-7 border-none text-center" /></td>
-                              <td className="p-1 border-r border-black"><Input type="number" value={g.gay_dudh} onChange={val => updateDynamicRow('localGavali', g.id, { gay_dudh: val.target.value })} className="h-7 border-none text-center" /></td>
-                              <td className="p-1 border-r border-black"><Input type="number" value={g.mhais_dudh} onChange={val => updateDynamicRow('localGavali', g.id, { mhais_dudh: val.target.value })} className="h-7 border-none text-center" /></td>
-                              <td className="p-1 border-r border-black"><Input type="number" value={g.producers} onChange={val => updateDynamicRow('localGavali', g.id, { producers: val.target.value })} className="h-7 border-none text-center" /></td>
-                              <td className="p-1 text-center"><Button variant="ghost" size="icon" onClick={() => removeDynamicRow('localGavali', g.id)} className="h-5 w-5 text-rose-500"><X className="h-3 w-3"/></Button></td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table><ScrollBar orientation="horizontal" /></ScrollArea>
-                  </div>
-
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between"><SectionTitle icon={ShieldCheck} title="१०) LSS सुविधा माहिती" /><Button size="sm" onClick={() => addDynamicRow('lssFacilities', { item: "", status: "YES", remarks: "" })} className="h-7 text-[8px] uppercase bg-primary">जोडा</Button></div>
+                    <div className="flex items-center justify-between"><SectionTitle icon={ShieldCheck} title="१०) LSS & डेअरी सुविधा माहिती" /><Button size="sm" onClick={() => addDynamicRow('lssFacilities', { item: "", status: "YES", remarks: "" })} className="h-7 text-[8px] uppercase bg-primary">जोडा</Button></div>
                     <ScrollArea className="w-full border-2 border-black rounded-xl">
                       <table className="w-full text-left border-collapse min-w-[500px]">
                         <thead className="bg-slate-50 text-[9px] font-black uppercase border-b-2 border-black">
@@ -689,41 +650,22 @@ function RouteDetailsContent() {
                   </div>
 
                   <div className="space-y-4">
-                    <div className="flex items-center justify-between"><SectionTitle icon={Users} title="११) इतर डेअरीमार्फत मिळणाऱ्या सुविधा" /><Button size="sm" onClick={() => addDynamicRow('competitorFacilities', { item: "", status: "NO", remarks: "" })} className="h-7 text-[8px] uppercase">जोडा</Button></div>
-                    <ScrollArea className="w-full border-2 border-black rounded-xl">
-                      <table className="w-full text-left border-collapse min-w-[500px]">
-                        <thead className="bg-rose-50 text-[9px] font-black uppercase border-b-2 border-black text-rose-900">
-                          <tr><th className="p-2 border-r-2 border-black">सुविधा नाव</th><th className="p-2 border-r-2 border-black text-center">स्थिती</th><th className="p-2 border-r-2 border-black">शेरा</th><th className="p-2 text-center">X</th></tr>
-                        </thead>
-                        <tbody>
-                          {formData.competitorFacilities.map(l => (
-                            <tr key={l.id} className="border-b-2 border-black last:border-0">
-                              <td className="p-1 border-r-2 border-black"><Input value={l.item} onChange={val => updateDynamicRow('competitorFacilities', l.id, { item: val.target.value })} className="h-7 border-none text-[10px] uppercase" /></td>
-                              <td className="p-1 border-r-2 border-black text-center"><select value={l.status} onChange={val => updateDynamicRow('competitorFacilities', l.id, { status: val.target.value })} className="text-[10px] font-bold outline-none bg-transparent"><option value="YES">हो</option><option value="NO">नाही</option></select></td>
-                              <td className="p-1 border-r-2 border-black"><Input value={l.remarks} onChange={val => updateDynamicRow('competitorFacilities', l.id, { remarks: val.target.value })} className="h-7 border-none text-[10px]" /></td>
-                              <td className="p-1 text-center"><Button variant="ghost" size="icon" onClick={() => removeDynamicRow('competitorFacilities', l.id)} className="h-6 w-6 text-rose-500"><X className="h-3 w-3"/></Button></td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table><ScrollBar orientation="horizontal" /></ScrollArea>
-                  </div>
-
-                  <div className="space-y-4">
-                     <div className="flex items-center justify-between"><SectionTitle icon={Truck} title="१२) अंतर्गत रूट माहिती (SUB-ROUTES)" color="text-emerald-700" /><Button size="sm" onClick={() => addDynamicRow('subRoutes', { vehicleType: "", km: "", area: "", producerCount: 0, animalCount: 0, milkQty: 0 })} className="h-7 text-[8px] uppercase bg-emerald-600">जोडा</Button></div>
+                     <div className="flex items-center justify-between"><SectionTitle icon={Truck} title="१२) अंतर्गत रूट माहिती (SUB-ROUTES)" color="text-emerald-700" /><Button size="sm" onClick={() => addDynamicRow('subRoutes', { vehicleType: "", km: "", area: "", producerCount: 0, cowCount: 0, buffaloCount: 0, milkQty: 0 })} className="h-7 text-[8px] uppercase bg-emerald-600">जोडा</Button></div>
                      <ScrollArea className="w-full border-2 border-black rounded-xl">
                       <table className="w-full text-left border-collapse min-w-[700px] text-[10px]">
                         <thead className="bg-emerald-50 font-black uppercase border-b-2 border-black">
-                          <tr><th className="p-1 border-r-2 border-black">गाडी</th><th className="p-1 border-r-2 border-black">किमी</th><th className="p-1 border-r-2 border-black">परिसर</th><th className="p-1 border-r-2 border-black">उत्पादक</th><th className="p-1 border-r-2 border-black">जनावरे</th><th className="p-1 border-r-2 border-black">दूध (L)</th><th className="p-1 text-center">X</th></tr>
+                          <tr><th className="p-1 border-r border-black">गाडी</th><th className="p-1 border-r border-black">किमी</th><th className="p-1 border-r border-black">परिसर</th><th className="p-1 border-r border-black">उत्पादक</th><th className="p-1 border-r border-black">गाई</th><th className="p-1 border-r border-black">म्हशी</th><th className="p-1 border-r border-black">दूध (L)</th><th className="p-1 text-center">X</th></tr>
                         </thead>
                         <tbody>
                           {formData.subRoutes.map(r => (
                             <tr key={r.id} className="border-b border-black last:border-0 text-center">
-                              <td className="p-1 border-r-2 border-black"><Input value={r.vehicleType} onChange={e => updateDynamicRow('subRoutes', r.id, { vehicleType: e.target.value })} className="h-7 border-none text-center" /></td>
-                              <td className="p-1 border-r-2 border-black"><Input value={r.km} onChange={e => updateDynamicRow('subRoutes', r.id, { km: e.target.value })} className="h-7 border-none text-center" /></td>
-                              <td className="p-1 border-r-2 border-black"><Input value={r.area} onChange={e => updateDynamicRow('subRoutes', r.id, { area: e.target.value })} className="h-7 border-none text-center" /></td>
-                              <td className="p-1 border-r-2 border-black"><Input type="number" value={r.producerCount} onChange={e => updateDynamicRow('subRoutes', r.id, { producerCount: e.target.value })} className="h-7 border-none text-center" /></td>
-                              <td className="p-1 border-r-2 border-black"><Input type="number" value={r.animalCount} onChange={e => updateDynamicRow('subRoutes', r.id, { animalCount: e.target.value })} className="h-7 border-none text-center" /></td>
-                              <td className="p-1 border-r-2 border-black"><Input type="number" value={r.milkQty} onChange={e => updateDynamicRow('subRoutes', r.id, { milkQty: e.target.value })} className="h-7 border-none text-center font-black" /></td>
+                              <td className="p-1 border-r border-black"><Input value={r.vehicleType} onChange={e => updateDynamicRow('subRoutes', r.id, { vehicleType: e.target.value })} className="h-7 border-none text-center" /></td>
+                              <td className="p-1 border-r border-black"><Input value={r.km} onChange={e => updateDynamicRow('subRoutes', r.id, { km: e.target.value })} className="h-7 border-none text-center" /></td>
+                              <td className="p-1 border-r border-black"><Input value={r.area} onChange={e => updateDynamicRow('subRoutes', r.id, { area: e.target.value })} className="h-7 border-none text-center" /></td>
+                              <td className="p-1 border-r border-black"><Input type="number" value={r.producerCount} onChange={e => updateDynamicRow('subRoutes', r.id, { producerCount: e.target.value })} className="h-7 border-none text-center" /></td>
+                              <td className="p-1 border-r border-black"><Input type="number" value={r.cowCount} onChange={e => updateDynamicRow('subRoutes', r.id, { cowCount: e.target.value })} className="h-7 border-none text-center" /></td>
+                              <td className="p-1 border-r border-black"><Input type="number" value={r.buffaloCount} onChange={e => updateDynamicRow('subRoutes', r.id, { buffaloCount: e.target.value })} className="h-7 border-none text-center" /></td>
+                              <td className="p-1 border-r border-black"><Input type="number" value={r.milkQty} onChange={e => updateDynamicRow('subRoutes', r.id, { milkQty: e.target.value })} className="h-7 border-none text-center font-black" /></td>
                               <td className="p-1 text-center"><Button variant="ghost" size="icon" onClick={() => removeDynamicRow('subRoutes', r.id)} className="text-rose-500"><X className="h-3 w-3" /></Button></td>
                             </tr>
                           ))}
@@ -828,13 +770,5 @@ function RouteDetailsContent() {
         </DialogContent>
       </Dialog>
     </div>
-  )
-}
-
-export default function RouteDetailsPage() {
-  return (
-    <Suspense fallback={<div className="p-10 text-center font-black uppercase text-[10px] opacity-50">लोड होत आहे...</div>}>
-      <RouteDetailsContent />
-    </Suspense>
   )
 }
