@@ -23,6 +23,7 @@ import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBl
 import { collection, doc } from "firebase/firestore"
 import { useToast } from "@/hooks/use-toast"
 import { Textarea } from "@/components/ui/textarea"
+import { cn } from "@/lib/utils"
 
 const SectionTitle = ({ icon: Icon, title, color = "text-primary" }: any) => (
   <div className={cn("flex items-center gap-1.5 border-b-2 pb-1 mb-3 mt-6", color === 'text-primary' ? 'border-primary/20' : 'border-black/20')}>
@@ -362,12 +363,13 @@ function SuppliersListPage() {
       </div>
 
       <Dialog open={isAdding || isEditing} onOpenChange={(o) => { if(!o) { setIsAdding(false); setIsEditing(false); } }}>
-        <DialogContent className="max-w-[95vw] sm:max-w-[950px] p-0 overflow-hidden rounded-3xl border-none shadow-2xl bg-white text-left">
-          <DialogHeader className="p-4 bg-primary text-white sticky top-0 z-10">
+        <DialogContent className="max-w-[95vw] sm:max-w-[950px] max-h-[90vh] p-0 overflow-hidden rounded-3xl border-none shadow-2xl bg-white text-left">
+          <DialogHeader className="p-4 bg-primary text-white sticky top-0 z-10 shrink-0">
             <DialogTitle className="text-base font-black uppercase tracking-widest">{isAdding ? 'नवीन सप्लायर' : 'माहिती बदला'}</DialogTitle>
             <DialogDescription className="text-[9px] text-white/70 uppercase">सप्लायरचा सविस्तर १६ कलमी तपशील भरा.</DialogDescription>
           </DialogHeader>
-          <ScrollArea className="max-h-[85vh] p-4 md:p-8">
+          
+          <ScrollArea className="flex-1 p-4 md:p-8 text-left">
             <div className="space-y-10 pb-20">
               <div className="space-y-4">
                 <SectionTitle icon={User} title="१) प्राथमिक माहिती" />
@@ -589,7 +591,7 @@ function SuppliersListPage() {
                               <td className="p-1 border-r border-black"><Input type="number" value={r.cowCount} onChange={e => updateDynamicRow('subRoutes', r.id, { cowCount: e.target.value })} className="h-7 border-none text-center" /></td>
                               <td className="p-1 border-r border-black"><Input type="number" value={r.buffaloCount} onChange={e => updateDynamicRow('subRoutes', r.id, { buffaloCount: e.target.value })} className="h-7 border-none text-center" /></td>
                               <td className="p-1 border-r border-black"><Input type="number" value={r.milkQty} onChange={e => updateDynamicRow('subRoutes', r.id, { milkQty: e.target.value })} className="h-7 border-none text-center font-black" /></td>
-                              <td className="p-1 text-center"><Button variant="ghost" size="icon" onClick={() => removeDynamicRow('subRoutes', r.id)} className="text-rose-500"><X className="h-3 w-3" /></Button></td>
+                              <td className="p-1 text-center"><Button variant="ghost" size="icon" onClick={() => removeDynamicRow('subRoutes', r.id)} className="text-rose-500"><X className="h-3.5 w-3.5" /></Button></td>
                             </tr>
                           ))}
                         </tbody>
@@ -687,12 +689,111 @@ function SuppliersListPage() {
               <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">विशेष शेरा</Label><Textarea value={formData.additionalNotes || formData.additionalInfo} onChange={e => setFormData({...formData, additionalNotes: e.target.value})} className="h-24 border-2 border-black rounded-xl p-4 font-bold" /></div>
             </div>
           </ScrollArea>
-          <DialogFooter className="p-4 border-t bg-muted/5 flex flex-row gap-2 no-print">
+          <DialogFooter className="p-4 border-t bg-muted/5 flex flex-row gap-2 no-print shrink-0">
             <Button variant="outline" onClick={() => setIsAdding(false)} className="flex-1 h-11 rounded-xl font-black uppercase text-[10px]">रद्द</Button>
             <Button onClick={handleSave} className="flex-[2] h-11 rounded-xl shadow-xl shadow-primary/20 bg-primary text-white font-black uppercase text-[10px] tracking-widest transition-all active:scale-95"><CheckCircle2 className="h-4 w-4 mr-1.5" /> प्रोफाइल जतन करा</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <Card className="border shadow-2xl rounded-2xl overflow-hidden bg-white border-muted-foreground/10 p-2 w-full">
+        <div className="flex flex-col sm:flex-row gap-2 items-center">
+          <div className="relative flex-1 w-full">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
+            <Input placeholder="नाव किंवा मोबाईलने शोधा..." className="pl-10 h-10 rounded-xl bg-muted/10 border-2 border-black font-bold text-xs shadow-inner w-full" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
+          </div>
+          <Select value={routeFilter} onValueChange={setRouteFilter}>
+            <SelectTrigger className="w-full sm:w-[180px] h-10 rounded-xl bg-muted/10 border-2 border-black font-black text-[9px] uppercase">
+              <Filter className="h-3.5 w-3.5 mr-2" /><SelectValue placeholder="रूट निवडा" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all" className="text-[10px] font-bold uppercase">सर्व रूट</SelectItem>
+              {(routes || []).map(r => <SelectItem key={r.id} value={r.id} className="text-[10px] font-bold uppercase">{r.name}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </div>
+      </Card>
+
+      <div className="bg-white rounded-2xl border border-muted-foreground/10 shadow-2xl overflow-hidden overflow-x-auto">
+        <Table className="min-w-full">
+          <TableHeader>
+            <TableRow className="bg-muted/30">
+              <TableHead className="font-black text-[9px] uppercase px-4 whitespace-nowrap">सप्लायर तपशील</TableHead>
+              <TableHead className="font-black text-[9px] uppercase text-center whitespace-nowrap">रूट (ROUTE)</TableHead>
+              <TableHead className="font-black text-[9px] uppercase text-right px-4">क्रिया</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredSuppliers.map((supp) => (
+              <TableRow key={supp.id} className="cursor-pointer hover:bg-primary/5 transition-colors group" onClick={() => setSelectedSupplier(supp)}>
+                <TableCell className="py-3 px-4">
+                  <div className="flex flex-col gap-0.5">
+                    <span className="font-black text-[12px] uppercase truncate max-w-[150px]">{supp.name}</span>
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <Badge variant="outline" className="h-3.5 px-1 text-[7px] border-none bg-primary/5 text-primary">ID: {supp.supplierId}</Badge>
+                      <span className="text-[8px] text-muted-foreground font-black uppercase flex items-center gap-1"><Phone className="h-2.5 w-2.5" /> {supp.mobile}</span>
+                    </div>
+                  </div>
+                </TableCell>
+                <TableCell className="text-center">
+                  <Badge className="h-4 px-1.5 text-[7px] font-black uppercase border-none truncate max-w-[80px]">
+                    {supp.routeId ? routes?.find(r => r.id === supp.routeId)?.name || '...' : 'Unassigned'}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-right px-4">
+                  <div className="flex gap-1 justify-end">
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-primary" onClick={(e) => { e.stopPropagation(); handleOpenEdit(supp); }}><Edit className="h-3.5 w-3.5" /></Button>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={(e) => { e.stopPropagation(); deleteSupplier(supp.id); }}><Trash2 className="h-3.5 w-3.5" /></Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+
+      <div className="w-full flex flex-col items-center">
+        {selectedSupplier ? (
+          <ScrollArea className="w-full h-full">
+            <div className="p-8 space-y-8 animate-in slide-in-from-right-2 duration-300 printable-report flex flex-col items-center shadow-none w-full max-w-[210mm] mx-auto text-left bg-white">
+              <div className="w-full flex items-center justify-between no-print mb-4 border-b pb-2">
+                <Badge className="bg-primary/10 text-primary border-none uppercase text-[10px] font-black">{selectedSupplier.supplierType} REPORT</Badge>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm" className="h-8 rounded-xl font-black uppercase text-[10px]" onClick={() => window.print()}><Printer className="h-4 w-4 mr-1.5" /> प्रिंट</Button>
+                  <Button variant="outline" size="sm" className="h-8 rounded-xl font-black uppercase text-[10px]" onClick={() => handleOpenEdit(selectedSupplier)}><Edit className="h-4 w-4 mr-1.5" /> बदल करा</Button>
+                  <Button variant="outline" size="sm" className="h-8 rounded-xl font-black uppercase text-[10px] text-destructive border-destructive/20" onClick={() => deleteSupplier(selectedSupplier.id)}><Trash2 className="h-4 w-4 mr-1.5" /> हटवा</Button>
+                  <Button variant="ghost" size="icon" onClick={() => setSelectedSupplier(null)} className="h-8 w-8 text-slate-400 hover:bg-slate-100 rounded-xl"><X className="h-5 w-5" /></Button>
+                </div>
+              </div>
+
+              <div className="w-full border-b-4 border-black pb-3 mb-6 text-center">
+                <h3 className="text-[20pt] font-black uppercase text-primary tracking-[0.1em]">{selectedSupplier.name}</h3>
+                <p className="text-[11pt] font-black text-muted-foreground uppercase tracking-widest mt-1">आयडी: {selectedSupplier.supplierId} | {selectedSupplier.supplierType} प्रोफाईल</p>
+              </div>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-10 w-full mb-6 text-left">
+                <div className="space-y-4">
+                  <SectionTitle icon={Info} title="१) प्राथमिक माहिती" />
+                  <div className="space-y-2 text-[12px] font-bold">
+                    <div className="flex justify-between border-b border-dashed border-black/20 pb-1"><span className="text-muted-foreground uppercase text-[10px]">ऑपरेटर</span><span>{selectedSupplier.operatorName || "-"}</span></div>
+                    <div className="flex justify-between border-b border-dashed border-black/20 pb-1"><span className="text-muted-foreground uppercase text-[10px]">मोबाईल</span><span>{selectedSupplier.mobile || "-"}</span></div>
+                    <div className="flex flex-col gap-1"><span className="text-muted-foreground uppercase text-[10px]">पत्ता</span><span className="leading-relaxed">{selectedSupplier.address || "-"}</span></div>
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  <SectionTitle icon={ShieldCheck} title="२) परवाना व तांत्रिक" />
+                  <div className="space-y-2 text-[12px] font-bold">
+                    <div className="flex justify-between border-b border-dashed border-black/20 pb-1"><span className="text-muted-foreground uppercase text-[10px]">FSSAI क्र.</span><span>{selectedSupplier.fssaiNumber || "-"}</span></div>
+                    <div className="flex justify-between border-b border-dashed border-black/20 pb-1"><span className="text-muted-foreground uppercase text-[10px]">काटा ब्रँड</span><span>{selectedSupplier.scaleBrand || "-"}</span></div>
+                    <div className="flex justify-between border-b border-dashed border-black/20 pb-1"><span className="text-muted-foreground uppercase text-[10px]">मशीन ब्रँड</span><span>{selectedSupplier.fatMachineBrand || "-"}</span></div>
+                  </div>
+                </div>
+              </div>
+              {selectedSupplier.supplierType === 'Center' && <ProducerCenterReportView supplier={selectedSupplier} />}
+            </div>
+          </ScrollArea>
+        ) : null}
+      </div>
     </div>
   )
 }

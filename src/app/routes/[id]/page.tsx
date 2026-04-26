@@ -396,9 +396,9 @@ function RouteDetailsContent() {
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-[95vw] sm:max-w-[950px] p-0 overflow-hidden rounded-3xl border-none shadow-2xl bg-white text-left">
-          <Tabs defaultValue="form" className="w-full">
-            <DialogHeader className="p-4 bg-primary text-white sticky top-0 z-10 no-print">
+        <DialogContent className="max-w-[95vw] sm:max-w-[950px] max-h-[90vh] p-0 overflow-hidden rounded-3xl border-none shadow-2xl bg-white text-left">
+          <Tabs defaultValue="form" className="w-full h-full flex flex-col">
+            <DialogHeader className="p-4 bg-primary text-white shrink-0 no-print">
               <div className="flex items-center justify-between">
                 <div>
                   <DialogTitle className="text-base font-black uppercase tracking-widest">{dialogMode === 'add' ? 'नवीन सप्लायर' : 'माहिती बदला'}</DialogTitle>
@@ -411,8 +411,8 @@ function RouteDetailsContent() {
               </div>
             </DialogHeader>
 
-            <TabsContent value="form" className="mt-0">
-              <ScrollArea className="max-h-[85vh] p-4 md:p-8 text-left">
+            <TabsContent value="form" className="mt-0 flex-1 overflow-hidden flex flex-col">
+              <ScrollArea className="flex-1 p-4 md:p-8 text-left">
                 <div className="space-y-10 pb-20">
                   <div className="space-y-4">
                     <SectionTitle icon={User} title="१) प्राथमिक माहिती" />
@@ -427,7 +427,16 @@ function RouteDetailsContent() {
                       <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">आयडी (ID) *</Label><Input value={formData.supplierId} onChange={e => setFormData({...formData, supplierId: e.target.value})} className="h-11 border-2 border-black font-bold rounded-xl" /></div>
                       <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">ऑपरेटर नाव</Label><Input value={formData.operatorName} onChange={e => setFormData({...formData, operatorName: e.target.value})} className="h-11 border-2 border-black font-bold rounded-xl" /></div>
                       <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">मोबाईल</Label><Input value={formData.mobile} onChange={e => setFormData({...formData, mobile: e.target.value})} className="h-11 border-2 border-black font-bold rounded-xl" /></div>
-                      <div className="lg:col-span-2 space-y-1.5"><Label className="text-[10px] font-black uppercase">पत्ता</Label><Input value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} className="h-11 border-2 border-black font-bold rounded-xl" /></div>
+                      <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">रूट निवडा</Label>
+                        <Select value={formData.routeId} onValueChange={v => setFormData({...formData, routeId: v})}>
+                          <SelectTrigger className="h-11 border-2 border-black rounded-xl font-black"><SelectValue placeholder="रूट निवडा" /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="none">रूट नाही</SelectItem>
+                            {allRoutes?.map(r => <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>)}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="lg:col-span-3 space-y-1.5"><Label className="text-[10px] font-black uppercase">पत्ता</Label><Input value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} className="h-11 border-2 border-black font-bold rounded-xl" /></div>
                     </div>
                   </div>
 
@@ -723,14 +732,14 @@ function RouteDetailsContent() {
                   <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase">विशेष शेरा</Label><Textarea value={formData.additionalNotes || formData.additionalInfo} onChange={e => setFormData({...formData, additionalNotes: e.target.value})} className="h-24 border-2 border-black rounded-xl p-4 font-bold" /></div>
                 </div>
               </ScrollArea>
-              <DialogFooter className="p-4 border-t bg-muted/5 flex flex-row gap-2 no-print">
+              <DialogFooter className="p-4 border-t bg-muted/5 flex flex-row gap-2 no-print shrink-0">
                 <Button variant="outline" onClick={() => setIsDialogOpen(false)} className="flex-1 h-11 rounded-xl font-black uppercase text-[10px]">रद्द</Button>
                 <Button onClick={handleSaveSupplier} className="flex-[2] h-11 rounded-xl shadow-xl shadow-primary/20 bg-primary text-white font-black uppercase text-[10px] tracking-widest transition-all active:scale-95"><CheckCircle2 className="h-4 w-4 mr-1.5" /> प्रोफाइल जतन करा</Button>
               </DialogFooter>
             </TabsContent>
 
-            <TabsContent value="master" className="mt-0">
-              <ScrollArea className="max-h-[80vh] p-4 md:p-8">
+            <TabsContent value="master" className="mt-0 flex-1 overflow-hidden flex flex-col">
+              <ScrollArea className="flex-1 p-4 md:p-8">
                 <div className="space-y-4">
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
