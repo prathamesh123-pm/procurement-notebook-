@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect, useMemo, Suspense } from "react"
@@ -15,7 +14,7 @@ import {
   Lightbulb, Info, FileText, PlusCircle, Briefcase, Users
 } from "lucide-react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogDescription } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
@@ -691,7 +690,7 @@ function SuppliersListPage() {
           </ScrollArea>
           <DialogFooter className="p-4 border-t bg-muted/5 flex flex-row gap-2 no-print shrink-0">
             <Button variant="outline" onClick={() => setIsDialogOpen(false)} className="flex-1 h-11 rounded-xl font-black uppercase text-[10px]">रद्द</Button>
-            <Button onClick={handleSaveSupplier} className="flex-[2] h-11 rounded-xl shadow-xl shadow-primary/20 bg-primary text-white font-black uppercase text-[10px] tracking-widest transition-all active:scale-95"><CheckCircle2 className="h-4 w-4 mr-1.5" /> प्रोफाइल जतन करा</Button>
+            <Button onClick={handleSave} className="flex-[2] h-11 rounded-xl shadow-xl shadow-primary/20 bg-primary text-white font-black uppercase text-[10px] tracking-widest transition-all active:scale-95"><CheckCircle2 className="h-4 w-4 mr-1.5" /> प्रोफाइल जतन करा</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -699,6 +698,6 @@ function SuppliersListPage() {
   )
 }
 
-export default function Page() {
-  return <Suspense fallback={<div className="p-10 text-center font-black uppercase text-[10px] opacity-50">लोड होत आहे...</div>}><RouteDetailsContent /></Suspense>
+export default function SuppliersPage() {
+  return <Suspense fallback={<div className="p-10 text-center font-black uppercase text-[10px] opacity-50">लोड होत आहे...</div>}><SuppliersListPage /></Suspense>
 }

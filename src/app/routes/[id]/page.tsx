@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect, useMemo, Suspense } from "react"
@@ -240,7 +239,7 @@ function RouteDetailsContent() {
       buffalo: Number(formData.buffalo),
       calves: Number(formData.calves),
       long_term_producers: formData.longTermProducers,
-      decreasing_producers: formData.decreasingProducers,
+      decreasing_producers: formData.decreasing_producers,
       capable_gotha_producers: formData.gothaCapableProducers,
       high_milk_producers: formData.highMilkProducers,
       local_employees: formData.localEmployees,
@@ -575,7 +574,7 @@ function RouteDetailsContent() {
                       </div>
 
                       <div className="space-y-4">
-                         <div className="flex items-center justify-between"><SectionTitle icon={History} title="९) परिसरातील स्थानिक गवळी माहिती" /><Button size="sm" onClick={() => addDynamicRow('localGavali', { name: "", code: "", cow_milk: 0, buffalo_milk: 0, total_milk: 0, producers: 0 })} className="h-7 text-[8px] uppercase">जोडा</Button></div>
+                         <div className="flex items-center justify-between"><History className="h-3.5 w-3.5 text-primary" /><h4 className="text-[10px] font-black uppercase tracking-widest text-primary">९) परिसरातील स्थानिक गवळी माहिती</h4><Button size="sm" onClick={() => addDynamicRow('localGavali', { name: "", code: "", cow_milk: 0, buffalo_milk: 0, total_milk: 0, producers: 0 })} className="h-7 text-[8px] uppercase">जोडा</Button></div>
                          <ScrollArea className="w-full border-2 border-black rounded-xl">
                           <table className="w-full text-left border-collapse min-w-[600px] text-[10px]">
                             <thead className="bg-slate-50 font-black uppercase border-b-2 border-black">
