@@ -216,7 +216,10 @@ function SuppliersListPage() {
   }
 
   const handleSave = () => {
-    if (!formData.name || !formData.supplierId || !db || !user) return;
+    if (!formData.name || !formData.supplierId || !db || !user) {
+      toast({ title: "त्रुटी", description: "नाव आणि आयडी आवश्यक आहे.", variant: "destructive" });
+      return;
+    }
     
     const additional_details = {
       morning_collection_time: formData.morning_collection_time,
@@ -285,6 +288,7 @@ function SuppliersListPage() {
     if (!db || !user) return
     if (confirm("हटवायचे आहे का?")) {
       deleteDocumentNonBlocking(doc(db, 'users', user.uid, 'suppliers', id))
+      setSelectedSupplier(null)
       toast({ title: "यशस्वी", description: "सप्लायर हटवला." })
     }
   }
@@ -689,7 +693,7 @@ function SuppliersListPage() {
             </div>
           </ScrollArea>
           <DialogFooter className="p-4 border-t bg-muted/5 flex flex-row gap-2 no-print shrink-0">
-            <Button variant="outline" onClick={() => setIsDialogOpen(false)} className="flex-1 h-11 rounded-xl font-black uppercase text-[10px]">रद्द</Button>
+            <Button variant="outline" onClick={() => setIsAdding(false)} className="flex-1 h-11 rounded-xl font-black uppercase text-[10px]">रद्द</Button>
             <Button onClick={handleSave} className="flex-[2] h-11 rounded-xl shadow-xl shadow-primary/20 bg-primary text-white font-black uppercase text-[10px] tracking-widest transition-all active:scale-95"><CheckCircle2 className="h-4 w-4 mr-1.5" /> प्रोफाइल जतन करा</Button>
           </DialogFooter>
         </DialogContent>
